@@ -9,10 +9,7 @@ import Database from "../utilities/database";
 export default class WarnCommand extends CommandWrapper {
     constructor() {
         super("warn", "Warns a user.")
-    }
-
-    json() {
-        return this.slashCommand
+        this.slashCommand
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("The target user whose warnings will be listed.")
@@ -36,7 +33,6 @@ export default class WarnCommand extends CommandWrapper {
                 .setName("notify")
                 .setDescription("Whether or not to notify the user of the warning.")
                 .setRequired(true))
-            .toJSON()
     }
 
     async execute(interaction: CommandInteraction) {
