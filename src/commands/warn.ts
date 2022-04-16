@@ -50,7 +50,12 @@ export default class WarnCommand extends CommandWrapper {
         const reason = interaction.options.getString("reason", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        await Database.watchlistUpdate(user, reason, penalty)
+        let member
+        try {
+            member = await interaction.guild?.members.fetch(user)
+        } catch (e) {}
+
+        await Database.watchlistUpdate(user, reason, penalty, member)
 
         const embed = Embed.make(`Warned ${user.tag}`, user.displayAvatarURL({
             dynamic: true,

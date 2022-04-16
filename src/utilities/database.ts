@@ -1,18 +1,19 @@
-import {User} from "discord.js";
+import {GuildMember, User} from "discord.js";
 import {Notion} from "../clients";
+import {Config} from "../config";
 
-let database
+let reasons
 
 async function getWatchlistPage(user: User) {
     const query = await Notion.databases.query({
-        database_id: "e40b49e15c64401a8209918452ebcb9c",
+        database_id: Config.databaseId,
         filter: {
             property: "ID",
             type: "rich_text",
             rich_text: {
-                contains: user.id
-            }
-        }
+                equals: user.id
+            },
+        },
     })
 
     switch (query.results.length) {
@@ -33,13 +34,13 @@ async function getWatchlistPage(user: User) {
 }
 
 async function createWarnReason(reason: string) {
-    database = await Notion.databases.retrieve({
-        database_id: "e40b49e15c64401a8209918452ebcb9c"
+    const database = await Notion.databases.retrieve({
+        database_id: Config.databaseId,
     })
 
-    const reasons = database.properties["Reasons"]
+    reasons = database.properties["Reasons"]
     if (reasons.type !== "multi_select") {
-        throw new Error("Reasons isn't a multi select")
+        throw new Error("Reasons isn't a multi-select")
     }
 
     if (reasons.multi_select.options.find(r => r.name === reason)) {
@@ -54,11 +55,11 @@ async function createWarnReason(reason: string) {
                     options: [
                         {
                             name: reason
-                        }, ...reasons.multi_select.options
-                    ]
-                }
-            }
-        }
+                        }, ...reasons.multi_select.options,
+                    ],
+                },
+            },
+        },
     })
 }
 
@@ -89,7 +90,7 @@ export default class Database {
         }
 
         if (reasons?.type !== "multi_select") {
-            throw new Error(`User with ID ${user.id} doesn't have a multi select reasons`)
+            throw new Error(`User with ID ${user.id} doesn't have a multi-select reasons`)
         }
 
         if (lastEditedTime?.type !== "last_edited_time") {
@@ -102,7 +103,7 @@ export default class Database {
 
         const lastEditedByUser = lastEditedBy.last_edited_by
         if (!("name" in lastEditedByUser) || !lastEditedByUser.name) {
-            throw new Error(`The Notion integration doesn't have access to user information`)
+            throw new Error("The Notion integration doesn't have access to user information")
         }
 
         return {
@@ -111,18 +112,18 @@ export default class Database {
             currentPenalty: currentPenalty.select.name,
             reasons: reasons.multi_select?.map(x => x.name),
             lastEdited: new Date(lastEditedTime.last_edited_time),
-            lastEditedBy: lastEditedByUser.name
+            lastEditedBy: lastEditedByUser.name,
         }
     }
 
-    static async watchlistUpdate(user: User, reason: string, penalty: string) {
+    static async watchlistUpdate(user: User, reason: string, penalty: string, member?: GuildMember) {
         await createWarnReason(reason)
 
         const page = await getWatchlistPage(user)
         if (page === null) {
             await Notion.pages.create({
                 parent: {
-                    database_id: "e40b49e15c64401a8209918452ebcb9c"
+                    database_id: Config.databaseId
                 },
                 properties: {
                     "ID": {
@@ -130,32 +131,32 @@ export default class Database {
                             {
                                 text: {
                                     content: user.id
-                                }
-                            }
-                        ]
+                                },
+                            },
+                        ],
                     },
                     "Name": {
                         title: [
                             {
                                 text: {
                                     content: user.tag
-                                }
-                            }
-                        ]
+                                },
+                            },
+                        ],
                     },
                     "Current penalty level": {
                         select: {
                             name: penalty
-                        }
+                        },
                     },
                     "Reasons": {
                         multi_select: [
                             {
                                 name: reason
-                            }
-                        ]
-                    }
-                }
+                            },
+                        ],
+                    },
+                },
             })
             return
         }
@@ -172,32 +173,32 @@ export default class Database {
                         {
                             text: {
                                 content: user.id
-                            }
-                        }
-                    ]
+                            },
+                        },
+                    ],
                 },
                 "Name": {
                     title: [
                         {
                             text: {
-                                content: user.tag
-                            }
-                        }
-                    ]
+                                content: member?.nickname ? `${user.tag} (${member.nickname})` : user.tag
+                            },
+                        },
+                    ],
                 },
                 "Current penalty level": {
                     select: {
                         name: penalty
-                    }
+                    },
                 },
                 "Reasons": {
                     multi_select: [
                         {
                             name: reason
                         }, ...page.properties["Reasons"].multi_select
-                    ]
-                }
-            }
+                    ],
+                },
+            },
         })
     }
 }
