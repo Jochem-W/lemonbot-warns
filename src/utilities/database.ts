@@ -113,6 +113,7 @@ export default class Database {
             reasons: reasons.multi_select?.map(x => x.name),
             lastEdited: new Date(lastEditedTime.last_edited_time),
             lastEditedBy: lastEditedByUser.name,
+            url: result.url,
         }
     }
 
@@ -121,7 +122,7 @@ export default class Database {
 
         const page = await getWatchlistPage(user)
         if (page === null) {
-            await Notion.pages.create({
+            const result = await Notion.pages.create({
                 parent: {
                     database_id: Config.databaseId
                 },
@@ -158,14 +159,19 @@ export default class Database {
                     },
                 },
             })
-            return
+
+            if (!("url" in result)) {
+                throw new Error("Page creation failed")
+            }
+
+            return result.url
         }
 
         if (page.properties["Reasons"]?.type !== "multi_select") {
             throw new Error("Reasons isn't a multi select")
         }
 
-        await Notion.pages.update({
+        const result = await Notion.pages.update({
             page_id: page.id,
             properties: {
                 "ID": {
@@ -200,5 +206,11 @@ export default class Database {
                 },
             },
         })
+
+        if (!("url" in result)) {
+            throw new Error("Page editing failed")
+        }
+
+        return result.url
     }
 }
