@@ -41,24 +41,26 @@ export default class WarnCommand extends CommandWrapper {
 
     async execute(interaction: CommandInteraction) {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
-            await interaction.editReply({
+            await interaction.reply({
                 embeds: [
                     Embed.make("No permission", undefined, "You do not have permission to execute this command."),
-                ]
+                ], ephemeral: true
             })
 
             return
         }
 
         if (!interaction.member) {
-            await interaction.editReply({
+            await interaction.reply({
                 embeds: [
                     Embed.make("Unknown member", "The user you specified is not a member of this server.")
-                ]
+                ],
             })
 
             return
         }
+
+        await interaction.deferReply()
 
         const user = interaction.options.getUser("user", true)
         const reason = interaction.options.getString("reason", true)
@@ -79,7 +81,7 @@ export default class WarnCommand extends CommandWrapper {
                         Embed.make("Warning", undefined, `You have been warned in ${member.guild.name}.`)
                             .addField("Reason", reason)
                             .setColor("#ff0000"),
-                    ]
+                    ],
                 })
 
                 embed.addField("Notification", "Successfully notified the user.")

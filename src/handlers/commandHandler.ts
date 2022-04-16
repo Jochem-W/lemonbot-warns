@@ -26,16 +26,14 @@ export default class CommandHandler extends HandlerWrapper {
 
         // handle any potential errors, and prevent them from crashing the bot
         try {
-            await interaction.deferReply()
             await command.execute(interaction);
         } catch (error) {
             console.error(error)
 
-            await interaction.editReply({
-                embeds: [
-                    Embed.make("Error", `An error occurred while executing the command`)
-                ]
-            })
+            const errorEmbed = Embed.make("Error", "An error occurred while executing the command")
+                .setColor("#ff0000")
+
+            await (interaction.replied ? interaction.editReply({embeds: [errorEmbed]}) : interaction.reply({embeds: [errorEmbed]}))
         }
     }
 }

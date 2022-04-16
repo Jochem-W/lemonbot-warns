@@ -22,14 +22,16 @@ export default class WarningsCommand extends CommandWrapper {
 
     async execute(interaction: CommandInteraction) {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
-            await interaction.editReply({
+            await interaction.reply({
                 embeds: [
                     Embed.make("No permission", undefined, "You do not have permission to execute this command"),
-                ]
+                ], ephemeral: true
             })
 
             return
         }
+
+        await interaction.deferReply()
 
         const user = interaction.options.getUser("user", true);
         const embed = Embed.make(`Warnings for ${user.tag}`, user.displayAvatarURL({
