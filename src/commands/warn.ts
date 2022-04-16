@@ -43,7 +43,8 @@ export default class WarnCommand extends CommandWrapper {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
             await interaction.reply({
                 embeds: [
-                    Embed.make("Error", undefined, "You do not have permission to execute this command."),
+                    Embed.make("Error", undefined, "You do not have permission to execute this command.")
+                        .setColor("#ff0000"),
                 ], ephemeral: true
             })
 
@@ -54,6 +55,7 @@ export default class WarnCommand extends CommandWrapper {
             await interaction.reply({
                 embeds: [
                     Embed.make("Unknown member", undefined, "The user you specified is not a member of this server.")
+                        .setColor("#ff0000"),
                 ],
             })
 
@@ -67,7 +69,7 @@ export default class WarnCommand extends CommandWrapper {
         const penalty = interaction.options.getString("penalty", true)
         const member = interaction.member as GuildMember
 
-        await Database.watchlistUpdate(user, reason, penalty, member)
+        const url = await Database.watchlistUpdate(user, reason, penalty, member)
 
         const embed = Embed.make(`Warned ${user.tag} in ${member.guild.name}`, user.displayAvatarURL({
             dynamic: true,
