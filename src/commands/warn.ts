@@ -72,7 +72,7 @@ export default class WarnCommand extends CommandWrapper {
         const embed = Embed.make(`Warned ${user.tag} in ${member.guild.name}`, user.displayAvatarURL({
             dynamic: true,
             size: 4096
-        }), `Reason: ${reason}`).addField("Penalty level", penalty)
+        }), `Reason: ${reason}`).addField("New penalty level", penalty)
 
         if (interaction.options.getBoolean("notify", true)) {
             try {
