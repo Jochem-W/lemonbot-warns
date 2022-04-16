@@ -24,7 +24,7 @@ export default class WarningsCommand extends CommandWrapper {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
             await interaction.reply({
                 embeds: [
-                    Embed.make("No permission", undefined, "You do not have permission to execute this command"),
+                    Embed.make("Error", undefined, "You do not have permission to execute this command"),
                 ], ephemeral: true
             })
 

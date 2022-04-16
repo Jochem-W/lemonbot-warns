@@ -30,7 +30,7 @@ export default class CommandHandler extends HandlerWrapper {
         } catch (error) {
             console.error(error)
 
-            const errorEmbed = Embed.make("Error", "An error occurred while executing the command")
+            const errorEmbed = Embed.make("Error", undefined, "An error occurred while executing the command")
                 .setColor("#ff0000")
 
             await (interaction.replied ? interaction.editReply({embeds: [errorEmbed]}) : interaction.reply({embeds: [errorEmbed]}))

@@ -43,7 +43,7 @@ export default class WarnCommand extends CommandWrapper {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
             await interaction.reply({
                 embeds: [
-                    Embed.make("No permission", undefined, "You do not have permission to execute this command."),
+                    Embed.make("Error", undefined, "You do not have permission to execute this command."),
                 ], ephemeral: true
             })
 
@@ -53,7 +53,7 @@ export default class WarnCommand extends CommandWrapper {
         if (!interaction.member) {
             await interaction.reply({
                 embeds: [
-                    Embed.make("Unknown member", "The user you specified is not a member of this server.")
+                    Embed.make("Unknown member", undefined, "The user you specified is not a member of this server.")
                 ],
             })
 
