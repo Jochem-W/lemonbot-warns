@@ -1,6 +1,6 @@
 import HandlerWrapper from "./types/handlerWrapper"
 import ReadyHandler from "./handlers/readyHandler"
-import CommandHandler from "./handlers/commandHandler";
+import CommandHandler from "./handlers/commandHandler"
 
 /**
  * @description The event handlers list which fires on each received event.

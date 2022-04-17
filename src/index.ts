@@ -5,7 +5,7 @@ import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Commands} from "./commands"
 import {Routes} from "discord-api-types/v10"
-import {Config} from "./config";
+import {Config} from "./config"
 
 const discord = new Client({
     intents: [

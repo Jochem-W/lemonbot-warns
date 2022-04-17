@@ -1,7 +1,7 @@
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction} from "discord.js"
-import Embed from "../utilities/embed";
-import Database from "../utilities/database";
+import Embed from "../utilities/embed"
+import Database from "../utilities/database"
 
 /**
  * @description Slash command which synchronises the database with the current names.
