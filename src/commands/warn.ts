@@ -49,6 +49,7 @@ export default class WarnCommand extends CommandWrapper {
         await interaction.deferReply()
 
         const reason = interaction.options.getString("reason", true)
+        const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
         const url = await Database.watchlistUpdate(member, reason, penalty)
@@ -57,6 +58,7 @@ export default class WarnCommand extends CommandWrapper {
             dynamic: true,
             size: 4096
         }), `Reason: ${reason}`)
+            .setDescription(description)
             .addField("Notion page", url)
             .addField("New penalty level", penalty)
 
@@ -69,8 +71,8 @@ export default class WarnCommand extends CommandWrapper {
         try {
             await member.send({
                 embeds: [
-                    Embed.make("Warning", undefined, `You have been warned in ${member.guild.name}`)
-                        .addField("Reason", reason)
+                    Embed.make(`You have been warned in ${member.guild.name}`, undefined, `Reason: ${reason}`)
+                        .setDescription(description)
                         .setColor("#ff0000"),
                 ],
             })
