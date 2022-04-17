@@ -1,5 +1,5 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction, Permissions} from "discord.js"
+import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
@@ -17,16 +17,6 @@ export default class SyncCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
-        if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
-            await interaction.reply({
-                embeds: [
-                    Embed.make("Error", undefined, "You do not have permission to execute this command.")
-                        .setColor("#ff0000"),
-                ], ephemeral: true
-            })
-            return
-        }
-
         await interaction.deferReply()
 
         const stored: { id: string; name: string; }[] = []

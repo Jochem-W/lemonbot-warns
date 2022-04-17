@@ -1,5 +1,5 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction, DiscordAPIError, GuildMember, Permissions} from "discord.js"
+import {CommandInteraction, DiscordAPIError, GuildMember} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
@@ -40,17 +40,6 @@ export default class WarnCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
-        if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
-            await interaction.reply({
-                embeds: [
-                    Embed.make("Error", undefined, "You do not have permission to execute this command.")
-                        .setColor("#ff0000"),
-                ], ephemeral: true
-            })
-
-            return
-        }
-
         const user = interaction.options.getUser("user", true)
         let member: GuildMember | undefined
         try {
