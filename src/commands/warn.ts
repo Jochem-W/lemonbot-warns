@@ -3,6 +3,7 @@ import {CommandInteraction, Constants, DiscordAPIError} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
+import {Config} from "../config";
 
 /**
  * @description Slash command which warns a user.
@@ -54,10 +55,7 @@ export default class WarnCommand extends CommandWrapper {
 
         const url = await Database.watchlistUpdate(member, reason, penalty)
 
-        const embed = Embed.make(`Warned ${member.user.tag}`, member.user.displayAvatarURL({
-            dynamic: true,
-            size: 4096
-        }), `Reason: ${reason}`)
+        const embed = Embed.make(`Warned ${member.user.tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
             .addField("Notion page", url)
             .addField("New penalty level", penalty)
@@ -71,7 +69,7 @@ export default class WarnCommand extends CommandWrapper {
         try {
             await member.send({
                 embeds: [
-                    Embed.make(`You have been warned in ${member.guild.name}`, undefined, `Reason: ${reason}`)
+                    Embed.make(`You have been warned in ${member.guild.name}`, Config.warnIcon, `Reason: ${reason}`)
                         .setDescription(description)
                         .setColor("#ff0000"),
                 ],
