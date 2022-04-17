@@ -2,8 +2,6 @@ import {GuildMember, User} from "discord.js";
 import {Notion} from "../clients";
 import {Config} from "../config";
 
-let reasons
-
 async function getWatchlistPage(user: User) {
     const query = await Notion.databases.query({
         database_id: Config.databaseId,
@@ -33,7 +31,7 @@ async function getWatchlistPage(user: User) {
     return result
 }
 
-async function createUser(user: User, member?: GuildMember, reason?: string, penalty = "0: Nothing") {
+async function createUser(user: User, member?: GuildMember, penalty = "0: Nothing", reason?: string) {
     const result = await Notion.pages.create({
         parent: {
             database_id: Config.databaseId
