@@ -19,31 +19,32 @@ export default class CommandHandler extends HandlerWrapper {
             return
         }
 
-        const command = Commands.find(command => command.json().name === interaction.commandName)
-        if (!command) {
+        const errorEmbed = Embed.make("Error").setColor("#ff0000")
+
+        if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("You do not have permission to use this command")],
+                ephemeral: true
+            })
             return
         }
 
-        // handle any potential errors, and prevent them from crashing the bot
-        try {
-            if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
-                await interaction.reply({
-                    embeds: [
-                        Embed.make("Error", undefined, "You do not have permission to execute this command.")
-                            .setColor("#ff0000"),
-                    ], ephemeral: true
-                })
-                return
-            }
+        const command = Commands.find(command => command.json().name === interaction.commandName)
+        if (!command) {
+            await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            return
+        }
 
-            await command.execute(interaction);
+        try {
+            await command.execute(interaction)
         } catch (error) {
             console.error(error)
-
-            const errorEmbed = Embed.make("Error", undefined, "An error occurred while executing the command")
-                .setColor("#ff0000")
-
-            await (interaction.replied || interaction.deferred ? interaction.editReply({embeds: [errorEmbed]}) : interaction.reply({embeds: [errorEmbed]}))
+            errorEmbed.setTitle("").setDescription(`${error}`)
+            if (interaction.replied || interaction.deferred) {
+                await interaction.editReply({embeds: [errorEmbed]})
+            } else {
+                await interaction.reply({embeds: [errorEmbed]})
+            }
         }
     }
 }
