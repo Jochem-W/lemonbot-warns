@@ -105,6 +105,27 @@ async function createUser(user: User, member?: GuildMember, reason?: string, pen
     return result
 }
 
+async function* getAllBlocks(user: User) {
+    const page = await getWatchlistPage(user);
+    if (!page) {
+        return
+    }
+
+    let response = undefined
+    while (!response || response?.has_more) {
+        response = await Notion.blocks.children.list({
+            block_id: page.id,
+            // I love TypeScript (this is sarcasm)
+            start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
+        })
+
+        for (const block of response.results) {
+            yield block
+        }
+    }
+}
+
+
 export default class Database {
     static async watchlistLookup(user: User) {
         const result = await getWatchlistPage(user)
@@ -163,7 +184,7 @@ export default class Database {
         await ensureWarnReason(reason)
 
         const page = await getWatchlistPage(user)
-        if (page === null) {
+        if (!page) {
             return (await createUser(user, member, penalty, reason)).url
         }
 
@@ -272,5 +293,15 @@ export default class Database {
                 ...newChildren,
             ],
         })
+    }
+
+    static async* getNotes(user: User) {
+        for await (const block of getAllBlocks(user)) {
+            if (!("type" in block)) {
+                continue
+            }
+
+            yield block
+        }
     }
 }
