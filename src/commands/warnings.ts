@@ -41,7 +41,7 @@ export default class WarningsCommand extends CommandWrapper {
             return
         }
 
-        embed.setTitle("Notion page")
+        embed.setTitle("View notes")
         embed.setURL(result.url)
         embed.addField("Current penalty level", result.currentPenalty ?? "")
         embed.addField("Reasons", result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A")

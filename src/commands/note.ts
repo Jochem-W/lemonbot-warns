@@ -59,8 +59,7 @@ export default class NoteCommand extends CommandWrapper {
         await interaction.editReply({
             embeds: [
                 Embed.make(`Added note to ${user.tag} in ${interaction.guild!.name}`, undefined, title ?? undefined)
-                    .setDescription(content)
-                    .setColor("#00ff00"),
+                    .setDescription(content),
             ]
         })
     }
