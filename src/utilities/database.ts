@@ -93,6 +93,19 @@ async function* getAllBlocks(user: User) {
     }
 }
 
+async function* getEntireDatabase() {
+    let response = undefined
+    while (!response || response?.has_more) {
+        response = await Notion.databases.query({
+            database_id: Config.databaseId,
+            start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
+        })
+
+        for (const result of response.results) {
+            yield result
+        }
+    }
+}
 
 export default class Database {
     static async watchlistLookup(user: User) {
@@ -268,6 +281,26 @@ export default class Database {
             }
 
             yield block
+        }
+    }
+
+    static async* getIdNamePairs() {
+        for await (const result of getEntireDatabase()) {
+            if (!("properties" in result)) {
+                continue
+            }
+
+            const id = result.properties["ID"]
+            const name = result.properties["Name"]
+
+            if (id?.type !== "rich_text" || name?.type !== "title") {
+                continue
+            }
+
+            yield {
+                id: id.rich_text.map(t => t.plain_text).join(""),
+                name: name.title.map(t => t.plain_text).join(""),
+            }
         }
     }
 }
