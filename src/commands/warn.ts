@@ -47,7 +47,14 @@ export default class WarnCommand extends CommandWrapper {
             return
         }
 
-        if (!interaction.member) {
+        const user = interaction.options.getUser("user", true)
+        let member: GuildMember | undefined
+        try {
+            member = await interaction.guild?.members.fetch(user)
+        } catch (e) {
+        }
+
+        if (!member) {
             await interaction.reply({
                 embeds: [
                     Embed.make("Unknown member", undefined, "The user you specified is not a member of this server.")
@@ -60,10 +67,8 @@ export default class WarnCommand extends CommandWrapper {
 
         await interaction.deferReply()
 
-        const user = interaction.options.getUser("user", true)
         const reason = interaction.options.getString("reason", true)
         const penalty = interaction.options.getString("penalty", true)
-        const member = interaction.member as GuildMember
 
         const url = await Database.watchlistUpdate(user, reason, penalty, member)
 
