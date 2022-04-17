@@ -138,8 +138,8 @@ export default class Database {
         }
 
         return {
-            id: id.rich_text[0].plain_text,
-            name: name.title[0].plain_text,
+            id: id.rich_text.map(t => t.plain_text).join(""),
+            name: name.title.map(t => t.plain_text).join(""),
             currentPenalty: currentPenalty.select.name,
             reasons: reasons.multi_select?.map(x => x.name),
             lastEdited: new Date(lastEditedTime.last_edited_time),

@@ -53,14 +53,14 @@ export default class NotesCommand extends CommandWrapper {
                         continue
                     }
 
-                    embed.addField(note.heading_1.rich_text[0].plain_text, "Placeholder")
+                    embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "Placeholder")
                     break
                 case "paragraph":
                     if (note.paragraph.rich_text.length !== 1) {
                         continue
                     }
 
-                    const plainText = note.paragraph.rich_text[0].plain_text
+                    const plainText = note.paragraph.rich_text.map(t => t.plain_text).join("")
                     if (!embed.fields.length) {
                         embed.setDescription(`${embed.description}\n\n${plainText}`)
                         break
