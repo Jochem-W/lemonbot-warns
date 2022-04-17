@@ -34,21 +34,15 @@ export default class NotesCommand extends CommandWrapper {
 
         let hasNotes = false
 
+        let unsupportedBlocks = 0
+        let possiblyTruncated = false
         for await (const note of Database.getNotes(user)) {
             hasNotes = true
             switch (note.type) {
                 case "heading_1":
-                    if (note.heading_1.rich_text.length !== 1) {
-                        continue
-                    }
-
-                    embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "Placeholder")
+                    embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
                     break
                 case "paragraph":
-                    if (note.paragraph.rich_text.length !== 1) {
-                        continue
-                    }
-
                     const plainText = note.paragraph.rich_text.map(t => t.plain_text).join("")
                     if (!embed.fields.length) {
                         embed.setDescription(`${embed.description}\n\n${plainText}`)
@@ -56,19 +50,29 @@ export default class NotesCommand extends CommandWrapper {
                     }
 
                     const last = embed.fields[embed.fields.length - 1]
-                    last.value = last.value === "Placeholder" ? plainText : `${last.value}\n\n${plainText}`
+                    last.value = last.value === "..." ? plainText : `${last.value}\n\n${plainText}`
                     break
+                default:
+                    unsupportedBlocks++
+                    break
+            }
+
+            if (embed.fields.length === 23) {
+                possiblyTruncated = true
+                break
             }
         }
 
+        if (possiblyTruncated) {
+            embed.addField("...", "View the Notion page for more notes.")
+        }
+
+        if (unsupportedBlocks) {
+            embed.addField("Warning", `${unsupportedBlocks} unsupported block${unsupportedBlocks ? "s" : ""} can only be viewed in Notion.`)
+        }
+
         if (!embed.fields.length && !embed.description) {
-            if (hasNotes) {
-                embed.addField("Unsupported blocks", "Only unsupported blocks were found :(\n" +
-                    "Please click the link to view the notes.")
-                embed.setColor("#ff0000")
-            } else {
-                embed.setTitle("No notes found")
-            }
+            embed.setTitle("No notes found")
         }
 
         await interaction.editReply({embeds: [embed]})
