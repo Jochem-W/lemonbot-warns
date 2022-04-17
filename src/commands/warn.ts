@@ -8,7 +8,7 @@ import Database from "../utilities/database";
  */
 export default class WarnCommand extends CommandWrapper {
     constructor() {
-        super("warn", "Warn a user.")
+        super("warn", "Warn a user")
         this.slashCommand
             .addUserOption(option => option
                 .setName("user")
