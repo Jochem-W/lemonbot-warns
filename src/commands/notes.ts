@@ -1,18 +1,18 @@
-/**
- * @description Slash command which lists notes on a user.
- */
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction, Permissions} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
+/**
+ * @description Slash command which lists notes on a user.
+ */
 export default class NotesCommand extends CommandWrapper {
     constructor() {
-        super("notes", "Lists a user's notes")
+        super("notes", "List a user's notes")
         this.slashCommand
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("The target user.")
+                .setDescription("Target user")
                 .setRequired(true))
     }
 

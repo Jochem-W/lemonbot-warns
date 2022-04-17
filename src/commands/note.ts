@@ -1,26 +1,26 @@
-/**
- * @description Slash command which add a note to a user.
- */
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction, GuildMember, Permissions} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
+/**
+ * @description Slash command which add a note to a user.
+ */
 export default class NoteCommand extends CommandWrapper {
     constructor() {
-        super("note", "Add a note to a user.")
+        super("note", "Add a note to a user")
         this.slashCommand
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("The target user.")
+                .setDescription("Target user")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("content")
-                .setDescription("Main content of the note.")
+                .setDescription("Main note content")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("title")
-                .setDescription("The title of the note.")
+                .setDescription("Optional note title")
                 .setRequired(false))
     }
 

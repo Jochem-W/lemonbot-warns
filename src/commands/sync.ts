@@ -1,18 +1,18 @@
-/**
- * @description Slash command which synchronises the database with the current names.
- */
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction, Permissions} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
+/**
+ * @description Slash command which synchronises the database with the current names.
+ */
 export default class SyncCommand extends CommandWrapper {
     constructor() {
-        super("sync", "Synchronises all names with the database")
+        super("sync", "Update the names stored in the database")
         this.slashCommand
             .addBooleanOption(option => option
                 .setName("dry")
-                .setDescription("Whether to do a dry run.")
+                .setDescription("Whether to do a dry run")
                 .setRequired(false))
     }
 

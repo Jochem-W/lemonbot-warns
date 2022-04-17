@@ -1,26 +1,30 @@
-/**
- * @description Slash command which warns a user.
- */
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction, DiscordAPIError, GuildMember, Permissions} from "discord.js"
 import Embed from "../utilities/embed";
 import Database from "../utilities/database";
 
+/**
+ * @description Slash command which warns a user.
+ */
 export default class WarnCommand extends CommandWrapper {
     constructor() {
-        super("warn", "Warns a user.")
+        super("warn", "Warn a user.")
         this.slashCommand
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("The target user whose warnings will be listed.")
+                .setDescription("Target user")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
-                .setDescription("The reason for the warning.")
+                .setDescription("Concise warning reason, preferably only a couple of words")
+                .setRequired(true))
+            .addStringOption(option => option
+                .setName("description")
+                .setDescription("Extended warning description")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
-                .setDescription("The new penalty level for the user.")
+                .setDescription("New penalty level for the user")
                 .addChoices([
                     ["0: Nothing", "0: Nothing"],
                     ["1: Warning", "1: Warning"],
@@ -31,7 +35,7 @@ export default class WarnCommand extends CommandWrapper {
                 .setRequired(true))
             .addBooleanOption(option => option
                 .setName("notify")
-                .setDescription("Whether or not to notify the user of the warning.")
+                .setDescription("Send a DM to the user")
                 .setRequired(true))
     }
 
