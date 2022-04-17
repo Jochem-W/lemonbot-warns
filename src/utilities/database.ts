@@ -33,36 +33,6 @@ async function getWatchlistPage(user: User) {
     return result
 }
 
-async function ensureWarnReason(reason: string) {
-    const database = await Notion.databases.retrieve({
-        database_id: Config.databaseId,
-    })
-
-    reasons = database.properties["Reasons"]
-    if (reasons.type !== "multi_select") {
-        throw new Error("Reasons isn't a multi-select")
-    }
-
-    if (reasons.multi_select.options.find(r => r.name === reason)) {
-        return
-    }
-
-    await Notion.databases.update({
-        database_id: "e40b49e15c64401a8209918452ebcb9c",
-        properties: {
-            "Reasons": {
-                multi_select: {
-                    options: [
-                        {
-                            name: reason
-                        }, ...reasons.multi_select.options,
-                    ],
-                },
-            },
-        },
-    })
-}
-
 async function createUser(user: User, member?: GuildMember, reason?: string, penalty = "0: Nothing") {
     const result = await Notion.pages.create({
         parent: {
@@ -181,8 +151,6 @@ export default class Database {
     }
 
     static async watchlistUpdate(user: User, reason: string, penalty: string, member?: GuildMember) {
-        await ensureWarnReason(reason)
-
         const page = await getWatchlistPage(user)
         if (!page) {
             return (await createUser(user, member, penalty, reason)).url
