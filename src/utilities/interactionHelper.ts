@@ -1,5 +1,6 @@
 import {CommandInteraction, Constants, DiscordAPIError, GuildMember} from "discord.js"
 import Embed from "./embed"
+import {Config} from "../config";
 
 export default class InteractionHelper {
     static async getMember(interaction: CommandInteraction, option = "user") {
@@ -17,7 +18,7 @@ export default class InteractionHelper {
             return member
         }
 
-        const embed = Embed.make("Unknown member", undefined, "The user you specified is not a member of this server")
+        const embed = Embed.make("Unknown member", Config.failIcon, "The user you specified is not a member of this server")
             .setColor("#ff0000")
 
         if (interaction.deferred || interaction.replied) {
