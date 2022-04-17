@@ -1,7 +1,8 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction, DiscordAPIError, GuildMember} from "discord.js"
-import Embed from "../utilities/embed";
-import Database from "../utilities/database";
+import {CommandInteraction, Constants, DiscordAPIError} from "discord.js"
+import Embed from "../utilities/embed"
+import Database from "../utilities/database"
+import InteractionHelper from "../utilities/interactionHelper"
 
 /**
  * @description Slash command which warns a user.
@@ -40,21 +41,8 @@ export default class WarnCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
-        const user = interaction.options.getUser("user", true)
-        let member: GuildMember | undefined
-        try {
-            member = await interaction.guild?.members.fetch(user)
-        } catch (e) {
-        }
-
+        const member = await InteractionHelper.getMember(interaction)
         if (!member) {
-            await interaction.reply({
-                embeds: [
-                    Embed.make("Unknown member", undefined, "The user you specified is not a member of this server.")
-                        .setColor("#ff0000"),
-                ],
-            })
-
             return
         }
 
@@ -63,32 +51,36 @@ export default class WarnCommand extends CommandWrapper {
         const reason = interaction.options.getString("reason", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        const url = await Database.watchlistUpdate(user, reason, penalty, member)
+        const url = await Database.watchlistUpdate(member, reason, penalty)
 
-        const embed = Embed.make(`Warned ${user.tag} in ${member.guild.name}`, user.displayAvatarURL({
+        const embed = Embed.make(`Warned ${member.user.tag}`, member.user.displayAvatarURL({
             dynamic: true,
             size: 4096
         }), `Reason: ${reason}`)
             .addField("Notion page", url)
             .addField("New penalty level", penalty)
 
-        if (interaction.options.getBoolean("notify", true)) {
-            try {
-                await member.send({
-                    embeds: [
-                        Embed.make("Warning", undefined, `You have been warned in ${member.guild.name}.`)
-                            .addField("Reason", reason)
-                            .setColor("#ff0000"),
-                    ],
-                })
+        if (!interaction.options.getBoolean("notify", true)) {
+            await interaction.editReply({embeds: [embed]})
+            return
+        }
 
-                embed.addField("Notification", "Successfully notified the user.")
-            } catch (e) {
-                if (e instanceof DiscordAPIError) {
-                    embed.addField("Notification", `Error: ${e.message}`)
-                } else {
-                    embed.addField("Notification", "An unknown error occurred while notifying the user.")
-                }
+        // Try to notify the user
+        try {
+            await member.send({
+                embeds: [
+                    Embed.make("Warning", undefined, `You have been warned in ${member.guild.name}`)
+                        .addField("Reason", reason)
+                        .setColor("#ff0000"),
+                ],
+            })
+
+            embed.addField("Notification", "Successfully notified the user.")
+        } catch (e) {
+            if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                embed.addField("Notification", "The user has DMs disabled.")
+            } else {
+                embed.addField("Notification", `${e}`)
             }
         }
 

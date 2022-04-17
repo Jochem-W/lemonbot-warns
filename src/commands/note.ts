@@ -1,7 +1,8 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction, GuildMember} from "discord.js"
-import Embed from "../utilities/embed";
-import Database from "../utilities/database";
+import {CommandInteraction} from "discord.js"
+import Embed from "../utilities/embed"
+import Database from "../utilities/database"
+import InteractionHelper from "../utilities/interactionHelper"
 
 /**
  * @description Slash command which add a note to a user.
@@ -25,34 +26,21 @@ export default class NoteCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
-        const user = interaction.options.getUser("user", true)
-        let member: GuildMember | undefined
-        try {
-            member = await interaction.guild?.members.fetch(user)
-        } catch (e) {
-        }
-
+        const member = await InteractionHelper.getMember(interaction)
         if (!member) {
-            await interaction.reply({
-                embeds: [
-                    Embed.make("Unknown member", undefined, "The user you specified is not a member of this server.")
-                        .setColor("#ff0000"),
-                ],
-            })
-
             return
         }
 
         await interaction.deferReply()
 
         const content = interaction.options.getString("content", true)
-        const title = interaction.options.getString("title", false)
+        const title = interaction.options.getString("title")
 
-        await Database.addNote(user, content, member, title ?? undefined)
+        await Database.addNote(member, content, title ?? undefined)
 
         await interaction.editReply({
             embeds: [
-                Embed.make(`Added note to ${user.tag} in ${interaction.guild!.name}`, undefined, title ?? undefined)
+                Embed.make(`Added note to ${member.user.tag}`, undefined, title ?? undefined)
                     .setDescription(content),
             ]
         })
