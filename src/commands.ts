@@ -5,6 +5,7 @@ import WarningsCommand from "./commands/warnings"
 import WarnCommand from "./commands/warn"
 import NotesCommand from "./commands/notes"
 import SyncCommand from "./commands/sync"
+import StatusCommand from "./commands/status";
 
 export const Commands: CommandWrapper[] = [
     new NoteCommand(),
@@ -12,4 +13,5 @@ export const Commands: CommandWrapper[] = [
     new WarnCommand(),
     new WarningsCommand(),
     new SyncCommand(),
+    new StatusCommand()
 ]
