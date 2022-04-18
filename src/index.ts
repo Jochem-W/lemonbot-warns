@@ -1,5 +1,5 @@
 import {REST} from "@discordjs/rest"
-import {Client, Intents} from "discord.js"
+import {Client} from "discord.js"
 
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
@@ -7,15 +7,7 @@ import {Commands} from "./commands"
 import {Routes} from "discord-api-types/v10"
 import {Config} from "./config"
 
-const discord = new Client({
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_PRESENCES
-    ],
-    partials: ["MESSAGE", "CHANNEL", "REACTION"]
-})
+const discord = new Client({intents: []})
 
 Handlers.forEach(handler => {
     discord.on(handler.eventName, async (...args: any[]) => {
