@@ -19,7 +19,7 @@ export default class Embed {
         }
 
         const last = embed.fields[embed.fields.length - 1]
-        last.value += `\n\n${content}`
+        last.value = last.value === "..." ? content : `${last.value}\n\n${content}`
         return embed
     }
 }
