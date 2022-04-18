@@ -69,7 +69,7 @@ export default class WarnCommand extends CommandWrapper {
         try {
             await member.send({
                 embeds: [
-                    Embed.make(`You have been warned in ${member.guild.name}`, Config.warnIcon, `Reason: ${reason}`)
+                    Embed.make(`You have been warned in ${interaction.guild!.name}`, Config.warnIcon, `Reason: ${reason}`)
                         .setDescription(description)
                         .setColor("#ff0000"),
                 ],
