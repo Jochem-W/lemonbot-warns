@@ -1,10 +1,10 @@
 import {GuildMember, User} from "discord.js"
 import {Notion} from "../clients"
-import {Config} from "../config"
+import {Variables} from "../variables";
 
 async function getWatchlistPage(user: User) {
     const query = await Notion.databases.query({
-        database_id: Config.databaseId,
+        database_id: Variables.databaseId,
         filter: {
             property: "ID",
             type: "rich_text",
@@ -34,7 +34,7 @@ async function getWatchlistPage(user: User) {
 async function createUser(member: GuildMember, penalty = "0: Nothing", reason?: string) {
     const result = await Notion.pages.create({
         parent: {
-            database_id: Config.databaseId
+            database_id: Variables.databaseId
         },
         properties: {
             "ID": {
@@ -97,7 +97,7 @@ async function* getEntireDatabase() {
     let response = undefined
     while (!response || response?.has_more) {
         response = await Notion.databases.query({
-            database_id: Config.databaseId,
+            database_id: Variables.databaseId,
             start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
         })
 

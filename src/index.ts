@@ -5,7 +5,6 @@ import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Commands} from "./commands"
 import {Routes} from "discord-api-types/v10"
-import {Config} from "./config"
 
 const discord = new Client({intents: []})
 
@@ -24,9 +23,7 @@ const jsonCommands = Commands.map(command => {
 
 (async () => {
     try {
-        for (const guildId of Config.guildIds) {
-            await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId, guildId), {body: jsonCommands})
-        }
+        await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId, Variables.guildId), {body: jsonCommands})
     } catch (error) {
         console.error(error)
     }
