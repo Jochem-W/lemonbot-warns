@@ -1,8 +1,8 @@
 export const Config = {
-    warnIcon: "https://cdn.discordapp.com/emojis/955886482835533855.png",
-    successIcon: "https://cdn.discordapp.com/emojis/952623108181864590.png",
-    failIcon: "https://cdn.discordapp.com/emojis/952623117623230485.png",
-    guildId: "854129731816914954",
-    allowedRoleIds: [],
-    allowedUserIds: ["869602709920174110"],
+    warnIcon: "CHANGE_ME", // Icon that is used when someone is warned
+    successIcon: "CHANGE_ME", // Icon that is used on success
+    failIcon: "CHANGE_ME", // Icon that is used on fail
+    guildId: "CHANGE_ME", // Guild to enable the bot on
+    allowedRoleIds: ["ADD_ROLE_IDS_HERE"], // Roles that can use the bot
+    allowedUserIds: ["ADD_USER_IDS_HERE"], // Users that can use the bot
 }
