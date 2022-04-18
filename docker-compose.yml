@@ -7,7 +7,7 @@ x-common-variables:
 
 # From here, nothing should have to be modified.
 services:
-  warn-with-notion:
+  bot:
     build: .
     environment:
       DISCORD_APPLICATION_ID: *discord-application-id
