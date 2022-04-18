@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "node build/index.js"
+    "start": "node dist/index.js"
   },
   "author": "Jochem Waqué",
   "license": "AGPL-3.0-only",
