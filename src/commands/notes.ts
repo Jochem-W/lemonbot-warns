@@ -20,7 +20,7 @@ export default class NotesCommand extends CommandWrapper {
         await interaction.deferReply()
 
         const user = interaction.options.getUser("user", true)
-        const result = await Database.watchlistLookup(user)
+        const result = await Database.getEntry(user)
 
         const embed = Embed.make(`Notes for ${user.tag}`, user.displayAvatarURL({dynamic: true, size: 4096}))
         if (!result) {

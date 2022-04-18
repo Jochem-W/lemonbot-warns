@@ -36,7 +36,7 @@ export default class NoteCommand extends CommandWrapper {
         const content = interaction.options.getString("content", true)
         const title = interaction.options.getString("title")
 
-        await Database.addNote(member, content, title ?? undefined)
+        await Database.addNote(member, content, title ?? undefined, InteractionHelper.getName(member))
 
         await interaction.editReply({
             embeds: [

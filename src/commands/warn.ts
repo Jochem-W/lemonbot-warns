@@ -53,11 +53,11 @@ export default class WarnCommand extends CommandWrapper {
         const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        const url = await Database.watchlistUpdate(member, reason, penalty)
+        const entry = await Database.updateEntry(member, InteractionHelper.getName(member), penalty, [reason])
 
         const embed = Embed.make(`Warned ${member.user.tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
-            .addField("Notion page", url)
+            .addField("Notion page", entry.url)
             .addField("New penalty level", penalty)
 
         if (!interaction.options.getBoolean("notify", true)) {

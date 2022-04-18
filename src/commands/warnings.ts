@@ -24,7 +24,7 @@ export default class WarningsCommand extends CommandWrapper {
             dynamic: true,
             size: 4096
         }), "This user has no known warnings")
-        const result = await Database.watchlistLookup(user)
+        const result = await Database.getEntry(user)
         if (!result) {
             await interaction.editReply({embeds: [embed]})
             return
@@ -32,9 +32,9 @@ export default class WarningsCommand extends CommandWrapper {
 
         embed.setTitle("View notes")
         embed.setURL(result.url)
-        embed.addField("Current penalty level", result.currentPenalty ?? "")
+        embed.addField("Current penalty level", result.currentPenaltyLevel ?? "")
         embed.addField("Reasons", result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A")
-        embed.addField("Last edited", `${result.lastEditedBy}\n<t:${Math.floor(result.lastEdited.getTime() / 1000)}:R>`)
+        embed.addField("Last edited", `${result.lastEditedBy}\n<t:${Math.floor(result.lastEditedTime.getTime() / 1000)}:R>`)
         await interaction.editReply({embeds: [embed]})
     }
 }
