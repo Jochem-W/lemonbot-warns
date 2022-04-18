@@ -12,4 +12,14 @@ export default class Embed {
             .setDescription(description ?? "")
             .setTimestamp(Date.now())
     }
+
+    static append(embed: MessageEmbed, content: string) {
+        if (!embed.fields.length) {
+            return embed.setDescription(`${embed.description}\n\n${content}`)
+        }
+
+        const last = embed.fields[embed.fields.length - 1]
+        last.value += `\n\n${content}`
+        return embed
+    }
 }

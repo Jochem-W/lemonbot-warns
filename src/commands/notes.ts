@@ -43,14 +43,27 @@ export default class NotesCommand extends CommandWrapper {
                     embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
                     break
                 case "paragraph":
-                    const plainText = note.paragraph.rich_text.map(t => t.plain_text).join("")
-                    if (!embed.fields.length) {
-                        embed.setDescription(`${embed.description}\n\n${plainText}`)
-                        break
+                    Embed.append(embed, note.paragraph.rich_text.map(t => t.plain_text).join(""))
+                    break
+                case "image":
+                    let alt = note.image.caption.map(t => t.plain_text).join("") || "View image"
+
+                    let url: string | undefined
+                    switch (note.image.type) {
+                        case "file":
+                            alt += ` (link expires <t:${Math.floor(new Date(note.image.file.expiry_time).getTime() / 1000)}:R>)`
+                            url = note.image.file.url
+                            break
+                        case "external":
+                            url = note.image.external.url
+                            break
                     }
 
-                    const last = embed.fields[embed.fields.length - 1]
-                    last.value = last.value === "..." ? plainText : `${last.value}\n\n${plainText}`
+                    if (!embed.image) {
+                        embed.setImage(url)
+                    }
+
+                    Embed.append(embed, `[${alt}](${url})`)
                     break
                 default:
                     unsupportedBlocks++
