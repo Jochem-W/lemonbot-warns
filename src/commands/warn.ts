@@ -27,13 +27,27 @@ export default class WarnCommand extends CommandWrapper {
             .addStringOption(option => option
                 .setName("penalty")
                 .setDescription("New penalty level for the user")
-                .addChoices([
-                    ["0: Nothing", "0: Nothing"],
-                    ["1: Warning", "1: Warning"],
-                    ["2: 24h Timeout", "2: 24h Timeout"],
-                    ["3: 48h Timeout", "3: 48h Timeout"],
-                    ["4: Ban/Blacklist", "4: Ban/Blacklist"]
-                ])
+                .setChoices(
+                    {
+                        name: "0: Nothing",
+                        value: "0: Nothing"
+                    },
+                    {
+                        name: "1: Warning",
+                        value: "1: Warning"
+                    },
+                    {
+                        name: "2: 24h Timeout",
+                        value: "2: 24h Timeout"
+                    },
+                    {
+                        name: "3: 48h Timeout",
+                        value: "3: 48h Timeout"
+                    },
+                    {
+                        name: "4: Ban/Blacklist",
+                        value: "4: Ban/Blacklist"
+                    })
                 .setRequired(true))
             .addBooleanOption(option => option
                 .setName("notify")
