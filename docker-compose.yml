@@ -2,8 +2,10 @@ version: '3'
 
 x-common-variables:
   DISCORD_APPLICATION_ID: &discord-application-id CHANGE_ME
-  DISCORD_BOT_TOKEN: &discord-bot-token CHANGE_ME_TOO
-  NOTION_TOKEN: &notion-token ALSO_CHANGE_ME
+  DISCORD_BOT_TOKEN: &discord-bot-token CHANGE_ME
+  DISCORD_GUILD_ID: &discord-guild-id CHANGE_ME
+  NOTION_DATABASE_ID: &notion-database-id CHANGE_ME
+  NOTION_TOKEN: &notion-token CHANGE_ME
 
 # From here, nothing should have to be modified.
 services:
@@ -11,6 +13,8 @@ services:
     build: .
     environment:
       DISCORD_APPLICATION_ID: *discord-application-id
+      DISCORD_GUILD_ID: *discord-guild-id
       DISCORD_BOT_TOKEN: *discord-bot-token
+      NOTION_DATABASE_ID: *notion-database-id
       NOTION_TOKEN: *notion-token
     restart: unless-stopped
