@@ -12,9 +12,18 @@ export default class StatusCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
+        const since = Math.floor((Date.now() - process.uptime()) / 1000)
+        const uptime = Duration.fromMillis(process.uptime() * 1000)
+            .shiftTo('days', 'hours', 'minutes', 'seconds')
+            .normalize()
+
         const embed = Embed.make("Status", undefined)
             .addField("Ping", `${interaction.client.ws.ping}ms`)
-            .addField("Uptime", `${Duration.fromMillis(process.uptime() * 1000).toHuman()}`)
+            .addField("Uptime", `Up since <t:${since}>\nUp for \`${uptime.toHuman({
+                listStyle: "short",
+                notation: "compact",
+                unitDisplay: "short"
+            })}\``)
 
         await interaction.reply({
             embeds: [embed]
