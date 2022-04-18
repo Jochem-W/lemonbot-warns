@@ -1,8 +1,9 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction} from "discord.js"
+import {CommandInteraction, Constants, DiscordAPIError} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
+import {Config} from "../config";
 
 /**
  * @description Slash command which warns a user.
@@ -65,26 +66,23 @@ export default class WarnCommand extends CommandWrapper {
         }
 
         // Try to notify the user
+        try {
+            await member.send({
+                embeds: [
+                    Embed.make(`You have been warned in ${member.guild.name}`, Config.warnIcon, `Reason: ${reason}`)
+                        .setDescription(description)
+                        .setColor("#ff0000"),
+                ],
+            })
 
-        embed.addField("Notification", "Sending notifications is currently disabled")
-
-        // try {
-        //     await member.send({
-        //         embeds: [
-        //             Embed.make(`You have been warned in ${member.guild.name}`, Config.warnIcon, `Reason: ${reason}`)
-        //                 .setDescription(description)
-        //                 .setColor("#ff0000"),
-        //         ],
-        //     })
-        //
-        //     embed.addField("Notification", "Successfully notified the user.")
-        // } catch (e) {
-        //     if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-        //         embed.addField("Notification", "The user has DMs disabled.")
-        //     } else {
-        //         embed.addField("Notification", `${e}`)
-        //     }
-        // }
+            embed.addField("Notification", "Successfully notified the user.")
+        } catch (e) {
+            if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
+                embed.addField("Notification", "The user has DMs disabled.")
+            } else {
+                embed.addField("Notification", `${e}`)
+            }
+        }
 
         await interaction.editReply({embeds: [embed]})
     }
