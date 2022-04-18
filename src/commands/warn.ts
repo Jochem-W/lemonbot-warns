@@ -11,7 +11,7 @@ import {Config} from "../config";
 export default class WarnCommand extends CommandWrapper {
     constructor() {
         super("warn", "Warn a user")
-        this.slashCommand
+        this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

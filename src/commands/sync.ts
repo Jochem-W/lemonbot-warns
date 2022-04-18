@@ -10,7 +10,7 @@ import {Config} from "../config";
 export default class SyncCommand extends CommandWrapper {
     constructor() {
         super("sync", "Update the names stored in the database")
-        this.slashCommand
+        this.commandBuilder
             .addBooleanOption(option => option
                 .setName("dry")
                 .setDescription("Whether to do a dry run")

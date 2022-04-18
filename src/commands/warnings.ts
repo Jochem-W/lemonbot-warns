@@ -9,7 +9,7 @@ import Database from "../utilities/database"
 export default class WarningsCommand extends CommandWrapper {
     constructor() {
         super("warnings", "List a user's warnings")
-        this.slashCommand
+        this.commandBuilder
             .addUserOption((option) => option
                 .setName("user")
                 .setDescription("Target user")

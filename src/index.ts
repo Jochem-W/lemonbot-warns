@@ -1,10 +1,11 @@
 import {REST} from "@discordjs/rest"
-import {Client} from "discord.js"
+import {ApplicationCommand, Client} from "discord.js"
 
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Commands} from "./commands"
-import {Routes} from "discord-api-types/v10"
+import {RESTPutAPIGuildApplicationCommandsPermissionsJSONBody, Routes} from "discord-api-types/v10"
+import {Config} from "./config";
 
 const discord = new Client({intents: []})
 
@@ -15,18 +16,22 @@ Handlers.forEach(handler => {
 })
 
 const rest = new REST({version: "10"}).setToken(Variables.discordToken)
-const jsonCommands = Commands.map(command => {
-    const json = command.json()
+
+const commandsBody = Commands.map(command => {
+    const json = command.toJSON()
     console.log(`Constructed command: ${json.name}`)
     return json
 });
 
 (async () => {
-    try {
-        await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId, Variables.guildId), {body: jsonCommands})
-    } catch (error) {
-        console.error(error)
-    }
-
+    const commands = await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId, Config.guildId), {body: commandsBody}) as ApplicationCommand[]
+    const permissions: RESTPutAPIGuildApplicationCommandsPermissionsJSONBody = commands.map(command => {
+        const wrapper = Commands.find(c => c.name === command.name)!
+        return {
+            id: command.id,
+            ...wrapper.permissionsToJSON(),
+        }
+    })
+    await rest.put(Routes.guildApplicationCommandsPermissions(Variables.discordApplicationId, Config.guildId), {body: permissions})
     await discord.login(Variables.discordToken)
 })()

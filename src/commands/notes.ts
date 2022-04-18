@@ -9,7 +9,7 @@ import Database from "../utilities/database"
 export default class NotesCommand extends CommandWrapper {
     constructor() {
         super("notes", "List a user's notes")
-        this.slashCommand
+        this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

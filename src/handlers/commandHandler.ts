@@ -30,7 +30,7 @@ export default class CommandHandler extends HandlerWrapper {
             return
         }
 
-        const command = Commands.find(command => command.json().name === interaction.commandName)
+        const command = Commands.find(command => command.name === interaction.commandName)
         if (!command) {
             await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return

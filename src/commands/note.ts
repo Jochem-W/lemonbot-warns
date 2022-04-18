@@ -10,7 +10,7 @@ import InteractionHelper from "../utilities/interactionHelper"
 export default class NoteCommand extends CommandWrapper {
     constructor() {
         super("note", "Add a note to a user")
-        this.slashCommand
+        this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

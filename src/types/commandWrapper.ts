@@ -1,33 +1,51 @@
-import {SlashCommandBuilder} from "@discordjs/builders"
-import {Interaction} from "discord.js"
+import {SlashCommandBuilder} from "@discordjs/builders";
+import ApplicationCommandPermissionBuilder from "./applicationCommandPermissionBuilder";
+import {Interaction} from "discord.js";
 
 /**
- * @description Slash command wrapper for interactions.
+ * Discord application command wrapper for interactions.
  */
 export default class CommandWrapper {
-    protected readonly slashCommand: SlashCommandBuilder
+    protected readonly permissionsBuilder = new ApplicationCommandPermissionBuilder()
+    protected readonly commandBuilder = new SlashCommandBuilder()
 
     /**
-     * @param name The name of slash command.
-     * @param description The description that will be shown on the command.
+     * @param name The name of the application command.
+     * @param description The description of the application command.
+     * @param defaultPermission The default permission of the application command.
      */
-    constructor(name: string, description: string) {
-        this.slashCommand = new SlashCommandBuilder()
-            .setName(name.toLowerCase())
+    constructor(name: string, description: string, defaultPermission = false) {
+        this.commandBuilder
+            .setName(name)
             .setDescription(description)
+            .setDefaultPermission(defaultPermission)
     }
 
     /**
-     * @description Returns the internal slash command's JSON structure.
+     * Gets the command's name.
      */
-    json() {
-        return this.slashCommand.toJSON()
+    get name() {
+        return this.commandBuilder.name
     }
 
     /**
-     * @description Custom code that will be run when an interaction is detected with the same name.
-     * @param interaction The command interaction that was triggered.
+     * Returns the JSON representation of the command.
+     */
+    toJSON() {
+        return this.commandBuilder.toJSON()
+    }
+
+    /**
+     * Returns the JSON representation of the command permissions.
+     */
+    permissionsToJSON() {
+        return this.permissionsBuilder.toJSON()
+    }
+
+    /**
+     * Function that will be called when the command is executed.
      */
     async execute(interaction: Interaction) {
+        throw new Error("Command not implemented.");
     }
 }
