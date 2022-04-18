@@ -2,6 +2,7 @@ import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
+import {Config} from "../config";
 
 /**
  * @description Slash command which synchronises the database with the current names.
@@ -17,6 +18,15 @@ export default class SyncCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
+        if (!interaction.options.getBoolean("dry")) {
+            await interaction.reply({
+                embeds: [
+                    Embed.make("Synchronisation", Config.failIcon, "Only dry runs are supported for now")
+                ]
+            })
+            return
+        }
+
         await interaction.deferReply()
 
         const stored: { id: string; name: string; }[] = []
