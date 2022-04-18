@@ -68,7 +68,7 @@ export default class NotesCommand extends CommandWrapper {
         }
 
         if (unsupportedBlocks) {
-            embed.addField("Warning", `${unsupportedBlocks} unsupported block${unsupportedBlocks ? "s" : ""} can only be viewed in Notion.`)
+            embed.addField("Warning", `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ? "" : "s"} can only be viewed in Notion.`)
         }
 
         if (!embed.fields.length && !embed.description) {
