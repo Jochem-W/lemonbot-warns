@@ -20,7 +20,7 @@ export default class StatusCommand extends CommandWrapper {
         const embed = Embed.make("Status", undefined)
             .addField("Ping", `${interaction.client.ws.ping}ms`)
             .addField("Uptime", `Up since <t:${since}>\nUp for \`${uptime.toHuman({
-                listStyle: "short",
+                listStyle: "long",
                 notation: "compact",
                 unitDisplay: "short"
             })}\``)
