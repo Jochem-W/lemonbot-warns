@@ -41,12 +41,6 @@ export default class SyncCommand extends CommandWrapper {
         }
 
         const embed = Embed.make("Synchronisation")
-        if (!update) {
-            embed.setTitle("All names are up to date!")
-            await interaction.editReply({embeds: [embed]})
-            return
-        }
-
         if (interaction.options.getBoolean("dry")) {
             for (const entry of update) {
                 embed.addField(entry.id, `Old: \`${entry.oldName}\`\nNew: \`${entry.newName}\``)
