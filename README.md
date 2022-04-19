@@ -11,6 +11,10 @@ Notion.
 3. Clone the repository
 4. Edit `docker-compose.yml` and `config.ts`
 
+Note: to make use of discord.js's optional dependencies, the Dockerfile has to
+be modified to use `node:current` instead of `node:current-alpine`. This also
+substantially increases the size of the image.
+
 ## Running instructions
 
 The bot uses Docker to ensure a consistent build and runtime environment for all users.
