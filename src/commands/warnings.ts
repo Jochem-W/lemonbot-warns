@@ -34,7 +34,7 @@ export default class WarningsCommand extends CommandWrapper {
         embed.setURL(result.url)
         embed.addField("Current penalty level", result.currentPenaltyLevel ?? "")
         embed.addField("Reasons", result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A")
-        embed.addField("Last edited", `${result.lastEditedBy}\n<t:${Math.floor(result.lastEditedTime.getTime() / 1000)}:R>`)
+        embed.addField("Last edited", `${result.lastEditedBy}\n<t:${result.lastEditedTime.toUnixInteger()}:R>`)
         await interaction.editReply({embeds: [embed]})
     }
 }

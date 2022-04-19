@@ -1,5 +1,6 @@
 import {MessageEmbed} from "discord.js"
 import {Config} from "../config"
+import {DateTime} from "luxon";
 
 export default class Embed {
     static make(authorName?: string, authorIcon?: string, title?: string, description?: string) {
@@ -10,7 +11,7 @@ export default class Embed {
             })
             .setTitle(title ?? "")
             .setDescription(description ?? "")
-            .setTimestamp(Date.now())
+            .setTimestamp(DateTime.now().toMillis())
     }
 
     static append(embed: MessageEmbed, content: string) {

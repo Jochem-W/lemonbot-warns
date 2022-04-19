@@ -2,13 +2,14 @@ import {GuildMember, Message, ThreadMember, User, UserResolvable} from "discord.
 import {Notion} from "../clients";
 import {Variables} from "../variables";
 import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@notionhq/client/build/src/api-endpoints";
+import {DateTime} from "luxon";
 
 export type DatabaseEntry = {
     id: string;
     name: string;
     currentPenaltyLevel: string;
     reasons: string[];
-    lastEditedTime: Date;
+    lastEditedTime: DateTime;
     lastEditedBy: string;
     url: string;
     pageId: string;
@@ -292,7 +293,7 @@ export default class Database {
                 name: name.title.map(t => t.plain_text).join(""),
                 currentPenaltyLevel: currentPenalty.select.name,
                 reasons: reasons.multi_select?.map(x => x.name),
-                lastEditedTime: new Date(lastEditedTime.last_edited_time),
+                lastEditedTime: DateTime.fromISO(lastEditedTime.last_edited_time),
                 lastEditedBy: lastEditedByUser.name,
                 url: result.url,
                 pageId: result.id,

@@ -2,6 +2,7 @@ import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
+import {DateTime} from "luxon";
 
 /**
  * @description Slash command which lists notes on a user.
@@ -51,7 +52,7 @@ export default class NotesCommand extends CommandWrapper {
                     let url: string | undefined
                     switch (note.image.type) {
                         case "file":
-                            alt += ` (link expires <t:${Math.floor(new Date(note.image.file.expiry_time).getTime() / 1000)}:R>)`
+                            alt += ` (link expires <t:${DateTime.fromISO(note.image.file.expiry_time).toUnixInteger()}:R>)`
                             url = note.image.file.url
                             break
                         case "external":

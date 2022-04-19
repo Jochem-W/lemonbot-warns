@@ -1,7 +1,7 @@
 import CommandWrapper from "../types/commandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
-import {Duration} from "luxon"
+import {DateTime, Duration} from "luxon"
 
 /**
  * @description Slash command which displays the bot status.
@@ -12,7 +12,7 @@ export default class StatusCommand extends CommandWrapper {
     }
 
     async execute(interaction: CommandInteraction) {
-        const since = Math.floor((Date.now() - process.uptime()) / 1000)
+        const since = DateTime.now().minus(Duration.fromDurationLike({seconds: process.uptime()})).toUnixInteger()
         const uptime = Duration.fromMillis(process.uptime() * 1000)
             .shiftTo('days', 'hours', 'minutes', 'seconds')
             .normalize()

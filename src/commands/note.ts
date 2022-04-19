@@ -23,6 +23,10 @@ export default class NoteCommand extends CommandWrapper {
                 .setName("title")
                 .setDescription("Optional note title")
                 .setRequired(false))
+            .addAttachmentOption(option => option
+                .setName("image")
+                .setDescription("Optional image attachment")
+                .setRequired(false))
     }
 
     async execute(interaction: CommandInteraction) {
