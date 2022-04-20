@@ -34,6 +34,7 @@ export default class InteractionHelper {
         if (user instanceof GuildMember) {
             return `${user.user.tag}${user.nickname ? ` (${user.nickname})` : ""}`
         }
+
         if (user instanceof User) {
             return user.tag
         } else {
