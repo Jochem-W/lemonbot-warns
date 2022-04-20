@@ -30,7 +30,7 @@ export default class NoteCommand extends CommandWrapper {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const user = await InteractionHelper.fetchMemberOrUser(interaction, "user")
+        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
         const content = interaction.options.getString("content", true)
 
