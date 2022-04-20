@@ -6,15 +6,15 @@ import InteractionHelper from "../utilities/interactionHelper"
 import {Config} from "../config";
 
 /**
- * @description Slash command which warns a member.
+ * @description Slash command which warns a user.
  */
 export default class WarnCommand extends CommandWrapper {
     constructor() {
-        super("warn", "Warn a member")
+        super("warn", "Warn a user")
         this.commandBuilder
             .addUserOption(option => option
-                .setName("member")
-                .setDescription("Target member")
+                .setName("user")
+                .setDescription("Target user")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
@@ -26,7 +26,7 @@ export default class WarnCommand extends CommandWrapper {
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
-                .setDescription("New penalty level for the member")
+                .setDescription("New penalty level for the user")
                 .setChoices(
                     {
                         name: "0: Nothing",
@@ -51,22 +51,24 @@ export default class WarnCommand extends CommandWrapper {
                 .setRequired(true))
             .addBooleanOption(option => option
                 .setName("notify")
-                .setDescription("Send a DM to the member")
+                .setDescription("Send a DM to the user")
                 .setRequired(true))
     }
 
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const member = await InteractionHelper.getMember(interaction, "member", true)
+        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
 
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        const entry = await Database.updateEntry(member, InteractionHelper.getName(member), penalty, [reason])
+        const entry = await Database.updateEntry(user, InteractionHelper.getName(user), penalty, [reason])
 
-        const embed = Embed.make(`Warned ${member.user.tag}`, undefined, `Reason: ${reason}`)
+        const tag = InteractionHelper.getTag(user)
+
+        const embed = Embed.make(`Warned ${tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
             .addField("Notion page", entry.url)
             .addField("New penalty level", penalty)
@@ -76,9 +78,9 @@ export default class WarnCommand extends CommandWrapper {
             return
         }
 
-        // Try to notify the member
+        // Try to notify the user
         try {
-            await member.send({
+            await user.send({
                 embeds: [
                     Embed.make(`You have been warned in ${(await interaction.guild!.fetch()).name}`, Config.warnIcon, `Reason: ${reason}`)
                         .setDescription(description)
@@ -86,10 +88,10 @@ export default class WarnCommand extends CommandWrapper {
                 ],
             })
 
-            embed.addField("Notification", "Successfully notified the member.")
+            embed.addField("Notification", "Successfully notified the user.")
         } catch (e) {
             if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                embed.addField("Notification", "The member has DMs disabled.")
+                embed.addField("Notification", "The user couldn't be messaged because they either have DMs disabled or aren't in the server.")
             } else {
                 embed.addField("Notification", `${e}`)
             }
