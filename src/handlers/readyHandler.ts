@@ -2,16 +2,14 @@ import {Client} from "discord.js"
 import HandlerWrapper from "../types/handlerWrapper"
 
 /**
- * @description Handler for events on the Discord API, via discord.js
+ * Handler for ready
  */
 export default class ReadyHandler extends HandlerWrapper {
     constructor() {
         super("ready", "Ready")
     }
 
-    async handle(...args: any) {
-        const [[bot]]: [[Client]] = args
-
-        console.log("Running as:", bot.user?.tag + "!")
+    async handle(client: Client) {
+        console.log("Running as:", client.user?.tag + "!")
     }
 }

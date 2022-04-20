@@ -1,5 +1,5 @@
 /**
- * @description Handler for events on the Discord API, via discord.js
+ * Handler for events on the Discord API, via discord.js
  */
 export default class HandlerWrapper {
     public readonly eventName: string
@@ -17,9 +17,9 @@ export default class HandlerWrapper {
     }
 
     /**
-     * @description Custom code handler that processes the event received.
+     * Custom code handler that processes the event received.
      * @param args The passed arguments from the event.
      */
-    async handle(...args: any) {
+    async handle(...args: any[]) {
     }
 }

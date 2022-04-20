@@ -6,16 +6,14 @@ import {Commands} from "../commands"
 import {Config} from "../config";
 
 /**
- * @description Handler for events on the Discord API, via discord.js
+ * Handler for interactions
  */
 export default class CommandHandler extends HandlerWrapper {
     constructor() {
         super("interactionCreate", "CommandHandler")
     }
 
-    async handle(...args: any) {
-        const [[interaction]]: [[Interaction]] = args
-
+    async handle(interaction: Interaction) {
         if (!interaction.isApplicationCommand()) {
             return
         }

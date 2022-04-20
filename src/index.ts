@@ -13,8 +13,8 @@ const discord = new Client({
 })
 
 Handlers.forEach(handler => {
-    discord.on(handler.eventName, async (...args: any[]) => {
-        await handler.handle(args)
+    discord.on(handler.eventName, async (...args) => {
+        await handler.handle(...args)
     })
 })
 
