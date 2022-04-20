@@ -44,6 +44,10 @@ export default class SyncCommand extends CommandWrapper {
                 embed.addField("Truncated", `And ${update.length - 24} more...`)
             }
 
+            if (embed.fields.length === 0) {
+                embed.addField("Already up to date", "The names in the database are already up to date")
+            }
+
             await interaction.editReply({embeds: [embed]})
             return
         }
