@@ -3,6 +3,23 @@ import Embed from "./embed"
 import {Config} from "../config";
 
 export default class InteractionHelper {
+    static async resolveUser(interaction: CommandInteraction, user: UserResolvable, force = false) {
+        let memberOrUser: GuildMember | User | undefined
+        try {
+            memberOrUser = await interaction.guild?.members.fetch({user: user, force: force})
+        } catch (e) {
+            if ((e as DiscordAPIError).code !== Constants.APIErrors.UNKNOWN_MEMBER) {
+                throw e
+            }
+        }
+
+        if (!memberOrUser) {
+            memberOrUser = await interaction.client.users.fetch(user, {force: force})
+        }
+
+        return memberOrUser
+    }
+
     static async getMember(interaction: CommandInteraction, option = "user") {
         const user = interaction.options.getUser(option, true)
         let member: GuildMember | undefined

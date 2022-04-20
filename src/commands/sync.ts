@@ -1,5 +1,5 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction, GuildMember} from "discord.js"
+import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper";
@@ -23,14 +23,8 @@ export default class SyncCommand extends CommandWrapper {
         // TODO: limit the amount of entries
         const update = []
         for await (const entry of Database.getEntries()) {
-            const user = await interaction.client.users.fetch(entry.id)
-            let member: GuildMember | undefined
-            try {
-                member = await interaction.guild?.members.fetch(user)
-            } catch (e) {
-            }
-
-            const name = InteractionHelper.getName(member ?? user)
+            const memberOrUser = await InteractionHelper.resolveUser(interaction, entry.id, true)
+            const name = InteractionHelper.getName(memberOrUser)
             if (entry.name !== name) {
                 update.push({
                     id: entry.id,
