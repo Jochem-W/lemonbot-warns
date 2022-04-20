@@ -10,6 +10,6 @@ export default class ReadyHandler extends HandlerWrapper {
     }
 
     async handle(client: Client) {
-        console.log("Running as:", client.user?.tag + "!")
+        console.log("Running as:", client.user!.tag + "!")
     }
 }

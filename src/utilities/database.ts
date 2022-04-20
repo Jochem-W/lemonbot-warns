@@ -18,7 +18,7 @@ export type DatabaseEntry = {
 export default class Database {
     static async* getEntries() {
         let response = undefined
-        while (!response || response?.has_more) {
+        while (!response || response.has_more) {
             response = await Notion.databases.query({
                 database_id: Variables.databaseId,
                 start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
@@ -213,7 +213,7 @@ export default class Database {
         }
 
         let response = undefined
-        while (!response || response?.has_more) {
+        while (!response || response.has_more) {
             response = await Notion.blocks.children.list({
                 block_id: entry.pageId,
                 // I love TypeScript (this is sarcasm)
@@ -294,7 +294,7 @@ export default class Database {
                 id: id.rich_text.map(t => t.plain_text).join(""),
                 name: name.title.map(t => t.plain_text).join(""),
                 currentPenaltyLevel: currentPenalty.select.name,
-                reasons: reasons.multi_select?.map(x => x.name),
+                reasons: reasons.multi_select.map(x => x.name),
                 lastEditedTime: DateTime.fromISO(lastEditedTime.last_edited_time),
                 lastEditedBy: lastEditedByUser.name,
                 url: result.url,
