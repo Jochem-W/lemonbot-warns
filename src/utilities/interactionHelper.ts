@@ -37,8 +37,8 @@ export default class InteractionHelper {
 
         if (user instanceof User) {
             return user.tag
-        } else {
-            throw new Error("Unsupported user type")
         }
+
+        throw new Error("Unsupported user type")
     }
 }
