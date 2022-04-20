@@ -58,7 +58,7 @@ export default class WarnCommand extends CommandWrapper {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
+        const user = await InteractionHelper.fetchMemberOrUser(interaction, "user")
 
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
