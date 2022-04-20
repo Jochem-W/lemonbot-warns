@@ -41,8 +41,8 @@ export default class WarnCommand extends CommandWrapper {
                         value: "2: 24h Timeout"
                     },
                     {
-                        name: "3: 48h Timeout",
-                        value: "3: 48h Timeout"
+                        name: "3: 1w Timeout",
+                        value: "3: 1w Timeout"
                     },
                     {
                         name: "4: Ban/Blacklist",
