@@ -137,7 +137,7 @@ export default class Database {
         }))[0]
     }
 
-    static async addNote(user: UserResolvable, content: string, title?: string, name?: string): Promise<void> {
+    static async addNote(user: UserResolvable, content: string, title?: string, name?: string): Promise<string> {
         let entry = await this.getEntry(user)
         if (!entry && name) {
             entry = await this.createEntry(user, name)
@@ -202,6 +202,8 @@ export default class Database {
                 ...newChildren,
             ],
         })
+
+        return entry.url
     }
 
     static async* getNotes(user: UserResolvable) {

@@ -6,15 +6,15 @@ import InteractionHelper from "../utilities/interactionHelper"
 import {Config} from "../config";
 
 /**
- * @description Slash command which warns a user.
+ * @description Slash command which warns a member.
  */
 export default class WarnCommand extends CommandWrapper {
     constructor() {
-        super("warn", "Warn a user")
+        super("warn", "Warn a member")
         this.commandBuilder
             .addUserOption(option => option
-                .setName("user")
-                .setDescription("Target user")
+                .setName("member")
+                .setDescription("Target member")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
@@ -26,7 +26,7 @@ export default class WarnCommand extends CommandWrapper {
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
-                .setDescription("New penalty level for the user")
+                .setDescription("New penalty level for the member")
                 .setChoices(
                     {
                         name: "0: Nothing",
@@ -51,17 +51,14 @@ export default class WarnCommand extends CommandWrapper {
                 .setRequired(true))
             .addBooleanOption(option => option
                 .setName("notify")
-                .setDescription("Send a DM to the user")
+                .setDescription("Send a DM to the member")
                 .setRequired(true))
     }
 
     async execute(interaction: CommandInteraction) {
-        const member = await InteractionHelper.getMember(interaction)
-        if (!member) {
-            return
-        }
-
         await interaction.deferReply()
+
+        const member = await InteractionHelper.getMember(interaction, "member", true)
 
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
@@ -79,7 +76,7 @@ export default class WarnCommand extends CommandWrapper {
             return
         }
 
-        // Try to notify the user
+        // Try to notify the member
         try {
             await member.send({
                 embeds: [
@@ -89,10 +86,10 @@ export default class WarnCommand extends CommandWrapper {
                 ],
             })
 
-            embed.addField("Notification", "Successfully notified the user.")
+            embed.addField("Notification", "Successfully notified the member.")
         } catch (e) {
             if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                embed.addField("Notification", "The user has DMs disabled.")
+                embed.addField("Notification", "The member has DMs disabled.")
             } else {
                 embed.addField("Notification", `${e}`)
             }

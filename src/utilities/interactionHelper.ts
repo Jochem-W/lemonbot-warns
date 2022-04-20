@@ -1,50 +1,27 @@
 import {CommandInteraction, Constants, DiscordAPIError, GuildMember, User, UserResolvable} from "discord.js"
-import Embed from "./embed"
-import {Config} from "../config";
 
 export default class InteractionHelper {
-    static async resolveUser(interaction: CommandInteraction, user: UserResolvable, force = false) {
-        let memberOrUser: GuildMember | User | undefined
-        try {
-            memberOrUser = await interaction.guild?.members.fetch({user: user, force: force})
-        } catch (e) {
-            if ((e as DiscordAPIError).code !== Constants.APIErrors.UNKNOWN_MEMBER) {
-                throw e
-            }
+    static async getMember(interaction: CommandInteraction, option: string, required: true): Promise<GuildMember>
+    static async getMember(interaction: CommandInteraction, option: string, required?: boolean): Promise<GuildMember | null>
+    static async getMember(interaction: CommandInteraction, option: string, required?: boolean) {
+        const user = interaction.options.getUser(option, required)
+        if (!user && !required) {
+            return null
         }
 
-        if (!memberOrUser) {
-            memberOrUser = await interaction.client.users.fetch(user, {force: force})
-        }
-
-        return memberOrUser
+        return interaction.guild?.members.fetch(user!);
     }
 
-    static async getMember(interaction: CommandInteraction, option = "user") {
-        const user = interaction.options.getUser(option, true)
-        let member: GuildMember | undefined
+    static async fetchMemberOrUser(interaction: CommandInteraction, user: UserResolvable, force?: boolean) {
         try {
-            member = await interaction.guild!.members.fetch(user)
+            return await interaction.guild!.members.fetch({user: user, force: force})
         } catch (e) {
             if ((e as DiscordAPIError).code !== Constants.APIErrors.UNKNOWN_MEMBER) {
                 throw e
             }
         }
 
-        if (member) {
-            return member
-        }
-
-        const embed = Embed.make("Unknown member", Config.failIcon, "The user you specified is not a member of this server")
-            .setColor("#ff0000")
-
-        if (interaction.deferred || interaction.replied) {
-            await interaction.editReply({embeds: [embed]})
-        } else {
-            await interaction.reply({embeds: [embed]})
-        }
-
-        return null
+        return await interaction.client.users.fetch(user, {force: force})
     }
 
     static getName(user: UserResolvable) {

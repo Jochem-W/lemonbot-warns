@@ -5,15 +5,15 @@ import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
 
 /**
- * @description Slash command which add a note to a user.
+ * @description Slash command which add a note to a member.
  */
 export default class NoteCommand extends CommandWrapper {
     constructor() {
-        super("note", "Add a note to a user")
+        super("note", "Add a note to a member")
         this.commandBuilder
             .addUserOption(option => option
-                .setName("user")
-                .setDescription("Target user")
+                .setName("member")
+                .setDescription("Target member")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("content")
@@ -21,32 +21,30 @@ export default class NoteCommand extends CommandWrapper {
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("title")
-                .setDescription("Optional note title")
-                .setRequired(false))
+                .setDescription("Optional note title"))
             .addAttachmentOption(option => option
                 .setName("image")
-                .setDescription("Optional image attachment")
-                .setRequired(false))
+                .setDescription("Optional image attachment"))
     }
 
     async execute(interaction: CommandInteraction) {
-        const member = await InteractionHelper.getMember(interaction)
-        if (!member) {
-            return
-        }
-
         await interaction.deferReply()
 
-        const content = interaction.options.getString("content", true)
+        const member = await InteractionHelper.getMember(interaction, "member", true)
         const title = interaction.options.getString("title")
+        const content = interaction.options.getString("content", true)
 
-        await Database.addNote(member, content, title ?? undefined, InteractionHelper.getName(member))
+        const url = await Database.addNote(member, content, title ?? undefined, InteractionHelper.getName(member))
 
-        await interaction.editReply({
-            embeds: [
-                Embed.make(`Added note to ${member.user.tag}`, undefined, title ?? undefined)
-                    .setDescription(content),
-            ]
-        })
+        const embed = Embed.make(`Added note to ${member.user.tag}`, undefined, "View notes")
+            .setURL(url)
+
+        if (title) {
+            embed.addField(title, content)
+        } else {
+            embed.setDescription(content)
+        }
+
+        await interaction.editReply({embeds: [embed]})
     }
 }

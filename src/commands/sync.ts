@@ -13,8 +13,7 @@ export default class SyncCommand extends CommandWrapper {
         this.commandBuilder
             .addBooleanOption(option => option
                 .setName("dry")
-                .setDescription("Whether to do a dry run")
-                .setRequired(false))
+                .setDescription("Whether to do a dry run"))
     }
 
     async execute(interaction: CommandInteraction) {
@@ -23,7 +22,7 @@ export default class SyncCommand extends CommandWrapper {
         // TODO: limit the amount of entries
         const update = []
         for await (const entry of Database.getEntries()) {
-            const memberOrUser = await InteractionHelper.resolveUser(interaction, entry.id, true)
+            const memberOrUser = await InteractionHelper.fetchMemberOrUser(interaction, entry.id, true)
             const name = InteractionHelper.getName(memberOrUser)
             if (entry.name !== name) {
                 update.push({
