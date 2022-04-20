@@ -243,7 +243,9 @@ $RECYCLE.BIN/
 
 ### Custom
 .github
+.dockerignore
 .gitignore
+docker-compose.yml
+Dockerfile
 LICENSE
 README.md
-docker-compose.yml
