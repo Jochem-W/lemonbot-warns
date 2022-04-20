@@ -1,19 +1,19 @@
 import CommandWrapper from "../types/commandWrapper"
-import {CommandInteraction} from "discord.js"
+import {CommandInteraction, GuildMember} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
 
 /**
- * @description Slash command which add a note to a member.
+ * @description Slash command which add a note to a user.
  */
 export default class NoteCommand extends CommandWrapper {
     constructor() {
-        super("note", "Add a note to a member")
+        super("note", "Add a note to a user")
         this.commandBuilder
             .addUserOption(option => option
-                .setName("member")
-                .setDescription("Target member")
+                .setName("user")
+                .setDescription("Target user")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("content")
@@ -30,13 +30,14 @@ export default class NoteCommand extends CommandWrapper {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const member = await InteractionHelper.getMember(interaction, "member", true)
+        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
         const content = interaction.options.getString("content", true)
 
-        const url = await Database.addNote(member, content, title ?? undefined, InteractionHelper.getName(member))
+        const url = await Database.addNote(user, content, title ?? undefined, InteractionHelper.getName(user))
 
-        const embed = Embed.make(`Added note to ${member.user.tag}`, undefined, "View notes")
+        const tag = (user instanceof GuildMember ? user.user : user).tag
+        const embed = Embed.make(`Added note to ${tag}`, undefined, "View notes")
             .setURL(url)
 
         if (title) {
