@@ -4,9 +4,9 @@ import Database from "../utilities/database";
 import InteractionHelper from "../utilities/interactionHelper";
 import {Config} from "../config";
 
-export default class UserUpdateHandler extends HandlerWrapper {
+export default class TagChangeHandler extends HandlerWrapper {
     constructor() {
-        super("userUpdate", "User update")
+        super("userUpdate", "TagChangeHandler")
     }
 
     async handle(oldUser: User | PartialUser, newUser: User) {

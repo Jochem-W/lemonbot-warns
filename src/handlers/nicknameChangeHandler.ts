@@ -3,9 +3,9 @@ import HandlerWrapper from "../types/handlerWrapper"
 import InteractionHelper from "../utilities/interactionHelper";
 import Database from "../utilities/database";
 
-export default class GuildMemberUpdateHandler extends HandlerWrapper {
+export default class NicknameChangeHandler extends HandlerWrapper {
     constructor() {
-        super("guildMemberUpdate", "Guild member update")
+        super("guildMemberUpdate", "NicknameChangeHandler")
     }
 
     async handle(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember) {

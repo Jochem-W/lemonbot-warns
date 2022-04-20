@@ -3,7 +3,7 @@
  */
 export default class HandlerWrapper {
     public readonly eventName: string
-    private readonly handlerName: string
+    public readonly name: string
 
     /**
      * @param eventName The event name to listen on. (see Events @ https://discord.js.org/#/docs/discord.js/stable/class/Client)
@@ -11,9 +11,7 @@ export default class HandlerWrapper {
      */
     constructor(eventName: string, handlerName: string) {
         this.eventName = eventName
-        this.handlerName = handlerName
-
-        console.log("Constructed", handlerName, "event handler!")
+        this.name = handlerName
     }
 
     /**

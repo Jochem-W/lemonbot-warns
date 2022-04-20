@@ -1,8 +1,8 @@
 import HandlerWrapper from "./types/handlerWrapper"
 import ReadyHandler from "./handlers/readyHandler"
 import CommandHandler from "./handlers/commandHandler"
-import GuildMemberUpdateHandler from "./handlers/guildMemberUpdateHandler";
-import UserUpdateHandler from "./handlers/userUpdateHandler";
+import NicknameChangeHandler from "./handlers/nicknameChangeHandler";
+import TagChangeHandler from "./handlers/tagChangeHandler";
 
 /**
  * @description The event handlers list which fires on each received event.
@@ -10,6 +10,6 @@ import UserUpdateHandler from "./handlers/userUpdateHandler";
 export const Handlers: HandlerWrapper[] = [
     new ReadyHandler(),
     new CommandHandler(),
-    new GuildMemberUpdateHandler(),
-    new UserUpdateHandler(),
+    new NicknameChangeHandler(),
+    new TagChangeHandler(),
 ]

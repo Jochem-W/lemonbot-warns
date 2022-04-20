@@ -6,7 +6,7 @@ import HandlerWrapper from "../types/handlerWrapper"
  */
 export default class ReadyHandler extends HandlerWrapper {
     constructor() {
-        super("ready", "Ready")
+        super("ready", "ReadyHandler")
     }
 
     async handle(client: Client) {

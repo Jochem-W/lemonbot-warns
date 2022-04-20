@@ -14,7 +14,7 @@ const discord = new Client({
 
 Handlers.forEach(handler => {
     discord.on(handler.eventName, async (...args) => await handler.handle(...args))
-    console.log(`Registered handler for ${handler.eventName}`)
+    console.log(`Registered ${handler.name} for ${handler.eventName}`)
 })
 
 const rest = new REST({version: "10"}).setToken(Variables.discordToken)
