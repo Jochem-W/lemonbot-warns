@@ -1,4 +1,4 @@
-import CommandWrapper from "../types/commandWrapper"
+import SlashCommandWrapper from "../types/slashCommandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
@@ -6,10 +6,10 @@ import Database from "../utilities/database"
 /**
  * @description Slash command which lists a user's warnings.
  */
-export default class WarningsCommand extends CommandWrapper {
+export default class WarningsCommand extends SlashCommandWrapper {
     constructor() {
         super("warnings", "List a user's warnings")
-        this.commandBuilder
+        this.builder
             .addUserOption((option) => option
                 .setName("user")
                 .setDescription("Target user")

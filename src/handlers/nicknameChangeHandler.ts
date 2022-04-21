@@ -1,11 +1,11 @@
 import {GuildMember, PartialGuildMember} from "discord.js"
 import HandlerWrapper from "../types/handlerWrapper"
-import InteractionHelper from "../utilities/interactionHelper";
-import Database from "../utilities/database";
+import InteractionHelper from "../utilities/interactionHelper"
+import Database from "../utilities/database"
 
 export default class NicknameChangeHandler extends HandlerWrapper {
     constructor() {
-        super("guildMemberUpdate", "NicknameChangeHandler")
+        super("guildMemberUpdate")
     }
 
     async handle(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember) {

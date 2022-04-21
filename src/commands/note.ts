@@ -1,4 +1,4 @@
-import CommandWrapper from "../types/commandWrapper"
+import SlashCommandWrapper from "../types/slashCommandWrapper"
 import {CommandInteraction, GuildMember} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
@@ -7,10 +7,10 @@ import InteractionHelper from "../utilities/interactionHelper"
 /**
  * @description Slash command which add a note to a user.
  */
-export default class NoteCommand extends CommandWrapper {
+export default class NoteCommand extends SlashCommandWrapper {
     constructor() {
         super("note", "Add a note to a user")
-        this.commandBuilder
+        this.builder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

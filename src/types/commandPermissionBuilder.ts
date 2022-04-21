@@ -1,4 +1,4 @@
-import {ApplicationCommandPermissionType, RESTPutAPIApplicationCommandPermissionsJSONBody} from "discord-api-types/v10"
+import {APIApplicationCommandPermission, ApplicationCommandPermissionType} from "discord-api-types/v10"
 import {
     ApplicationCommandPermissions,
     GuildMember,
@@ -10,12 +10,12 @@ import {
     User,
     UserResolvable
 } from "discord.js"
-import {Config} from "../config";
+import {Config} from "../config"
 
 /**
  * Helper class to easily work with application command permissions.
  */
-export default class ApplicationCommandPermissionBuilder {
+export default class CommandPermissionBuilder {
     private readonly rolePermissions: Map<Snowflake, boolean> = new Map()
     private readonly userPermissions: Map<Snowflake, boolean> = new Map()
 
@@ -94,20 +94,18 @@ export default class ApplicationCommandPermissionBuilder {
     /**
      * Return the JSON representation of the permissions.
      */
-    toJSON(): RESTPutAPIApplicationCommandPermissionsJSONBody {
-        return {
-            permissions: [
-                ...Array.from(this.rolePermissions).map(([key, value]) => ({
-                    id: key,
-                    type: ApplicationCommandPermissionType.Role,
-                    permission: value
-                })),
-                ...Array.from(this.userPermissions).map(([key, value]) => ({
-                    id: key,
-                    type: ApplicationCommandPermissionType.User,
-                    permission: value
-                }))
-            ]
-        }
+    toJSON(): APIApplicationCommandPermission[] {
+        return [
+            ...Array.from(this.rolePermissions).map(([key, value]) => ({
+                id: key,
+                type: ApplicationCommandPermissionType.Role,
+                permission: value
+            })),
+            ...Array.from(this.userPermissions).map(([key, value]) => ({
+                id: key,
+                type: ApplicationCommandPermissionType.User,
+                permission: value
+            }))
+        ]
     }
 }

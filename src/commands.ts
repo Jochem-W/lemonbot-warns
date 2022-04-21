@@ -1,17 +1,16 @@
-import CommandWrapper from "./types/commandWrapper"
-
+import CommandWrapper from "./interfaces/commandWrapper"
 import NoteCommand from "./commands/note"
-import WarningsCommand from "./commands/warnings"
-import WarnCommand from "./commands/warn"
 import NotesCommand from "./commands/notes"
+import StatusCommand from "./commands/status"
 import SyncCommand from "./commands/sync"
-import StatusCommand from "./commands/status";
+import WarnCommand from "./commands/warn"
+import WarningsCommand from "./commands/warnings"
 
-export const Commands: CommandWrapper[] = [
+export const CommandWrappers: CommandWrapper[] = [
     new NoteCommand(),
     new NotesCommand(),
-    new WarnCommand(),
-    new WarningsCommand(),
+    new StatusCommand(),
     new SyncCommand(),
-    new StatusCommand()
+    new WarnCommand(),
+    new WarningsCommand()
 ]

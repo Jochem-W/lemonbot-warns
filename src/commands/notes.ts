@@ -1,16 +1,16 @@
-import CommandWrapper from "../types/commandWrapper"
+import SlashCommandWrapper from "../types/slashCommandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
-import {DateTime} from "luxon";
+import {DateTime} from "luxon"
 
 /**
  * @description Slash command which lists notes on a user.
  */
-export default class NotesCommand extends CommandWrapper {
+export default class NotesCommand extends SlashCommandWrapper {
     constructor() {
         super("notes", "List a user's notes")
-        this.commandBuilder
+        this.builder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

@@ -1,17 +1,17 @@
-import CommandWrapper from "../types/commandWrapper"
+import SlashCommandWrapper from "../types/slashCommandWrapper"
 import {CommandInteraction, Constants, DiscordAPIError} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
-import {Config} from "../config";
+import {Config} from "../config"
 
 /**
  * @description Slash command which warns a user.
  */
-export default class WarnCommand extends CommandWrapper {
+export default class WarnCommand extends SlashCommandWrapper {
     constructor() {
         super("warn", "Warn a user")
-        this.commandBuilder
+        this.builder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")

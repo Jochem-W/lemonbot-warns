@@ -1,18 +1,18 @@
-import {GuildMember, Message, ThreadMember, User, UserResolvable} from "discord.js";
-import {Notion} from "../clients";
-import {Variables} from "../variables";
-import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@notionhq/client/build/src/api-endpoints";
-import {DateTime} from "luxon";
+import {GuildMember, Message, ThreadMember, User, UserResolvable} from "discord.js"
+import {Notion} from "../clients"
+import {Variables} from "../variables"
+import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@notionhq/client/build/src/api-endpoints"
+import {DateTime} from "luxon"
 
 export type DatabaseEntry = {
-    id: string;
-    name: string;
-    currentPenaltyLevel: string;
-    reasons: string[];
-    lastEditedTime: DateTime;
-    lastEditedBy: string;
-    url: string;
-    pageId: string;
+    id: string
+    name: string
+    currentPenaltyLevel: string
+    reasons: string[]
+    lastEditedTime: DateTime
+    lastEditedBy: string
+    url: string
+    pageId: string
 }
 
 export default class Database {

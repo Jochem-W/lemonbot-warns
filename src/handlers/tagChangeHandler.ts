@@ -1,12 +1,12 @@
 import {PartialUser, User} from "discord.js"
 import HandlerWrapper from "../types/handlerWrapper"
-import Database from "../utilities/database";
-import InteractionHelper from "../utilities/interactionHelper";
-import {Config} from "../config";
+import Database from "../utilities/database"
+import InteractionHelper from "../utilities/interactionHelper"
+import {Config} from "../config"
 
 export default class TagChangeHandler extends HandlerWrapper {
     constructor() {
-        super("userUpdate", "TagChangeHandler")
+        super("userUpdate")
     }
 
     async handle(oldUser: User | PartialUser, newUser: User) {

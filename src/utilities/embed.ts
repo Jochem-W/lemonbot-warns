@@ -1,6 +1,6 @@
 import {MessageEmbed} from "discord.js"
 import {Config} from "../config"
-import {DateTime} from "luxon";
+import {DateTime} from "luxon"
 
 export default class Embed {
     static make(authorName?: string, authorIcon?: string, title?: string, description?: string) {

@@ -1,4 +1,4 @@
-import CommandWrapper from "../types/commandWrapper"
+import SlashCommandWrapper from "../types/slashCommandWrapper"
 import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import {DateTime, Duration} from "luxon"
@@ -6,7 +6,7 @@ import {DateTime, Duration} from "luxon"
 /**
  * @description Slash command which displays the bot status.
  */
-export default class StatusCommand extends CommandWrapper {
+export default class StatusCommand extends SlashCommandWrapper {
     constructor() {
         super("status", "Display ping and uptime")
     }
