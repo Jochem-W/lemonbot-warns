@@ -14,7 +14,7 @@ export default class StatusCommand extends SlashCommandWrapper {
     async execute(interaction: CommandInteraction) {
         const since = DateTime.now().minus(Duration.fromDurationLike({seconds: process.uptime()})).toUnixInteger()
         const uptime = Duration.fromMillis(process.uptime() * 1000)
-            .shiftTo('days', 'hours', 'minutes', 'seconds')
+            .shiftTo("days", "hours", "minutes", "seconds")
             .normalize()
 
         const embed = Embed.make("Status", undefined)
@@ -22,11 +22,11 @@ export default class StatusCommand extends SlashCommandWrapper {
             .addField("Uptime", `Up since <t:${since}>\nUp for \`${uptime.toHuman({
                 listStyle: "long",
                 notation: "compact",
-                unitDisplay: "short"
+                unitDisplay: "short",
             })}\``)
 
         await interaction.reply({
-            embeds: [embed]
+            embeds: [embed],
         })
     }
 }

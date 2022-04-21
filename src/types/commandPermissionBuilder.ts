@@ -8,7 +8,7 @@ import {
     Snowflake,
     ThreadMember,
     User,
-    UserResolvable
+    UserResolvable,
 } from "discord.js"
 import {Config} from "../config"
 
@@ -40,13 +40,13 @@ export default class CommandPermissionBuilder {
             return {
                 type: "ROLE",
                 permission: permission,
-                id: id
+                id: id,
             }
         }), ...Array.from(this.userPermissions).map(([id, permission]) => {
             return {
                 type: "USER",
                 permission: permission,
-                id: id
+                id: id,
             }
         })] as ApplicationCommandPermissions[]
     }
@@ -99,13 +99,13 @@ export default class CommandPermissionBuilder {
             ...Array.from(this.rolePermissions).map(([key, value]) => ({
                 id: key,
                 type: ApplicationCommandPermissionType.Role,
-                permission: value
+                permission: value,
             })),
             ...Array.from(this.userPermissions).map(([key, value]) => ({
                 id: key,
                 type: ApplicationCommandPermissionType.User,
-                permission: value
-            }))
+                permission: value,
+            })),
         ]
     }
 }

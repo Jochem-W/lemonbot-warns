@@ -40,35 +40,35 @@ export default class NotesCommand extends SlashCommandWrapper {
         for await (const note of Database.getNotes(user)) {
             hasNotes = true
             switch (note.type) {
-                case "heading_1":
-                    embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
-                    break
-                case "paragraph":
-                    Embed.append(embed, note.paragraph.rich_text.map(t => t.plain_text).join(""))
-                    break
-                case "image":
-                    let alt = note.image.caption.map(t => t.plain_text).join("") || "View image"
+            case "heading_1":
+                embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
+                break
+            case "paragraph":
+                Embed.append(embed, note.paragraph.rich_text.map(t => t.plain_text).join(""))
+                break
+            case "image":
+                let alt = note.image.caption.map(t => t.plain_text).join("") || "View image"
 
-                    let url: string | undefined
-                    switch (note.image.type) {
-                        case "file":
-                            alt += ` (link expires <t:${DateTime.fromISO(note.image.file.expiry_time).toUnixInteger()}:R>)`
-                            url = note.image.file.url
-                            break
-                        case "external":
-                            url = note.image.external.url
-                            break
-                    }
-
-                    if (!embed.image) {
-                        embed.setImage(url)
-                    }
-
-                    Embed.append(embed, `[${alt}](${url})`)
+                let url: string | undefined
+                switch (note.image.type) {
+                case "file":
+                    alt += ` (link expires <t:${DateTime.fromISO(note.image.file.expiry_time).toUnixInteger()}:R>)`
+                    url = note.image.file.url
                     break
-                default:
-                    unsupportedBlocks++
+                case "external":
+                    url = note.image.external.url
                     break
+                }
+
+                if (!embed.image) {
+                    embed.setImage(url)
+                }
+
+                Embed.append(embed, `[${alt}](${url})`)
+                break
+            default:
+                unsupportedBlocks++
+                break
             }
 
             if (embed.fields.length === 23) {
@@ -82,7 +82,10 @@ export default class NotesCommand extends SlashCommandWrapper {
         }
 
         if (unsupportedBlocks) {
-            embed.addField("Warning", `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ? "" : "s"} can only be viewed in Notion.`)
+            embed.addField("Warning",
+                `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ?
+                    "" :
+                    "s"} can only be viewed in Notion.`)
         }
 
         if (!embed.fields.length && !embed.description) {

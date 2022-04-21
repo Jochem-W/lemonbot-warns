@@ -22,7 +22,7 @@ export default class WarningsCommand extends SlashCommandWrapper {
         const user = interaction.options.getUser("user", true)
         const embed = Embed.make(`Warnings for ${user.tag}`, user.displayAvatarURL({
             dynamic: true,
-            size: 4096
+            size: 4096,
         }), "This user has no known warnings")
         const result = await Database.getEntry(user)
         if (!result) {
@@ -33,7 +33,8 @@ export default class WarningsCommand extends SlashCommandWrapper {
         embed.setTitle("View notes")
         embed.setURL(result.url)
         embed.addField("Current penalty level", result.currentPenaltyLevel ?? "")
-        embed.addField("Reasons", result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A")
+        embed.addField("Reasons",
+            result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A")
         embed.addField("Last edited", `${result.lastEditedBy}\n<t:${result.lastEditedTime.toUnixInteger()}:R>`)
         await interaction.editReply({embeds: [embed]})
     }

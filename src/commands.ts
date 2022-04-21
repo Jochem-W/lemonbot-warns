@@ -12,5 +12,5 @@ export const CommandWrappers: CommandWrapper[] = [
     new StatusCommand(),
     new SyncCommand(),
     new WarnCommand(),
-    new WarningsCommand()
+    new WarningsCommand(),
 ]

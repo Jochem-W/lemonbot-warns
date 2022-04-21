@@ -7,7 +7,7 @@ export default class Embed {
         return new MessageEmbed()
             .setAuthor({
                 name: authorName ?? "",
-                iconURL: authorIcon ?? Config.successIcon
+                iconURL: authorIcon ?? Config.successIcon,
             })
             .setTitle(title ?? "")
             .setDescription(description ?? "")

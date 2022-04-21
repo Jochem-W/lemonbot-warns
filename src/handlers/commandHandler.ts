@@ -30,7 +30,7 @@ export default class CommandHandler extends HandlerWrapper {
         if (!interaction.memberPermissions?.has(Permissions.FLAGS.MODERATE_MEMBERS)) {
             await interaction.reply({
                 embeds: [errorEmbed.setTitle("You do not have permission to use this command")],
-                ephemeral: true
+                ephemeral: true,
             })
             return
         }

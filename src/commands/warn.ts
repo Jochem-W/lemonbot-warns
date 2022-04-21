@@ -30,23 +30,23 @@ export default class WarnCommand extends SlashCommandWrapper {
                 .setChoices(
                     {
                         name: "0: Nothing",
-                        value: "0: Nothing"
+                        value: "0: Nothing",
                     },
                     {
                         name: "1: Warning",
-                        value: "1: Warning"
+                        value: "1: Warning",
                     },
                     {
                         name: "2: 24h Timeout",
-                        value: "2: 24h Timeout"
+                        value: "2: 24h Timeout",
                     },
                     {
                         name: "3: 1w Timeout",
-                        value: "3: 1w Timeout"
+                        value: "3: 1w Timeout",
                     },
                     {
                         name: "4: Ban/Blacklist",
-                        value: "4: Ban/Blacklist"
+                        value: "4: Ban/Blacklist",
                     })
                 .setRequired(true))
             .addBooleanOption(option => option
@@ -82,7 +82,9 @@ export default class WarnCommand extends SlashCommandWrapper {
         try {
             await user.send({
                 embeds: [
-                    Embed.make(`You have been warned in ${(await interaction.guild!.fetch()).name}`, Config.warnIcon, `Reason: ${reason}`)
+                    Embed.make(`You have been warned in ${(await interaction.guild!.fetch()).name}`,
+                        Config.warnIcon,
+                        `Reason: ${reason}`)
                         .setDescription(description)
                         .setColor("#ff0000"),
                 ],
@@ -91,7 +93,8 @@ export default class WarnCommand extends SlashCommandWrapper {
             embed.addField("Notification", "Successfully notified the user.")
         } catch (e) {
             if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                embed.addField("Notification", "The user couldn't be messaged because they either have DMs disabled or aren't in the server.")
+                embed.addField("Notification",
+                    "The user couldn't be messaged because they either have DMs disabled or aren't in the server.")
             } else {
                 embed.addField("Notification", `${e}`)
             }

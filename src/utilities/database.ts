@@ -38,22 +38,25 @@ export default class Database {
                 property: "ID",
                 type: "rich_text",
                 rich_text: {
-                    equals: id
+                    equals: id,
                 },
             },
         })
 
         switch (queryResponse.results.length) {
-            case 0:
-                return null
-            case 1:
-                return this.toDatabaseEntries(queryResponse)[0]
-            default:
-                throw new Error(`Multiple entries found for ${id}`)
+        case 0:
+            return null
+        case 1:
+            return this.toDatabaseEntries(queryResponse)[0]
+        default:
+            throw new Error(`Multiple entries found for ${id}`)
         }
     }
 
-    static async updateEntry(user: UserResolvable, name?: string, currentPenaltyLevel?: string, reasons?: string[]): Promise<DatabaseEntry> {
+    static async updateEntry(user: UserResolvable,
+                             name?: string,
+                             currentPenaltyLevel?: string,
+                             reasons?: string[]): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
         if (!entry && name) {
             return this.createEntry(user, name, currentPenaltyLevel, reasons)
@@ -91,7 +94,10 @@ export default class Database {
         }))[0]
     }
 
-    static async createEntry(user: UserResolvable, name: string, currentPenaltyLevel = "0: Nothing", reasons?: string[]): Promise<DatabaseEntry> {
+    static async createEntry(user: UserResolvable,
+                             name: string,
+                             currentPenaltyLevel = "0: Nothing",
+                             reasons?: string[]): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
         if (entry) {
             throw new Error(`Entry already exists for ${user}`)
@@ -100,14 +106,14 @@ export default class Database {
         const id = this.resolveUser(user)
         return this.toDatabaseEntries(await Notion.pages.create({
             parent: {
-                database_id: Variables.databaseId
+                database_id: Variables.databaseId,
             },
             properties: {
                 "ID": {
                     rich_text: [
                         {
                             text: {
-                                content: id
+                                content: id,
                             },
                         },
                     ],
@@ -116,14 +122,14 @@ export default class Database {
                     title: [
                         {
                             text: {
-                                content: name
+                                content: name,
                             },
                         },
                     ],
                 },
                 "Current penalty level": {
                     select: {
-                        name: currentPenaltyLevel
+                        name: currentPenaltyLevel,
                     },
                 },
                 "Reasons": {
@@ -160,7 +166,7 @@ export default class Database {
                         {
                             type: "text",
                             text: {
-                                content: title
+                                content: title,
                             },
                         },
                     ],
@@ -176,7 +182,7 @@ export default class Database {
                     {
                         type: "text",
                         text: {
-                            content: content
+                            content: content,
                         },
                     },
                 ],
