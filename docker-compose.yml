@@ -7,6 +7,7 @@ x-common-variables:
   NOTION_DATABASE_ID: &notion-database-id CHANGE_ME
   NOTION_TOKEN: &notion-token CHANGE_ME
   GOOGLE_APPLICATION_CREDENTIALS: &google-application-credentials CHANGE_ME
+  STORAGE_BUCKET: &storage-bucket CHANGE_ME
 
 # From here, nothing should have to be modified.
 services:
@@ -19,4 +20,5 @@ services:
       NOTION_DATABASE_ID: *notion-database-id
       NOTION_TOKEN: *notion-token
       GOOGLE_APPLICATION_CREDENTIALS: *google-application-credentials
+      STORAGE_BUCKET: *storage-bucket
     restart: unless-stopped
