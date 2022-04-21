@@ -3,6 +3,7 @@ import {CommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import {DateTime} from "luxon"
+import {hyperlink} from "@discordjs/builders"
 
 /**
  * @description Slash command which lists notes on a user.
@@ -44,7 +45,8 @@ export default class NotesCommand extends SlashCommandWrapper {
                 embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
                 break
             case "paragraph":
-                Embed.append(embed, note.paragraph.rich_text.map(t => t.plain_text).join(""))
+                Embed.append(embed,
+                    note.paragraph.rich_text.map(t => t.href ? hyperlink(t.plain_text, t.href) : t.plain_text).join(""))
                 break
             case "image":
                 let alt = note.image.caption.map(t => t.plain_text).join("") || "View image"
