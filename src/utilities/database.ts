@@ -15,6 +15,13 @@ export type DatabaseEntry = {
     pageId: string
 }
 
+export type NoteContent = {
+    title?: string
+    body?: string
+    url?: string
+    image?: string
+}
+
 export default class Database {
     static async* getEntries() {
         let response = undefined
@@ -143,7 +150,7 @@ export default class Database {
         }))[0]
     }
 
-    static async addNote(user: UserResolvable, content: string, title?: string, name?: string): Promise<string> {
+    static async addNote(user: UserResolvable, content: NoteContent, name?: string): Promise<string> {
         let entry = await this.getEntry(user)
         if (!entry && name) {
             entry = await this.createEntry(user, name)
@@ -157,7 +164,7 @@ export default class Database {
         // Very unfortunate too, since these are complex objects :/
         // https://developers.notion.com/reference/patch-block-children
         const newChildren: any[] = []
-        if (title) {
+        if (content.title) {
             newChildren.push({
                 object: "block",
                 type: "heading_1",
@@ -166,7 +173,7 @@ export default class Database {
                         {
                             type: "text",
                             text: {
-                                content: title,
+                                content: content.title,
                             },
                         },
                     ],
@@ -174,39 +181,40 @@ export default class Database {
             })
         }
 
-        newChildren.push({
-            object: "block",
-            type: "paragraph",
-            paragraph: {
-                rich_text: [
-                    {
-                        type: "text",
-                        text: {
-                            content: content,
+        if (content.body) {
+            newChildren.push({
+                object: "block",
+                type: "paragraph",
+                paragraph: {
+                    rich_text: [
+                        {
+                            type: "text",
+                            text: {
+                                content: content.body,
+                                link: content.url ? {url: content.url} : undefined,
+                            },
                         },
-                    },
-                ],
-            },
-        })
+                    ],
+                },
+            })
+        }
 
-        // if (attachment) {
-        //     newChildren.push({
-        //         object: "block",
-        //         type: "file",
-        //         file: {
-        //             type: "external",
-        //             external: {
-        //                 url: attachment,
-        //             },
-        //         },
-        //     })
-        // }
+        if (content.image) {
+            newChildren.push({
+                object: "block",
+                type: "image",
+                image: {
+                    type: "external",
+                    external: {
+                        url: content.image,
+                    },
+                },
+            })
+        }
 
         await Notion.blocks.children.append({
             block_id: entry.pageId,
-            children: [
-                ...newChildren,
-            ],
+            children: [...newChildren],
         })
 
         return entry.url

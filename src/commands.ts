@@ -6,6 +6,8 @@ import SyncCommand from "./commands/sync"
 import WarnCommand from "./commands/warn"
 import WarningsCommand from "./commands/warnings"
 
+import NoteContextCommand from "./commands/noteContext"
+
 export const CommandWrappers: CommandWrapper[] = [
     new NoteCommand(),
     new NotesCommand(),
@@ -13,4 +15,6 @@ export const CommandWrappers: CommandWrapper[] = [
     new SyncCommand(),
     new WarnCommand(),
     new WarningsCommand(),
+
+    new NoteContextCommand(),
 ]

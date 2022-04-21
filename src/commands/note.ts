@@ -30,11 +30,15 @@ export default class NoteCommand extends SlashCommandWrapper {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
+        const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
+            interaction.guild!,
+            interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
         const content = interaction.options.getString("content", true)
 
-        const url = await Database.addNote(user, content, title ?? undefined, InteractionHelper.getName(user))
+        const url = await Database.addNote(user,
+            {title: title ?? undefined, body: content},
+            InteractionHelper.getName(user))
 
         const tag = (user instanceof GuildMember ? user.user : user).tag
         const embed = Embed.make(`Added note to ${tag}`, undefined, "View notes")

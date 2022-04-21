@@ -3,4 +3,5 @@ export const Variables = {
     discordApplicationId: process.env.DISCORD_APPLICATION_ID as string,
     notionToken: process.env.NOTION_TOKEN as string,
     databaseId: process.env.NOTION_DATABASE_ID as string,
+    storageBucket: process.env.STORAGE_BUCKET as string,
 }

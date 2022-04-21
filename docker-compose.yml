@@ -6,6 +6,7 @@ x-common-variables:
   DISCORD_GUILD_ID: &discord-guild-id CHANGE_ME
   NOTION_DATABASE_ID: &notion-database-id CHANGE_ME
   NOTION_TOKEN: &notion-token CHANGE_ME
+  GOOGLE_APPLICATION_CREDENTIALS: &google-application-credentials CHANGE_ME
 
 # From here, nothing should have to be modified.
 services:
@@ -17,4 +18,5 @@ services:
       DISCORD_BOT_TOKEN: *discord-bot-token
       NOTION_DATABASE_ID: *notion-database-id
       NOTION_TOKEN: *notion-token
+      GOOGLE_APPLICATION_CREDENTIALS: *google-application-credentials
     restart: unless-stopped

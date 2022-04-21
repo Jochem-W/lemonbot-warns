@@ -24,6 +24,9 @@ FROM node:current-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 
+# Install runtime dependencies
+RUN apk add --no-cache imagemagick
+
 # Copy all files (including source :/)
 COPY --from=builder /app .
 

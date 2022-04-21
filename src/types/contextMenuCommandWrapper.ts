@@ -1,5 +1,5 @@
 import CommandWrapper from "../interfaces/commandWrapper"
-import {ContextMenuCommandBuilder} from "@discordjs/builders"
+import {ContextMenuCommandBuilder, ContextMenuCommandType} from "@discordjs/builders"
 import {ContextMenuInteraction} from "discord.js"
 import CommandPermissionBuilder from "./commandPermissionBuilder"
 
@@ -8,8 +8,9 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
     readonly permissionsBuilder = new CommandPermissionBuilder()
     readonly name
 
-    constructor(name: string) {
+    constructor(name: string, type: ContextMenuCommandType) {
         this.builder.setName(name)
+            .setType(type)
             .setDefaultPermission(false)
         this.name = name
     }

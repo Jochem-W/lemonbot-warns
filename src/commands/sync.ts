@@ -22,7 +22,10 @@ export default class SyncCommand extends SlashCommandWrapper {
         // TODO: limit the amount of entries
         const update = []
         for await (const entry of Database.getEntries()) {
-            const memberOrUser = await InteractionHelper.fetchMemberOrUser(interaction, entry.id, true)
+            const memberOrUser = await InteractionHelper.fetchMemberOrUser(interaction.client,
+                interaction.guild!,
+                entry.id,
+                true)
             const name = InteractionHelper.getName(memberOrUser)
             if (entry.name !== name) {
                 update.push({

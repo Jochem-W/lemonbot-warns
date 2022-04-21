@@ -58,7 +58,9 @@ export default class WarnCommand extends SlashCommandWrapper {
     async execute(interaction: CommandInteraction) {
         await interaction.deferReply()
 
-        const user = await InteractionHelper.fetchMemberOrUser(interaction, interaction.options.getUser("user", true))
+        const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
+            interaction.guild!,
+            interaction.options.getUser("user", true))
 
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
