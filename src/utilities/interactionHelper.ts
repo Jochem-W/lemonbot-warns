@@ -23,7 +23,7 @@ export default class InteractionHelper {
 
         const date = DateTime.fromMillis(message.createdTimestamp).toRFC2822()
         const messageFile = `${message.id}.png`
-        spawnSync("magick", ["-background", "#36393F", "-size", "512x", `pango:<span font_family=\"sans-serif\"
+        const spawnReturns = spawnSync("magick", ["-background", "#36393F", "-size", "512x", `pango:<span font_family=\"sans-serif\"
              foreground=\"#FFFFFF\" weight=\"500\" size=\"11264\">${message.author.username}</span> <span
              font_family=\"sans-serif\" foreground=\"#A3A6AA\" weight=\"500\"
              size=\"8448\">${date}</span>\n<span font_family=\"sans-serif\" foreground=\"#DCDDDE\"
@@ -33,6 +33,8 @@ export default class InteractionHelper {
             "circle 20 20 20 39", "-alpha", "Copy", ")", "-compose", "CopyOpacity", "-composite", ")", "-compose",
             "Over", "-gravity", "NorthWest", "-geometry", "+8+8", "-composite", messageFile,
         ])
+
+        console.error(spawnReturns.stderr?.toString())
 
         await unlink(avatarFile)
 
