@@ -1,20 +1,13 @@
 import {Client, Constants, DiscordAPIError, Guild, GuildMember, Message, User, UserResolvable} from "discord.js"
 import {createWriteStream} from "fs"
-import {access, unlink} from "fs/promises"
+import {unlink} from "fs/promises"
 import {spawnSync} from "child_process"
 import {DateTime} from "luxon"
 import fetch from "node-fetch"
 
 export default class InteractionHelper {
     static async messageToPng(message: Message): Promise<string> {
-        let imageMagick
-        try {
-            await access("magick")
-            imageMagick = "magick"
-        } catch (e) {
-            await access("convert")
-            imageMagick = "convert"
-        }
+        const magickExecutable = spawnSync("magick").error === undefined ? "magick" : "convert"
 
         // TODO: update @types/node and switch to fetch
         const response = await fetch(message.author.displayAvatarURL({size: 4096}))
@@ -32,10 +25,10 @@ export default class InteractionHelper {
 
         const date = DateTime.fromMillis(message.createdTimestamp).toRFC2822()
         const messageFile = `${message.id}.png`
-        const spawnReturns = spawnSync(imageMagick, ["-background", "#36393F", "-size", "512x", `pango:<span font_family=\"sans-serif\"
-             foreground=\"#FFFFFF\" weight=\"500\" size=\"11264\">${message.author.username}</span> <span
-             font_family=\"sans-serif\" foreground=\"#A3A6AA\" weight=\"500\"
-             size=\"8448\">${date}</span>\n<span font_family=\"sans-serif\" foreground=\"#DCDDDE\"
+        const spawnReturns = spawnSync(magickExecutable, ["-background", "#36393F", "-size", "512x", `pango:<span
+             font_family=\"sans-serif\" foreground=\"#FFFFFF\" weight=\"500\"
+             size=\"11264\">${message.author.username}</span> <span font_family=\"sans-serif\" foreground=\"#A3A6AA\"
+             weight=\"500\" size=\"8448\">${date}</span>\n<span font_family=\"sans-serif\" foreground=\"#DCDDDE\"
              weight=\"400\" size=\"11264\">${message.content}</span>`, "-flatten", "-bordercolor", "#36393F",
             "-gravity", "West", "-splice", "56x0", "-border", "8", "-gravity", "NorthWest", "(", avatarFile,
             "-geometry", "40x40", "-gravity", "Center", "(", "-size", "40x40", "xc:Black", "-fill", "White", "-draw",
