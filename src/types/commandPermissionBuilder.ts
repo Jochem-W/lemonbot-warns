@@ -38,13 +38,13 @@ export default class CommandPermissionBuilder {
     get permissions(): ApplicationCommandPermissions[] {
         return [...Array.from(this.rolePermissions).map(([id, permission]) => {
             return {
-                type: "ROLE",
+                type: ApplicationCommandPermissionType.Role,
                 permission: permission,
                 id: id,
             }
         }), ...Array.from(this.userPermissions).map(([id, permission]) => {
             return {
-                type: "USER",
+                type: ApplicationCommandPermissionType.User,
                 permission: permission,
                 id: id,
             }

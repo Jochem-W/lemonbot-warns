@@ -1,4 +1,4 @@
-import {MessageContextMenuInteraction} from "discord.js"
+import {MessageContextMenuCommandInteraction} from "discord.js"
 import ContextMenuCommandWrapper from "../types/contextMenuCommandWrapper"
 import {ApplicationCommandType} from "discord-api-types/v10"
 import InteractionHelper from "../utilities/interactionHelper"
@@ -15,7 +15,7 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
         super("Add to notes", ApplicationCommandType.Message)
     }
 
-    async execute(interaction: MessageContextMenuInteraction) {
+    async execute(interaction: MessageContextMenuCommandInteraction) {
         await interaction.deferReply({ephemeral: true})
 
         // TODO: help

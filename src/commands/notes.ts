@@ -1,14 +1,13 @@
-import SlashCommandWrapper from "../types/slashCommandWrapper"
-import {CommandInteraction} from "discord.js"
+import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import {ChatInputCommandInteraction, hyperlink} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import {DateTime} from "luxon"
-import {hyperlink} from "@discordjs/builders"
 
 /**
  * @description Slash command which lists notes on a user.
  */
-export default class NotesCommand extends SlashCommandWrapper {
+export default class NotesCommand extends ChatInputCommandWrapper {
     constructor() {
         super("notes", "List a user's notes")
         this.builder
@@ -18,13 +17,13 @@ export default class NotesCommand extends SlashCommandWrapper {
                 .setRequired(true))
     }
 
-    async execute(interaction: CommandInteraction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
 
         const user = interaction.options.getUser("user", true)
         const result = await Database.getEntry(user)
 
-        const embed = Embed.make(`Notes for ${user.tag}`, user.displayAvatarURL({dynamic: true, size: 4096}))
+        const embed = Embed.make(`Notes for ${user.tag}`, user.displayAvatarURL({size: 4096}))
         if (!result) {
             embed.setTitle("This user has no known notes")
             await interaction.editReply({embeds: [embed]})
@@ -42,7 +41,10 @@ export default class NotesCommand extends SlashCommandWrapper {
             hasNotes = true
             switch (note.type) {
             case "heading_1":
-                embed.addField(note.heading_1.rich_text.map(t => t.plain_text).join(""), "...")
+                embed.addFields([{
+                    name: note.heading_1.rich_text.map(t => t.plain_text).join(""),
+                    value: "...",
+                }])
                 break
             case "paragraph":
                 Embed.append(embed,
@@ -62,7 +64,7 @@ export default class NotesCommand extends SlashCommandWrapper {
                     break
                 }
 
-                if (!embed.image) {
+                if (!embed.data.image) {
                     embed.setImage(url)
                 }
 
@@ -73,24 +75,29 @@ export default class NotesCommand extends SlashCommandWrapper {
                 break
             }
 
-            if (embed.fields.length === 23) {
+            if (embed.data.fields?.length === 23) {
                 possiblyTruncated = true
                 break
             }
         }
 
         if (possiblyTruncated) {
-            embed.addField("...", "View the Notion page for more notes.")
+            embed.addFields([{
+                name: "...",
+                value: "View the Notion page for more notes.",
+            }])
         }
 
         if (unsupportedBlocks) {
-            embed.addField("Warning",
-                `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ?
+            embed.addFields([{
+                name: "Warning",
+                value: `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ?
                     "" :
-                    "s"} can only be viewed in Notion.`)
+                    "s"} can only be viewed in Notion.`,
+            }])
         }
 
-        if (!embed.fields.length && !embed.description) {
+        if (!embed.data.fields?.length && !embed.data.description) {
             embed.setTitle("No notes found")
         }
 

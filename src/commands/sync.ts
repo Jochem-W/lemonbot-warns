@@ -1,5 +1,5 @@
-import SlashCommandWrapper from "../types/slashCommandWrapper"
-import {CommandInteraction} from "discord.js"
+import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import {ChatInputCommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
@@ -7,7 +7,7 @@ import InteractionHelper from "../utilities/interactionHelper"
 /**
  * @description Slash command which synchronises the database with the current names.
  */
-export default class SyncCommand extends SlashCommandWrapper {
+export default class SyncCommand extends ChatInputCommandWrapper {
     constructor() {
         super("sync", "Update the names stored in the database")
         this.builder
@@ -16,7 +16,7 @@ export default class SyncCommand extends SlashCommandWrapper {
                 .setDescription("Whether to do a dry run"))
     }
 
-    async execute(interaction: CommandInteraction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
 
         // TODO: limit the amount of entries
@@ -39,15 +39,24 @@ export default class SyncCommand extends SlashCommandWrapper {
         const embed = Embed.make("Synchronisation")
         if (interaction.options.getBoolean("dry")) {
             for (const entry of update) {
-                embed.addField(entry.id, `Old: \`${entry.oldName}\`\nNew: \`${entry.newName}\``)
+                embed.addFields([{
+                    name: entry.id,
+                    value: `Old: \`${entry.oldName}\`\nNew: \`${entry.newName}\``,
+                }])
             }
 
-            if (embed.fields.length === 24) {
-                embed.addField("Truncated", `And ${update.length - 24} more...`)
+            if (embed.data.fields?.length === 24) {
+                embed.addFields([{
+                    name: "Truncated",
+                    value: `And ${update.length - 24} more...`,
+                }])
             }
 
-            if (embed.fields.length === 0) {
-                embed.addField("Already up to date", "The names in the database are already up to date")
+            if (!embed.data.fields?.length) {
+                embed.addFields([{
+                    name: "Already up to date",
+                    value: "The names in the database are already up to date",
+                }])
             }
 
             await interaction.editReply({embeds: [embed]})
@@ -58,7 +67,10 @@ export default class SyncCommand extends SlashCommandWrapper {
             await Database.updateEntry(entry.id, entry.newName)
         }
 
-        embed.addField("Database synchronised", `${update.length} names updated`)
+        embed.addFields([{
+            name: "Database synchronised",
+            value: `${update.length} names updated`,
+        }])
         await interaction.editReply({embeds: [embed]})
     }
 }

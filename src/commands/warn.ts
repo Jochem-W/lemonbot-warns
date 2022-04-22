@@ -1,5 +1,5 @@
-import SlashCommandWrapper from "../types/slashCommandWrapper"
-import {CommandInteraction, Constants, DiscordAPIError} from "discord.js"
+import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import {ChatInputCommandInteraction, DiscordAPIError, RESTJSONErrorCodes} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
@@ -8,7 +8,7 @@ import {Config} from "../config"
 /**
  * @description Slash command which warns a user.
  */
-export default class WarnCommand extends SlashCommandWrapper {
+export default class WarnCommand extends ChatInputCommandWrapper {
     constructor() {
         super("warn", "Warn a user")
         this.builder
@@ -55,7 +55,7 @@ export default class WarnCommand extends SlashCommandWrapper {
                 .setRequired(true))
     }
 
-    async execute(interaction: CommandInteraction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
 
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
@@ -72,8 +72,13 @@ export default class WarnCommand extends SlashCommandWrapper {
 
         const embed = Embed.make(`Warned ${tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
-            .addField("Notion page", entry.url)
-            .addField("New penalty level", penalty)
+            .addFields([{
+                name: "Notion page",
+                value: entry.url,
+            }, {
+                name: "New penalty level",
+                value: penalty,
+            }])
 
         if (!interaction.options.getBoolean("notify", true)) {
             await interaction.editReply({embeds: [embed]})
@@ -92,13 +97,21 @@ export default class WarnCommand extends SlashCommandWrapper {
                 ],
             })
 
-            embed.addField("Notification", "Successfully notified the user.")
+            embed.addFields([{
+                name: "Notification",
+                value: "Successfully notified the user",
+            }])
         } catch (e) {
-            if ((e as DiscordAPIError).code === Constants.APIErrors.CANNOT_MESSAGE_USER) {
-                embed.addField("Notification",
-                    "The user couldn't be messaged because they either have DMs disabled or aren't in the server.")
+            if ((e as DiscordAPIError).code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
+                embed.addFields([{
+                    name: "Notification",
+                    value: "The user couldn't be messaged because they either have DMs disabled or aren't in the server.",
+                }])
             } else {
-                embed.addField("Notification", `${e}`)
+                embed.addFields([{
+                    name: "Notification",
+                    value: "An error occurred while trying to notify the user.",
+                }])
             }
         }
 

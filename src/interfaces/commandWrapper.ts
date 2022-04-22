@@ -1,6 +1,5 @@
 import CommandPermissionBuilder from "../types/commandPermissionBuilder"
-import {Interaction} from "discord.js"
-import {ContextMenuCommandBuilder, SlashCommandBuilder} from "@discordjs/builders"
+import {CommandInteraction, ContextMenuCommandBuilder, SlashCommandBuilder} from "discord.js"
 import {APIApplicationCommandPermission, RESTPostAPIApplicationCommandsJSONBody} from "discord-api-types/v10"
 
 /**
@@ -24,5 +23,5 @@ export default interface CommandWrapper {
     /**
      * Function that will be called when the command is executed.
      */
-    execute(interaction: Interaction): Promise<void>
+    execute(interaction: CommandInteraction): Promise<void>
 }

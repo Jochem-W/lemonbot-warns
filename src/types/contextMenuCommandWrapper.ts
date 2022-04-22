@@ -1,6 +1,5 @@
 import CommandWrapper from "../interfaces/commandWrapper"
-import {ContextMenuCommandBuilder, ContextMenuCommandType} from "@discordjs/builders"
-import {ContextMenuInteraction} from "discord.js"
+import {ContextMenuCommandBuilder, ContextMenuCommandInteraction, ContextMenuCommandType} from "discord.js"
 import CommandPermissionBuilder from "./commandPermissionBuilder"
 
 export default class ContextMenuCommandWrapper implements CommandWrapper {
@@ -15,7 +14,7 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
         this.name = name
     }
 
-    execute(interaction: ContextMenuInteraction): Promise<void> {
+    execute(interaction: ContextMenuCommandInteraction): Promise<void> {
         return Promise.resolve(undefined)
     }
 

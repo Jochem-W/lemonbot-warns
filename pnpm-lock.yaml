@@ -1,18 +1,17 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@discordjs/builders': ^0.13.0
-  '@discordjs/rest': ^0.4.1
+  '@discordjs/rest': ^0.5.0-dev.1650586178-61a44c5
   '@notionhq/client': ^1.0.4
   '@tsconfig/node17': ^1.0.0
   '@types/luxon': ^2.3.1
   '@types/node': ^17.0.25
-  '@types/node-fetch': '2'
+  '@types/node-fetch': ^2.6.1
   bufferutil: ^4.0.6
-  discord-api-types: ^0.31.2
-  discord.js: ^13.6.0
+  discord-api-types: ^0.32.0-next.1212eb9.1650469859
+  discord.js: ^14.0.0-dev.1650586180-61a44c5
   erlpack: github:discord/erlpack
-  firebase-admin: ^10.0.2
+  firebase-admin: ^10.1.0
   luxon: ^2.3.2
   node-fetch: '2'
   typescript: ^4.6.3
@@ -20,15 +19,14 @@ specifiers:
   zlib-sync: ^0.1.7
 
 dependencies:
-  '@discordjs/builders': 0.13.0
-  '@discordjs/rest': 0.4.1
+  '@discordjs/rest': 0.5.0-dev.1650586178-61a44c5
   '@notionhq/client': 1.0.4
   '@types/luxon': 2.3.1
   '@types/node': 17.0.25
   '@types/node-fetch': 2.6.1
-  discord-api-types: 0.31.2
-  discord.js: 13.6.0_d6955b83f926115bf12ffeabab6deaae
-  firebase-admin: 10.0.2
+  discord-api-types: 0.32.0-next.1212eb9.1650469859
+  discord.js: 14.0.0-dev.1650586180-61a44c5_d6955b83f926115bf12ffeabab6deaae
+  firebase-admin: 10.1.0
   luxon: 2.3.2
   node-fetch: 2.6.7
 
@@ -44,19 +42,8 @@ devDependencies:
 
 packages:
 
-  /@discordjs/builders/0.11.0:
-    resolution: { integrity: sha512-ZTB8yJdJKrKlq44dpWkNUrAtEJEq0gqpb7ASdv4vmq6/mZal5kOv312hQ56I/vxwMre+VIkoHquNUAfnTbiYtg== }
-    engines: { node: '>=16.0.0', npm: '>=7.0.0' }
-    dependencies:
-      '@sindresorhus/is': 4.6.0
-      discord-api-types: 0.26.1
-      ts-mixer: 6.0.1
-      tslib: 2.3.1
-      zod: 3.14.4
-    dev: false
-
-  /@discordjs/builders/0.13.0:
-    resolution: { integrity: sha512-4L9y26KRNNU8Y7J78SRUN1Uhava9D8jfit/YqEaKi8gQRc7PdqKqk2poybo6RXaiyt/BgKYPfcjxT7WvzGfYCA== }
+  /@discordjs/builders/0.14.0-dev.1650586175-61a44c5:
+    resolution: { integrity: sha512-NpQcPZdYxeQ9/48z6B/4ZWFxh4LH/dRa9UUN2ZkDBPF/Ob+VwAC14P+Ybhyl5aSYv/HVLGSvcU9ghxiY5qL7GA== }
     engines: { node: '>=16.9.0' }
     dependencies:
       '@sapphire/shapeshift': 2.0.0
@@ -64,31 +51,26 @@ packages:
       discord-api-types: 0.31.2
       fast-deep-equal: 3.1.3
       ts-mixer: 6.0.1
-      tslib: 2.3.1
+      tslib: 2.4.0
     dev: false
 
-  /@discordjs/collection/0.4.0:
-    resolution: { integrity: sha512-zmjq+l/rV35kE6zRrwe8BHqV78JvIh2ybJeZavBi5NySjWXqN3hmmAKg7kYMMXSeiWtSsMoZ/+MQi0DiQWy2lw== }
-    engines: { node: '>=16.0.0', npm: '>=7.0.0' }
-    dev: false
-
-  /@discordjs/collection/0.7.0-dev.1650413395-585169f:
-    resolution: { integrity: sha512-oD+SAyP+bpMf7oS5ArY6mCIw2TjfBr4dPB51LH9MGaBn/mYUFJdm/FIBZ413dt8T+JBhdH67SUXgl8ZiH16yYA== }
+  /@discordjs/collection/0.7.0-dev.1650586175-61a44c5:
+    resolution: { integrity: sha512-GyBtogCnQjh0AKdBFU+ScoCLbaQuUoOzA6e1+ckDe/7coOFEheOlt4wN03eolW6v/raAZpA1ozJZDGB7VHTDIA== }
     engines: { node: '>=16.9.0' }
     dev: false
 
-  /@discordjs/rest/0.4.1:
-    resolution: { integrity: sha512-rtWy+AIfNlfjGkAgA2TJLASdqli07aTNQceVGT6RQQiQaEqV0nsfBO4WtDlDzk7PmO3w+InP3dpwEolJI5jz0A== }
+  /@discordjs/rest/0.5.0-dev.1650586178-61a44c5:
+    resolution: { integrity: sha512-ghUYTcTmVFP/zNMYHEaibO14g+jw2+TPaHWv/LmjwOdZq5WgPTGyhA83M5S93IHnbPWmfQMyaW4RtSuDMzO2bA== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/collection': 0.7.0-dev.1650413395-585169f
+      '@discordjs/collection': 0.7.0-dev.1650586175-61a44c5
       '@sapphire/async-queue': 1.3.1
       '@sapphire/snowflake': 3.2.1
       '@types/node-fetch': 2.6.1
       discord-api-types: 0.29.0
       form-data: 4.0.0
       node-fetch: 2.6.7
-      tslib: 2.3.1
+      tslib: 2.4.0
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -110,7 +92,7 @@ packages:
     resolution: { integrity: sha512-hxhJtpD8Ppf/VU2Rlos6KFCEV77TGIGD5bJlkPK1+B/WUe0mC6dTjW7KhZtXTc+qRBp9nFHWcsIORnT8liHP9w== }
     dependencies:
       '@firebase/util': 1.5.2
-      tslib: 2.3.1
+      tslib: 2.4.0
     dev: false
 
   /@firebase/database-compat/0.1.8:
@@ -123,7 +105,7 @@ packages:
       '@firebase/database-types': 0.9.7
       '@firebase/logger': 0.3.2
       '@firebase/util': 1.5.2
-      tslib: 2.3.1
+      tslib: 2.4.0
     transitivePeerDependencies:
       - '@firebase/app-types'
     dev: false
@@ -143,7 +125,7 @@ packages:
       '@firebase/logger': 0.3.2
       '@firebase/util': 1.5.2
       faye-websocket: 0.11.4
-      tslib: 2.3.1
+      tslib: 2.4.0
     transitivePeerDependencies:
       - '@firebase/app-types'
     dev: false
@@ -151,13 +133,13 @@ packages:
   /@firebase/logger/0.3.2:
     resolution: { integrity: sha512-lzLrcJp9QBWpo40OcOM9B8QEtBw2Fk1zOZQdvv+rWS6gKmhQBCEMc4SMABQfWdjsylBcDfniD1Q+fUX1dcBTXA== }
     dependencies:
-      tslib: 2.3.1
+      tslib: 2.4.0
     dev: false
 
   /@firebase/util/1.5.2:
     resolution: { integrity: sha512-YvBH2UxFcdWG2HdFnhxZptPl2eVFlpOyTH66iDo13JPEYraWzWToZ5AMTtkyRHVmu7sssUpQlU9igy1KET7TOw== }
     dependencies:
-      tslib: 2.3.1
+      tslib: 2.4.0
     dev: false
 
   /@google-cloud/firestore/4.15.1:
@@ -604,11 +586,6 @@ packages:
       streamsearch: 1.1.0
     dev: false
 
-  /discord-api-types/0.26.1:
-    resolution: { integrity: sha512-T5PdMQ+Y1MEECYMV5wmyi9VEYPagEDEi4S0amgsszpWY0VB9JJ/hEvM6BgLhbdnKky4gfmZEXtEEtojN8ZKJQQ== }
-    engines: { node: '>=12' }
-    dev: false
-
   /discord-api-types/0.29.0:
     resolution: { integrity: sha512-Ekq1ICNpOTVajXKZguNFrsDeTmam+ZeA38txsNLZnANdXUjU6QBPIZLUQTC6MzigFGb0Tt8vk4xLnXmzv0shNg== }
     dev: false
@@ -617,18 +594,24 @@ packages:
     resolution: { integrity: sha512-gpzXTvFVg7AjKVVJFH0oJGC0q0tO34iJGSHZNz9u3aqLxlD6LfxEs9wWVVikJqn9gra940oUTaPFizCkRDcEiA== }
     dev: false
 
-  /discord.js/13.6.0_d6955b83f926115bf12ffeabab6deaae:
-    resolution: { integrity: sha512-tXNR8zgsEPxPBvGk3AQjJ9ljIIC6/LOPjzKwpwz8Y1Q2X66Vi3ZqFgRHYwnHKC0jC0F+l4LzxlhmOJsBZDNg9g== }
-    engines: { node: '>=16.6.0', npm: '>=7.0.0' }
+  /discord-api-types/0.32.0-next.1212eb9.1650469859:
+    resolution: { integrity: sha512-9j/5ie0eMiAOpaFnwlf3oS9/QaZVeOZGZ7BS1HO+jQ+b8zS4yM+uXD3ZrPtM1pWgov77Kj+ZW/BJ1oi9+mTjVg== }
+    dev: false
+
+  /discord.js/14.0.0-dev.1650586180-61a44c5_d6955b83f926115bf12ffeabab6deaae:
+    resolution: { integrity: sha512-eq2GORK/ohNisknOy2ZEo8OFez0PA7Tv3OhKvv7OTyFhP3nr/wdZqF69lTB7LyWe5w9fUZKeNh/KqdDmt/exLA== }
+    engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/builders': 0.11.0
-      '@discordjs/collection': 0.4.0
-      '@sapphire/async-queue': 1.3.1
-      '@types/node-fetch': 2.6.1
+      '@discordjs/builders': 0.14.0-dev.1650586175-61a44c5
+      '@discordjs/collection': 0.7.0-dev.1650586175-61a44c5
+      '@discordjs/rest': 0.5.0-dev.1650586178-61a44c5
+      '@sapphire/snowflake': 3.2.1
       '@types/ws': 8.5.3
-      discord-api-types: 0.26.1
-      form-data: 4.0.0
-      node-fetch: 2.6.7
+      discord-api-types: 0.31.2
+      fast-deep-equal: 3.1.3
+      lodash.snakecase: 4.1.1
+      tslib: 2.4.0
+      undici: 4.16.0
       ws: 8.5.0_d6955b83f926115bf12ffeabab6deaae
     transitivePeerDependencies:
       - bufferutil
@@ -715,8 +698,8 @@ packages:
     dev: false
     optional: true
 
-  /firebase-admin/10.0.2:
-    resolution: { integrity: sha512-MLH0SPmC4L0aCHvPjs1KThraru/T84T3hxiPY3uCH7NZEgE/T5n4GwecwU3RcM3X+br75BIBY7qhaR5uCxhdXA== }
+  /firebase-admin/10.1.0:
+    resolution: { integrity: sha512-4i4wu+EFgNfY4+D4DxXkZcmbD832ozUMNvHMkOFQrf8upyp51n6jrDJS+wLok9sd62yeqcImbnsLOympGlISPA== }
     engines: { node: '>=12.7.0' }
     dependencies:
       '@firebase/database-compat': 0.1.8
@@ -1055,6 +1038,10 @@ packages:
     resolution: { integrity: sha1-DdOXEhPHxW34gJd9UEyI+0cal6w= }
     dev: false
 
+  /lodash.snakecase/4.1.1:
+    resolution: { integrity: sha1-OdcUo1NXFHg3rv1ktdy7Fr7Nj40= }
+    dev: false
+
   /long/4.0.0:
     resolution: { integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA== }
     dev: false
@@ -1348,8 +1335,8 @@ packages:
     resolution: { integrity: sha512-hvE+ZYXuINrx6Ei6D6hz+PTim0Uf++dYbK9FFifLNwQj+RwKquhQpn868yZsCtJYiclZF1u8l6WZxxKi+vv7Rg== }
     dev: false
 
-  /tslib/2.3.1:
-    resolution: { integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw== }
+  /tslib/2.4.0:
+    resolution: { integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ== }
     dev: false
 
   /typedarray-to-buffer/3.1.5:
@@ -1364,6 +1351,11 @@ packages:
     engines: { node: '>=4.2.0' }
     hasBin: true
     dev: true
+
+  /undici/4.16.0:
+    resolution: { integrity: sha512-tkZSECUYi+/T1i4u+4+lwZmQgLXd4BLGlrc7KZPcLIW7Jpq99+Xpc30ONv7nS6F5UNOxp/HBZSSL9MafUrvJbw== }
+    engines: { node: '>=12.18' }
+    dev: false
 
   /unique-string/2.0.0:
     resolution: { integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg== }
@@ -1513,10 +1505,6 @@ packages:
       nan: 2.15.0
     dev: false
     optional: true
-
-  /zod/3.14.4:
-    resolution: { integrity: sha512-U9BFLb2GO34Sfo9IUYp0w3wJLlmcyGoMd75qU9yf+DrdGA4kEx6e+l9KOkAlyUO0PSQzZCa3TR4qVlcmwqSDuw== }
-    dev: false
 
   github.com/discord/erlpack/3b793a333dd3f6a140b9168ea91e9fa9660753ce:
     resolution: { tarball: https://codeload.github.com/discord/erlpack/tar.gz/3b793a333dd3f6a140b9168ea91e9fa9660753ce }

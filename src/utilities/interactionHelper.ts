@@ -1,4 +1,13 @@
-import {Client, Constants, DiscordAPIError, Guild, GuildMember, Message, User, UserResolvable} from "discord.js"
+import {
+    Client,
+    DiscordAPIError,
+    Guild,
+    GuildMember,
+    Message,
+    RESTJSONErrorCodes,
+    User,
+    UserResolvable,
+} from "discord.js"
 import {createWriteStream} from "fs"
 import {unlink} from "fs/promises"
 import {spawnSync} from "child_process"
@@ -50,7 +59,7 @@ export default class InteractionHelper {
         try {
             return await guild.members.fetch({user: user, force: force})
         } catch (e) {
-            if ((e as DiscordAPIError).code !== Constants.APIErrors.UNKNOWN_MEMBER) {
+            if ((e as DiscordAPIError).code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                 throw e
             }
         }

@@ -1,9 +1,8 @@
 import CommandWrapper from "../interfaces/commandWrapper"
-import {SlashCommandBuilder} from "@discordjs/builders"
-import {CommandInteraction} from "discord.js"
+import {ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js"
 import CommandPermissionBuilder from "./commandPermissionBuilder"
 
-export default class SlashCommandWrapper implements CommandWrapper {
+export default class ChatInputCommandWrapper implements CommandWrapper {
     readonly builder = new SlashCommandBuilder()
     readonly permissionsBuilder = new CommandPermissionBuilder()
     readonly name
@@ -15,7 +14,7 @@ export default class SlashCommandWrapper implements CommandWrapper {
         this.name = name
     }
 
-    execute(interaction: CommandInteraction): Promise<void> {
+    execute(interaction: ChatInputCommandInteraction): Promise<void> {
         return Promise.resolve(undefined)
     }
 

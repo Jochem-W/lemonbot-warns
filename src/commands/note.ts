@@ -1,5 +1,5 @@
-import SlashCommandWrapper from "../types/slashCommandWrapper"
-import {CommandInteraction, GuildMember} from "discord.js"
+import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import {ChatInputCommandInteraction, GuildMember} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
@@ -7,7 +7,7 @@ import InteractionHelper from "../utilities/interactionHelper"
 /**
  * @description Slash command which add a note to a user.
  */
-export default class NoteCommand extends SlashCommandWrapper {
+export default class NoteCommand extends ChatInputCommandWrapper {
     constructor() {
         super("note", "Add a note to a user")
         this.builder
@@ -27,7 +27,7 @@ export default class NoteCommand extends SlashCommandWrapper {
                 .setDescription("Optional image attachment"))
     }
 
-    async execute(interaction: CommandInteraction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply()
 
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
@@ -45,7 +45,10 @@ export default class NoteCommand extends SlashCommandWrapper {
             .setURL(url)
 
         if (title) {
-            embed.addField(title, content)
+            embed.addFields([{
+                name: title,
+                value: content,
+            }])
         } else {
             embed.setDescription(content)
         }

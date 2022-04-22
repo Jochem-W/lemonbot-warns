@@ -8,13 +8,13 @@ import {
     Routes,
 } from "discord-api-types/v10"
 import {Config} from "./config"
-import {Client, Collection, Intents} from "discord.js"
+import {Client, Collection, IntentsBitField, Partials} from "discord.js"
 import CommandHandler from "./handlers/commandHandler"
 import {Handlers} from "./handlers"
 
 const client = new Client({
-    intents: [Intents.FLAGS.GUILD_MEMBERS],
-    partials: ["USER", "GUILD_MEMBER"],
+    intents: [IntentsBitField.Flags.GuildMembers],
+    partials: [Partials.User, Partials.GuildMember],
 })
 
 const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
