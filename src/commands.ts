@@ -1,12 +1,12 @@
 import CommandWrapper from "./interfaces/commandWrapper"
-import NoteCommand from "./commands/note"
-import NotesCommand from "./commands/notes"
-import StatusCommand from "./commands/status"
-import SyncCommand from "./commands/sync"
-import WarnCommand from "./commands/warn"
-import WarningsCommand from "./commands/warnings"
+import NoteCommand from "./commands/noteCommand"
+import NotesCommand from "./commands/notesCommand"
+import StatusCommand from "./commands/statusCommand"
+import SyncCommand from "./commands/syncCommand"
+import WarnCommand from "./commands/warnCommand"
+import WarningsCommand from "./commands/warningsCommand"
 
-import NoteContextCommand from "./commands/noteContext"
+import NoteContextCommand from "./commands/noteContextCommand"
 
 export const CommandWrappers: CommandWrapper[] = [
     new NoteCommand(),
