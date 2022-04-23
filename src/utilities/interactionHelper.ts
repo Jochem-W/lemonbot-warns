@@ -53,14 +53,16 @@ export default class InteractionHelper {
     }
 
     static async fetchMemberOrUser(client: Client,
-                                   guild: Guild,
+                                   guild: Guild | null,
                                    user: UserResolvable,
                                    force?: boolean): Promise<GuildMember | User> {
-        try {
-            return await guild.members.fetch({user: user, force: force})
-        } catch (e) {
-            if ((e as DiscordAPIError).code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
-                throw e
+        if (guild) {
+            try {
+                return await guild.members.fetch({user: user, force: force})
+            } catch (e) {
+                if ((e as DiscordAPIError).code !== RESTJSONErrorCodes.UnknownMember) {
+                    throw e
+                }
             }
         }
 

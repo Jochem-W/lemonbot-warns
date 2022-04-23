@@ -56,10 +56,14 @@ export default class WarnCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
+        if (!interaction.inGuild()) {
+            throw new Error("This command can only be used in a guild")
+        }
+
         await interaction.deferReply()
 
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
-            interaction.guild!,
+            interaction.guild,
             interaction.options.getUser("user", true))
 
         const reason = interaction.options.getString("reason", true)
@@ -85,11 +89,13 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             return
         }
 
+        const guild = await interaction.client.guilds.fetch(interaction.guildId)
+
         // Try to notify the user
         try {
             await user.send({
                 embeds: [
-                    Embed.make(`You have been warned in ${(await interaction.guild!.fetch()).name}`,
+                    Embed.make(`You have been warned in ${guild.name}`,
                         Config.warnIcon,
                         `Reason: ${reason}`)
                         .setDescription(description)
@@ -110,7 +116,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             } else {
                 embed.addFields([{
                     name: "Notification",
-                    value: "An error occurred while trying to notify the user.",
+                    value: `The following error occurred while trying to notify the user:\n${e}`,
                 }])
             }
         }

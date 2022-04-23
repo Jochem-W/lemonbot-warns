@@ -10,6 +10,10 @@ export default class ReadyHandler extends HandlerWrapper {
     }
 
     async handle(client: Client) {
-        console.log("Running as:", client.user!.tag + "!")
+        if (client.user) {
+            console.log(`Running as: ${client.user.tag}`)
+        } else {
+            console.log("Running without a user")
+        }
     }
 }

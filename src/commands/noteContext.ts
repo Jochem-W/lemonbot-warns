@@ -16,16 +16,20 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
     }
 
     async execute(interaction: MessageContextMenuCommandInteraction) {
+        if (!interaction.inGuild()) {
+            throw new Error("This command can only be used in a guild.")
+        }
+
         await interaction.deferReply({ephemeral: true})
 
         // TODO: help
-        const guild = await interaction.client.guilds.fetch(interaction.guildId!)
-        const channel = await guild.channels.fetch(interaction.channelId!)
+        const guild = await interaction.client.guilds.fetch(interaction.guildId)
+        const channel = await guild.channels.fetch(interaction.channelId)
         if (!channel?.isText()) {
             throw new Error("Channel is not a text channel")
         }
 
-        const message = await channel.messages.fetch(interaction.targetId!)
+        const message = await channel.messages.fetch(interaction.targetId)
         const author = await InteractionHelper.fetchMemberOrUser(interaction.client, guild, message.author, true)
 
         const fileName = await InteractionHelper.messageToPng(message)

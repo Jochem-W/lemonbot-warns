@@ -31,7 +31,7 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         await interaction.deferReply()
 
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
-            interaction.guild!,
+            interaction.guild,
             interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
         const content = interaction.options.getString("content", true)

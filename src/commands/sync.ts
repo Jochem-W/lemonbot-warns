@@ -23,7 +23,7 @@ export default class SyncCommand extends ChatInputCommandWrapper {
         const update = []
         for await (const entry of Database.getEntries()) {
             const memberOrUser = await InteractionHelper.fetchMemberOrUser(interaction.client,
-                interaction.guild!,
+                interaction.guild,
                 entry.id,
                 true)
             const name = InteractionHelper.getName(memberOrUser)
