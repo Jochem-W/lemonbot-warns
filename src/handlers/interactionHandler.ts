@@ -16,7 +16,7 @@ import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
 /**
  * Handler for interactions
  */
-export default class CommandHandler extends HandlerWrapper {
+export default class InteractionHandler extends HandlerWrapper {
     private readonly commands
 
     constructor(commands: Collection<Snowflake, CommandWrapper>) {

@@ -9,7 +9,7 @@ import {
 } from "discord-api-types/v10"
 import {Config} from "./config"
 import {Client, Collection, IntentsBitField, Partials} from "discord.js"
-import CommandHandler from "./handlers/commandHandler"
+import InteractionHandler from "./handlers/interactionHandler"
 import {Handlers} from "./handlers"
 
 const client = new Client({
@@ -41,7 +41,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
         return [applicationCommands.find(c => c.name === cw.name)!.id, cw]
     }))
 
-    Handlers.push(new CommandHandler(result))
+    Handlers.push(new InteractionHandler(result))
 
     Handlers.forEach(h => {
         client.on(h.eventName, async (...args) => await h.handle(...args))
