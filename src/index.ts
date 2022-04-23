@@ -38,7 +38,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
         {body: permissionsBody})
 
     const result = new Collection(CommandWrappers.map(cw => {
-        return [applicationCommands.find(c => c.name === cw.name)!.id, cw.execute]
+        return [applicationCommands.find(c => c.name === cw.name)!.id, cw]
     }))
 
     Handlers.push(new CommandHandler(result))

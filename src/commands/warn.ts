@@ -1,5 +1,10 @@
 import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
-import {ChatInputCommandInteraction, DiscordAPIError, RESTJSONErrorCodes} from "discord.js"
+import {
+    ApplicationCommandOptionChoiceData,
+    ChatInputCommandInteraction,
+    DiscordAPIError,
+    RESTJSONErrorCodes,
+} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
@@ -27,32 +32,43 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             .addStringOption(option => option
                 .setName("penalty")
                 .setDescription("New penalty level for the user")
-                .setChoices(
-                    {
-                        name: "0: Nothing",
-                        value: "0: Nothing",
-                    },
-                    {
-                        name: "1: Warning",
-                        value: "1: Warning",
-                    },
-                    {
-                        name: "2: 24h Timeout",
-                        value: "2: 24h Timeout",
-                    },
-                    {
-                        name: "3: 1w Timeout",
-                        value: "3: 1w Timeout",
-                    },
-                    {
-                        name: "4: Ban/Blacklist",
-                        value: "4: Ban/Blacklist",
-                    })
-                .setRequired(true))
+                .setRequired(true)
+                .setAutocomplete(true))
             .addBooleanOption(option => option
                 .setName("notify")
                 .setDescription("Send a DM to the user")
                 .setRequired(true))
+
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): ApplicationCommandOptionChoiceData[] {
+        switch (option.name) {
+        case "penalty":
+            return [
+                {
+                    name: "0: Nothing",
+                    value: "0: Nothing",
+                },
+                {
+                    name: "1: Warning",
+                    value: "1: Warning",
+                },
+                {
+                    name: "2: 24h Timeout",
+                    value: "2: 24h Timeout",
+                },
+                {
+                    name: "3: 1w Timeout",
+                    value: "3: 1w Timeout",
+                },
+                {
+                    name: "4: Ban/Blacklist",
+                    value: "4: Ban/Blacklist",
+                },
+            ]
+        default:
+            return super.getAutocomplete(option)
+        }
     }
 
     async execute(interaction: ChatInputCommandInteraction) {

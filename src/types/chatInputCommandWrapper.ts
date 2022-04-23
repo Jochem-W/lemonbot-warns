@@ -1,5 +1,5 @@
 import CommandWrapper from "../interfaces/commandWrapper"
-import {ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js"
+import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, SlashCommandBuilder} from "discord.js"
 import CommandPermissionBuilder from "./commandPermissionBuilder"
 
 export default class ChatInputCommandWrapper implements CommandWrapper {
@@ -12,6 +12,10 @@ export default class ChatInputCommandWrapper implements CommandWrapper {
             .setDescription(description)
             .setDefaultPermission(false)
         this.name = name
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): ApplicationCommandOptionChoiceData[] {
+        return []
     }
 
     execute(interaction: ChatInputCommandInteraction): Promise<void> {
