@@ -17,8 +17,6 @@ export default class SyncCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply()
-
         // TODO: limit the amount of entries
         const update = []
         for await (const entry of Database.getEntries()) {

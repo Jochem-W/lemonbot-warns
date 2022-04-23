@@ -20,8 +20,6 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
             throw new Error("This command can only be used in a guild.")
         }
 
-        await interaction.deferReply({ephemeral: true})
-
         // TODO: help
         const guild = await interaction.client.guilds.fetch(interaction.guildId)
         const channel = await guild.channels.fetch(interaction.channelId)

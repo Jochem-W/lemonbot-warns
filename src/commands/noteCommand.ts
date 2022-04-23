@@ -28,8 +28,6 @@ export default class NoteCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply()
-
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
             interaction.guild,
             interaction.options.getUser("user", true))

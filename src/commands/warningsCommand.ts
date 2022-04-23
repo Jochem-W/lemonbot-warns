@@ -17,8 +17,6 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply()
-
         const user = interaction.options.getUser("user", true)
         const embed = Embed.make(`Warnings for ${user.tag}`, user.displayAvatarURL({size: 4096}),
             "This user has no known warnings")

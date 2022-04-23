@@ -76,8 +76,6 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             throw new Error("This command can only be used in a guild")
         }
 
-        await interaction.deferReply()
-
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
             interaction.guild,
             interaction.options.getUser("user", true))

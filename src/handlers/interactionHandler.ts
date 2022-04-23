@@ -43,11 +43,13 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     private async handleCommand(interaction: CommandInteraction) {
+        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+
         const errorEmbed = Embed.make("Error", Config.failIcon).setColor("#ff0000")
 
         const command = this.commands.get(interaction.commandId)
         if (!command) {
-            await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            await interaction.editReply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return
         }
 
@@ -55,17 +57,13 @@ export default class InteractionHandler extends HandlerWrapper {
             await command.execute(interaction)
         } catch (error) {
             console.error(error)
-            errorEmbed.setTitle("Error").setDescription(`${error}`)
-            if (interaction.replied || interaction.deferred) {
-                await interaction.editReply({embeds: [errorEmbed]})
-                return
-            }
-
-            await interaction.reply({embeds: [errorEmbed]})
+            await interaction.editReply({embeds: [errorEmbed.setTitle("Error").setDescription(`${error}`)]})
         }
     }
 
     private async handleMessageComponent(interaction: MessageComponentInteraction) {
+        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+
         throw new Error("Method not implemented.")
     }
 
@@ -80,6 +78,8 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     private async handleModalSubmit(interaction: ModalSubmitInteraction) {
+        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId ?? "")})
+
         throw new Error("Method not implemented.")
     }
 }

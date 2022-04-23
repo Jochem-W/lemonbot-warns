@@ -31,8 +31,6 @@ export default class StatusCommand extends ChatInputCommandWrapper {
                 })}\``,
             }])
 
-        await interaction.reply({
-            embeds: [embed],
-        })
+        await interaction.editReply({embeds: [embed]})
     }
 }

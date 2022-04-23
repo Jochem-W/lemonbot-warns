@@ -18,8 +18,6 @@ export default class NotesCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply()
-
         const user = interaction.options.getUser("user", true)
         const result = await Database.getEntry(user)
 
