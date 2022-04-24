@@ -1,8 +1,10 @@
 import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
 import {
     ApplicationCommandOptionChoiceData,
+    bold,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    italic,
     RESTJSONErrorCodes,
 } from "discord.js"
 import Embed from "../utilities/embed"
@@ -23,12 +25,12 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
-                .setDescription("Concise warning reason, preferably only a couple of words")
+                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
                 .setRequired(true)
                 .setAutocomplete(true))
             .addStringOption(option => option
                 .setName("description")
-                .setDescription("Extended warning description")
+                .setDescription("Extended warning description that is sent to the user")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
@@ -90,16 +92,17 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             return
         }
 
-        const guild = await interaction.client.guilds.fetch(interaction.guildId)
+        const guild = await interaction.client.guilds.fetch({
+            guild: interaction.guildId,
+            force: true,
+        })
 
         // Try to notify the user
         try {
             await user.send({
                 embeds: [
-                    Embed.make(`You have been warned in ${guild.name}`,
-                        Config.warnIcon,
-                        `Reason: ${reason}`)
-                        .setDescription(description)
+                    Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
+                        .setDescription(`${bold("Reason")}: ${italic(description)}`)
                         .setColor("#ff0000"),
                 ],
             })
