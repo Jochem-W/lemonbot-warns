@@ -1,8 +1,8 @@
 import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
-import {ChatInputCommandInteraction, hyperlink} from "discord.js"
+import {ChatInputCommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
-import {DateTime} from "luxon"
+import NotionHelper from "../utilities/notionHelper"
 
 /**
  * @description Slash command which lists notes on a user.
@@ -31,69 +31,29 @@ export default class NotesCommand extends ChatInputCommandWrapper {
         embed.setTitle("View notes")
         embed.setURL(result.url)
 
-        let hasNotes = false
-
-        let unsupportedBlocks = 0
-        let possiblyTruncated = false
+        const notes = []
         for await (const note of Database.getNotes(user)) {
-            hasNotes = true
-            switch (note.type) {
-            case "heading_1":
-                embed.addFields([{
-                    name: note.heading_1.rich_text.map(t => t.plain_text).join(""),
-                    value: "...",
-                }])
-                break
-            case "paragraph":
-                Embed.append(embed,
-                    note.paragraph.rich_text.map(t => t.href ? hyperlink(t.plain_text, t.href) : t.plain_text).join(""))
-                break
-            case "image":
-                let alt = note.image.caption.map(t => t.plain_text).join("") || "View image"
-
-                let url: string | undefined
-                switch (note.image.type) {
-                case "file":
-                    alt += ` (link expires <t:${DateTime.fromISO(note.image.file.expiry_time).toUnixInteger()}:R>)`
-                    url = note.image.file.url
-                    break
-                case "external":
-                    url = note.image.external.url
-                    break
-                }
-
-                if (!embed.data.image) {
-                    embed.setImage(url)
-                }
-
-                Embed.append(embed, `[${alt}](${url})`)
-                break
-            default:
-                unsupportedBlocks++
-                break
-            }
-
-            if (embed.data.fields?.length === 23) {
-                possiblyTruncated = true
-                break
-            }
+            notes.push(note)
         }
 
-        if (possiblyTruncated) {
-            embed.addFields([{
-                name: "...",
-                value: "View the Notion page for more notes.",
-            }])
+        const parseResult = NotionHelper.parseBlockObjects(notes)
+        if (parseResult.unsupportedBlocks) {
+            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
+            Embed.append(embed,
+                `• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`,
+                "\n")
         }
 
-        if (unsupportedBlocks) {
-            embed.addFields([{
-                name: "Warning",
-                value: `${unsupportedBlocks} unsupported block${unsupportedBlocks === 1 ?
-                    "" :
-                    "s"} can only be viewed in Notion.`,
-            }])
+        if (parseResult.fields.length > 25) {
+            Embed.append(embed, `• Displaying the first 25 of ${parseResult.fields.length} notes`, "\n")
         }
+
+        if (parseResult.firstImage) {
+            Embed.append(embed, `• The first image in the notes has been added to the embed`, "\n")
+            embed.setImage(parseResult.firstImage)
+        }
+
+        embed.addFields(parseResult.fields.slice(0, 25))
 
         if (!embed.data.fields?.length && !embed.data.description) {
             embed.setTitle("No notes found")

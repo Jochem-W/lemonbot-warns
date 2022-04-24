@@ -3,6 +3,7 @@ import {Notion} from "../clients"
 import {Variables} from "../variables"
 import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@notionhq/client/build/src/api-endpoints"
 import {DateTime} from "luxon"
+import {BlockObjectResponse} from "../types/notion"
 
 export type DatabaseEntry = {
     id: string
@@ -239,7 +240,7 @@ export default class Database {
         return entry.url
     }
 
-    static async* getNotes(user: UserResolvable) {
+    static async* getNotes(user: UserResolvable): AsyncGenerator<BlockObjectResponse> {
         const entry = await this.getEntry(user)
         if (!entry) {
             return null
