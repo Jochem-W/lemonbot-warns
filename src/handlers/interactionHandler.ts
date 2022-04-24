@@ -79,7 +79,7 @@ export default class InteractionHandler extends HandlerWrapper {
         }
 
         const option = interaction.options.getFocused(true)
-        await interaction.respond(command.getAutocomplete(option))
+        await interaction.respond(await command.getAutocomplete(option))
     }
 
     private async handleModalSubmit(interaction: ModalSubmitInteraction) {

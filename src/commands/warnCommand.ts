@@ -24,7 +24,8 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             .addStringOption(option => option
                 .setName("reason")
                 .setDescription("Concise warning reason, preferably only a couple of words")
-                .setRequired(true))
+                .setRequired(true)
+                .setAutocomplete(true))
             .addStringOption(option => option
                 .setName("description")
                 .setDescription("Extended warning description")
@@ -40,33 +41,20 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 .setRequired(true))
     }
 
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): ApplicationCommandOptionChoiceData[] {
+    async getAutocomplete(option: ApplicationCommandOptionChoiceData) {
         switch (option.name) {
         case "penalty":
-            return [
-                {
-                    name: "0: Nothing",
-                    value: "0: Nothing",
-                },
-                {
-                    name: "1: Warning",
-                    value: "1: Warning",
-                },
-                {
-                    name: "2: 24h Timeout",
-                    value: "2: 24h Timeout",
-                },
-                {
-                    name: "3: 1w Timeout",
-                    value: "3: 1w Timeout",
-                },
-                {
-                    name: "4: Ban/Blacklist",
-                    value: "4: Ban/Blacklist",
-                },
-            ]
+            return (await Database.getPenaltyLevels()).map(level => ({
+                name: level,
+                value: level,
+            }))
+        case "reason":
+            return (await Database.getReasons()).map(level => ({
+                name: level,
+                value: level,
+            }))
         default:
-            return super.getAutocomplete(option)
+            return await super.getAutocomplete(option)
         }
     }
 

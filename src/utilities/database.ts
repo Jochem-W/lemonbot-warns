@@ -22,6 +22,26 @@ export type NoteContent = {
 }
 
 export default class Database {
+    static async getPenaltyLevels() {
+        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+        const penaltyLevel = database.properties["Penalty Level"]
+        if (!(penaltyLevel?.type === "select")) {
+            throw new Error("Penalty level is not a select")
+        }
+
+        return penaltyLevel.select.options.map(o => o.name)
+    }
+
+    static async getReasons() {
+        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+        const reasons = database.properties["Reasons"]
+        if (!(reasons?.type === "multi_select")) {
+            throw new Error("Penalty level is not a select")
+        }
+
+        return reasons.multi_select.options.map(o => o.name)
+    }
+
     static async* getEntries() {
         let response = undefined
         while (!response || response.has_more) {

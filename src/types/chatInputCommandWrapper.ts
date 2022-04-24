@@ -22,12 +22,11 @@ export default class ChatInputCommandWrapper implements CommandWrapper {
         this.memberPermissions = memberPermissions ?? Config.requiredPermissions ?? undefined
     }
 
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): ApplicationCommandOptionChoiceData[] {
+    async getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
         return []
     }
 
-    execute(interaction: ChatInputCommandInteraction): Promise<void> {
-        return Promise.resolve(undefined)
+    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     }
 
     permissionsToJSON() {
