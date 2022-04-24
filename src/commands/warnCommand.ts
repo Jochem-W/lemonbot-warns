@@ -11,6 +11,8 @@ import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
 import {Config} from "../config"
+import MIMEType from "whatwg-mimetype"
+import {DateTime} from "luxon"
 
 /**
  * @description Slash command which warns a user.
@@ -41,6 +43,9 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 .setName("notify")
                 .setDescription("Send a DM to the user")
                 .setRequired(true))
+            .addAttachmentOption(option => option
+                .setName("image")
+                .setDescription("Optional image attachment"))
     }
 
     async getAutocomplete(option: ApplicationCommandOptionChoiceData) {
@@ -65,27 +70,41 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             throw new Error("This command can only be used in a guild")
         }
 
+        const image = interaction.options.getAttachment("image")
+        if (image && (!image.contentType || new MIMEType(image.contentType).type !== "image")) {
+            throw new Error("Only image attachments are supported")
+        }
+
         const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
             interaction.guild,
             interaction.options.getUser("user", true))
-
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
+        const warnTime = DateTime.fromMillis(interaction.createdTimestamp).toFormat("yyyy-MM-dd, HH:mm ZZZZ")
+
         const entry = await Database.updateEntry(user, InteractionHelper.getName(user), penalty, [reason])
+        await Database.addNote(user, {
+            title: `Warned by ${interaction.user.tag} for ${reason} (${warnTime})`,
+            body: description,
+            image: image?.url,
+        })
 
         const tag = InteractionHelper.getTag(user)
 
         const embed = Embed.make(`Warned ${tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
-            .addFields([{
-                name: "Notion page",
-                value: entry.url,
-            }, {
-                name: "New penalty level",
-                value: penalty,
-            }])
+            .addFields([
+                {
+                    name: "Notion page",
+                    value: entry.url,
+                },
+                {
+                    name: "New penalty level",
+                    value: penalty,
+                },
+            ])
 
         if (!interaction.options.getBoolean("notify", true)) {
             await interaction.editReply({embeds: [embed]})
@@ -99,13 +118,14 @@ export default class WarnCommand extends ChatInputCommandWrapper {
 
         // Try to notify the user
         try {
-            await user.send({
-                embeds: [
-                    Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
-                        .setDescription(`${bold("Reason")}: ${italic(description)}`)
-                        .setColor("#ff0000"),
-                ],
-            })
+            const warnEmbed = Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
+                .setDescription(`${bold("Reason")}: ${italic(description)}`)
+                .setColor("#ff0000")
+            if (image) {
+                warnEmbed.setImage(image.url)
+            }
+
+            await user.send({embeds: [warnEmbed]})
 
             embed.addFields([{
                 name: "Notification",
