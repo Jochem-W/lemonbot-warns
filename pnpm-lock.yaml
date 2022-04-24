@@ -7,6 +7,7 @@ specifiers:
   '@types/luxon': ^2.3.1
   '@types/node': ^17.0.25
   '@types/node-fetch': ^2.6.1
+  '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
   discord-api-types: ^0.31.2
   discord.js: ^14.0.0-dev.1650672498-3617093
@@ -16,6 +17,7 @@ specifiers:
   node-fetch: ^2.6.7
   typescript: ^4.6.3
   utf-8-validate: ^5.0.9
+  whatwg-mimetype: ^3.0.0
   zlib-sync: ^0.1.7
 
 dependencies:
@@ -24,11 +26,13 @@ dependencies:
   '@types/luxon': 2.3.1
   '@types/node': 17.0.25
   '@types/node-fetch': 2.6.1
+  '@types/whatwg-mimetype': 2.1.1
   discord-api-types: 0.31.2
   discord.js: 14.0.0-dev.1650672498-3617093_d6955b83f926115bf12ffeabab6deaae
   firebase-admin: 10.1.0
   luxon: 2.3.2
   node-fetch: 2.6.7
+  whatwg-mimetype: 3.0.0
 
 optionalDependencies:
   bufferutil: 4.0.6
@@ -414,6 +418,10 @@ packages:
     dependencies:
       '@types/mime': 1.3.2
       '@types/node': 17.0.25
+    dev: false
+
+  /@types/whatwg-mimetype/2.1.1:
+    resolution: { integrity: sha512-ojnf89qt5AWnqsjyPqMLN8uVaxm5x23vxNQ1me6EPBOdJe1YYuIZUzg809MZUG8UU6HKhkr6ah4fi2WUvD0DFw== }
     dev: false
 
   /@types/ws/8.5.3:
@@ -1397,6 +1405,11 @@ packages:
   /websocket-extensions/0.1.4:
     resolution: { integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg== }
     engines: { node: '>=0.8.0' }
+    dev: false
+
+  /whatwg-mimetype/3.0.0:
+    resolution: { integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q== }
+    engines: { node: '>=12' }
     dev: false
 
   /whatwg-url/5.0.0:
