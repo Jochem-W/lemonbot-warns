@@ -38,7 +38,6 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 .setName("notify")
                 .setDescription("Send a DM to the user")
                 .setRequired(true))
-
     }
 
     getAutocomplete(option: ApplicationCommandOptionChoiceData): ApplicationCommandOptionChoiceData[] {

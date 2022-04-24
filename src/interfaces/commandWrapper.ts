@@ -1,5 +1,5 @@
 import CommandPermissionBuilder from "../types/commandPermissionBuilder"
-import {CommandInteraction, ContextMenuCommandBuilder, SlashCommandBuilder} from "discord.js"
+import {CommandInteraction, ContextMenuCommandBuilder, PermissionResolvable, SlashCommandBuilder} from "discord.js"
 import {APIApplicationCommandPermission, RESTPostAPIApplicationCommandsJSONBody} from "discord-api-types/v10"
 
 /**
@@ -9,6 +9,7 @@ export default interface CommandWrapper {
     readonly name: string
     readonly builder: SlashCommandBuilder | ContextMenuCommandBuilder
     readonly permissionsBuilder: CommandPermissionBuilder
+    readonly memberPermissions?: PermissionResolvable
 
     /**
      * Returns the JSON representation of the command.

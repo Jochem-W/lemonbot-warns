@@ -53,6 +53,11 @@ export default class InteractionHandler extends HandlerWrapper {
             return
         }
 
+        if (command.memberPermissions && !interaction.memberPermissions?.has(command.memberPermissions, true)) {
+            await interaction.editReply({embeds: [errorEmbed.setTitle("You don't have the required permissions")]})
+            return
+        }
+
         try {
             await command.execute(interaction)
         } catch (error) {
