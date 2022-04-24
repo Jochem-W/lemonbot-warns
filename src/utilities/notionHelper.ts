@@ -31,7 +31,10 @@ export default class NotionHelper {
 
         let currentListNumber = 1
         for (const block of blocks) {
-            currentListNumber = block.type === "numbered_list_item" ? currentListNumber + 1 : 1
+            if (block.type !== "numbered_list_item") {
+                currentListNumber = 1
+            }
+
             const lastField = fields[fields.length - 1]
             switch (block.type) {
             case "paragraph":
