@@ -16,7 +16,7 @@ export default class Embed {
 
     static append(embed: EmbedBuilder, content: string) {
         if (!embed.data.fields?.length) {
-            return embed.setDescription(`${embed.data.description}\n\n${content}`)
+            return embed.setDescription(`${embed.data.description ? `${embed.data.description}\n\n` : ""}${content}`)
         }
 
         const last = embed.data.fields[embed.data.fields.length - 1]
