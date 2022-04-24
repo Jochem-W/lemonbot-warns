@@ -45,7 +45,8 @@ export default class InteractionHandler extends HandlerWrapper {
     private async handleCommand(interaction: CommandInteraction) {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
-        const errorEmbed = Embed.make("Error", Config.failIcon).setColor("#ff0000")
+        const errorEmbed = Embed.make("Something went wrong while executing the command", Config.failIcon)
+            .setColor("#ff0000")
 
         const command = this.commands.get(interaction.commandId)
         if (!command) {
@@ -62,7 +63,7 @@ export default class InteractionHandler extends HandlerWrapper {
             await command.execute(interaction)
         } catch (error) {
             console.error(error)
-            await interaction.editReply({embeds: [errorEmbed.setTitle("Error").setDescription(`${error}`)]})
+            await interaction.editReply({embeds: [errorEmbed.setDescription(`${error}`)]})
         }
     }
 
