@@ -71,7 +71,7 @@ export default class InteractionHelper {
 
     static getName(user: UserResolvable) {
         if (user instanceof GuildMember) {
-            return `${user.user.tag}${user.nickname ? ` (${user.nickname})` : ""}`
+            return `${user.user.tag}${user.nickname ? ` [${user.nickname}]` : ""}`
         }
 
         if (user instanceof User) {
