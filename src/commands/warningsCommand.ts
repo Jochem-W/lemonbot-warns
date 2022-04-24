@@ -36,7 +36,7 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
             value: result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A",
         }, {
             name: "Last edited",
-            value: `${result.lastEditedBy}\n<t:${result.lastEditedTime.toUnixInteger()}:R>`,
+            value: `<t:${result.lastEditedTime.toUnixInteger()}:R>`,
         }])
 
         await interaction.editReply({embeds: [embed]})

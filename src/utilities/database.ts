@@ -10,7 +10,6 @@ export type DatabaseEntry = {
     currentPenaltyLevel: string
     reasons: string[]
     lastEditedTime: DateTime
-    lastEditedBy: string
     url: string
     pageId: string
 }
@@ -76,7 +75,7 @@ export default class Database {
         return this.toDatabaseEntries(await Notion.pages.update({
             page_id: entry.pageId,
             properties: {
-                "Name": {
+                "Name [Server Nickname]": {
                     title: [
                         {
                             text: {
@@ -85,7 +84,7 @@ export default class Database {
                         },
                     ],
                 },
-                "Current penalty level": {
+                "Penalty Level": {
                     select: {
                         name: currentPenaltyLevel ?? entry.currentPenaltyLevel,
                     },
@@ -125,7 +124,7 @@ export default class Database {
                         },
                     ],
                 },
-                "Name": {
+                "Name [Server Nickname]": {
                     title: [
                         {
                             text: {
@@ -134,7 +133,7 @@ export default class Database {
                         },
                     ],
                 },
-                "Current penalty level": {
+                "Penalty Level": {
                     select: {
                         name: currentPenaltyLevel,
                     },
@@ -274,14 +273,14 @@ export default class Database {
                 throw new Error("Malformed ID")
             }
 
-            const name = result.properties["Name"]
+            const name = result.properties["Name [Server Nickname]"]
             if (name?.type !== "title") {
                 throw new Error("Malformed name")
             }
 
-            const currentPenalty = result.properties["Current penalty level"]
+            const currentPenalty = result.properties["Penalty Level"]
             if (currentPenalty?.type !== "select" || !currentPenalty.select) {
-                throw new Error("Malformed current penalty level")
+                throw new Error("Malformed penalty level")
             }
 
             const reasons = result.properties["Reasons"]
@@ -294,15 +293,15 @@ export default class Database {
                 throw new Error("Malformed last edited time for")
             }
 
-            const lastEditedBy = result.properties["Last edited by"]
-            if (lastEditedBy?.type !== "last_edited_by") {
-                throw new Error("Malformed last edited by")
-            }
-
-            const lastEditedByUser = lastEditedBy.last_edited_by
-            if (!("name" in lastEditedByUser) || !lastEditedByUser.name) {
-                throw new Error("The Notion integration doesn't have access to user information")
-            }
+            // const lastEditedBy = result.properties["Last edited by"]
+            // if (lastEditedBy?.type !== "last_edited_by") {
+            //     throw new Error("Malformed last edited by")
+            // }
+            //
+            // const lastEditedByUser = lastEditedBy.last_edited_by
+            // if (!("name" in lastEditedByUser) || !lastEditedByUser.name) {
+            //     throw new Error("The Notion integration doesn't have access to user information")
+            // }
 
             entries.push({
                 id: id.rich_text.map(t => t.plain_text).join(""),
@@ -310,7 +309,7 @@ export default class Database {
                 currentPenaltyLevel: currentPenalty.select.name,
                 reasons: reasons.multi_select.map(x => x.name),
                 lastEditedTime: DateTime.fromISO(lastEditedTime.last_edited_time),
-                lastEditedBy: lastEditedByUser.name,
+                // lastEditedBy: lastEditedByUser.name,
                 url: result.url,
                 pageId: result.id,
             })
