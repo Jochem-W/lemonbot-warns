@@ -5,7 +5,7 @@ specifiers:
   '@notionhq/client': ^1.0.4
   '@tsconfig/node17': ^1.0.0
   '@types/luxon': ^2.3.1
-  '@types/node': ^17.0.25
+  '@types/node': ^17.0.26
   '@types/node-fetch': ^2.6.1
   '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
@@ -24,7 +24,7 @@ dependencies:
   '@discordjs/rest': 0.5.0-dev.1650672506-3617093
   '@notionhq/client': 1.0.4
   '@types/luxon': 2.3.1
-  '@types/node': 17.0.25
+  '@types/node': 17.0.26
   '@types/node-fetch': 2.6.1
   '@types/whatwg-mimetype': 2.1.1
   discord-api-types: 0.31.2
@@ -50,7 +50,7 @@ packages:
     resolution: { integrity: sha512-E9fvizt8urp1EezSr1MFNgtYONBNkDFrORgB/7XpqUyMC1IN3L3ekSULyI0x2Ls9YdmTk+tggKsYNrFydZRhgg== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@sapphire/shapeshift': 2.0.0
+      '@sapphire/shapeshift': 2.1.0
       '@sindresorhus/is': 4.6.0
       discord-api-types: 0.31.2
       fast-deep-equal: 3.1.3
@@ -69,7 +69,7 @@ packages:
     dependencies:
       '@discordjs/collection': 0.7.0-dev.1650672508-3617093
       '@sapphire/async-queue': 1.3.1
-      '@sapphire/snowflake': 3.2.1
+      '@sapphire/snowflake': 3.2.2
       '@types/node-fetch': 2.6.1
       discord-api-types: 0.29.0
       form-data: 4.0.0
@@ -223,7 +223,7 @@ packages:
     engines: { node: ^8.13.0 || >=10.10.0 }
     dependencies:
       '@grpc/proto-loader': 0.6.9
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
     dev: false
     optional: true
 
@@ -313,13 +313,13 @@ packages:
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
     dev: false
 
-  /@sapphire/shapeshift/2.0.0:
-    resolution: { integrity: sha512-SKq4mKZXW2xB6O2Im4lBCDYy8pnuAMC3Zziw5Ub7WvZMt0fgwebDnqh+9MhoMYUSjkLyQcEO8ZS9d3ES7aRhBw== }
+  /@sapphire/shapeshift/2.1.0:
+    resolution: { integrity: sha512-Z1ISLP9pNI3jpKJxx82xtDpEsfomhJ3iPqcKdYLjAHmQP2X5yqQF6phA0Wd+MmdXp081wepOiT59XEN0xdTVvQ== }
     engines: { node: '>=v15.0.0', npm: '>=7.0.0' }
     dev: false
 
-  /@sapphire/snowflake/3.2.1:
-    resolution: { integrity: sha512-vmZq1I6J6iNRQVXP+N9HzOMOY4ORB3MunoFeWCw/aBnZTf1cDgDvP0RZFQS53B1TN95AIgFY9T+ItQ/fWAUYWQ== }
+  /@sapphire/snowflake/3.2.2:
+    resolution: { integrity: sha512-ula2O0kpSZtX9rKXNeQMrHwNd7E4jPDJYUXmEGTFdMRfyfMw+FPyh04oKMjAiDuOi64bYgVkOV3MjK+loImFhQ== }
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
     dev: false
 
@@ -342,13 +342,13 @@ packages:
     resolution: { integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g== }
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
     dev: false
 
   /@types/connect/3.4.35:
     resolution: { integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ== }
     dependencies:
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
     dev: false
 
   /@types/express-jwt/0.0.42:
@@ -361,7 +361,7 @@ packages:
   /@types/express-serve-static-core/4.17.28:
     resolution: { integrity: sha512-P1BJAEAW3E2DJUlkgq4tOL3RyMunoWXqbSCygWo5ZIWTjUgN1YnaXWW4VWl/oc8vs/XoYibEGBKP0uZyF4AHig== }
     dependencies:
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
     dev: false
@@ -397,12 +397,12 @@ packages:
   /@types/node-fetch/2.6.1:
     resolution: { integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA== }
     dependencies:
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
       form-data: 3.0.1
     dev: false
 
-  /@types/node/17.0.25:
-    resolution: { integrity: sha512-wANk6fBrUwdpY4isjWrKTufkrXdu1D2YHCot2fD/DfWxF5sMrVSA+KN7ydckvaTCh0HiqX9IVl0L5/ZoXg5M7w== }
+  /@types/node/17.0.26:
+    resolution: { integrity: sha512-z/FG/6DUO7pnze3AE3TBGIjGGKkvCcGcWINe1C7cADY8hKLJPDYpzsNE37uExQ4md5RFtTCvg+M8Mu1Enyeg2A== }
     dev: false
 
   /@types/qs/6.9.7:
@@ -417,7 +417,7 @@ packages:
     resolution: { integrity: sha512-nCkHGI4w7ZgAdNkrEu0bv+4xNV/XDqW+DydknebMOQwkpDGx8G+HTlj7R7ABI8i8nKxVw0wtKPi1D+lPOkh4YQ== }
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
     dev: false
 
   /@types/whatwg-mimetype/2.1.1:
@@ -427,7 +427,7 @@ packages:
   /@types/ws/8.5.3:
     resolution: { integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w== }
     dependencies:
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
     dev: false
 
   /abort-controller/3.0.0:
@@ -609,7 +609,7 @@ packages:
       '@discordjs/builders': 0.14.0-dev.1650672503-3617093
       '@discordjs/collection': 0.7.0-dev.1650672508-3617093
       '@discordjs/rest': 0.5.0-dev.1650672506-3617093
-      '@sapphire/snowflake': 3.2.1
+      '@sapphire/snowflake': 3.2.2
       '@types/ws': 8.5.3
       discord-api-types: 0.31.2
       fast-deep-equal: 3.1.3
@@ -708,7 +708,7 @@ packages:
     dependencies:
       '@firebase/database-compat': 0.1.8
       '@firebase/database-types': 0.9.7
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
       dicer: 0.3.1
       jsonwebtoken: 8.5.1
       jwks-rsa: 2.0.5
@@ -1185,7 +1185,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.1
-      '@types/node': 17.0.25
+      '@types/node': 17.0.26
       long: 4.0.0
     dev: false
     optional: true

@@ -16,7 +16,7 @@
     "@discordjs/rest": "^0.5.0-dev.1650672506-3617093",
     "@notionhq/client": "^1.0.4",
     "@types/luxon": "^2.3.1",
-    "@types/node": "^17.0.25",
+    "@types/node": "^17.0.26",
     "@types/node-fetch": "^2.6.1",
     "@types/whatwg-mimetype": "^2.1.1",
     "discord-api-types": "^0.31.2",
