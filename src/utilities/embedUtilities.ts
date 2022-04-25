@@ -3,7 +3,10 @@ import {DateTime} from "luxon"
 import {EmbedBuilder} from "discord.js"
 
 export default class EmbedUtilities {
-    static makeEmbed(authorName: string, authorIcon = Config.successIcon, title?: string, description?: string) {
+    static makeEmbed(authorName: string,
+                     authorIcon = Config.successIcon,
+                     title?: string,
+                     description?: string): EmbedBuilder {
         return new EmbedBuilder()
             .setAuthor({
                 name: authorName,
@@ -14,7 +17,7 @@ export default class EmbedUtilities {
             .setTimestamp(DateTime.now().toMillis())
     }
 
-    static append(embed: EmbedBuilder, content: string, separator = "\n\n") {
+    static append(embed: EmbedBuilder, content: string, separator = "\n\n"): EmbedBuilder {
         if (!embed.data.fields?.length) {
             return embed.setDescription(`${embed.data.description ?
                 `${embed.data.description}${separator}` :

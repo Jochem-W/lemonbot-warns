@@ -12,7 +12,7 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
     readonly builder = new ContextMenuCommandBuilder()
     readonly permissionsBuilder = new CommandPermissionBuilder()
     readonly name
-    readonly memberPermissions?: PermissionResolvable
+    readonly memberPermissions
 
     constructor(name: string, type: ContextMenuCommandType, memberPermissions?: PermissionResolvable) {
         this.builder.setName(name)
@@ -22,7 +22,7 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
         this.memberPermissions = memberPermissions ?? Config.requiredPermissions ?? undefined
     }
 
-    execute(interaction: ContextMenuCommandInteraction): Promise<void> {
+    execute(interaction: ContextMenuCommandInteraction) {
         return Promise.resolve(undefined)
     }
 

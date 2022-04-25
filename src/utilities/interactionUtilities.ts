@@ -73,7 +73,7 @@ export default class InteractionUtilities {
         return await client.users.fetch(user, {force: force})
     }
 
-    static getName(user: UserResolvable) {
+    static getName(user: UserResolvable): string {
         if (user instanceof GuildMember) {
             return `${user.user.tag}${user.nickname ? ` [${user.nickname}]` : ""}`
         }
@@ -85,7 +85,7 @@ export default class InteractionUtilities {
         throw new Error("Unsupported user type")
     }
 
-    static getTag(user: UserResolvable) {
+    static getTag(user: UserResolvable): string {
         if (user instanceof GuildMember) {
             return user.user.tag
         }

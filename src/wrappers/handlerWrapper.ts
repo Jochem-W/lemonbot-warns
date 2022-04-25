@@ -15,6 +15,6 @@ export default class HandlerWrapper {
      * Custom code handler that processes the event received.
      * @param args The passed arguments from the event.
      */
-    async handle(...args: any[]) {
+    async handle(...args: any[]): Promise<void> {
     }
 }

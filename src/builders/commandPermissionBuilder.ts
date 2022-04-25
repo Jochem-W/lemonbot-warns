@@ -38,7 +38,7 @@ export default class CommandPermissionBuilder {
         })] as ApplicationCommandPermissions[]
     }
 
-    static getDefault() {
+    static getDefault(): CommandPermissionBuilder {
         const builder = new CommandPermissionBuilder()
         for (const roleId of Config.allowedRoleIds) {
             builder.setRolePermission(roleId, true)
@@ -56,7 +56,7 @@ export default class CommandPermissionBuilder {
      * @param role The role to set permissions for.
      * @param permission Whether to allow or deny the command, or undefined to remove the override.
      */
-    setRolePermission(role: RoleResolvable, permission?: boolean) {
+    setRolePermission(role: RoleResolvable, permission?: boolean): CommandPermissionBuilder {
         const key = role instanceof Role ? role.id : role
         if (permission === undefined) {
             this.rolePermissions.delete(key)
@@ -72,7 +72,7 @@ export default class CommandPermissionBuilder {
      * @param user The user to set permissions for.
      * @param permission Whether to allow or deny the command, or undefined to remove the override.
      */
-    setUserPermission(user: UserResolvable, permission?: boolean) {
+    setUserPermission(user: UserResolvable, permission?: boolean): CommandPermissionBuilder {
         let key
         if (user instanceof User || user instanceof GuildMember || user instanceof ThreadMember) {
             key = user.id

@@ -166,7 +166,7 @@ export default class NotionUtilities {
         }
     }
 
-    static generateHyperlink(file: FileBlockResponse, defaultCaption: string) {
+    static generateHyperlink(file: FileBlockResponse, defaultCaption: string): string {
         let caption = file.caption.map(this.richTextToString).join("")
         if (!caption) {
             caption = defaultCaption

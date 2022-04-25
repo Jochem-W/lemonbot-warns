@@ -12,7 +12,7 @@ export default class ChatInputCommandWrapper implements CommandWrapper {
     readonly builder = new SlashCommandBuilder()
     readonly permissionsBuilder = CommandPermissionBuilder.getDefault()
     readonly name
-    readonly memberPermissions?: PermissionResolvable
+    readonly memberPermissions
 
     constructor(name: string, description: string, memberPermissions?: PermissionResolvable) {
         this.builder.setName(name)
@@ -26,7 +26,7 @@ export default class ChatInputCommandWrapper implements CommandWrapper {
         return []
     }
 
-    async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    async execute(interaction: ChatInputCommandInteraction) {
     }
 
     permissionsToJSON() {

@@ -17,7 +17,7 @@ import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
  * Handler for interactions
  */
 export default class InteractionHandler extends HandlerWrapper {
-    private readonly commands
+    private readonly commands: Collection<Snowflake, CommandWrapper>
 
     constructor(commands: Collection<Snowflake, CommandWrapper>) {
         super("interactionCreate")
@@ -42,7 +42,7 @@ export default class InteractionHandler extends HandlerWrapper {
         }
     }
 
-    private async handleCommand(interaction: CommandInteraction) {
+    private async handleCommand(interaction: CommandInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
@@ -67,13 +67,13 @@ export default class InteractionHandler extends HandlerWrapper {
         }
     }
 
-    private async handleMessageComponent(interaction: MessageComponentInteraction) {
+    private async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
         throw new Error("Method not implemented.")
     }
 
-    private async handleAutocomplete(interaction: AutocompleteInteraction) {
+    private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
         const command = this.commands.get(interaction.commandId)
         if (!(command instanceof ChatInputCommandWrapper)) {
             return
@@ -83,7 +83,7 @@ export default class InteractionHandler extends HandlerWrapper {
         await interaction.respond(await command.getAutocomplete(option))
     }
 
-    private async handleModalSubmit(interaction: ModalSubmitInteraction) {
+    private async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId ?? "")})
 
         throw new Error("Method not implemented.")
