@@ -94,7 +94,8 @@ export default class NotionHelper {
                     break
                 }
 
-                lastField.values.push(`${icon} ${block.callout.rich_text.map(this.richTextToString).join("")}`)
+                lastField.values.push(codeBlock(`${icon} ${block.callout.rich_text.map(this.richTextToString)
+                    .join("")}`))
                 break
             }
             case "embed": {
@@ -154,7 +155,7 @@ export default class NotionHelper {
         return {
             unsupportedBlocks: unsupportedBlocks,
             fields: fields.filter(f => f.name || f.values.length).map(f => {
-                const value = f.values.join("\n\n")
+                const value = f.values.join("\n")
                 return {
                     name: f.name ? f.name : "\u200b",
                     value: value ? value : "\u200b",
