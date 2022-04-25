@@ -29,7 +29,9 @@ export default class NotesCommand extends ChatInputCommandWrapper {
         }
 
         embed.setTitle("View notes")
-        embed.setURL(result.url)
+            .setURL(result.url)
+            .setFooter({text: "Last edited"})
+            .setTimestamp(result.lastEditedTime.toMillis())
 
         const notes = []
         for await (const note of Database.getNotes(user)) {

@@ -27,17 +27,16 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
         }
 
         embed.setTitle("View notes")
-        embed.setURL(result.url)
-        embed.addFields([{
-            name: "Current penalty level",
-            value: result.currentPenaltyLevel,
-        }, {
-            name: "Reasons",
-            value: result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A",
-        }, {
-            name: "Last edited",
-            value: `<t:${result.lastEditedTime.toUnixInteger()}:R>`,
-        }])
+            .setURL(result.url)
+            .addFields([{
+                name: "Current penalty level",
+                value: result.currentPenaltyLevel,
+            }, {
+                name: "Reasons",
+                value: result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A",
+            }])
+            .setFooter({text: "Last edited"})
+            .setTimestamp(result.lastEditedTime.toMillis())
 
         await interaction.editReply({embeds: [embed]})
     }
