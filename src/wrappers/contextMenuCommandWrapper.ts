@@ -22,8 +22,7 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
         this.memberPermissions = memberPermissions ?? Config.requiredPermissions ?? undefined
     }
 
-    execute(interaction: ContextMenuCommandInteraction) {
-        return Promise.resolve(undefined)
+    async execute(interaction: ContextMenuCommandInteraction) {
     }
 
     permissionsToJSON() {
