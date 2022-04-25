@@ -12,13 +12,13 @@ import {
 } from "discord.js"
 import {DateTime} from "luxon"
 
-export type ParsedObjectsResult = {
+export type ParseBlockObjectsResult = {
     fields: APIEmbedField[]
     unsupportedBlocks: number,
 }
 
 export default class NotionHelper {
-    static parseBlockObjects(blocks: BlockObjectResponse[]): ParsedObjectsResult {
+    static parseBlockObjects(blocks: BlockObjectResponse[]): ParseBlockObjectsResult {
         const fields = [
             {
                 name: "",
@@ -61,8 +61,8 @@ export default class NotionHelper {
                     .join("")}`)
                 break
             case "numbered_list_item":
-                lastField.values.push(`${currentListNumber}. ${block.numbered_list_item.rich_text.map(this.richTextToString)
-                    .join("")}`)
+                lastField.values.push(`${currentListNumber}. ${block.numbered_list_item.rich_text
+                    .map(this.richTextToString).join("")}`)
                 currentListNumber++
                 break
             case "quote":
