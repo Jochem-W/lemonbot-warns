@@ -4,6 +4,7 @@ import {
     bold,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    EmbedBuilder,
     italic,
     RESTJSONErrorCodes,
 } from "discord.js"
@@ -145,9 +146,10 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             force: true,
         })
 
+        let warnEmbed: EmbedBuilder | null
         // Try to notify the user
         try {
-            const warnEmbed = Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
+            warnEmbed = Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
                 .setDescription(`${bold("Reason")}: ${italic(description)}`)
                 .setColor("#ff0000")
             if (image) {
@@ -158,9 +160,10 @@ export default class WarnCommand extends ChatInputCommandWrapper {
 
             embed.addFields([{
                 name: "Notification",
-                value: "Successfully notified the user",
+                value: "Successfully notified the user. The message sent to the user is shown below.",
             }])
         } catch (e) {
+            warnEmbed = null
             if ((e as DiscordAPIError).code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                 embed.addFields([{
                     name: "Notification",
@@ -174,6 +177,6 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             }
         }
 
-        await interaction.editReply({embeds: [embed]})
+        await interaction.editReply({embeds: warnEmbed ? [embed, warnEmbed] : [embed]})
     }
 }
