@@ -36,51 +36,51 @@ export default class NotionHelper {
             const lastField = fields[fields.length - 1]
             switch (block.type) {
             case "paragraph":
-                lastField.values.push(block.paragraph.rich_text.map(NotionHelper.richTextToString).join(""))
+                lastField.values.push(block.paragraph.rich_text.map(this.richTextToString).join(""))
                 break
             case "heading_1":
                 fields.push({
-                    name: block.heading_1.rich_text.map(NotionHelper.richTextToString).join(""),
+                    name: block.heading_1.rich_text.map(this.richTextToString).join(""),
                     values: [],
                 })
                 break
             case "heading_2":
                 fields.push({
-                    name: block.heading_2.rich_text.map(NotionHelper.richTextToString).join(""),
+                    name: block.heading_2.rich_text.map(this.richTextToString).join(""),
                     values: [],
                 })
                 break
             case "heading_3":
                 fields.push({
-                    name: block.heading_3.rich_text.map(NotionHelper.richTextToString).join(""),
+                    name: block.heading_3.rich_text.map(this.richTextToString).join(""),
                     values: [],
                 })
                 break
             case "bulleted_list_item":
-                lastField.values.push(`• ${block.bulleted_list_item.rich_text.map(NotionHelper.richTextToString)
+                lastField.values.push(`• ${block.bulleted_list_item.rich_text.map(this.richTextToString)
                     .join("")}`)
                 break
             case "numbered_list_item":
-                lastField.values.push(`${currentListNumber}. ${block.numbered_list_item.rich_text.map(NotionHelper.richTextToString)
+                lastField.values.push(`${currentListNumber}. ${block.numbered_list_item.rich_text.map(this.richTextToString)
                     .join("")}`)
                 currentListNumber++
                 break
             case "quote":
-                lastField.values.push(`> ${block.quote.rich_text.map(NotionHelper.richTextToString).join("")}`)
+                lastField.values.push(`> ${block.quote.rich_text.map(this.richTextToString).join("")}`)
                 break
             case "to_do":
                 lastField.values.push(`${block.to_do.checked ?
                     "✅" :
-                    "🟩"} ${block.to_do.rich_text.map(NotionHelper.richTextToString).join("")}`)
+                    "🟩"} ${block.to_do.rich_text.map(this.richTextToString).join("")}`)
                 break
             case "toggle":
-                lastField.values.push(block.toggle.rich_text.map(NotionHelper.richTextToString).join(""))
+                lastField.values.push(block.toggle.rich_text.map(this.richTextToString).join(""))
                 break
             case "equation":
                 lastField.values.push(inlineCode(block.equation.expression))
                 break
             case "code":
-                lastField.values.push(codeBlock(block.code.rich_text.map(NotionHelper.richTextToString).join("")),
+                lastField.values.push(codeBlock(block.code.rich_text.map(this.richTextToString).join("")),
                     block.code.language)
                 break
             case "callout": {
@@ -94,11 +94,11 @@ export default class NotionHelper {
                     break
                 }
 
-                lastField.values.push(`${icon} ${block.callout.rich_text.map(NotionHelper.richTextToString).join("")}`)
+                lastField.values.push(`${icon} ${block.callout.rich_text.map(this.richTextToString).join("")}`)
                 break
             }
             case "embed": {
-                let caption = block.embed.caption.map(NotionHelper.richTextToString).join("")
+                let caption = block.embed.caption.map(this.richTextToString).join("")
                 if (!caption) {
                     caption = "View embed"
                 }
@@ -107,7 +107,7 @@ export default class NotionHelper {
                 break
             }
             case "bookmark": {
-                let caption = block.bookmark.caption.map(NotionHelper.richTextToString).join("")
+                let caption = block.bookmark.caption.map(this.richTextToString).join("")
                 if (!caption) {
                     caption = "View bookmark"
                 }
@@ -164,7 +164,7 @@ export default class NotionHelper {
     }
 
     static generateHyperlink(file: FileBlockResponse, defaultCaption: string) {
-        let caption = file.caption.map(NotionHelper.richTextToString).join("")
+        let caption = file.caption.map(this.richTextToString).join("")
         if (!caption) {
             caption = defaultCaption
         }
