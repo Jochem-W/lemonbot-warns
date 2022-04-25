@@ -11,7 +11,8 @@ import {
     underscore,
 } from "discord.js"
 import {DateTime} from "luxon"
-import {WarnData} from "./responseUtilities"
+import {NoteData, WarnData} from "./responseUtilities"
+import InteractionUtilities from "./interactionUtilities"
 
 export type ParseBlockObjectsResult = {
     fields: APIEmbedField[]
@@ -282,6 +283,96 @@ export default class NotionUtilities {
                     },
                 },
             })
+        }
+
+        return objects
+    }
+
+    static async generateNote(data: NoteData): Promise<BlockObjectRequest[]> {
+        const objects: BlockObjectRequest[] = []
+        if (data.title) {
+            objects.push({
+                heading_1: {
+                    rich_text: [{
+                        text: {
+                            content: data.title,
+                        },
+                    }],
+                },
+            })
+        }
+
+        objects.push({
+            paragraph: {
+                rich_text: [{
+                    text: {
+                        content: data.body,
+                    },
+                }],
+            },
+        })
+
+        if (data.attachment) {
+            const result = await InteractionUtilities.uploadAttachment(data.attachment)
+            switch (result.type) {
+            case "image":
+                objects.push({
+                    image: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            case "video":
+                objects.push({
+                    video: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            case "audio":
+                objects.push({
+                    audio: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            case "application":
+                if (result.subtype === "pdf") {
+                    objects.push({
+                        pdf: {
+                            external: {
+                                url: result.url,
+                            },
+                        },
+                    })
+                    break
+                } else {
+                    objects.push({
+                        file: {
+                            external: {
+                                url: result.url,
+                            },
+                        },
+                    })
+                }
+
+                break
+            default:
+                objects.push({
+                    file: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            }
         }
 
         return objects

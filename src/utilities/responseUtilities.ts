@@ -2,6 +2,7 @@ import {Config} from "../config"
 import EmbedUtilities from "./embedUtilities"
 import {
     ActionRowBuilder,
+    Attachment,
     bold,
     ButtonBuilder,
     ButtonStyle,
@@ -33,6 +34,16 @@ export type WarnData = {
     image?: string,
     notified?: boolean,
     url: string,
+}
+
+export type NoteData = {
+    author: User,
+    target: GuildMember | User,
+    title?: string,
+    body: string,
+    attachment?: Attachment,
+    url: string,
+    timestamp: DateTime,
 }
 
 export default class ResponseUtilities {
@@ -78,17 +89,40 @@ export default class ResponseUtilities {
             embed.setImage(options.image)
         }
 
-        return {
-            embeds: [embed],
-            components: [
-                new ActionRowBuilder<MessageActionRowComponentBuilder>()
-                    .addComponents([
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(options.url)
-                            .setLabel("📝 View notes"),
-                    ]),
-            ],
+        return this.addNotesButton({embeds: [embed]}, options.url)
+    }
+
+    static generateNoteResponse(options: NoteData): WebhookEditMessageOptions {
+        const embed = EmbedUtilities.makeEmbed(`Note added to ${InteractionUtilities.getTag(options.target)}`)
+        if (options.title) {
+            embed.setTitle(options.title)
         }
+
+        embed.setDescription(options.body)
+        if (options.attachment) {
+            embed.setImage(options.attachment.url)
+        }
+
+        embed.setFooter({text: `Added by ${options.author.tag}`})
+        embed.setTimestamp(options.timestamp.toMillis())
+
+        return this.addNotesButton({embeds: [embed]}, options.url)
+    }
+
+    static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type, url: string): Type {
+        if (!options.components) {
+            options.components = []
+        }
+
+        options.components.push(new ActionRowBuilder<MessageActionRowComponentBuilder>()
+            .addComponents([
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(url)
+                    .setLabel("📝 View notes"),
+            ]),
+        )
+
+        return options
     }
 }

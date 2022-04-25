@@ -1,9 +1,10 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction, GuildMember} from "discord.js"
-import EmbedUtilities from "../utilities/embedUtilities"
+import {ChatInputCommandInteraction, User} from "discord.js"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
-import {BlockObjectRequest} from "../types/notion"
+import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
+import NotionUtilities from "../utilities/notionUtilities"
+import {DateTime} from "luxon"
 
 /**
  * @description Slash command which add a note to a user.
@@ -29,108 +30,26 @@ export default class NoteCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const user = await InteractionUtilities.fetchMemberOrUser({
-            client: interaction.client,
-            guild: interaction.guild ?? interaction.guildId ?? undefined,
-            user: interaction.options.getUser("user", true),
-        })
-        const title = interaction.options.getString("title")
-        const body = interaction.options.getString("body", true)
-        const attachment = interaction.options.getAttachment("attachment")
-
-        const content: BlockObjectRequest[] = []
-        if (title) {
-            content.push({
-                heading_1: {
-                    rich_text: [{
-                        text: {
-                            content: title,
-                        },
-                    }],
-                },
-            })
+        const data: NoteData = {
+            author: await InteractionUtilities.fetchMemberOrUser({
+                client: interaction.client,
+                user: interaction.user,
+            }) as User,
+            target: await InteractionUtilities.fetchMemberOrUser({
+                client: interaction.client,
+                guild: interaction.guild ?? interaction.guildId ?? undefined,
+                user: interaction.options.getUser("user", true),
+            }),
+            title: interaction.options.getString("title") ?? undefined,
+            body: interaction.options.getString("body", true),
+            attachment: interaction.options.getAttachment("attachment") ?? undefined,
+            url: "",
+            timestamp: DateTime.fromMillis(interaction.createdTimestamp),
         }
 
-        content.push({
-            paragraph: {
-                rich_text: [{
-                    text: {
-                        content: body,
-                    },
-                }],
-            },
-        })
+        const content = await NotionUtilities.generateNote(data)
+        data.url = await DatabaseUtilities.addNote(data.target, content, InteractionUtilities.getName(data.target))
 
-        if (attachment) {
-            const result = await InteractionUtilities.uploadAttachment(attachment)
-
-            switch (result.type) {
-            case "image":
-                content.push({
-                    image: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "video":
-                content.push({
-                    video: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "audio":
-                content.push({
-                    audio: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "application":
-                if (result.subtype === "pdf") {
-                    content.push({
-                        pdf: {
-                            external: {
-                                url: result.url,
-                            },
-                        },
-                    })
-                    break
-                } else {
-                    content.push({
-                        file: {
-                            external: {
-                                url: result.url,
-                            },
-                        },
-                    })
-                }
-
-                break
-            default:
-                content.push({
-                    file: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            }
-        }
-
-        const url = await DatabaseUtilities.addNote(user, content, InteractionUtilities.getName(user))
-
-        const tag = (user instanceof GuildMember ? user.user : user).tag
-        const embed = EmbedUtilities.makeEmbed(`Added note to ${tag}`, undefined, "View notes")
-            .setURL(url)
-
-        await interaction.editReply({embeds: [embed]})
+        await interaction.editReply(ResponseUtilities.generateNoteResponse(data))
     }
 }
