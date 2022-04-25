@@ -13,7 +13,6 @@ import {createWriteStream} from "fs"
 import {unlink} from "fs/promises"
 import {spawnSync} from "child_process"
 import {DateTime} from "luxon"
-import fetch from "node-fetch"
 import {StorageBucket} from "../clients"
 import {pipeline} from "stream/promises"
 import MIMEType from "whatwg-mimetype"
@@ -28,19 +27,14 @@ export default class InteractionHelper {
     static async messageToPng(message: Message): Promise<string> {
         const magickExecutable = spawnSync("magick").error === undefined ? "magick" : "convert"
 
-        // TODO: update @types/node and switch to fetch
         const response = await fetch(message.author.displayAvatarURL({size: 4096}))
         if (!response.body) {
             throw new Error("No response body")
         }
 
         const avatarFile = message.author.id
-        const fileStream = createWriteStream(avatarFile)
-        await new Promise((resolve, reject) => {
-            response.body?.pipe(fileStream)
-            response.body?.on("error", reject)
-            fileStream.on("finish", resolve)
-        })
+        // @ts-ignore TODO: wait for @types/node update
+        await pipeline(response.body, createWriteStream(avatarFile))
 
         const date = DateTime.fromMillis(message.createdTimestamp).toRFC2822()
         const messageFile = `${message.id}.png`
@@ -108,6 +102,11 @@ export default class InteractionHelper {
         const file = StorageBucket.file(`${attachment.id}.${attachment.name?.split(".").pop() ?? "bin"}`)
 
         const response = await fetch(attachment.url)
+        if (!response.body) {
+            throw new Error("No response body")
+        }
+
+        // @ts-ignore TODO: wait for @types/node update
         await pipeline(response.body, file.createWriteStream())
 
         await file.makePublic()
