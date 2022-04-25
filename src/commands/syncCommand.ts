@@ -20,10 +20,11 @@ export default class SyncCommand extends ChatInputCommandWrapper {
         // TODO: limit the amount of entries
         const update = []
         for await (const entry of DatabaseUtilities.getEntries()) {
-            const memberOrUser = await InteractionUtilities.fetchMemberOrUser(interaction.client,
-                interaction.guild,
-                entry.id,
-                true)
+            const memberOrUser = await InteractionUtilities.fetchMemberOrUser({
+                client: interaction.client,
+                guild: interaction.guild ?? interaction.guildId ?? undefined,
+                user: entry.id,
+            })
             const name = InteractionUtilities.getName(memberOrUser)
             if (entry.name !== name) {
                 update.push({

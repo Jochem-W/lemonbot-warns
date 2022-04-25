@@ -1,4 +1,4 @@
-import {BlockObjectResponse, FileBlockResponse, RichTextItemResponse} from "../types/notion"
+import {BlockObjectRequest, BlockObjectResponse, FileBlockResponse, RichTextItemResponse} from "../types/notion"
 import {
     APIEmbedField,
     bold,
@@ -11,6 +11,7 @@ import {
     underscore,
 } from "discord.js"
 import {DateTime} from "luxon"
+import {WarnData} from "./responseUtilities"
 
 export type ParseBlockObjectsResult = {
     fields: APIEmbedField[]
@@ -238,5 +239,51 @@ export default class NotionUtilities {
         }
 
         return text
+    }
+
+    static generateWarnNote(data: WarnData): BlockObjectRequest[] {
+        const objects: BlockObjectRequest[] = [
+            {
+                heading_1: {
+                    rich_text: [
+                        {
+                            text: {
+                                content: `Warned by ${data.warnedBy.tag} for ${data.reason} `,
+                            },
+                        },
+                        {
+                            mention: {
+                                date: {
+                                    start: data.timestamp.toISO(),
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                paragraph: {
+                    rich_text: [
+                        {
+                            text: {
+                                content: data.description,
+                            },
+                        },
+                    ],
+                },
+            },
+        ]
+
+        if (data.image) {
+            objects.push({
+                image: {
+                    external: {
+                        url: data.image,
+                    },
+                },
+            })
+        }
+
+        return objects
     }
 }

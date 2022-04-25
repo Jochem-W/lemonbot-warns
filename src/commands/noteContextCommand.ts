@@ -28,7 +28,11 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
         }
 
         const message = await channel.messages.fetch(interaction.targetId)
-        const author = await InteractionUtilities.fetchMemberOrUser(interaction.client, guild, message.author, true)
+        const author = await InteractionUtilities.fetchMemberOrUser({
+            client: interaction.client,
+            guild: interaction.guild ?? interaction.guildId ?? undefined,
+            user: message.author,
+        })
 
         const fileName = await InteractionUtilities.messageToPng(message)
         const [file] = await StorageBucket.upload(fileName)

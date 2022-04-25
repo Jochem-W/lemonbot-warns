@@ -2,8 +2,8 @@ import {
     Attachment,
     Client,
     DiscordAPIError,
-    Guild,
     GuildMember,
+    GuildResolvable,
     Message,
     RESTJSONErrorCodes,
     User,
@@ -21,6 +21,13 @@ export type UploadAttachmentResult = {
     url: string,
     type: string,
     subtype: string,
+}
+
+export type FetchMemberOrUserOptions = {
+    guild?: GuildResolvable,
+    client: Client,
+    user: UserResolvable,
+    force?: boolean,
 }
 
 export default class InteractionUtilities {
@@ -56,45 +63,40 @@ export default class InteractionUtilities {
         return messageFile
     }
 
-    static async fetchMemberOrUser(client: Client,
-                                   guild: Guild | null,
-                                   user: UserResolvable,
-                                   force?: boolean): Promise<GuildMember | User> {
-        if (guild) {
-            try {
-                return await guild.members.fetch({user: user, force: force})
-            } catch (e) {
-                if ((e as DiscordAPIError).code !== RESTJSONErrorCodes.UnknownMember) {
-                    throw e
-                }
-            }
+    static async fetchMemberOrUser(options: FetchMemberOrUserOptions, force?: boolean): Promise<GuildMember | User> {
+        let guild = options.guild ? await options.client.guilds.fetch({guild: options.guild}) : undefined
+        if (!guild) {
+            return await options.client.users.fetch(options.user, {force: force})
         }
 
-        return await client.users.fetch(user, {force: force})
+        try {
+            return await guild.members.fetch({
+                user: options.user,
+                force: force,
+            })
+        } catch (e) {
+            if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownMember) {
+                throw e
+            }
+
+            return await options.client.users.fetch(options.user)
+        }
     }
 
-    static getName(user: UserResolvable): string {
+    static getName(user: GuildMember | User): string {
         if (user instanceof GuildMember) {
             return `${user.user.tag}${user.nickname ? ` [${user.nickname}]` : ""}`
         }
 
-        if (user instanceof User) {
-            return user.tag
-        }
-
-        throw new Error("Unsupported user type")
+        return user.tag
     }
 
-    static getTag(user: UserResolvable): string {
+    static getTag(user: GuildMember | User): string {
         if (user instanceof GuildMember) {
             return user.user.tag
         }
 
-        if (user instanceof User) {
-            return user.tag
-        }
-
-        throw new Error("Unsupported user type")
+        return user.tag
     }
 
     static async uploadAttachment(attachment: Attachment): Promise<UploadAttachmentResult> {

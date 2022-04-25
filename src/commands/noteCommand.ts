@@ -29,9 +29,11 @@ export default class NoteCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const user = await InteractionUtilities.fetchMemberOrUser(interaction.client,
-            interaction.guild,
-            interaction.options.getUser("user", true))
+        const user = await InteractionUtilities.fetchMemberOrUser({
+            client: interaction.client,
+            guild: interaction.guild ?? interaction.guildId ?? undefined,
+            user: interaction.options.getUser("user", true),
+        })
         const title = interaction.options.getString("title")
         const body = interaction.options.getString("body", true)
         const attachment = interaction.options.getAttachment("attachment")
