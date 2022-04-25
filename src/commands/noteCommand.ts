@@ -60,13 +60,67 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         })
 
         if (attachment) {
-            content.push({
-                file: {
-                    external: {
-                        url: attachment.url,
+            const result = await InteractionHelper.uploadAttachment(attachment)
+
+            switch (result.type) {
+            case "image":
+                content.push({
+                    image: {
+                        external: {
+                            url: result.url,
+                        },
                     },
-                },
-            })
+                })
+                break
+            case "video":
+                content.push({
+                    video: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            case "audio":
+                content.push({
+                    audio: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            case "application":
+                if (result.subtype === "pdf") {
+                    content.push({
+                        pdf: {
+                            external: {
+                                url: result.url,
+                            },
+                        },
+                    })
+                    break
+                } else {
+                    content.push({
+                        file: {
+                            external: {
+                                url: result.url,
+                            },
+                        },
+                    })
+                }
+
+                break
+            default:
+                content.push({
+                    file: {
+                        external: {
+                            url: result.url,
+                        },
+                    },
+                })
+                break
+            }
         }
 
         const url = await Database.addNote(user, content, InteractionHelper.getName(user))

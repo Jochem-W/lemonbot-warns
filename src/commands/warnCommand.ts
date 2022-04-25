@@ -110,10 +110,11 @@ export default class WarnCommand extends ChatInputCommandWrapper {
         }]
 
         if (image) {
+            const result = await InteractionHelper.uploadAttachment(image)
             content.push({
                 image: {
                     external: {
-                        url: image.url,
+                        url: result.url,
                     },
                 },
             })

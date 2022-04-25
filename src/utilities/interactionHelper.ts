@@ -1,4 +1,5 @@
 import {
+    Attachment,
     Client,
     DiscordAPIError,
     Guild,
@@ -13,6 +14,15 @@ import {unlink} from "fs/promises"
 import {spawnSync} from "child_process"
 import {DateTime} from "luxon"
 import fetch from "node-fetch"
+import {StorageBucket} from "../clients"
+import {pipeline} from "stream/promises"
+import MIMEType from "whatwg-mimetype"
+
+export type UploadAttachmentResult = {
+    url: string,
+    type: string,
+    subtype: string,
+}
 
 export default class InteractionHelper {
     static async messageToPng(message: Message): Promise<string> {
@@ -91,5 +101,21 @@ export default class InteractionHelper {
         }
 
         throw new Error("Unsupported user type")
+    }
+
+    static async uploadAttachment(attachment: Attachment): Promise<UploadAttachmentResult> {
+        const mimeType = new MIMEType(attachment.contentType ?? "application/octet-stream")
+        const file = StorageBucket.file(`${attachment.id}.${attachment.name?.split(".").pop() ?? "bin"}`)
+
+        const response = await fetch(attachment.url)
+        await pipeline(response.body, file.createWriteStream())
+
+        await file.makePublic()
+
+        return {
+            url: file.publicUrl(),
+            type: mimeType.type,
+            subtype: mimeType.subtype,
+        }
     }
 }
