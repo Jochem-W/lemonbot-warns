@@ -37,11 +37,28 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
         await file.makePublic()
         const fileUrl = file.publicUrl()
 
-        const notesUrl = await Database.addNote(author.id, {
-            body: `Message ID: ${message.id}`,
-            image: fileUrl,
-            url: message.url,
-        }, InteractionHelper.getName(author))
+        const notesUrl = await Database.addNote(author.id, [{
+            paragraph: {
+                rich_text: [{
+                    text: {
+                        content: `Message ID: `,
+                    },
+                }, {
+                    text: {
+                        content: message.id,
+                        link: {
+                            url: message.url,
+                        },
+                    },
+                }],
+            },
+        }, {
+            image: {
+                external: {
+                    url: fileUrl,
+                },
+            },
+        }], InteractionHelper.getName(author))
 
         await interaction.editReply({
             embeds: [

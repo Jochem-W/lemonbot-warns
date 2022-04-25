@@ -48,11 +48,6 @@ export default class NotesCommand extends ChatInputCommandWrapper {
             Embed.append(embed, `• Displaying the first 25 of ${parseResult.fields.length} notes`, "\n")
         }
 
-        if (parseResult.firstImage) {
-            Embed.append(embed, `• The first image in the notes has been added to the embed`, "\n")
-            embed.setImage(parseResult.firstImage)
-        }
-
         embed.addFields(parseResult.fields.slice(0, 25))
 
         if (!embed.data.fields?.length && !embed.data.description) {

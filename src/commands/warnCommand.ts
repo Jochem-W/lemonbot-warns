@@ -13,6 +13,7 @@ import InteractionHelper from "../utilities/interactionHelper"
 import {Config} from "../config"
 import MIMEType from "whatwg-mimetype"
 import {DateTime} from "luxon"
+import {BlockObjectRequest} from "../types/notion"
 
 /**
  * @description Slash command which warns a user.
@@ -82,14 +83,42 @@ export default class WarnCommand extends ChatInputCommandWrapper {
         const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        const warnTime = DateTime.fromMillis(interaction.createdTimestamp).toFormat("yyyy-MM-dd, HH:mm ZZZZ")
-
         const entry = await Database.updateEntry(user, InteractionHelper.getName(user), penalty, [reason])
-        await Database.addNote(user, {
-            title: `Warned by ${interaction.user.tag} for ${reason} (${warnTime})`,
-            body: description,
-            image: image?.url,
-        })
+        const content: BlockObjectRequest[] = [{
+            heading_1: {
+                rich_text: [{
+                    text: {
+                        content: `Warned by ${interaction.user.tag} for ${reason} `,
+                    },
+                }, {
+                    mention: {
+                        date: {
+                            start: DateTime.fromMillis(interaction.createdTimestamp).toISO(),
+                        },
+                    },
+                }],
+            },
+        }, {
+            paragraph: {
+                rich_text: [{
+                    text: {
+                        content: description,
+                    },
+                }],
+            },
+        }]
+
+        if (image) {
+            content.push({
+                image: {
+                    external: {
+                        url: image.url,
+                    },
+                },
+            })
+        }
+
+        await Database.addNote(user, content)
 
         const tag = InteractionHelper.getTag(user)
 

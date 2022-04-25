@@ -1,4 +1,4 @@
-import {BlockObjectResponse, RichTextItemResponse} from "../types/notion"
+import {BlockObjectResponse, FileBlockResponse, RichTextItemResponse} from "../types/notion"
 import {
     APIEmbedField,
     bold,
@@ -15,7 +15,6 @@ import {DateTime} from "luxon"
 export type ParsedObjectsResult = {
     fields: APIEmbedField[]
     unsupportedBlocks: number,
-    firstImage?: string
 }
 
 export default class NotionHelper {
@@ -27,7 +26,6 @@ export default class NotionHelper {
             },
         ]
         let unsupportedBlocks = 0
-        let firstImage
 
         let currentListNumber = 1
         for (const block of blocks) {
@@ -78,18 +76,6 @@ export default class NotionHelper {
             case "toggle":
                 lastField.values.push(block.toggle.rich_text.map(NotionHelper.richTextToString).join(""))
                 break
-            case "template":
-                unsupportedBlocks++
-                break
-            case "synced_block":
-                unsupportedBlocks++
-                break
-            case "child_page":
-                unsupportedBlocks++
-                break
-            case "child_database":
-                unsupportedBlocks++
-                break
             case "equation":
                 lastField.values.push(inlineCode(block.equation.expression))
                 break
@@ -111,30 +97,6 @@ export default class NotionHelper {
                 lastField.values.push(`${icon} ${block.callout.rich_text.map(NotionHelper.richTextToString).join("")}`)
                 break
             }
-            case "divider":
-                unsupportedBlocks++
-                break
-            case "breadcrumb":
-                unsupportedBlocks++
-                break
-            case "table_of_contents":
-                unsupportedBlocks++
-                break
-            case "column_list":
-                unsupportedBlocks++
-                break
-            case "column":
-                unsupportedBlocks++
-                break
-            case "link_to_page":
-                unsupportedBlocks++
-                break
-            case "table":
-                unsupportedBlocks++
-                break
-            case "table_row":
-                unsupportedBlocks++
-                break
             case "embed": {
                 let caption = block.embed.caption.map(NotionHelper.richTextToString).join("")
                 if (!caption) {
@@ -153,119 +115,37 @@ export default class NotionHelper {
                 lastField.values.push(hyperlink(caption, block.bookmark.url))
                 break
             }
-            case "image": {
-                let caption = block.image.caption.map(NotionHelper.richTextToString).join("")
-                if (!caption) {
-                    caption = "View image"
-                }
-
-                let url
-                switch (block.image.type) {
-                case "external":
-                    url = block.image.external.url
-                    break
-                case "file":
-                    url = block.image.file.url
-                    caption +=
-                        ` (link expires ${time(DateTime.fromISO(block.image.file.expiry_time).toUnixInteger(), "R")})`
-                    break
-                }
-
-                lastField.values.push(hyperlink(caption, url))
-                if (!firstImage) {
-                    firstImage = url
-                }
-
+            case "image":
+                lastField.values.push(this.generateHyperlink(block.image, "View image"))
                 break
-            }
-            case "video": {
-                let caption = block.video.caption.map(NotionHelper.richTextToString).join("")
-                if (!caption) {
-                    caption = "View image"
-                }
-
-                let url
-                switch (block.video.type) {
-                case "external":
-                    url = block.video.external.url
-                    break
-                case "file":
-                    url = block.video.file.url
-                    caption +=
-                        ` (link expires ${time(DateTime.fromISO(block.video.file.expiry_time).toUnixInteger(), "R")})`
-                    break
-                }
-
-                lastField.values.push(hyperlink(caption, url))
+            case "video":
+                lastField.values.push(this.generateHyperlink(block.video, "View video"))
                 break
-            }
-            case "pdf": {
-                let caption = block.pdf.caption.map(NotionHelper.richTextToString).join("")
-                if (!caption) {
-                    caption = "View PDF"
-                }
-
-                let url
-                switch (block.pdf.type) {
-                case "external":
-                    url = block.pdf.external.url
-                    break
-                case "file":
-                    url = block.pdf.file.url
-                    caption +=
-                        ` (link expires ${time(DateTime.fromISO(block.pdf.file.expiry_time).toUnixInteger(), "R")})`
-                    break
-                }
-
-                lastField.values.push(hyperlink(caption, url))
+            case "pdf":
+                lastField.values.push(this.generateHyperlink(block.pdf, "View PDF"))
                 break
-            }
-            case "file": {
-                let caption = block.file.caption.map(NotionHelper.richTextToString).join("")
-                if (!caption) {
-                    caption = "View file"
-                }
-
-                let url
-                switch (block.file.type) {
-                case "external":
-                    url = block.file.external.url
-                    break
-                case "file":
-                    url = block.file.file.url
-                    caption +=
-                        ` (link expires ${time(DateTime.fromISO(block.file.file.expiry_time).toUnixInteger(), "R")})`
-                    break
-                }
-
-                lastField.values.push(hyperlink(caption, url))
+            case "file":
+                lastField.values.push(this.generateHyperlink(block.file, "View file"))
                 break
-            }
-            case "audio": {
-                let caption = block.audio.caption.map(NotionHelper.richTextToString).join("") ?? "View audio"
-                if (!caption) {
-                    caption = "View audio"
-                }
-
-                let url
-                switch (block.audio.type) {
-                case "external":
-                    url = block.audio.external.url
-                    break
-                case "file":
-                    url = block.audio.file.url
-                    caption +=
-                        ` (link expires ${time(DateTime.fromISO(block.audio.file.expiry_time).toUnixInteger(), "R")})`
-                    break
-                }
-
-                lastField.values.push(hyperlink(caption, url))
+            case "audio":
+                lastField.values.push(this.generateHyperlink(block.audio, "View audio"))
                 break
-            }
             case "link_preview":
-                lastField.values.push(hyperlink("Link preview", block.link_preview.url))
+                lastField.values.push(hyperlink("View link", block.link_preview.url))
                 break
             case "unsupported":
+            case "template":
+            case "synced_block":
+            case "child_page":
+            case "child_database":
+            case "divider":
+            case "breadcrumb":
+            case "table_of_contents":
+            case "column_list":
+            case "column":
+            case "link_to_page":
+            case "table":
+            case "table_row":
                 unsupportedBlocks++
                 break
             }
@@ -280,8 +160,28 @@ export default class NotionHelper {
                     value: value ? value : "\u200b",
                 }
             }),
-            firstImage: firstImage,
         }
+    }
+
+    static generateHyperlink(file: FileBlockResponse, defaultCaption: string) {
+        let caption = file.caption.map(NotionHelper.richTextToString).join("")
+        if (!caption) {
+            caption = defaultCaption
+        }
+
+        let url
+        switch (file.type) {
+        case "external":
+            url = file.external.url
+            break
+        case "file":
+            url = file.file.url
+            caption +=
+                ` (link expires ${time(DateTime.fromISO(file.file.expiry_time).toUnixInteger(), "R")})`
+            break
+        }
+
+        return hyperlink(caption, url)
     }
 
     static richTextToString(richText: RichTextItemResponse): string {

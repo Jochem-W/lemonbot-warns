@@ -3,6 +3,7 @@ import {ChatInputCommandInteraction, GuildMember} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
+import {BlockObjectRequest} from "../types/notion"
 
 /**
  * @description Slash command which add a note to a user.
@@ -16,8 +17,8 @@ export default class NoteCommand extends ChatInputCommandWrapper {
                 .setDescription("Target user")
                 .setRequired(true))
             .addStringOption(option => option
-                .setName("content")
-                .setDescription("Main note content")
+                .setName("body")
+                .setDescription("Main note body")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("title")
@@ -32,30 +33,47 @@ export default class NoteCommand extends ChatInputCommandWrapper {
             interaction.guild,
             interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
-        const content = interaction.options.getString("content", true)
+        const body = interaction.options.getString("body", true)
         const attachment = interaction.options.getAttachment("attachment")
 
-        const url = await Database.addNote(user,
-            {title: title ?? undefined, body: content, image: attachment?.url},
-            InteractionHelper.getName(user))
+        const content: BlockObjectRequest[] = []
+        if (title) {
+            content.push({
+                heading_1: {
+                    rich_text: [{
+                        text: {
+                            content: title,
+                        },
+                    }],
+                },
+            })
+        }
+
+        content.push({
+            paragraph: {
+                rich_text: [{
+                    text: {
+                        content: body,
+                    },
+                }],
+            },
+        })
+
+        if (attachment) {
+            content.push({
+                file: {
+                    external: {
+                        url: attachment.url,
+                    },
+                },
+            })
+        }
+
+        const url = await Database.addNote(user, content, InteractionHelper.getName(user))
 
         const tag = (user instanceof GuildMember ? user.user : user).tag
         const embed = Embed.make(`Added note to ${tag}`, undefined, "View notes")
             .setURL(url)
-
-        if (title) {
-            embed.addFields([{
-                name: title,
-                value: content,
-            }])
-        } else {
-            embed.setDescription(content)
-        }
-
-        // TODO: check content type
-        if (attachment) {
-            embed.setImage(attachment.url)
-        }
 
         await interaction.editReply({embeds: [embed]})
     }
