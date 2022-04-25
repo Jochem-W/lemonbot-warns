@@ -1,4 +1,4 @@
-import HandlerWrapper from "./types/handlerWrapper"
+import HandlerWrapper from "./wrappers/handlerWrapper"
 import ReadyHandler from "./handlers/readyHandler"
 import NicknameChangeHandler from "./handlers/nicknameChangeHandler"
 import TagChangeHandler from "./handlers/tagChangeHandler"

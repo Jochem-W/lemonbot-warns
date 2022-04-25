@@ -7,11 +7,11 @@ import {
     ModalSubmitInteraction,
     Snowflake,
 } from "discord.js"
-import HandlerWrapper from "../types/handlerWrapper"
+import HandlerWrapper from "../wrappers/handlerWrapper"
 import Embed from "../utilities/embed"
 import {Config} from "../config"
 import CommandWrapper from "../interfaces/commandWrapper"
-import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 
 /**
  * Handler for interactions

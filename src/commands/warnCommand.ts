@@ -1,4 +1,4 @@
-import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {
     ApplicationCommandOptionChoiceData,
     bold,

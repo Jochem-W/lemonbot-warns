@@ -1,4 +1,4 @@
-import ChatInputCommandWrapper from "../types/chatInputCommandWrapper"
+import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
 import Embed from "../utilities/embed"
 import Database from "../utilities/database"

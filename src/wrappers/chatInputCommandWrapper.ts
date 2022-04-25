@@ -5,7 +5,7 @@ import {
     PermissionResolvable,
     SlashCommandBuilder,
 } from "discord.js"
-import CommandPermissionBuilder from "./commandPermissionBuilder"
+import CommandPermissionBuilder from "../builders/commandPermissionBuilder"
 import {Config} from "../config"
 
 export default class ChatInputCommandWrapper implements CommandWrapper {

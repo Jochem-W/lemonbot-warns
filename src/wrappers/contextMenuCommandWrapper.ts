@@ -5,7 +5,7 @@ import {
     ContextMenuCommandType,
     PermissionResolvable,
 } from "discord.js"
-import CommandPermissionBuilder from "./commandPermissionBuilder"
+import CommandPermissionBuilder from "../builders/commandPermissionBuilder"
 import {Config} from "../config"
 
 export default class ContextMenuCommandWrapper implements CommandWrapper {

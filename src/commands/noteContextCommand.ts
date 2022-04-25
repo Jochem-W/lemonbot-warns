@@ -1,5 +1,5 @@
 import {MessageContextMenuCommandInteraction} from "discord.js"
-import ContextMenuCommandWrapper from "../types/contextMenuCommandWrapper"
+import ContextMenuCommandWrapper from "../wrappers/contextMenuCommandWrapper"
 import {ApplicationCommandType} from "discord-api-types/v10"
 import InteractionHelper from "../utilities/interactionHelper"
 import {unlink} from "fs/promises"

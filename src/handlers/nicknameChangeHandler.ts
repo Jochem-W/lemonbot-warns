@@ -1,5 +1,5 @@
 import {GuildMember, PartialGuildMember} from "discord.js"
-import HandlerWrapper from "../types/handlerWrapper"
+import HandlerWrapper from "../wrappers/handlerWrapper"
 import InteractionHelper from "../utilities/interactionHelper"
 import Database from "../utilities/database"
 

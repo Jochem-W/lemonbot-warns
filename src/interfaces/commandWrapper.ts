@@ -1,4 +1,4 @@
-import CommandPermissionBuilder from "../types/commandPermissionBuilder"
+import CommandPermissionBuilder from "../builders/commandPermissionBuilder"
 import {CommandInteraction, ContextMenuCommandBuilder, PermissionResolvable, SlashCommandBuilder} from "discord.js"
 import {APIApplicationCommandPermission, RESTPostAPIApplicationCommandsJSONBody} from "discord-api-types/v10"
 

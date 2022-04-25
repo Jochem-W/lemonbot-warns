@@ -1,5 +1,5 @@
 import {Client} from "discord.js"
-import HandlerWrapper from "../types/handlerWrapper"
+import HandlerWrapper from "../wrappers/handlerWrapper"
 
 /**
  * Handler for ready

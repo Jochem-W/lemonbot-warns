@@ -1,5 +1,5 @@
 import {PartialUser, User} from "discord.js"
-import HandlerWrapper from "../types/handlerWrapper"
+import HandlerWrapper from "../wrappers/handlerWrapper"
 import Database from "../utilities/database"
 import InteractionHelper from "../utilities/interactionHelper"
 import {Config} from "../config"
