@@ -15,14 +15,7 @@ export type DatabaseEntry = {
     pageId: string
 }
 
-export type NoteContent = {
-    title?: string
-    body?: string
-    url?: string
-    image?: string
-}
-
-export default class Database {
+export default class DatabaseUtilities {
     static async getPenaltyLevels() {
         const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
         const penaltyLevel = database.properties["Penalty Level"]

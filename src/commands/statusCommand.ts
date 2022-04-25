@@ -1,6 +1,6 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
-import Embed from "../utilities/embed"
+import EmbedUtilities from "../utilities/embedUtilities"
 import {DateTime, Duration} from "luxon"
 
 /**
@@ -18,7 +18,7 @@ export default class StatusCommand extends ChatInputCommandWrapper {
             .normalize()
 
 
-        const embed = Embed.make("Status", undefined)
+        const embed = EmbedUtilities.makeEmbed("Status", undefined)
             .addFields([{
                 name: "Ping",
                 value: `${interaction.client.ws.ping}ms`,

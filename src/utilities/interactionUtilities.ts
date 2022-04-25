@@ -23,7 +23,7 @@ export type UploadAttachmentResult = {
     subtype: string,
 }
 
-export default class InteractionHelper {
+export default class InteractionUtilities {
     static async messageToPng(message: Message): Promise<string> {
         const magickExecutable = spawnSync("magick").error === undefined ? "magick" : "convert"
 

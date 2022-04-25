@@ -1,11 +1,11 @@
 import {MessageContextMenuCommandInteraction} from "discord.js"
 import ContextMenuCommandWrapper from "../wrappers/contextMenuCommandWrapper"
 import {ApplicationCommandType} from "discord-api-types/v10"
-import InteractionHelper from "../utilities/interactionHelper"
+import InteractionUtilities from "../utilities/interactionUtilities"
 import {unlink} from "fs/promises"
 import {StorageBucket} from "../clients"
-import Database from "../utilities/database"
-import Embed from "../utilities/embed"
+import DatabaseUtilities from "../utilities/databaseUtilities"
+import EmbedUtilities from "../utilities/embedUtilities"
 
 /**
  * @description Slash command which add a note to a user.
@@ -28,16 +28,16 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
         }
 
         const message = await channel.messages.fetch(interaction.targetId)
-        const author = await InteractionHelper.fetchMemberOrUser(interaction.client, guild, message.author, true)
+        const author = await InteractionUtilities.fetchMemberOrUser(interaction.client, guild, message.author, true)
 
-        const fileName = await InteractionHelper.messageToPng(message)
+        const fileName = await InteractionUtilities.messageToPng(message)
         const [file] = await StorageBucket.upload(fileName)
         await unlink(fileName)
 
         await file.makePublic()
         const fileUrl = file.publicUrl()
 
-        const notesUrl = await Database.addNote(author.id, [{
+        const notesUrl = await DatabaseUtilities.addNote(author.id, [{
             paragraph: {
                 rich_text: [{
                     text: {
@@ -58,11 +58,13 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
                     url: fileUrl,
                 },
             },
-        }], InteractionHelper.getName(author))
+        }], InteractionUtilities.getName(author))
 
         await interaction.editReply({
             embeds: [
-                Embed.make(`Added note to ${InteractionHelper.getTag(author)}`, undefined, "View notes")
+                EmbedUtilities.makeEmbed(`Added note to ${InteractionUtilities.getTag(author)}`,
+                    undefined,
+                    "View notes")
                     .setURL(notesUrl)
                     .setImage(fileUrl),
             ],

@@ -1,8 +1,8 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
-import Embed from "../utilities/embed"
-import Database from "../utilities/database"
-import InteractionHelper from "../utilities/interactionHelper"
+import EmbedUtilities from "../utilities/embedUtilities"
+import DatabaseUtilities from "../utilities/databaseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 
 /**
  * @description Slash command which synchronises the database with the current names.
@@ -19,12 +19,12 @@ export default class SyncCommand extends ChatInputCommandWrapper {
     async execute(interaction: ChatInputCommandInteraction) {
         // TODO: limit the amount of entries
         const update = []
-        for await (const entry of Database.getEntries()) {
-            const memberOrUser = await InteractionHelper.fetchMemberOrUser(interaction.client,
+        for await (const entry of DatabaseUtilities.getEntries()) {
+            const memberOrUser = await InteractionUtilities.fetchMemberOrUser(interaction.client,
                 interaction.guild,
                 entry.id,
                 true)
-            const name = InteractionHelper.getName(memberOrUser)
+            const name = InteractionUtilities.getName(memberOrUser)
             if (entry.name !== name) {
                 update.push({
                     id: entry.id,
@@ -34,7 +34,7 @@ export default class SyncCommand extends ChatInputCommandWrapper {
             }
         }
 
-        const embed = Embed.make("Synchronisation")
+        const embed = EmbedUtilities.makeEmbed("Synchronisation")
         if (interaction.options.getBoolean("dry")) {
             for (const entry of update) {
                 embed.addFields([{
@@ -62,7 +62,7 @@ export default class SyncCommand extends ChatInputCommandWrapper {
         }
 
         for (const entry of update) {
-            await Database.updateEntry(entry.id, entry.newName)
+            await DatabaseUtilities.updateEntry(entry.id, entry.newName)
         }
 
         embed.addFields([{

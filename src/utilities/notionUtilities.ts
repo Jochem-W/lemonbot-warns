@@ -17,7 +17,7 @@ export type ParseBlockObjectsResult = {
     unsupportedBlocks: number,
 }
 
-export default class NotionHelper {
+export default class NotionUtilities {
     static parseBlockObjects(blocks: BlockObjectResponse[]): ParseBlockObjectsResult {
         const fields = [
             {

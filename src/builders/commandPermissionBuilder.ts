@@ -19,19 +19,6 @@ export default class CommandPermissionBuilder {
     private readonly rolePermissions: Map<Snowflake, boolean> = new Map()
     private readonly userPermissions: Map<Snowflake, boolean> = new Map()
 
-    static getDefault() {
-        const builder = new CommandPermissionBuilder()
-        for (const roleId of Config.allowedRoleIds) {
-            builder.setRolePermission(roleId, true)
-        }
-
-        for (const userId of Config.allowedUserIds) {
-            builder.setUserPermission(userId, true)
-        }
-
-        return builder
-    }
-
     /**
      * Return the current permissions.
      */
@@ -49,6 +36,19 @@ export default class CommandPermissionBuilder {
                 id: id,
             }
         })] as ApplicationCommandPermissions[]
+    }
+
+    static getDefault() {
+        const builder = new CommandPermissionBuilder()
+        for (const roleId of Config.allowedRoleIds) {
+            builder.setRolePermission(roleId, true)
+        }
+
+        for (const userId of Config.allowedUserIds) {
+            builder.setUserPermission(userId, true)
+        }
+
+        return builder
     }
 
     /**

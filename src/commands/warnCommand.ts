@@ -8,9 +8,9 @@ import {
     italic,
     RESTJSONErrorCodes,
 } from "discord.js"
-import Embed from "../utilities/embed"
-import Database from "../utilities/database"
-import InteractionHelper from "../utilities/interactionHelper"
+import EmbedUtilities from "../utilities/embedUtilities"
+import DatabaseUtilities from "../utilities/databaseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 import {Config} from "../config"
 import MIMEType from "whatwg-mimetype"
 import {DateTime} from "luxon"
@@ -53,12 +53,12 @@ export default class WarnCommand extends ChatInputCommandWrapper {
     async getAutocomplete(option: ApplicationCommandOptionChoiceData) {
         switch (option.name) {
         case "penalty":
-            return (await Database.getPenaltyLevels()).map(level => ({
+            return (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
                 name: level,
                 value: level,
             }))
         case "reason":
-            return (await Database.getReasons()).map(level => ({
+            return (await DatabaseUtilities.getReasons()).map(level => ({
                 name: level,
                 value: level,
             }))
@@ -77,14 +77,14 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             throw new Error("Only image attachments are supported")
         }
 
-        const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
+        const user = await InteractionUtilities.fetchMemberOrUser(interaction.client,
             interaction.guild,
             interaction.options.getUser("user", true))
         const reason = interaction.options.getString("reason", true)
         const description = interaction.options.getString("description", true)
         const penalty = interaction.options.getString("penalty", true)
 
-        const entry = await Database.updateEntry(user, InteractionHelper.getName(user), penalty, [reason])
+        const entry = await DatabaseUtilities.updateEntry(user, InteractionUtilities.getName(user), penalty, [reason])
         const content: BlockObjectRequest[] = [{
             heading_1: {
                 rich_text: [{
@@ -110,7 +110,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
         }]
 
         if (image) {
-            const result = await InteractionHelper.uploadAttachment(image)
+            const result = await InteractionUtilities.uploadAttachment(image)
             content.push({
                 image: {
                     external: {
@@ -120,11 +120,11 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             })
         }
 
-        await Database.addNote(user, content)
+        await DatabaseUtilities.addNote(user, content)
 
-        const tag = InteractionHelper.getTag(user)
+        const tag = InteractionUtilities.getTag(user)
 
-        const embed = Embed.make(`Warned ${tag}`, undefined, `Reason: ${reason}`)
+        const embed = EmbedUtilities.makeEmbed(`Warned ${tag}`, undefined, `Reason: ${reason}`)
             .setDescription(description)
             .addFields([
                 {
@@ -150,7 +150,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
         let warnEmbed: EmbedBuilder | null
         // Try to notify the user
         try {
-            warnEmbed = Embed.make(`You have been warned in ${guild.name}!`, Config.warnIcon)
+            warnEmbed = EmbedUtilities.makeEmbed(`You have been warned in ${guild.name}!`, Config.warnIcon)
                 .setDescription(`${bold("Reason")}: ${italic(description)}`)
                 .setColor("#ff0000")
             if (image) {

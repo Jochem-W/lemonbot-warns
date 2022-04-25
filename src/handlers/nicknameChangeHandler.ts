@@ -1,7 +1,7 @@
 import {GuildMember, PartialGuildMember} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
-import InteractionHelper from "../utilities/interactionHelper"
-import Database from "../utilities/database"
+import InteractionUtilities from "../utilities/interactionUtilities"
+import DatabaseUtilities from "../utilities/databaseUtilities"
 
 export default class NicknameChangeHandler extends HandlerWrapper {
     constructor() {
@@ -13,13 +13,13 @@ export default class NicknameChangeHandler extends HandlerWrapper {
             return
         }
 
-        const newName = InteractionHelper.getName(newMember)
-        const entry = await Database.getEntry(newMember)
+        const newName = InteractionUtilities.getName(newMember)
+        const entry = await DatabaseUtilities.getEntry(newMember)
         if (!entry || entry.name === newName) {
             return
         }
 
         console.log(`Changing ${newMember.id}'s name to '${newName}' (partial: ${oldMember.partial})`)
-        await Database.updateEntry(newMember, newName)
+        await DatabaseUtilities.updateEntry(newMember, newName)
     }
 }

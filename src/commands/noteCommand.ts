@@ -1,8 +1,8 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction, GuildMember} from "discord.js"
-import Embed from "../utilities/embed"
-import Database from "../utilities/database"
-import InteractionHelper from "../utilities/interactionHelper"
+import EmbedUtilities from "../utilities/embedUtilities"
+import DatabaseUtilities from "../utilities/databaseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 import {BlockObjectRequest} from "../types/notion"
 
 /**
@@ -29,7 +29,7 @@ export default class NoteCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const user = await InteractionHelper.fetchMemberOrUser(interaction.client,
+        const user = await InteractionUtilities.fetchMemberOrUser(interaction.client,
             interaction.guild,
             interaction.options.getUser("user", true))
         const title = interaction.options.getString("title")
@@ -60,7 +60,7 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         })
 
         if (attachment) {
-            const result = await InteractionHelper.uploadAttachment(attachment)
+            const result = await InteractionUtilities.uploadAttachment(attachment)
 
             switch (result.type) {
             case "image":
@@ -123,10 +123,10 @@ export default class NoteCommand extends ChatInputCommandWrapper {
             }
         }
 
-        const url = await Database.addNote(user, content, InteractionHelper.getName(user))
+        const url = await DatabaseUtilities.addNote(user, content, InteractionUtilities.getName(user))
 
         const tag = (user instanceof GuildMember ? user.user : user).tag
-        const embed = Embed.make(`Added note to ${tag}`, undefined, "View notes")
+        const embed = EmbedUtilities.makeEmbed(`Added note to ${tag}`, undefined, "View notes")
             .setURL(url)
 
         await interaction.editReply({embeds: [embed]})

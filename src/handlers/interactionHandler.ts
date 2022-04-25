@@ -8,7 +8,7 @@ import {
     Snowflake,
 } from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
-import Embed from "../utilities/embed"
+import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
 import CommandWrapper from "../interfaces/commandWrapper"
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
@@ -45,7 +45,7 @@ export default class InteractionHandler extends HandlerWrapper {
     private async handleCommand(interaction: CommandInteraction) {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
-        const errorEmbed = Embed.make("Something went wrong while executing the command", Config.failIcon)
+        const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
         const command = this.commands.get(interaction.commandId)

@@ -2,8 +2,8 @@ import {Config} from "../config"
 import {DateTime} from "luxon"
 import {EmbedBuilder} from "discord.js"
 
-export default class Embed {
-    static make(authorName: string, authorIcon = Config.successIcon, title?: string, description?: string) {
+export default class EmbedUtilities {
+    static makeEmbed(authorName: string, authorIcon = Config.successIcon, title?: string, description?: string) {
         return new EmbedBuilder()
             .setAuthor({
                 name: authorName,
