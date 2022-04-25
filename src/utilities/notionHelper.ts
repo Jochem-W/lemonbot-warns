@@ -134,12 +134,14 @@ export default class NotionHelper {
             case "link_preview":
                 lastField.values.push(hyperlink("View link", block.link_preview.url))
                 break
+            case "divider":
+                lastField.values.push(`───`)
+                break
             case "unsupported":
             case "template":
             case "synced_block":
             case "child_page":
             case "child_database":
-            case "divider":
             case "breadcrumb":
             case "table_of_contents":
             case "column_list":
