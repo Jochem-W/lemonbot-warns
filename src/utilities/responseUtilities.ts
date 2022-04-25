@@ -16,6 +16,9 @@ import {
 } from "discord.js"
 import {DateTime} from "luxon"
 import InteractionUtilities from "./interactionUtilities"
+import {DatabaseEntry} from "./databaseUtilities"
+import NotionUtilities from "./notionUtilities"
+import {BlockObjectResponse} from "../types/notion"
 
 export type WarnDmOptions = {
     guildName: string,
@@ -44,6 +47,12 @@ export type NoteData = {
     attachment?: Attachment,
     url: string,
     timestamp: DateTime,
+}
+
+export type NotesData = {
+    user: User,
+    blocks: BlockObjectResponse[],
+    entry?: DatabaseEntry,
 }
 
 export default class ResponseUtilities {
@@ -107,6 +116,38 @@ export default class ResponseUtilities {
         embed.setTimestamp(options.timestamp.toMillis())
 
         return this.addNotesButton({embeds: [embed]}, options.url)
+    }
+
+    static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
+        const embed = EmbedUtilities.makeEmbed(`Notes for ${options.user.tag}`,
+            options.user.displayAvatarURL({size: 4096}))
+        if (!options.entry) {
+            embed.setTitle("This user isn't in the database")
+            return {embeds: [embed]}
+        }
+
+        embed.setFooter({text: "Last edited"})
+            .setTimestamp(options.entry.lastEditedTime.toMillis())
+
+        const parseResult = NotionUtilities.parseBlockObjects(options.blocks)
+        if (parseResult.unsupportedBlocks) {
+            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
+            EmbedUtilities.append(embed,
+                `• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`,
+                "\n")
+        }
+
+        if (parseResult.fields.length > 25) {
+            EmbedUtilities.append(embed, `• Displaying the first 25 of ${parseResult.fields.length} notes`, "\n")
+        }
+
+        embed.addFields(parseResult.fields.slice(0, 25))
+
+        if (!embed.data.fields?.length && !embed.data.description) {
+            embed.setTitle("This user has no notes")
+        }
+
+        return this.addNotesButton({embeds: [embed]}, options.entry.url)
     }
 
     static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type, url: string): Type {

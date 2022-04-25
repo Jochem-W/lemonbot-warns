@@ -1,8 +1,7 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
-import EmbedUtilities from "../utilities/embedUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
-import NotionUtilities from "../utilities/notionUtilities"
+import ResponseUtilities, {NotesData} from "../utilities/responseUtilities"
 
 /**
  * @description Slash command which lists notes on a user.
@@ -19,43 +18,18 @@ export default class NotesCommand extends ChatInputCommandWrapper {
 
     async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser("user", true)
-        const result = await DatabaseUtilities.getEntry(user)
-
-        const embed = EmbedUtilities.makeEmbed(`Notes for ${user.tag}`, user.displayAvatarURL({size: 4096}))
-        if (!result) {
-            embed.setTitle("This user has no known notes")
-            await interaction.editReply({embeds: [embed]})
-            return
+        const data: NotesData = {
+            user: user,
+            entry: await DatabaseUtilities.getEntry(user) ?? undefined,
+            blocks: [],
         }
 
-        embed.setTitle("View notes")
-            .setURL(result.url)
-            .setFooter({text: "Last edited"})
-            .setTimestamp(result.lastEditedTime.toMillis())
-
-        const notes = []
-        for await (const note of DatabaseUtilities.getNotes(user)) {
-            notes.push(note)
+        if (data.entry) {
+            for await (const block of DatabaseUtilities.getNotes(user)) {
+                data.blocks.push(block)
+            }
         }
 
-        const parseResult = NotionUtilities.parseBlockObjects(notes)
-        if (parseResult.unsupportedBlocks) {
-            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
-            EmbedUtilities.append(embed,
-                `• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`,
-                "\n")
-        }
-
-        if (parseResult.fields.length > 25) {
-            EmbedUtilities.append(embed, `• Displaying the first 25 of ${parseResult.fields.length} notes`, "\n")
-        }
-
-        embed.addFields(parseResult.fields.slice(0, 25))
-
-        if (!embed.data.fields?.length && !embed.data.description) {
-            embed.setTitle("No notes found")
-        }
-
-        await interaction.editReply({embeds: [embed]})
+        await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
     }
 }

@@ -184,7 +184,7 @@ export default class DatabaseUtilities {
     static async* getNotes(user: UserResolvable): AsyncGenerator<BlockObjectResponse> {
         const entry = await this.getEntry(user)
         if (!entry) {
-            return null
+            return
         }
 
         let response = undefined
