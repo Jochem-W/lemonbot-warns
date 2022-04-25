@@ -1,7 +1,7 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
-import EmbedUtilities from "../utilities/embedUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
+import ResponseUtilities, {WarningsData} from "../utilities/responseUtilities"
 
 /**
  * @description Slash command which lists a user's warnings.
@@ -18,26 +18,11 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
 
     async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser("user", true)
-        const embed = EmbedUtilities.makeEmbed(`Warnings for ${user.tag}`, user.displayAvatarURL({size: 4096}),
-            "This user has no known warnings")
-        const result = await DatabaseUtilities.getEntry(user)
-        if (!result) {
-            await interaction.editReply({embeds: [embed]})
-            return
+        const data: WarningsData = {
+            user: user,
+            entry: await DatabaseUtilities.getEntry(user) ?? undefined,
         }
 
-        embed.setTitle("View notes")
-            .setURL(result.url)
-            .addFields([{
-                name: "Current penalty level",
-                value: result.currentPenaltyLevel,
-            }, {
-                name: "Reasons",
-                value: result.reasons.length ? result.reasons.map(reason => ` - ${reason}`).join("\n") : "N/A",
-            }])
-            .setFooter({text: "Last edited"})
-            .setTimestamp(result.lastEditedTime.toMillis())
-
-        await interaction.editReply({embeds: [embed]})
+        await interaction.editReply(ResponseUtilities.generateWarningsResponse(data))
     }
 }

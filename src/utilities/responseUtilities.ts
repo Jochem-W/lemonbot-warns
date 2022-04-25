@@ -55,6 +55,11 @@ export type NotesData = {
     entry?: DatabaseEntry,
 }
 
+export type WarningsData = {
+    user: User,
+    entry?: DatabaseEntry,
+}
+
 export default class ResponseUtilities {
     static generateWarnDm(options: WarnDmOptions): MessageOptions {
         const embed = EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
@@ -146,6 +151,29 @@ export default class ResponseUtilities {
         if (!embed.data.fields?.length && !embed.data.description) {
             embed.setTitle("This user has no notes")
         }
+
+        return this.addNotesButton({embeds: [embed]}, options.entry.url)
+    }
+
+    static generateWarningsResponse(options: WarningsData): WebhookEditMessageOptions {
+        const embed = EmbedUtilities.makeEmbed(`Warnings for ${options.user.tag}`,
+            options.user.displayAvatarURL({size: 4096}))
+        if (!options.entry) {
+            embed.setTitle("This user isn't in the database")
+            return {embeds: [embed]}
+        }
+
+        embed.addFields([{
+            name: "Current penalty level",
+            value: options.entry.currentPenaltyLevel,
+        }, {
+            name: "Reasons",
+            value: options.entry.reasons.length ?
+                options.entry.reasons.map(reason => ` - ${reason}`).join("\n") :
+                "N/A",
+        }])
+            .setFooter({text: "Last edited"})
+            .setTimestamp(options.entry.lastEditedTime.toMillis())
 
         return this.addNotesButton({embeds: [embed]}, options.entry.url)
     }
