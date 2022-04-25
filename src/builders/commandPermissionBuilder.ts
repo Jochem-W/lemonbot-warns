@@ -19,17 +19,17 @@ export default class CommandPermissionBuilder {
     private readonly rolePermissions: Map<Snowflake, boolean> = new Map()
     private readonly userPermissions: Map<Snowflake, boolean> = new Map()
 
-    /**
-     * Apply the default permissions from Config.
-     */
-    constructor() {
+    static getDefault() {
+        const builder = new CommandPermissionBuilder()
         for (const roleId of Config.allowedRoleIds) {
-            this.setRolePermission(roleId, true)
+            builder.setRolePermission(roleId, true)
         }
 
         for (const userId of Config.allowedUserIds) {
-            this.setUserPermission(userId, true)
+            builder.setUserPermission(userId, true)
         }
+
+        return builder
     }
 
     /**

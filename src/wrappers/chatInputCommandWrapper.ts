@@ -10,7 +10,7 @@ import {Config} from "../config"
 
 export default class ChatInputCommandWrapper implements CommandWrapper {
     readonly builder = new SlashCommandBuilder()
-    readonly permissionsBuilder = new CommandPermissionBuilder()
+    readonly permissionsBuilder = CommandPermissionBuilder.getDefault()
     readonly name
     readonly memberPermissions?: PermissionResolvable
 
