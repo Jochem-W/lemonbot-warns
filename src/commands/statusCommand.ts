@@ -17,7 +17,6 @@ export default class StatusCommand extends ChatInputCommandWrapper {
             .shiftTo("days", "hours", "minutes", "seconds")
             .normalize()
 
-
         const embed = EmbedUtilities.makeEmbed("Status", undefined)
             .addFields([{
                 name: "Ping",
