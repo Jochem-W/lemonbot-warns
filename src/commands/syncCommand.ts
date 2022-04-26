@@ -62,13 +62,14 @@ export default class SyncCommand extends ChatInputCommandWrapper {
             return
         }
 
+        DatabaseUtilities.clearCache()
         for (const entry of update) {
             await DatabaseUtilities.updateEntry(entry.id, entry.newName)
         }
 
         embed.addFields([{
             name: "Database synchronised",
-            value: `${update.length} names updated`,
+            value: `• ${update.length} names updated\n• Cache cleared`,
         }])
         await interaction.editReply({embeds: [embed]})
     }

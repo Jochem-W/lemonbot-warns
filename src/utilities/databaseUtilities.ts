@@ -4,6 +4,8 @@ import {Variables} from "../variables"
 import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@notionhq/client/build/src/api-endpoints"
 import {DateTime} from "luxon"
 import {BlockObjectRequest, BlockObjectResponse} from "../types/notion"
+import LRUCache from "lru-cache"
+import {Config} from "../config"
 
 export type DatabaseEntry = {
     id: string
@@ -16,24 +18,57 @@ export type DatabaseEntry = {
 }
 
 export default class DatabaseUtilities {
+    private static readonly cache = new LRUCache({
+        ttl: Config.cacheTtl,
+        max: 2,
+        fetchMethod: async (key: string) => {
+            switch (key) {
+            case "reasons": {
+                console.log("Fetching reasons")
+                const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+                const reasons = database.properties["Reasons"]
+                if (!(reasons?.type === "multi_select")) {
+                    throw new Error("Penalty level is not a select")
+                }
+
+                return reasons.multi_select.options.map(o => o.name)
+            }
+            case "penaltyLevels": {
+                console.log("Fetching penalty levels")
+                const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+                const penaltyLevel = database.properties["Penalty Level"]
+                if (!(penaltyLevel?.type === "select")) {
+                    throw new Error("Penalty level is not a select")
+                }
+
+                return penaltyLevel.select.options.map(o => o.name)
+            }
+            default:
+                return null
+            }
+        },
+    })
+
+    static clearCache() {
+        this.cache.clear()
+    }
+
     static async getPenaltyLevels(): Promise<string[]> {
-        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
-        const penaltyLevel = database.properties["Penalty Level"]
-        if (!(penaltyLevel?.type === "select")) {
-            throw new Error("Penalty level is not a select")
+        const value = await this.cache.fetch<string[]>("penaltyLevels")
+        if (!value) {
+            throw new Error("Failed to fetch penalty levels")
         }
 
-        return penaltyLevel.select.options.map(o => o.name)
+        return value
     }
 
     static async getReasons(): Promise<string[]> {
-        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
-        const reasons = database.properties["Reasons"]
-        if (!(reasons?.type === "multi_select")) {
-            throw new Error("Penalty level is not a select")
+        const value = await this.cache.fetch<string[]>("reasons")
+        if (!value) {
+            throw new Error("Failed to fetch reasons")
         }
 
-        return reasons.multi_select.options.map(o => o.name)
+        return value
     }
 
     static async* getEntries(): AsyncGenerator<DatabaseEntry> {
@@ -75,16 +110,18 @@ export default class DatabaseUtilities {
 
     static async updateEntry(user: UserResolvable,
                              name?: string,
-                             currentPenaltyLevel?: string,
+                             penaltyLevel?: string,
                              reasons?: string[]): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
         if (!entry && name) {
-            return this.createEntry(user, name, currentPenaltyLevel, reasons)
+            return this.createEntry(user, name, penaltyLevel, reasons)
         }
 
         if (!entry) {
             throw new Error(`No entry found for ${user} and no name provided`)
         }
+
+        this.updateCache(penaltyLevel, reasons)
 
         return this.toDatabaseEntries(await Notion.pages.update({
             page_id: entry.pageId,
@@ -100,7 +137,7 @@ export default class DatabaseUtilities {
                 },
                 "Penalty Level": {
                     select: {
-                        name: currentPenaltyLevel ?? entry.currentPenaltyLevel,
+                        name: penaltyLevel ?? entry.currentPenaltyLevel,
                     },
                 },
                 "Reasons": {
@@ -116,12 +153,14 @@ export default class DatabaseUtilities {
 
     static async createEntry(user: UserResolvable,
                              name: string,
-                             currentPenaltyLevel = "0: Nothing",
+                             penaltyLevel = "0: Nothing",
                              reasons?: string[]): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
         if (entry) {
             throw new Error(`Entry already exists for ${user}`)
         }
+
+        this.updateCache(penaltyLevel, reasons)
 
         const id = this.resolveUser(user)
         return this.toDatabaseEntries(await Notion.pages.create({
@@ -149,7 +188,7 @@ export default class DatabaseUtilities {
                 },
                 "Penalty Level": {
                     select: {
-                        name: currentPenaltyLevel,
+                        name: penaltyLevel,
                     },
                 },
                 "Reasons": {
@@ -202,6 +241,20 @@ export default class DatabaseUtilities {
 
                 yield block
             }
+        }
+    }
+
+    private static updateCache(penaltyLevel?: string, reasons?: string[]) {
+        const storedReasons = this.cache.get<string[]>("reasons")
+        if (storedReasons) {
+            storedReasons.push(...reasons?.filter(reason => !storedReasons.includes(reason)) ?? [])
+            this.cache.set("reasons", storedReasons)
+        }
+
+        const storedPenaltyLevels = this.cache.get<string[]>("penaltyLevels")
+        if (storedPenaltyLevels && penaltyLevel && !storedPenaltyLevels.includes(penaltyLevel)) {
+            storedPenaltyLevels.push(penaltyLevel)
+            this.cache.set("penaltyLevels", storedPenaltyLevels)
         }
     }
 
