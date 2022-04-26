@@ -26,20 +26,24 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     async handle(interaction: Interaction) {
-        if (interaction.isCommand()) {
-            return await this.handleCommand(interaction)
-        }
+        try {
+            if (interaction.isCommand()) {
+                return await this.handleCommand(interaction)
+            }
 
-        if (interaction.isMessageComponent()) {
-            return await this.handleMessageComponent(interaction)
-        }
+            if (interaction.isMessageComponent()) {
+                return await this.handleMessageComponent(interaction)
+            }
 
-        if (interaction.isAutocomplete()) {
-            return await this.handleAutocomplete(interaction)
-        }
+            if (interaction.isAutocomplete()) {
+                return await this.handleAutocomplete(interaction)
+            }
 
-        if (interaction.isModalSubmit()) {
-            return await this.handleModalSubmit(interaction)
+            if (interaction.isModalSubmit()) {
+                return await this.handleModalSubmit(interaction)
+            }
+        } catch (e) {
+            console.error(`Uncaught error while handling interaction`, interaction, e)
         }
     }
 
