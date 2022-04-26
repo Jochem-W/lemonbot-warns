@@ -23,8 +23,8 @@ export default class NotesCommand extends ChatInputCommandWrapper {
         await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
     }
 
-    async executeComponent(interaction: MessageComponentInteraction, ...args: string[]) {
-        const data = await InteractionUtilities.generateNotesData(interaction, args[0])
+    async executeComponent(interaction: MessageComponentInteraction, id: string) {
+        const data = await InteractionUtilities.generateNotesData(interaction, id)
 
         await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
     }

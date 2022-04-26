@@ -102,7 +102,7 @@ export default class DatabaseUtilities {
         case 0:
             return null
         case 1:
-            return this.toDatabaseEntries(queryResponse)[0]
+            return this.toDatabaseEntries(queryResponse)[0]!
         default:
             throw new Error(`Multiple entries found for ${id}`)
         }
@@ -148,7 +148,7 @@ export default class DatabaseUtilities {
                     }),
                 },
             },
-        }))[0]
+        }))[0]!
     }
 
     static async createEntry(user: UserResolvable,
@@ -199,7 +199,7 @@ export default class DatabaseUtilities {
                     }) ?? [],
                 },
             },
-        }))[0]
+        }))[0]!
     }
 
     static async addNote(user: UserResolvable, content: BlockObjectRequest[], name?: string): Promise<string> {

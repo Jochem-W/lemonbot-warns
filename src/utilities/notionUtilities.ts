@@ -35,7 +35,7 @@ export default class NotionUtilities {
                 currentListNumber = 1
             }
 
-            const lastField = fields[fields.length - 1]
+            const lastField = fields[fields.length - 1]!
             switch (block.type) {
             case "paragraph":
                 lastField.values.push(block.paragraph.rich_text.map(this.richTextToString).join(""))

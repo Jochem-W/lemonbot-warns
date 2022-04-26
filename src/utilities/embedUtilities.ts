@@ -18,13 +18,13 @@ export default class EmbedUtilities {
     }
 
     static append(embed: EmbedBuilder, content: string, separator = "\n\n"): EmbedBuilder {
-        if (!embed.data.fields?.length) {
+        const last = embed.data.fields?.at(embed.data.fields.length - 1)
+        if (!last) {
             return embed.setDescription(`${embed.data.description ?
                 `${embed.data.description}${separator}` :
                 ""}${content}`)
         }
 
-        const last = embed.data.fields[embed.data.fields.length - 1]
         last.value = last.value === "..." ? content : `${last.value}${separator}${content}`
         return embed
     }

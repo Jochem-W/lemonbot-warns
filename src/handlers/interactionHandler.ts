@@ -107,7 +107,7 @@ export default class InteractionHandler extends HandlerWrapper {
         await interaction.deferReply({ephemeral: ephemeral === "true"})
 
         try {
-            await command.executeComponent(interaction, ...args.split(":"))
+            await command.executeComponent(interaction, ...(args ?? "").split(":"))
         } catch (error) {
             console.error(error)
             await interaction.editReply({embeds: [errorEmbed.setDescription(`${error}`)]})
