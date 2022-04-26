@@ -1,6 +1,6 @@
 import {REST} from "@discordjs/rest"
 import {Variables} from "./variables"
-import {CommandWrappers} from "./commands"
+import {Commands, CommandWrappers} from "./commands"
 import {
     RESTPutAPIApplicationGuildCommandsJSONBody,
     RESTPutAPIApplicationGuildCommandsResult,
@@ -8,8 +8,7 @@ import {
     Routes,
 } from "discord-api-types/v10"
 import {Config} from "./config"
-import {Client, Collection, IntentsBitField, Partials} from "discord.js"
-import InteractionHandler from "./handlers/interactionHandler"
+import {Client, IntentsBitField, Partials} from "discord.js"
 import {Handlers} from "./handlers"
 
 const client = new Client({
@@ -28,20 +27,27 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
 (async () => {
     const applicationCommands = await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId,
         Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
-    const permissionsBody: RESTPutAPIGuildApplicationCommandsPermissionsJSONBody = applicationCommands.map(c => {
+    console.log("Commands updated")
+
+    for (const applicationCommand of applicationCommands) {
+        // TODO: check command type and scope
+        const wrapper = CommandWrappers.find(cw => cw.name === applicationCommand.name)
+        if (!wrapper) {
+            throw new Error(`Command '${applicationCommand.name}' not found`)
+        }
+
+        Commands.set(applicationCommand.id, wrapper)
+    }
+
+    const permissionsBody: RESTPutAPIGuildApplicationCommandsPermissionsJSONBody = Commands.map((c, id) => {
         return {
-            id: c.id,
-            permissions: CommandWrappers.find(cw => cw.name === c.name)!.permissionsToJSON(),
+            id: id,
+            permissions: c.permissionsToJSON(),
         }
     })
     await rest.put(Routes.guildApplicationCommandsPermissions(Variables.discordApplicationId, Config.guildId),
         {body: permissionsBody})
-
-    const result = new Collection(CommandWrappers.map(cw => {
-        return [applicationCommands.find(c => c.name === cw.name)!.id, cw]
-    }))
-
-    Handlers.push(new InteractionHandler(result))
+    console.log("Permissions updated")
 
     Handlers.forEach(h => {
         client.on(h.eventName, async (...args) => await h.handle(...args))

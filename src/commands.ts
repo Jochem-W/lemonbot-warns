@@ -7,8 +7,11 @@ import WarnCommand from "./commands/warnCommand"
 import WarningsCommand from "./commands/warningsCommand"
 
 import NoteContextCommand from "./commands/noteContextCommand"
+import {Collection, Snowflake} from "discord.js"
 
-export const CommandWrappers: CommandWrapper[] = [
+export const Commands = new Collection<Snowflake, CommandWrapper>()
+
+export const CommandWrappers: Readonly<CommandWrapper[]> = [
     new NoteCommand(),
     new NotesCommand(),
     new StatusCommand(),

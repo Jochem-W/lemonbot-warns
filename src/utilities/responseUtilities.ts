@@ -21,6 +21,7 @@ import InteractionUtilities from "./interactionUtilities"
 import {DatabaseEntry} from "./databaseUtilities"
 import NotionUtilities from "./notionUtilities"
 import {BlockObjectResponse} from "../types/notion"
+import {Commands} from "../commands"
 
 export type WarnDmOptions = {
     guildName: string,
@@ -121,7 +122,7 @@ export default class ResponseUtilities {
         }
 
         return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
-            commandId: "notes",
+            commandId: Commands.findKey(command => command.name === "notes")!,
             ephemeral: interaction.ephemeral ?? false,
             sourceId: options.warnedBy.id,
             targetId: options.recipient.id,
@@ -150,7 +151,7 @@ export default class ResponseUtilities {
         embed.setTimestamp(options.timestamp.toMillis())
 
         return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
-            commandId: "notes",
+            commandId: Commands.findKey(command => command.name === "notes")!,
             ephemeral: interaction.ephemeral ?? false,
             sourceId: options.author.id,
             targetId: options.target.id,
@@ -211,7 +212,7 @@ export default class ResponseUtilities {
             .setTimestamp(options.entry.lastEditedTime.toMillis())
 
         return this.addNotesButton({embeds: [embed]}, options.entry.url, interaction ? {
-            commandId: "notes",
+            commandId: Commands.findKey(command => command.name === "notes")!,
             ephemeral: interaction.ephemeral ?? false,
             sourceId: options.requester.id,
             targetId: options.user.id,

@@ -1,28 +1,23 @@
 import {
     AutocompleteInteraction,
-    Collection,
     CommandInteraction,
     Interaction,
     MessageComponentInteraction,
     ModalSubmitInteraction,
-    Snowflake,
 } from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
-import CommandWrapper from "../interfaces/commandWrapper"
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import StringUtilities from "../utilities/stringUtilities"
+import {Commands} from "../commands"
 
 /**
  * Handler for interactions
  */
 export default class InteractionHandler extends HandlerWrapper {
-    private readonly commands: Collection<Snowflake, CommandWrapper>
-
-    constructor(commands: Collection<Snowflake, CommandWrapper>) {
+    constructor() {
         super("interactionCreate")
-        this.commands = commands
     }
 
     async handle(interaction: Interaction) {
@@ -51,7 +46,7 @@ export default class InteractionHandler extends HandlerWrapper {
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
-        const command = this.commands.get(interaction.commandId)
+        const command = Commands.get(interaction.commandId)
         if (!command) {
             await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return
@@ -80,7 +75,15 @@ export default class InteractionHandler extends HandlerWrapper {
             .setColor("#ff0000")
 
         // TODO: use commandId
-        const [commandName, ephemeral, sourceId, args] = StringUtilities.split(interaction.customId, /:/g, 3)
+        const [commandId, ephemeral, sourceId, args] = StringUtilities.split(interaction.customId, /:/g, 3)
+
+        if (!commandId || !ephemeral || !sourceId) {
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("Invalid parameters")],
+                ephemeral: true,
+            })
+            return
+        }
 
         if (interaction.user.id !== sourceId) {
             await interaction.reply({
@@ -90,7 +93,7 @@ export default class InteractionHandler extends HandlerWrapper {
             return
         }
 
-        const command = this.commands.find(c => c.name === commandName)
+        const command = Commands.get(commandId)
         if (!command || !(command instanceof ChatInputCommandWrapper)) {
             await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return
@@ -115,7 +118,7 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-        const command = this.commands.get(interaction.commandId)
+        const command = Commands.get(interaction.commandId)
         if (!(command instanceof ChatInputCommandWrapper)) {
             return
         }
@@ -127,6 +130,6 @@ export default class InteractionHandler extends HandlerWrapper {
     private async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId ?? "")})
 
-        throw new Error("Method not implemented.")
+        throw new Error("Method not implemented")
     }
 }
