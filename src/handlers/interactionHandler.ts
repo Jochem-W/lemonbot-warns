@@ -12,6 +12,8 @@ import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
 import CommandWrapper from "../interfaces/commandWrapper"
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
+import InteractionUtilities from "../utilities/interactionUtilities"
+import ResponseUtilities from "../utilities/responseUtilities"
 
 /**
  * Handler for interactions
@@ -67,10 +69,32 @@ export default class InteractionHandler extends HandlerWrapper {
         }
     }
 
-    private async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+    private static async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+        const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
+            .setColor("#ff0000")
+
+        const [command, authorId, targetId] = interaction.customId.split(":")
+
+        if (interaction.user.id !== authorId) {
+            await interaction.reply({embeds: [errorEmbed.setTitle("You can't use this button")]})
+            return
+        }
+
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
-        throw new Error("Method not implemented.")
+        try {
+            switch (command) {
+            case "notes":
+                const data = await InteractionUtilities.generateNotesData(interaction, targetId)
+                await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
+                break
+            default:
+                throw new Error(`Unknown message component command ${command}`)
+            }
+        } catch (error) {
+            console.error(error)
+            await interaction.editReply({embeds: [errorEmbed.setDescription(`${error}`)]})
+        }
     }
 
     private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
@@ -83,7 +107,7 @@ export default class InteractionHandler extends HandlerWrapper {
         await interaction.respond(await command.getAutocomplete(option))
     }
 
-    private async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+    private static async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId ?? "")})
 
         throw new Error("Method not implemented.")

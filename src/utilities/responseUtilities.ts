@@ -11,6 +11,7 @@ import {
     italic,
     MessageActionRowComponentBuilder,
     MessageOptions,
+    Snowflake,
     User,
     WebhookEditMessageOptions,
 } from "discord.js"
@@ -58,6 +59,7 @@ export type NotesData = {
 export type WarningsData = {
     user: User,
     entry?: DatabaseEntry,
+    requester: User,
 }
 
 export default class ResponseUtilities {
@@ -103,7 +105,7 @@ export default class ResponseUtilities {
             embed.setImage(options.image)
         }
 
-        return this.addNotesButton({embeds: [embed]}, options.url)
+        return this.addNotesButton({embeds: [embed]}, options.url, options.warnedBy.id, options.recipient.id)
     }
 
     static generateNoteResponse(options: NoteData): WebhookEditMessageOptions {
@@ -120,7 +122,7 @@ export default class ResponseUtilities {
         embed.setFooter({text: `Added by ${options.author.tag}`})
         embed.setTimestamp(options.timestamp.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.url)
+        return this.addNotesButton({embeds: [embed]}, options.url, options.author.id, options.target.id)
     }
 
     static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
@@ -175,22 +177,39 @@ export default class ResponseUtilities {
             .setFooter({text: "Last edited"})
             .setTimestamp(options.entry.lastEditedTime.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.entry.url)
+        return this.addNotesButton({embeds: [embed]}, options.entry.url, options.requester.id, options.user.id)
     }
 
-    static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type, url: string): Type {
+    static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type,
+                                                                                   url: string,
+                                                                                   sourceId?: Snowflake,
+                                                                                   targetId?: Snowflake): Type {
+        if (!(sourceId && targetId || !sourceId && !targetId)) {
+            throw new Error("Both sourceId and targetId must be provided")
+        }
+
         if (!options.components) {
             options.components = []
         }
 
-        options.components.push(new ActionRowBuilder<MessageActionRowComponentBuilder>()
-            .addComponents([
+        const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
+        if (targetId && sourceId) {
+            actionRow.addComponents([
                 new ButtonBuilder()
-                    .setStyle(ButtonStyle.Link)
-                    .setURL(url)
-                    .setLabel("📝 View notes"),
-            ]),
-        )
+                    .setStyle(ButtonStyle.Primary)
+                    .setLabel("📝 View notes (Discord)")
+                    .setCustomId(`notes:${sourceId}:${targetId}`),
+            ])
+        }
+
+        actionRow.addComponents([
+            new ButtonBuilder()
+                .setStyle(ButtonStyle.Link)
+                .setURL(url)
+                .setLabel("📝 View notes (Notion)"),
+        ])
+
+        options.components.push(actionRow)
 
         return options
     }

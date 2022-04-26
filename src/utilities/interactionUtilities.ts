@@ -4,6 +4,7 @@ import {
     DiscordAPIError,
     GuildMember,
     GuildResolvable,
+    Interaction,
     Message,
     RESTJSONErrorCodes,
     User,
@@ -16,6 +17,8 @@ import {DateTime} from "luxon"
 import {StorageBucket} from "../clients"
 import {pipeline} from "stream/promises"
 import MIMEType from "whatwg-mimetype"
+import {NotesData} from "./responseUtilities"
+import DatabaseUtilities from "./databaseUtilities"
 
 export type UploadAttachmentResult = {
     url: string,
@@ -118,5 +121,21 @@ export default class InteractionUtilities {
             type: mimeType.type,
             subtype: mimeType.subtype,
         }
+    }
+
+    static async generateNotesData(interaction: Interaction, user: UserResolvable): Promise<NotesData> {
+        const data: NotesData = {
+            user: await interaction.client.users.fetch(user),
+            entry: await DatabaseUtilities.getEntry(user) ?? undefined,
+            blocks: [],
+        }
+
+        if (data.entry) {
+            for await (const block of DatabaseUtilities.getNotes(user)) {
+                data.blocks.push(block)
+            }
+        }
+
+        return data
     }
 }

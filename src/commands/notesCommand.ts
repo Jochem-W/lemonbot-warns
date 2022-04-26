@@ -1,7 +1,7 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {ChatInputCommandInteraction} from "discord.js"
-import DatabaseUtilities from "../utilities/databaseUtilities"
-import ResponseUtilities, {NotesData} from "../utilities/responseUtilities"
+import ResponseUtilities from "../utilities/responseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 
 /**
  * @description Slash command which lists notes on a user.
@@ -17,18 +17,8 @@ export default class NotesCommand extends ChatInputCommandWrapper {
     }
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const user = interaction.options.getUser("user", true)
-        const data: NotesData = {
-            user: user,
-            entry: await DatabaseUtilities.getEntry(user) ?? undefined,
-            blocks: [],
-        }
-
-        if (data.entry) {
-            for await (const block of DatabaseUtilities.getNotes(user)) {
-                data.blocks.push(block)
-            }
-        }
+        const data = await InteractionUtilities.generateNotesData(interaction,
+            interaction.options.getUser("user", true))
 
         await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
     }

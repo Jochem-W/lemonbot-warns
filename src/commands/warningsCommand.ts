@@ -21,6 +21,7 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
         const data: WarningsData = {
             user: user,
             entry: await DatabaseUtilities.getEntry(user) ?? undefined,
+            requester: interaction.user,
         }
 
         await interaction.editReply(ResponseUtilities.generateWarningsResponse(data))
