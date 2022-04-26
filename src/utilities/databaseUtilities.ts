@@ -24,7 +24,6 @@ export default class DatabaseUtilities {
         fetchMethod: async (key: string) => {
             switch (key) {
             case "reasons": {
-                console.log("Fetching reasons")
                 const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
                 const reasons = database.properties["Reasons"]
                 if (!(reasons?.type === "multi_select")) {
@@ -34,7 +33,6 @@ export default class DatabaseUtilities {
                 return reasons.multi_select.options.map(o => o.name)
             }
             case "penaltyLevels": {
-                console.log("Fetching penalty levels")
                 const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
                 const penaltyLevel = database.properties["Penalty Level"]
                 if (!(penaltyLevel?.type === "select")) {
