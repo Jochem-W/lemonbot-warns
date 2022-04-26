@@ -92,7 +92,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             }) as User,
             timestamp: DateTime.fromMillis(interaction.createdTimestamp),
             description: interaction.options.getString("description", true),
-            image: image?.url,
+            image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
             reason: interaction.options.getString("reason", true),
             penalty: interaction.options.getString("penalty", true),
             url: "",
