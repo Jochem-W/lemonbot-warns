@@ -1,7 +1,6 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
 import {
     ApplicationCommandOptionChoiceData,
-    CacheType,
     ChatInputCommandInteraction,
     MessageComponentInteraction,
     User,
@@ -39,7 +38,7 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         throw new Error("Method not implemented.")
     }
 
-    executeComponent(interaction: MessageComponentInteraction<CacheType>, ...args: string[]): Promise<void> {
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
         throw new Error("Method not implemented.")
     }
 
