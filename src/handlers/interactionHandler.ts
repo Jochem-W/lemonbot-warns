@@ -69,7 +69,7 @@ export default class InteractionHandler extends HandlerWrapper {
         }
     }
 
-    private static async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+    private async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
@@ -107,7 +107,7 @@ export default class InteractionHandler extends HandlerWrapper {
         await interaction.respond(await command.getAutocomplete(option))
     }
 
-    private static async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+    private async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
         await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId ?? "")})
 
         throw new Error("Method not implemented.")
