@@ -76,7 +76,7 @@ export default class ResponseUtilities {
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
-            .setFooter({text: "If you have any questions, please contact a staff member"})
+            .setFooter({text: "If you have any questions, please contact an admin."})
 
         if (options.image) {
             embed.setImage(options.image)
