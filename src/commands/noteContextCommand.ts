@@ -17,7 +17,7 @@ export default class NoteContextCommand extends ContextMenuCommandWrapper {
 
     async execute(interaction: MessageContextMenuCommandInteraction) {
         if (!interaction.inGuild()) {
-            throw new Error("This command can only be used in a guild.")
+            throw new Error("This command can only be used in a guild")
         }
 
         // TODO: help

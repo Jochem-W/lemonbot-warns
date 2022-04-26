@@ -27,11 +27,11 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
         await interaction.editReply(ResponseUtilities.generateWarningsResponse(data, interaction))
     }
 
-    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        return Promise.resolve(undefined)
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        throw new Error("Method not implemented")
     }
 
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
-        return Promise.resolve([])
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        throw new Error("Method not implemented")
     }
 }

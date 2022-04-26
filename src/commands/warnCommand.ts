@@ -126,6 +126,6 @@ export default class WarnCommand extends ChatInputCommandWrapper {
     }
 
     executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        return Promise.resolve(undefined)
+        throw new Error("Method not implemented")
     }
 }

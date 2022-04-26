@@ -34,14 +34,6 @@ export default class NoteCommand extends ChatInputCommandWrapper {
                 .setDescription("Optional file attachment"))
     }
 
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
-        throw new Error("Method not implemented.")
-    }
-
-    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        throw new Error("Method not implemented.")
-    }
-
     async execute(interaction: ChatInputCommandInteraction) {
         const data: NoteData = {
             author: await InteractionUtilities.fetchMemberOrUser({
@@ -64,5 +56,13 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         data.url = await DatabaseUtilities.addNote(data.target, content, InteractionUtilities.getName(data.target))
 
         await interaction.editReply(ResponseUtilities.generateNoteResponse(data, interaction))
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        throw new Error("Method not implemented")
+    }
+
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        throw new Error("Method not implemented")
     }
 }
