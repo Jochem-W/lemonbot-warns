@@ -1,5 +1,5 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction} from "discord.js"
+import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, MessageComponentInteraction} from "discord.js"
 import ResponseUtilities from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 
@@ -21,5 +21,15 @@ export default class NotesCommand extends ChatInputCommandWrapper {
             interaction.options.getUser("user", true))
 
         await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
+    }
+
+    async executeComponent(interaction: MessageComponentInteraction, ...args: string[]) {
+        const data = await InteractionUtilities.generateNotesData(interaction, args[0])
+
+        await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        return Promise.resolve([])
     }
 }

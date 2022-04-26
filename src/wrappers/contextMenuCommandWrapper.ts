@@ -8,13 +8,13 @@ import {
 import CommandPermissionBuilder from "../builders/commandPermissionBuilder"
 import {Config} from "../config"
 
-export default class ContextMenuCommandWrapper implements CommandWrapper {
+export default abstract class ContextMenuCommandWrapper implements CommandWrapper {
     readonly builder = new ContextMenuCommandBuilder()
     readonly permissionsBuilder = new CommandPermissionBuilder()
     readonly name
     readonly memberPermissions
 
-    constructor(name: string, type: ContextMenuCommandType, memberPermissions?: PermissionResolvable) {
+    protected constructor(name: string, type: ContextMenuCommandType, memberPermissions?: PermissionResolvable) {
         this.builder.setName(name)
             .setType(type)
             .setDefaultPermission(false)
@@ -22,8 +22,7 @@ export default class ContextMenuCommandWrapper implements CommandWrapper {
         this.memberPermissions = memberPermissions ?? Config.requiredPermissions ?? undefined
     }
 
-    async execute(interaction: ContextMenuCommandInteraction) {
-    }
+    abstract execute(interaction: ContextMenuCommandInteraction): Promise<void>
 
     permissionsToJSON() {
         return this.permissionsBuilder.toJSON()

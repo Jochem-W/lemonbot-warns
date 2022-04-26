@@ -3,6 +3,7 @@ import {
     ApplicationCommandOptionChoiceData,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    MessageComponentInteraction,
     RESTJSONErrorCodes,
     User,
 } from "discord.js"
@@ -60,7 +61,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 value: level,
             }))
         default:
-            return await super.getAutocomplete(option)
+            return []
         }
     }
 
@@ -121,6 +122,10 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             }
         }
 
-        await interaction.editReply(ResponseUtilities.generateWarnResponse(data))
+        await interaction.editReply(ResponseUtilities.generateWarnResponse(data, interaction))
+    }
+
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        return Promise.resolve(undefined)
     }
 }

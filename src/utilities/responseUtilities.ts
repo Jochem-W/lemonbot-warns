@@ -6,6 +6,7 @@ import {
     bold,
     ButtonBuilder,
     ButtonStyle,
+    CommandInteraction,
     GuildMember,
     inlineCode,
     italic,
@@ -62,6 +63,13 @@ export type WarningsData = {
     requester: User,
 }
 
+export type NotesButtonData = {
+    commandId: Snowflake,
+    ephemeral: boolean,
+    sourceId: Snowflake,
+    targetId: Snowflake,
+}
+
 export default class ResponseUtilities {
     static generateWarnDm(options: WarnDmOptions): MessageOptions {
         const embed = EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
@@ -77,7 +85,7 @@ export default class ResponseUtilities {
         return {embeds: [embed]}
     }
 
-    static generateWarnResponse(options: WarnData & { url: string }): WebhookEditMessageOptions {
+    static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
         let administrationText = `• Reason: \`${options.reason}\`\n• Penalty level: \`${options.penalty}\``
         if (options.notified === true) {
             administrationText += `\n• DM sent: ${inlineCode("✅")}`
@@ -105,10 +113,15 @@ export default class ResponseUtilities {
             embed.setImage(options.image)
         }
 
-        return this.addNotesButton({embeds: [embed]}, options.url, options.warnedBy.id, options.recipient.id)
+        return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
+            commandId: "notes",
+            ephemeral: interaction.ephemeral ?? false,
+            sourceId: options.warnedBy.id,
+            targetId: options.recipient.id,
+        } : undefined)
     }
 
-    static generateNoteResponse(options: NoteData): WebhookEditMessageOptions {
+    static generateNoteResponse(options: NoteData, interaction?: CommandInteraction): WebhookEditMessageOptions {
         const embed = EmbedUtilities.makeEmbed(`Note added to ${InteractionUtilities.getTag(options.target)}`)
         if (options.title) {
             embed.setTitle(options.title)
@@ -122,7 +135,12 @@ export default class ResponseUtilities {
         embed.setFooter({text: `Added by ${options.author.tag}`})
         embed.setTimestamp(options.timestamp.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.url, options.author.id, options.target.id)
+        return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
+            commandId: "notes",
+            ephemeral: interaction.ephemeral ?? false,
+            sourceId: options.author.id,
+            targetId: options.target.id,
+        } : undefined)
     }
 
     static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
@@ -157,7 +175,8 @@ export default class ResponseUtilities {
         return this.addNotesButton({embeds: [embed]}, options.entry.url)
     }
 
-    static generateWarningsResponse(options: WarningsData): WebhookEditMessageOptions {
+    static generateWarningsResponse(options: WarningsData,
+                                    interaction?: CommandInteraction): WebhookEditMessageOptions {
         const embed = EmbedUtilities.makeEmbed(`Warnings for ${options.user.tag}`,
             options.user.displayAvatarURL({size: 4096}))
         if (!options.entry) {
@@ -177,28 +196,28 @@ export default class ResponseUtilities {
             .setFooter({text: "Last edited"})
             .setTimestamp(options.entry.lastEditedTime.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.entry.url, options.requester.id, options.user.id)
+        return this.addNotesButton({embeds: [embed]}, options.entry.url, interaction ? {
+            commandId: "notes",
+            ephemeral: interaction.ephemeral ?? false,
+            sourceId: options.requester.id,
+            targetId: options.user.id,
+        } : undefined)
     }
 
     static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type,
                                                                                    url: string,
-                                                                                   sourceId?: Snowflake,
-                                                                                   targetId?: Snowflake): Type {
-        if (!(sourceId && targetId || !sourceId && !targetId)) {
-            throw new Error("Both sourceId and targetId must be provided")
-        }
-
+                                                                                   button?: NotesButtonData): Type {
         if (!options.components) {
             options.components = []
         }
 
         const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
-        if (targetId && sourceId) {
+        if (button) {
             actionRow.addComponents([
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Primary)
                     .setLabel("📝 View notes (Discord)")
-                    .setCustomId(`notes:${sourceId}:${targetId}`),
+                    .setCustomId(`${button.commandId}:${button.ephemeral}:${button.sourceId}:${button.targetId}`),
             ])
         }
 

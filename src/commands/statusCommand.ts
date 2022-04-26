@@ -1,5 +1,5 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction} from "discord.js"
+import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, MessageComponentInteraction} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {DateTime, Duration} from "luxon"
 
@@ -31,5 +31,13 @@ export default class StatusCommand extends ChatInputCommandWrapper {
             }])
 
         await interaction.editReply({embeds: [embed]})
+    }
+
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        return Promise.resolve(undefined)
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        return Promise.resolve([])
     }
 }

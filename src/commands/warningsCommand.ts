@@ -1,5 +1,5 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction} from "discord.js"
+import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, MessageComponentInteraction} from "discord.js"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import ResponseUtilities, {WarningsData} from "../utilities/responseUtilities"
 
@@ -24,6 +24,14 @@ export default class WarningsCommand extends ChatInputCommandWrapper {
             requester: interaction.user,
         }
 
-        await interaction.editReply(ResponseUtilities.generateWarningsResponse(data))
+        await interaction.editReply(ResponseUtilities.generateWarningsResponse(data, interaction))
+    }
+
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        return Promise.resolve(undefined)
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        return Promise.resolve([])
     }
 }

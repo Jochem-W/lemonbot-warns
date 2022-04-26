@@ -1,5 +1,11 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction, User} from "discord.js"
+import {
+    ApplicationCommandOptionChoiceData,
+    CacheType,
+    ChatInputCommandInteraction,
+    MessageComponentInteraction,
+    User,
+} from "discord.js"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
@@ -29,6 +35,14 @@ export default class NoteCommand extends ChatInputCommandWrapper {
                 .setDescription("Optional file attachment"))
     }
 
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        throw new Error("Method not implemented.")
+    }
+
+    executeComponent(interaction: MessageComponentInteraction<CacheType>, ...args: string[]): Promise<void> {
+        throw new Error("Method not implemented.")
+    }
+
     async execute(interaction: ChatInputCommandInteraction) {
         const data: NoteData = {
             author: await InteractionUtilities.fetchMemberOrUser({
@@ -50,6 +64,6 @@ export default class NoteCommand extends ChatInputCommandWrapper {
         const content = await NotionUtilities.generateNote(data)
         data.url = await DatabaseUtilities.addNote(data.target, content, InteractionUtilities.getName(data.target))
 
-        await interaction.editReply(ResponseUtilities.generateNoteResponse(data))
+        await interaction.editReply(ResponseUtilities.generateNoteResponse(data, interaction))
     }
 }

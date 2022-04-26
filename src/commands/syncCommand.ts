@@ -1,5 +1,5 @@
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ChatInputCommandInteraction} from "discord.js"
+import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, MessageComponentInteraction} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
@@ -71,5 +71,13 @@ export default class SyncCommand extends ChatInputCommandWrapper {
             value: `${update.length} names updated`,
         }])
         await interaction.editReply({embeds: [embed]})
+    }
+
+    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+        return Promise.resolve(undefined)
+    }
+
+    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
+        return Promise.resolve([])
     }
 }

@@ -12,8 +12,7 @@ import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
 import CommandWrapper from "../interfaces/commandWrapper"
 import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import InteractionUtilities from "../utilities/interactionUtilities"
-import ResponseUtilities from "../utilities/responseUtilities"
+import StringUtilities from "../utilities/stringUtilities"
 
 /**
  * Handler for interactions
@@ -73,24 +72,28 @@ export default class InteractionHandler extends HandlerWrapper {
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
-        const [command, authorId, targetId] = interaction.customId.split(":")
+        // TODO: use commandId
+        const [commandName, ephemeral, sourceId, args] = StringUtilities.split(interaction.customId, /:/g, 3)
+        await interaction.deferReply({ephemeral: ephemeral === "true"})
 
-        if (interaction.user.id !== authorId) {
-            await interaction.reply({embeds: [errorEmbed.setTitle("You can't use this button")]})
+        if (interaction.user.id !== sourceId) {
+            await interaction.editReply({embeds: [errorEmbed.setTitle("You can't use this button")]})
             return
         }
 
-        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+        const command = this.commands.find(c => c.name === commandName)
+        if (!command || !(command instanceof ChatInputCommandWrapper)) {
+            await interaction.editReply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            return
+        }
+
+        if (command.memberPermissions && !interaction.memberPermissions?.has(command.memberPermissions, true)) {
+            await interaction.editReply({embeds: [errorEmbed.setTitle("You don't have the required permissions")]})
+            return
+        }
 
         try {
-            switch (command) {
-            case "notes":
-                const data = await InteractionUtilities.generateNotesData(interaction, targetId)
-                await interaction.editReply(ResponseUtilities.generateNotesResponse(data))
-                break
-            default:
-                throw new Error(`Unknown message component command ${command}`)
-            }
+            await command.executeComponent(interaction, ...args.split(":"))
         } catch (error) {
             console.error(error)
             await interaction.editReply({embeds: [errorEmbed.setDescription(`${error}`)]})
