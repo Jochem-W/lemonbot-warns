@@ -95,7 +95,11 @@ export default class ResponseUtilities {
             administrationText += `\n• DM sent: ${inlineCode("❌ (notify was False)")}`
         }
 
-        const embed = EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`)
+        const recipientAvatar = (options.recipient instanceof GuildMember ?
+            options.recipient.user :
+            options.recipient).displayAvatarURL({size: 4096})
+        const embed = EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
+            recipientAvatar)
             .addFields([
                 {
                     name: "Description",
@@ -106,7 +110,10 @@ export default class ResponseUtilities {
                     value: administrationText,
                 },
             ])
-            .setFooter({text: `Warned by ${options.warnedBy.tag}`})
+            .setFooter({
+                text: `Warned by ${options.warnedBy.tag}`,
+                iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
+            })
             .setTimestamp(options.timestamp.toMillis())
 
         if (options.image) {
@@ -122,7 +129,11 @@ export default class ResponseUtilities {
     }
 
     static generateNoteResponse(options: NoteData, interaction?: CommandInteraction): WebhookEditMessageOptions {
-        const embed = EmbedUtilities.makeEmbed(`Note added to ${InteractionUtilities.getTag(options.target)}`)
+        const targetAvatar = (options.target instanceof GuildMember ?
+            options.target.user :
+            options.target).displayAvatarURL({size: 4096})
+        const embed = EmbedUtilities.makeEmbed(`Note added to ${InteractionUtilities.getTag(options.target)}`,
+            targetAvatar)
         if (options.title) {
             embed.setTitle(options.title)
         }
@@ -132,7 +143,10 @@ export default class ResponseUtilities {
             embed.setImage(options.attachment.url)
         }
 
-        embed.setFooter({text: `Added by ${options.author.tag}`})
+        embed.setFooter({
+            text: `Added by ${options.author.tag}`,
+            iconURL: options.author.displayAvatarURL({size: 4096}),
+        })
         embed.setTimestamp(options.timestamp.toMillis())
 
         return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
