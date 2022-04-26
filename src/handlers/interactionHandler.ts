@@ -78,13 +78,13 @@ export default class InteractionHandler extends HandlerWrapper {
         // TODO: use commandId
         const [commandName, ephemeral, sourceId, args] = StringUtilities.split(interaction.customId, /:/g, 3)
 
-        // if (interaction.user.id !== sourceId) {
-        //     await interaction.reply({
-        //         embeds: [errorEmbed.setTitle("You can't use this button")],
-        //         ephemeral: true
-        //     })
-        //     return
-        // }
+        if (interaction.user.id !== sourceId) {
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("You can't use this button")],
+                ephemeral: true,
+            })
+            return
+        }
 
         const command = this.commands.find(c => c.name === commandName)
         if (!command || !(command instanceof ChatInputCommandWrapper)) {
