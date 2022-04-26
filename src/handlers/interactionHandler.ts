@@ -44,21 +44,24 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     private async handleCommand(interaction: CommandInteraction): Promise<void> {
-        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
-
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
         const command = this.commands.get(interaction.commandId)
         if (!command) {
-            await interaction.editReply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return
         }
 
         if (command.memberPermissions && !interaction.memberPermissions?.has(command.memberPermissions, true)) {
-            await interaction.editReply({embeds: [errorEmbed.setTitle("You don't have the required permissions")]})
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("You don't have the required permissions")],
+                ephemeral: true,
+            })
             return
         }
+
+        await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
 
         try {
             await command.execute(interaction)
@@ -74,23 +77,30 @@ export default class InteractionHandler extends HandlerWrapper {
 
         // TODO: use commandId
         const [commandName, ephemeral, sourceId, args] = StringUtilities.split(interaction.customId, /:/g, 3)
-        await interaction.deferReply({ephemeral: ephemeral === "true"})
 
-        if (interaction.user.id !== sourceId) {
-            await interaction.editReply({embeds: [errorEmbed.setTitle("You can't use this button")]})
-            return
-        }
+        // if (interaction.user.id !== sourceId) {
+        //     await interaction.reply({
+        //         embeds: [errorEmbed.setTitle("You can't use this button")],
+        //         ephemeral: true
+        //     })
+        //     return
+        // }
 
         const command = this.commands.find(c => c.name === commandName)
         if (!command || !(command instanceof ChatInputCommandWrapper)) {
-            await interaction.editReply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
             return
         }
 
         if (command.memberPermissions && !interaction.memberPermissions?.has(command.memberPermissions, true)) {
-            await interaction.editReply({embeds: [errorEmbed.setTitle("You don't have the required permissions")]})
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("You don't have the required permissions")],
+                ephemeral: true,
+            })
             return
         }
+
+        await interaction.deferReply({ephemeral: ephemeral === "true"})
 
         try {
             await command.executeComponent(interaction, ...args.split(":"))
