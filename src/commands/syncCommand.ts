@@ -9,12 +9,8 @@ export default class SyncCommand extends CommandConstructor<ChatInputCommandInte
     constructor() {
         super(ExecutableSyncCommand,
             "sync",
-            "Update the names stored in the database",
+            "Update the names stored in the database and clears autocompletion cache.",
             PermissionsBitField.Flags.ModerateMembers)
-        this.commandBuilder
-            .addBooleanOption(option => option
-                .setName("dry")
-                .setDescription("Whether to do a dry run"))
     }
 }
 
@@ -46,32 +42,6 @@ class ExecutableSyncCommand extends ExecutableCommand<ChatInputCommandInteractio
         }
 
         const embed = EmbedUtilities.makeEmbed("Synchronisation")
-        if (this.interaction.options.getBoolean("dry")) {
-            for (const entry of update) {
-                embed.addFields([{
-                    name: entry.id,
-                    value: `Old: \`${entry.oldName}\`\nNew: \`${entry.newName}\``,
-                }])
-            }
-
-            if (embed.data.fields?.length === 24) {
-                embed.addFields([{
-                    name: "Truncated",
-                    value: `And ${update.length - 24} more...`,
-                }])
-            }
-
-            if (!embed.data.fields?.length) {
-                embed.addFields([{
-                    name: "Already up to date",
-                    value: "The names in the database are already up to date",
-                }])
-            }
-
-            await this.interaction.editReply({embeds: [embed]})
-            return
-        }
-
         DatabaseUtilities.clearCache()
         for (const entry of update) {
             await DatabaseUtilities.updateEntry(entry.id, entry.newName)

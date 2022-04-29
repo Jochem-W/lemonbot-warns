@@ -17,33 +17,33 @@ import DatabaseUtilities from "../utilities/databaseUtilities"
 
 export default class WarnCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super(ExecutableWarnCommand, "warn", "Warn a user", PermissionsBitField.Flags.ModerateMembers)
+        super(ExecutableWarnCommand, "warn", "Warn a user.", PermissionsBitField.Flags.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("Target user")
+                .setDescription("Target user.")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
-                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
+                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words.")
                 .setRequired(true)
                 .setAutocomplete(true))
             .addStringOption(option => option
                 .setName("description")
-                .setDescription("Extended warning description that is sent to the user")
+                .setDescription("Extended warning description that is sent to the user and added as a note.")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
-                .setDescription("New penalty level for the user")
+                .setDescription("New penalty level for the user. The penalty has to be applied separately.")
                 .setRequired(true)
                 .setAutocomplete(true))
             .addBooleanOption(option => option
                 .setName("notify")
-                .setDescription("Send a DM to the user")
+                .setDescription("Whether to send a DM to the user or not.")
                 .setRequired(true))
             .addAttachmentOption(option => option
                 .setName("image")
-                .setDescription("Optional image attachment"))
+                .setDescription("Optional image attachment."))
     }
 
     override async getAutocomplete(interaction: AutocompleteInteraction) {

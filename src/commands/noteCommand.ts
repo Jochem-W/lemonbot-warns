@@ -9,22 +9,22 @@ import DatabaseUtilities from "../utilities/databaseUtilities"
 
 export default class NoteCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super(ExecutableNoteCommand, "note", "Add a note to a user", PermissionsBitField.Flags.ModerateMembers)
+        super(ExecutableNoteCommand, "note", "Add a note to a user.", PermissionsBitField.Flags.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("Target user")
+                .setDescription("Target user.")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("body")
-                .setDescription("Main note body")
+                .setDescription("Main note body.")
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("title")
-                .setDescription("Optional note title"))
+                .setDescription("Optional note title. If omitted, the note will be grouped with the previous note."))
             .addAttachmentOption(option => option
                 .setName("attachment")
-                .setDescription("Optional file attachment"))
+                .setDescription("Optional file attachment. Can be any file type."))
     }
 }
 

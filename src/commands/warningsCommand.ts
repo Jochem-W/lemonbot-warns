@@ -8,12 +8,12 @@ export default class WarningsCommand extends CommandConstructor<ChatInputCommand
     constructor() {
         super(ExecutableWarningsCommand,
             "warnings",
-            "List a user's warnings",
+            "List a user's warnings.",
             PermissionsBitField.Flags.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("Target user")
+                .setDescription("Target user.")
                 .setRequired(true))
     }
 }

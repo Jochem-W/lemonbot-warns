@@ -6,7 +6,7 @@ import {DateTime, Duration} from "luxon"
 
 export default class StatusCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super(ExecutableStatusCommand, "status", "Display ping and uptime", PermissionsBitField.Flags.ModerateMembers)
+        super(ExecutableStatusCommand, "status", "Display ping and uptime.", PermissionsBitField.Flags.ModerateMembers)
     }
 }
 
