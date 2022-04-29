@@ -45,22 +45,12 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
         if (this.memberPermissions) {
             return {
                 ...this.commandBuilder.toJSON(),
-                dm_permission: false,
-                default_member_permissions: this.memberPermissions.toString(),
-            }
-        }
-
-        if (this.memberPermissions) {
-            return {
-                ...this.commandBuilder.toJSON(),
-                dm_permission: false,
                 default_member_permissions: this.memberPermissions.toString(),
             }
         }
 
         return {
             ...this.commandBuilder.toJSON(),
-            dm_permission: false,
         }
     }
 
