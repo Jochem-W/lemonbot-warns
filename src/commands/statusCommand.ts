@@ -1,17 +1,24 @@
-import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {ApplicationCommandOptionChoiceData, ChatInputCommandInteraction, MessageComponentInteraction} from "discord.js"
+import CommandConstructor from "../models/commandConstructor"
+import ExecutableCommand from "../models/executableCommand"
+import {ChatInputCommandInteraction, PermissionsBitField} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {DateTime, Duration} from "luxon"
 
-/**
- * @description Slash command which displays the bot status.
- */
-export default class StatusCommand extends ChatInputCommandWrapper {
+export default class StatusCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super("status", "Display ping and uptime")
+        super(ExecutableStatusCommand, "status", "Display ping and uptime", PermissionsBitField.Flags.ModerateMembers)
+    }
+}
+
+class ExecutableStatusCommand extends ExecutableCommand<ChatInputCommandInteraction> {
+    constructor(interaction: ChatInputCommandInteraction) {
+        super(interaction)
     }
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async cleanup() {
+    }
+
+    async execute() {
         const since = DateTime.now().minus(Duration.fromDurationLike({seconds: process.uptime()})).toUnixInteger()
         const uptime = Duration.fromMillis(process.uptime() * 1000)
             .shiftTo("days", "hours", "minutes", "seconds")
@@ -20,7 +27,7 @@ export default class StatusCommand extends ChatInputCommandWrapper {
         const embed = EmbedUtilities.makeEmbed("Status", undefined)
             .addFields([{
                 name: "Ping",
-                value: `${interaction.client.ws.ping}ms`,
+                value: `${this.interaction.client.ws.ping}ms`,
             }, {
                 name: "Uptime",
                 value: `Up since <t:${since}>\nUp for \`${uptime.toHuman({
@@ -30,14 +37,6 @@ export default class StatusCommand extends ChatInputCommandWrapper {
                 })}\``,
             }])
 
-        await interaction.editReply({embeds: [embed]})
-    }
-
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
-        throw new Error("Method not implemented")
-    }
-
-    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        throw new Error("Method not implemented")
+        await this.interaction.editReply({embeds: [embed]})
     }
 }

@@ -1,26 +1,24 @@
-import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
+import CommandConstructor from "../models/commandConstructor"
+import ExecutableCommand from "../models/executableCommand"
 import {
-    ApplicationCommandOptionChoiceData,
+    AutocompleteInteraction,
     ChatInputCommandInteraction,
     DiscordAPIError,
-    MessageComponentInteraction,
+    PermissionsBitField,
     RESTJSONErrorCodes,
     User,
 } from "discord.js"
-import DatabaseUtilities from "../utilities/databaseUtilities"
-import InteractionUtilities from "../utilities/interactionUtilities"
-import MIMEType from "whatwg-mimetype"
 import {DateTime} from "luxon"
-import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
+import MIMEType from "whatwg-mimetype"
 import NotionUtilities from "../utilities/notionUtilities"
+import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
+import DatabaseUtilities from "../utilities/databaseUtilities"
 
-/**
- * @description Slash command which warns a user.
- */
-export default class WarnCommand extends ChatInputCommandWrapper {
+export default class WarnCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super("warn", "Warn a user")
-        this.builder
+        super(ExecutableWarnCommand, "warn", "Warn a user", PermissionsBitField.Flags.ModerateMembers)
+        this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")
@@ -48,8 +46,8 @@ export default class WarnCommand extends ChatInputCommandWrapper {
                 .setDescription("Optional image attachment"))
     }
 
-    async getAutocomplete(option: ApplicationCommandOptionChoiceData) {
-        switch (option.name) {
+    override async getAutocomplete(interaction: AutocompleteInteraction) {
+        switch (interaction.options.getFocused(true).name) {
         case "penalty":
             return (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
                 name: level,
@@ -64,37 +62,46 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             return []
         }
     }
+}
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        if (!interaction.inGuild()) {
+class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteraction> {
+    constructor(interaction: ChatInputCommandInteraction) {
+        super(interaction)
+    }
+
+    async cleanup() {
+    }
+
+    async execute() {
+        if (!this.interaction.inGuild()) {
             throw new Error("This command can only be used in a server")
         }
 
-        const image = interaction.options.getAttachment("image")
+        const image = this.interaction.options.getAttachment("image")
         if (image && (!image.contentType || new MIMEType(image.contentType).type !== "image")) {
             throw new Error("Only image attachments are supported")
         }
 
-        const guild = await interaction.client.guilds.fetch({
-            guild: interaction.guild ?? interaction.guildId,
+        const guild = await this.interaction.client.guilds.fetch({
+            guild: this.interaction.guild ?? this.interaction.guildId,
             force: true,
         })
 
         const data: WarnData = {
             recipient: await InteractionUtilities.fetchMemberOrUser({
-                client: interaction.client,
+                client: this.interaction.client,
                 guild: guild,
-                user: interaction.options.getUser("user", true),
+                user: this.interaction.options.getUser("user", true),
             }),
             warnedBy: await InteractionUtilities.fetchMemberOrUser({
-                client: interaction.client,
-                user: interaction.user,
+                client: this.interaction.client,
+                user: this.interaction.user,
             }) as User,
-            timestamp: DateTime.fromMillis(interaction.createdTimestamp),
-            description: interaction.options.getString("description", true),
+            timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
+            description: this.interaction.options.getString("description", true),
             image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
-            reason: interaction.options.getString("reason", true),
-            penalty: interaction.options.getString("penalty", true),
+            reason: this.interaction.options.getString("reason", true),
+            penalty: this.interaction.options.getString("penalty", true),
             url: "",
         }
 
@@ -104,7 +111,7 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             [data.reason])
         data.url = await DatabaseUtilities.addNote(data.recipient, NotionUtilities.generateWarnNote(data))
 
-        if (interaction.options.getBoolean("notify", true)) {
+        if (this.interaction.options.getBoolean("notify", true)) {
             try {
                 await data.recipient.send(ResponseUtilities.generateWarnDm({
                     guildName: guild.name,
@@ -122,10 +129,138 @@ export default class WarnCommand extends ChatInputCommandWrapper {
             }
         }
 
-        await interaction.editReply(ResponseUtilities.generateWarnResponse(data, interaction))
-    }
-
-    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        throw new Error("Method not implemented")
+        await this.interaction.editReply(ResponseUtilities.generateWarnResponse(data, this.interaction))
     }
 }
+
+// import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
+// import {
+//     ApplicationCommandOptionChoiceData,
+//     ChatInputCommandInteraction,
+//     DiscordAPIError,
+//     MessageComponentInteraction,
+//     RESTJSONErrorCodes,
+//     User,
+// } from "discord.js"
+// import DatabaseUtilities from "../utilities/databaseUtilities"
+// import InteractionUtilities from "../utilities/interactionUtilities"
+// import MIMEType from "whatwg-mimetype"
+// import {DateTime} from "luxon"
+// import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
+// import NotionUtilities from "../utilities/notionUtilities"
+//
+// /**
+//  * @description Slash command which warns a user.
+//  */
+// export default class WarnCommand extends ChatInputCommandWrapper {
+//     constructor() {
+//         super("warn", "Warn a user")
+//         this.builder
+//             .addUserOption(option => option
+//                 .setName("user")
+//                 .setDescription("Target user")
+//                 .setRequired(true))
+//             .addStringOption(option => option
+//                 .setName("reason")
+//                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
+//                 .setRequired(true)
+//                 .setAutocomplete(true))
+//             .addStringOption(option => option
+//                 .setName("description")
+//                 .setDescription("Extended warning description that is sent to the user")
+//                 .setRequired(true))
+//             .addStringOption(option => option
+//                 .setName("penalty")
+//                 .setDescription("New penalty level for the user")
+//                 .setRequired(true)
+//                 .setAutocomplete(true))
+//             .addBooleanOption(option => option
+//                 .setName("notify")
+//                 .setDescription("Send a DM to the user")
+//                 .setRequired(true))
+//             .addAttachmentOption(option => option
+//                 .setName("image")
+//                 .setDescription("Optional image attachment"))
+//     }
+//
+//     async getAutocomplete(option: ApplicationCommandOptionChoiceData) {
+//         switch (option.name) {
+//         case "penalty":
+//             return (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
+//                 name: level,
+//                 value: level,
+//             }))
+//         case "reason":
+//             return (await DatabaseUtilities.getReasons()).map(level => ({
+//                 name: level,
+//                 value: level,
+//             }))
+//         default:
+//             return []
+//         }
+//     }
+//
+//     async execute(interaction: ChatInputCommandInteraction) {
+//         if (!interaction.inGuild()) {
+//             throw new Error("This command can only be used in a server")
+//         }
+//
+//         const image = interaction.options.getAttachment("image")
+//         if (image && (!image.contentType || new MIMEType(image.contentType).type !== "image")) {
+//             throw new Error("Only image attachments are supported")
+//         }
+//
+//         const guild = await interaction.client.guilds.fetch({
+//             guild: interaction.guild ?? interaction.guildId,
+//             force: true,
+//         })
+//
+//         const data: WarnData = {
+//             recipient: await InteractionUtilities.fetchMemberOrUser({
+//                 client: interaction.client,
+//                 guild: guild,
+//                 user: interaction.options.getUser("user", true),
+//             }),
+//             warnedBy: await InteractionUtilities.fetchMemberOrUser({
+//                 client: interaction.client,
+//                 user: interaction.user,
+//             }) as User,
+//             timestamp: DateTime.fromMillis(interaction.createdTimestamp),
+//             description: interaction.options.getString("description", true),
+//             image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
+//             reason: interaction.options.getString("reason", true),
+//             penalty: interaction.options.getString("penalty", true),
+//             url: "",
+//         }
+//
+//         await DatabaseUtilities.updateEntry(data.recipient,
+//             InteractionUtilities.getName(data.recipient),
+//             data.penalty,
+//             [data.reason])
+//         data.url = await DatabaseUtilities.addNote(data.recipient, NotionUtilities.generateWarnNote(data))
+//
+//         if (interaction.options.getBoolean("notify", true)) {
+//             try {
+//                 await data.recipient.send(ResponseUtilities.generateWarnDm({
+//                     guildName: guild.name,
+//                     description: data.description,
+//                     image: data.image,
+//                     timestamp: data.timestamp,
+//                 }))
+//                 data.notified = true
+//             } catch (e) {
+//                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
+//                     throw e
+//                 }
+//
+//                 data.notified = false
+//             }
+//         }
+//
+//         await interaction.editReply(ResponseUtilities.generateWarnResponse(data, interaction))
+//     }
+//
+//     executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
+//         throw new Error("Method not implemented")
+//     }
+// }

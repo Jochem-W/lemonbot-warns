@@ -10,17 +10,17 @@
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@tsconfig/node18": "^1.0.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@discordjs/rest": "^0.5.0-dev.1650931739-df64d3e",
+    "@discordjs/rest": "^0.5.0-dev.1651147752-679dcda",
     "@notionhq/client": "^1.0.4",
     "@types/lru-cache": "^7.6.1",
     "@types/luxon": "^2.3.1",
-    "@types/node": "^17.0.27",
+    "@types/node": "^17.0.30",
     "@types/whatwg-mimetype": "^2.1.1",
     "discord-api-types": "^0.32.0",
-    "discord.js": "^14.0.0-dev.1650931749-df64d3e",
+    "discord.js": "^14.0.0-dev.1651147765-679dcda",
     "firebase-admin": "^10.1.0",
     "lru-cache": "^7.8.1",
     "luxon": "^2.3.2",

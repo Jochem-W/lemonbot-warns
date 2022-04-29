@@ -21,7 +21,6 @@ import InteractionUtilities from "./interactionUtilities"
 import {DatabaseEntry} from "./databaseUtilities"
 import NotionUtilities from "./notionUtilities"
 import {BlockObjectResponse} from "../types/notion"
-import {Commands} from "../commands"
 
 export type WarnDmOptions = {
     guildName: string,
@@ -121,12 +120,13 @@ export default class ResponseUtilities {
             embed.setImage(options.image)
         }
 
-        return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
-            commandId: Commands.findKey(command => command.name === "notes")!,
-            ephemeral: interaction.ephemeral ?? false,
-            sourceId: options.warnedBy.id,
-            targetId: options.recipient.id,
-        } : undefined)
+        return this.addNotesButton({embeds: [embed]}, options.url)
+        // return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
+        //     commandId: ChatInputCommands.findKey(command => command.name === "notes")!,
+        //     ephemeral: interaction.ephemeral ?? false,
+        //     sourceId: options.warnedBy.id,
+        //     targetId: options.recipient.id,
+        // } : undefined)
     }
 
     static generateNoteResponse(options: NoteData, interaction?: CommandInteraction): WebhookEditMessageOptions {
@@ -150,12 +150,13 @@ export default class ResponseUtilities {
         })
         embed.setTimestamp(options.timestamp.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
-            commandId: Commands.findKey(command => command.name === "notes")!,
-            ephemeral: interaction.ephemeral ?? false,
-            sourceId: options.author.id,
-            targetId: options.target.id,
-        } : undefined)
+        return this.addNotesButton({embeds: [embed]}, options.url)
+        // return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
+        //     commandId: ChatInputCommands.findKey(command => command.name === "notes")!,
+        //     ephemeral: interaction.ephemeral ?? false,
+        //     sourceId: options.author.id,
+        //     targetId: options.target.id,
+        // } : undefined)
     }
 
     static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
@@ -188,6 +189,7 @@ export default class ResponseUtilities {
         }
 
         return this.addNotesButton({embeds: [embed]}, options.entry.url)
+        // return this.addNotesButton({embeds: [embed]}, options.entry.url)
     }
 
     static generateWarningsResponse(options: WarningsData,
@@ -211,40 +213,58 @@ export default class ResponseUtilities {
             .setFooter({text: "Last edited"})
             .setTimestamp(options.entry.lastEditedTime.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.entry.url, interaction ? {
-            commandId: Commands.findKey(command => command.name === "notes")!,
-            ephemeral: interaction.ephemeral ?? false,
-            sourceId: options.requester.id,
-            targetId: options.user.id,
-        } : undefined)
+        return this.addNotesButton({embeds: [embed]}, options.entry.url)
+        // return this.addNotesButton({embeds: [embed]}, options.entry.url, interaction ? {
+        //     commandId: ChatInputCommands.findKey(command => command.name === "notes")!,
+        //     ephemeral: interaction.ephemeral ?? false,
+        //     sourceId: options.requester.id,
+        //     targetId: options.user.id,
+        // } : undefined)
     }
 
-    static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type,
-                                                                                   url: string,
-                                                                                   button?: NotesButtonData): Type {
+    static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type, url: string): Type {
         if (!options.components) {
             options.components = []
         }
 
-        const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
-        if (button) {
-            actionRow.addComponents([
+        options.components.push(new ActionRowBuilder<MessageActionRowComponentBuilder>()
+            .addComponents([
                 new ButtonBuilder()
-                    .setStyle(ButtonStyle.Primary)
-                    .setLabel("📝 View notes (Discord)")
-                    .setCustomId(`${button.commandId}:${button.ephemeral}:${button.sourceId}:${button.targetId}`),
-            ])
-        }
-
-        actionRow.addComponents([
-            new ButtonBuilder()
-                .setStyle(ButtonStyle.Link)
-                .setURL(url)
-                .setLabel("📝 View notes (Notion)"),
-        ])
-
-        options.components.push(actionRow)
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(url)
+                    .setLabel("📝 View notes (Notion)"),
+            ]),
+        )
 
         return options
     }
+
+    // static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type,
+    //                                                                                url: string,
+    //                                                                                button?: NotesButtonData): Type {
+    //     if (!options.components) {
+    //         options.components = []
+    //     }
+    //
+    //     const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
+    //     if (button) {
+    //         actionRow.addComponents([
+    //             new ButtonBuilder()
+    //                 .setStyle(ButtonStyle.Primary)
+    //                 .setLabel("📝 View notes (Discord)")
+    //                 .setCustomId(`${button.commandId}:${button.ephemeral}:${button.sourceId}:${button.targetId}`),
+    //         ])
+    //     }
+    //
+    //     actionRow.addComponents([
+    //         new ButtonBuilder()
+    //             .setStyle(ButtonStyle.Link)
+    //             .setURL(url)
+    //             .setLabel("📝 View notes (Notion)"),
+    //     ])
+    //
+    //     options.components.push(actionRow)
+    //
+    //     return options
+    // }
 }

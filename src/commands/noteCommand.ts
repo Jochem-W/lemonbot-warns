@@ -1,23 +1,16 @@
-import ChatInputCommandWrapper from "../wrappers/chatInputCommandWrapper"
-import {
-    ApplicationCommandOptionChoiceData,
-    ChatInputCommandInteraction,
-    MessageComponentInteraction,
-    User,
-} from "discord.js"
-import DatabaseUtilities from "../utilities/databaseUtilities"
-import InteractionUtilities from "../utilities/interactionUtilities"
+import CommandConstructor from "../models/commandConstructor"
+import ExecutableCommand from "../models/executableCommand"
+import {ChatInputCommandInteraction, PermissionsBitField, User} from "discord.js"
 import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 import NotionUtilities from "../utilities/notionUtilities"
 import {DateTime} from "luxon"
+import DatabaseUtilities from "../utilities/databaseUtilities"
 
-/**
- * @description Slash command which add a note to a user.
- */
-export default class NoteCommand extends ChatInputCommandWrapper {
+export default class NoteCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super("note", "Add a note to a user")
-        this.builder
+        super(ExecutableNoteCommand, "note", "Add a note to a user", PermissionsBitField.Flags.ModerateMembers)
+        this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")
@@ -33,36 +26,38 @@ export default class NoteCommand extends ChatInputCommandWrapper {
                 .setName("attachment")
                 .setDescription("Optional file attachment"))
     }
+}
 
-    async execute(interaction: ChatInputCommandInteraction) {
+class ExecutableNoteCommand extends ExecutableCommand<ChatInputCommandInteraction> {
+    constructor(interaction: ChatInputCommandInteraction) {
+        super(interaction)
+    }
+
+    async execute() {
         const data: NoteData = {
             author: await InteractionUtilities.fetchMemberOrUser({
-                client: interaction.client,
-                user: interaction.user,
+                client: this.interaction.client,
+                user: this.interaction.user,
             }) as User,
             target: await InteractionUtilities.fetchMemberOrUser({
-                client: interaction.client,
-                guild: interaction.guild ?? interaction.guildId ?? undefined,
-                user: interaction.options.getUser("user", true),
+                client: this.interaction.client,
+                guild: this.interaction.guild ?? this.interaction.guildId ?? undefined,
+                user: this.interaction.options.getUser("user", true),
             }),
-            title: interaction.options.getString("title") ?? undefined,
-            body: interaction.options.getString("body", true),
-            attachment: interaction.options.getAttachment("attachment") ?? undefined,
+            title: this.interaction.options.getString("title") ?? undefined,
+            body: this.interaction.options.getString("body", true),
+            attachment: this.interaction.options.getAttachment("attachment") ?? undefined,
             url: "",
-            timestamp: DateTime.fromMillis(interaction.createdTimestamp),
+            timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
         }
 
         const content = await NotionUtilities.generateNote(data)
         data.url = await DatabaseUtilities.addNote(data.target, content, InteractionUtilities.getName(data.target))
 
-        await interaction.editReply(ResponseUtilities.generateNoteResponse(data, interaction))
+        await this.interaction.editReply(ResponseUtilities.generateNoteResponse(data, this.interaction))
     }
 
-    getAutocomplete(option: ApplicationCommandOptionChoiceData): Promise<ApplicationCommandOptionChoiceData[]> {
-        throw new Error("Method not implemented")
-    }
-
-    executeComponent(interaction: MessageComponentInteraction, ...args: string[]): Promise<void> {
-        throw new Error("Method not implemented")
+    async cleanup() {
+        await this.disableButtons()
     }
 }
