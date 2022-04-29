@@ -189,7 +189,6 @@ export default class ResponseUtilities {
         }
 
         return this.addNotesButton({embeds: [embed]}, options.entry.url)
-        // return this.addNotesButton({embeds: [embed]}, options.entry.url)
     }
 
     static generateWarningsResponse(options: WarningsData,
@@ -238,33 +237,4 @@ export default class ResponseUtilities {
 
         return options
     }
-
-    // static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type,
-    //                                                                                url: string,
-    //                                                                                button?: NotesButtonData): Type {
-    //     if (!options.components) {
-    //         options.components = []
-    //     }
-    //
-    //     const actionRow = new ActionRowBuilder<MessageActionRowComponentBuilder>()
-    //     if (button) {
-    //         actionRow.addComponents([
-    //             new ButtonBuilder()
-    //                 .setStyle(ButtonStyle.Primary)
-    //                 .setLabel("📝 View notes (Discord)")
-    //                 .setCustomId(`${button.commandId}:${button.ephemeral}:${button.sourceId}:${button.targetId}`),
-    //         ])
-    //     }
-    //
-    //     actionRow.addComponents([
-    //         new ButtonBuilder()
-    //             .setStyle(ButtonStyle.Link)
-    //             .setURL(url)
-    //             .setLabel("📝 View notes (Notion)"),
-    //     ])
-    //
-    //     options.components.push(actionRow)
-    //
-    //     return options
-    // }
 }
