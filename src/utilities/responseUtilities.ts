@@ -90,7 +90,7 @@ export default class ResponseUtilities {
         if (options.notified === true) {
             administrationText += `\n• DM sent: ${inlineCode("✅")}`
         } else if (options.notified === false) {
-            administrationText += `\n• DM sent: ${inlineCode("❌ (failed)")}`
+            administrationText += `\n• DM sent: ${inlineCode("❌ (DMs disabled/bot blocked)")}`
         } else {
             administrationText += `\n• DM sent: ${inlineCode("❌ (notify was False)")}`
         }
