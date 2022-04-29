@@ -198,7 +198,7 @@ export default class NotionUtilities {
         case "mention":
             switch (richText.mention.type) {
             case "user":
-                text = richText.plain_text
+                text = inlineCode(richText.plain_text)
                 break
             case "date":
                 text = time(DateTime.fromISO(richText.mention.date.start).toSeconds(), "R")
