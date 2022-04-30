@@ -22,7 +22,7 @@
     "discord-api-types": "^0.32.0",
     "discord.js": "^14.0.0-dev.1651147765-679dcda",
     "firebase-admin": "^10.1.0",
-    "lru-cache": "^7.8.1",
+    "lru-cache": "^7.9.0",
     "luxon": "^2.3.2",
     "whatwg-mimetype": "^3.0.0"
   },

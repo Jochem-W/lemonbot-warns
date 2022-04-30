@@ -13,7 +13,7 @@ specifiers:
   discord.js: ^14.0.0-dev.1651147765-679dcda
   erlpack: github:discord/erlpack
   firebase-admin: ^10.1.0
-  lru-cache: ^7.8.1
+  lru-cache: ^7.9.0
   luxon: ^2.3.2
   typescript: ^4.6.4
   utf-8-validate: ^5.0.9
@@ -30,7 +30,7 @@ dependencies:
   discord-api-types: 0.32.0
   discord.js: 14.0.0-dev.1651147765-679dcda_d6955b83f926115bf12ffeabab6deaae
   firebase-admin: 10.1.0
-  lru-cache: 7.8.1
+  lru-cache: 7.9.0
   luxon: 2.3.2
   whatwg-mimetype: 3.0.0
 
@@ -50,7 +50,7 @@ packages:
     resolution: { integrity: sha512-XMI7ac6eMNJaH9ymT+B8fqSaCmR8vfuh40+BIomHpw27v1P1D1U41cpWdvQx74KDZfclFcoJhxhvvLQLeqGk7A== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@sapphire/shapeshift': 2.1.0
+      '@sapphire/shapeshift': 2.2.0
       '@sindresorhus/is': 4.6.0
       discord-api-types: 0.31.2
       fast-deep-equal: 3.1.3
@@ -313,8 +313,8 @@ packages:
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
     dev: false
 
-  /@sapphire/shapeshift/2.1.0:
-    resolution: { integrity: sha512-Z1ISLP9pNI3jpKJxx82xtDpEsfomhJ3iPqcKdYLjAHmQP2X5yqQF6phA0Wd+MmdXp081wepOiT59XEN0xdTVvQ== }
+  /@sapphire/shapeshift/2.2.0:
+    resolution: { integrity: sha512-UEnKgMlQyI0yY/q+lCMX0VJft9y86IsesgbIQj6e62FBYSaMVr+IaMNpi4z45Q14VnuMACbK0yrbHISNqgUYcQ== }
     engines: { node: '>=v15.0.0', npm: '>=7.0.0' }
     dev: false
 
@@ -1074,8 +1074,8 @@ packages:
     dev: false
     optional: true
 
-  /lru-cache/7.8.1:
-    resolution: { integrity: sha512-E1v547OCgJvbvevfjgK9sNKIVXO96NnsTsFPBlg4ZxjhsJSODoH9lk8Bm0OxvHNm6Vm5Yqkl/1fErDxhYL8Skg== }
+  /lru-cache/7.9.0:
+    resolution: { integrity: sha512-lkcNMUKqdJk96TuIXUidxaPuEg5sJo/+ZyVE2BDFnuZGzwXem7d8582eG8vbu4todLfT14snP6iHriCHXXi5Rw== }
     engines: { node: '>=12' }
     dev: false
 
