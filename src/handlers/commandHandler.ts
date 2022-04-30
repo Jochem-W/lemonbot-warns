@@ -31,7 +31,10 @@ export default class CommandHandler extends HandlerWrapper {
 
         const command = ChatInputCommands.get(interaction.commandId)
         if (!command) {
-            await interaction.reply({embeds: [errorEmbed.setTitle("This command doesn't exist")]})
+            await interaction.reply({
+                embeds: [errorEmbed.setTitle("This command doesn't exist")],
+                ephemeral: true,
+            })
             return
         }
 
