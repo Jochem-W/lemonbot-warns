@@ -12,6 +12,7 @@ export type DatabaseEntry = {
     name: string
     currentPenaltyLevel: string
     reasons: string[]
+    watchlist: boolean
     lastEditedTime: DateTime
     url: string
     pageId: string
@@ -46,9 +47,33 @@ export default class DatabaseUtilities {
             }
         },
     })
+    private static parentUrl: string | undefined
 
     static clearCache() {
         this.cache.clear()
+    }
+
+    static async getParentUrl(): Promise<string> {
+        if (this.parentUrl) {
+            return this.parentUrl
+        }
+
+        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+        if (!("url" in database)) {
+            throw new Error("Database has no url")
+        }
+
+        if (database.parent.type !== "page_id") {
+            throw new Error("Database parent is not a page")
+        }
+
+        const page = await Notion.pages.retrieve({page_id: database.parent.page_id})
+        if (!("url" in page)) {
+            throw new Error("Database parent has no url")
+        }
+
+        this.parentUrl = page.url
+        return this.parentUrl
     }
 
     static async getPenaltyLevels(): Promise<string[]> {
@@ -75,6 +100,16 @@ export default class DatabaseUtilities {
             response = await Notion.databases.query({
                 database_id: Variables.databaseId,
                 start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
+                sorts: [
+                    {
+                        property: "Penalty Level",
+                        direction: "descending",
+                    },
+                    {
+                        property: "Name [Server Nickname]",
+                        direction: "ascending",
+                    },
+                ],
             })
 
             for (const entry of this.toDatabaseEntries(response)) {
@@ -301,6 +336,11 @@ export default class DatabaseUtilities {
                 throw new Error("Malformed reasons")
             }
 
+            const watchlist = result.properties["Watchlist"]
+            if (watchlist?.type !== "checkbox") {
+                throw new Error("Malformed watchlist")
+            }
+
             const lastEditedTime = result.properties["Last edited time"]
             if (lastEditedTime?.type !== "last_edited_time") {
                 throw new Error("Malformed last edited time for")
@@ -321,6 +361,7 @@ export default class DatabaseUtilities {
                 name: name.title.map(t => t.plain_text).join(""),
                 currentPenaltyLevel: currentPenalty.select.name,
                 reasons: reasons.multi_select.map(x => x.name),
+                watchlist: watchlist.checkbox,
                 lastEditedTime: DateTime.fromISO(lastEditedTime.last_edited_time),
                 // lastEditedBy: lastEditedByUser.name,
                 url: result.url,
