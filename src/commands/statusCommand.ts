@@ -24,7 +24,7 @@ class ExecutableStatusCommand extends ExecutableCommand<ChatInputCommandInteract
             .shiftTo("days", "hours", "minutes", "seconds")
             .normalize()
 
-        const embed = EmbedUtilities.makeEmbed("Status", undefined)
+        const embed = EmbedUtilities.makeEmbed("Status")
             .addFields([{
                 name: "Ping",
                 value: `${this.interaction.client.ws.ping}ms`,
