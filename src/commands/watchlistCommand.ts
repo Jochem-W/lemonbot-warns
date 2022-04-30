@@ -32,7 +32,7 @@ class WatchlistExecutableCommand extends ExecutableCommand<ChatInputCommandInter
         super(interaction)
     }
 
-    override async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+    override async handleMessageComponent(interaction: MessageComponentInteraction) {
         switch (interaction.customId) {
         case "next":
             this.offset += this.count
@@ -48,11 +48,11 @@ class WatchlistExecutableCommand extends ExecutableCommand<ChatInputCommandInter
         await interaction.update(await this.generate())
     }
 
-    async cleanup(): Promise<void> {
+    async cleanup() {
         await this.disableButtons()
     }
 
-    async execute(): Promise<void> {
+    async execute() {
         await this.load()
         await this.load()
         await this.interaction.editReply(await this.generate())
