@@ -11,6 +11,8 @@ import {
     ModalSubmitInteraction,
     SelectMenuBuilder,
 } from "discord.js"
+import EmbedUtilities from "../utilities/embedUtilities"
+import {Config} from "../config"
 
 /**
  * A command that was executed by a user.
@@ -92,5 +94,18 @@ export default abstract class ExecutableCommand<T extends CommandInteraction> {
                 })),
             ),
         })
+    }
+
+    protected async checkUser(interaction: MessageComponentInteraction) {
+        if (interaction.user !== this.interaction.user) {
+            await interaction.reply({
+                embeds: [EmbedUtilities.makeEmbed("Something went wrong while handling this interaction",
+                    Config.failIcon, "You can't use this component!")],
+                ephemeral: true,
+            })
+            return false
+        }
+
+        return true
     }
 }

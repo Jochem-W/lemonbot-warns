@@ -33,6 +33,10 @@ class WatchlistExecutableCommand extends ExecutableCommand<ChatInputCommandInter
     }
 
     override async handleMessageComponent(interaction: MessageComponentInteraction) {
+        if (!await this.checkUser(interaction)) {
+            return
+        }
+
         switch (interaction.customId) {
         case "next":
             this.offset += this.count
