@@ -58,6 +58,5 @@ class ExecutableNoteCommand extends ExecutableCommand<ChatInputCommandInteractio
     }
 
     async cleanup() {
-        await this.disableButtons()
     }
 }
