@@ -75,7 +75,7 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
             channel: command.interaction.channel ?? command.interaction.channelId ?? undefined,
             message: await command.interaction.deferReply({...options, fetchReply: true}),
             dispose: true,
-            idle: 5000,
+            idle: 600000,
         }).on("collect", async collected => {
             if (collected.isMessageComponent()) {
                 await command.handleMessageComponent(collected)
