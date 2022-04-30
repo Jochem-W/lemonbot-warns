@@ -102,6 +102,10 @@ export default class DatabaseUtilities {
                 start_cursor: response && "next_cursor" in response ? response.next_cursor ?? undefined : undefined,
                 sorts: [
                     {
+                        property: "Watchlist",
+                        direction: "descending",
+                    },
+                    {
                         property: "Penalty Level",
                         direction: "descending",
                     },
