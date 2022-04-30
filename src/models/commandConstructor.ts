@@ -88,7 +88,7 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
             }
 
             throw new Error(`Unexpected interaction ${collected} on command ${command}`)
-        }).on("dispose", async () => {
+        }).on("end", async () => {
             await command.cleanup()
         })
 
