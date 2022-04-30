@@ -24,7 +24,6 @@ ChatInputCommandConstructors.forEach(cw => {
 const rest = new REST({version: "10"}).setToken(Variables.discordToken);
 
 (async () => {
-    await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId, Config.guildId), {body: []})
     const applicationCommands = await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId,
         Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
