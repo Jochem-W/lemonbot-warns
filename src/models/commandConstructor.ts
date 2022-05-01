@@ -8,7 +8,6 @@ import {
     SlashCommandBuilder,
 } from "discord.js"
 import ExecutableCommand from "./executableCommand"
-import EmbedUtilities from "../utilities/embedUtilities"
 
 /**
  * A constructor for a command that can be executed by a user.
@@ -94,14 +93,5 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
         })
 
         await command.execute()
-
-        await interaction.followUp({
-            embeds: [
-                EmbedUtilities.makeEmbed("Reminder",
-                    undefined,
-                    "While you're at it, please fix the command permissions in the integration tab if you haven't already!")
-                    .setDescription("If the permissions were already fixed, you can ignore this message."),
-            ],
-        })
     }
 }
