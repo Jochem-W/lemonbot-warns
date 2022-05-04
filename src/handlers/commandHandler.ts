@@ -55,14 +55,18 @@ export default class CommandHandler extends HandlerWrapper {
     }
 
     async handle(interaction: Interaction) {
-        if (interaction.isAutocomplete()) {
-            await CommandHandler.handleAutocomplete(interaction)
-            return
-        }
+        try {
+            if (interaction.isAutocomplete()) {
+                await CommandHandler.handleAutocomplete(interaction)
+                return
+            }
 
-        if (interaction.isCommand()) {
-            await CommandHandler.handleCommand(interaction)
-            return
+            if (interaction.isCommand()) {
+                await CommandHandler.handleCommand(interaction)
+                return
+            }
+        } catch (e) {
+            console.error("Encountered an unhandled error", e, "while handling interaction", interaction)
         }
     }
 }

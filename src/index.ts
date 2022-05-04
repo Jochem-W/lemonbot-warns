@@ -39,7 +39,13 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
     }
 
     Handlers.forEach(h => {
-        client.on(h.eventName, async (...args) => await h.handle(...args))
+        client.on(h.eventName, async (...args) => {
+            try {
+                await h.handle(...args)
+            } catch (e) {
+                console.error("Unhandled error", e, "while handling an event using", h)
+            }
+        })
         console.log(`Registered '${h.constructor.name}' handler for '${h.eventName}'`)
     })
 
