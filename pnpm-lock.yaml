@@ -88,6 +88,9 @@ packages:
     peerDependencies:
       '@firebase/app-types': 0.x
       '@firebase/util': 1.x
+    peerDependenciesMeta:
+      '@firebase/app-types':
+        optional: true
     dependencies:
       '@firebase/util': 1.5.2
     dev: false
@@ -103,6 +106,9 @@ packages:
     resolution: { integrity: sha512-dhXr5CSieBuKNdU96HgeewMQCT9EgOIkfF1GNy+iRrdl7BWLxmlKuvLfK319rmIytSs/vnCzcD9uqyxTeU/A3A== }
     peerDependencies:
       '@firebase/app-compat': 0.x
+    peerDependenciesMeta:
+      '@firebase/app-compat':
+        optional: true
     dependencies:
       '@firebase/component': 0.5.13
       '@firebase/database': 0.12.8
