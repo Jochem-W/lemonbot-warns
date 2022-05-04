@@ -49,16 +49,22 @@ export default class WarnCommand extends CommandConstructor<ChatInputCommandInte
 
     override async getAutocomplete(interaction: AutocompleteInteraction) {
         switch (interaction.options.getFocused(true).name) {
-        case "penalty":
-            return (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
+        case "penalty": {
+            const options = (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
                 name: level,
                 value: level,
             }))
-        case "reason":
-            return (await DatabaseUtilities.getReasons()).map(level => ({
+            console.log("Submitting penalty autocomplete", options)
+            return options
+        }
+        case "reason": {
+            const options = (await DatabaseUtilities.getReasons()).map(level => ({
                 name: level,
                 value: level,
             }))
+            console.log("Submitting reasons autocomplete", options)
+            return options
+        }
         default:
             return []
         }
