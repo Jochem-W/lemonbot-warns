@@ -6,11 +6,11 @@ import InteractionUtilities from "../utilities/interactionUtilities"
 
 export default class NotesCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super(ExecutableNotesCommand, "notes", "List a user's notes.", PermissionsBitField.Flags.ModerateMembers)
+        super(ExecutableNotesCommand, "notes", "List a user's notes", PermissionsBitField.Flags.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
-                .setDescription("Target user.")
+                .setDescription("Target user")
                 .setRequired(true))
     }
 }

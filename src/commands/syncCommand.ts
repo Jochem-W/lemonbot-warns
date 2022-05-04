@@ -9,7 +9,7 @@ export default class SyncCommand extends CommandConstructor<ChatInputCommandInte
     constructor() {
         super(ExecutableSyncCommand,
             "sync",
-            "Update the names stored in the database and clears autocompletion cache.",
+            "Update the names stored in the database and clear autocompletion cache",
             PermissionsBitField.Flags.ModerateMembers)
     }
 }
