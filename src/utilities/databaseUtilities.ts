@@ -22,6 +22,7 @@ export default class DatabaseUtilities {
     private static readonly cache = new LRUCache({
         ttl: Config.cacheTtl,
         max: 2,
+        ttlAutopurge: true,
         fetchMethod: async (key: string) => {
             switch (key) {
             case "reasons": {
@@ -45,6 +46,9 @@ export default class DatabaseUtilities {
             default:
                 return null
             }
+        },
+        disposeAfter: async (value, key) => {
+            await this.cache.fetch(key)
         },
     })
     private static parentUrl: string | undefined
