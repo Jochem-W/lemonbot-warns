@@ -26,7 +26,8 @@ export default class WarnCommand extends CommandConstructor<ChatInputCommandInte
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("reason")
-                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
+                .setDescription(
+                    "Concise warning reason for administration purposes, preferably only a couple of words (you can add new options here as well)")
                 .setRequired(true)
                 .setAutocomplete(true))
             .addStringOption(option => option
