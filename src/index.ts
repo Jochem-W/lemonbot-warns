@@ -9,6 +9,7 @@ import {Variables} from "./variables"
 import {Handlers} from "./handlers"
 import {REST} from "@discordjs/rest"
 import {Config} from "./config"
+import DatabaseUtilities from "./utilities/databaseUtilities"
 
 const client = new Client({
     intents: [IntentsBitField.Flags.GuildMembers],
@@ -50,4 +51,6 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
     })
 
     await client.login(Variables.discordToken)
+
+    await DatabaseUtilities.initialiseCache()
 })()

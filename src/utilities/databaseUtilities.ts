@@ -53,8 +53,10 @@ export default class DatabaseUtilities {
     })
     private static parentUrl: string | undefined
 
-    static clearCache() {
+    static async initialiseCache() {
         this.cache.clear()
+        await this.cache.fetch("reasons")
+        await this.cache.fetch("penaltyLevels")
     }
 
     static async getParentUrl(): Promise<string> {
