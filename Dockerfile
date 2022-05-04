@@ -1,5 +1,5 @@
 # Set-up build image
-FROM node:current-slim AS builder
+FROM node:current-alpine AS builder
 ENV NODE_ENV=development
 WORKDIR /app
 
@@ -7,9 +7,7 @@ WORKDIR /app
 COPY ["pnpm-lock.yaml", "package.json", "./"]
 
 # Install dependencies
-RUN apt-get update && \
-    apt-get install -y build-essential python3 && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN apk add --no-cache alpine-sdk python3 && \
     npm install -g pnpm && \
     pnpm install
 
@@ -22,14 +20,9 @@ RUN npm run compile && \
 
 
 # Set-up running image
-FROM node:current-slim
+FROM node:current-alpine
 ENV NODE_ENV=production
 WORKDIR /app
-
-# Install runtime dependencies
-RUN apt-get update && \
-    apt-get install -y imagemagick && \
-    rm -rf /var/lib/apt/lists/*
 
 # Copy all files (including source :/)
 COPY --from=builder /app .
