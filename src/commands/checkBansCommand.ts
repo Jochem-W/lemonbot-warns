@@ -34,7 +34,7 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
             }
 
             embed.data.description +=
-                `• ${inlineCode(ban.user.tag)} (created ${time(Math.floor(createdDate.toSeconds()), "R")})\n`
+                `\n• ${inlineCode(ban.user.tag)} (created ${time(Math.floor(createdDate.toSeconds()), "R")})`
         }
 
         await this.interaction.editReply({embeds: [embed]})
