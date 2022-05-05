@@ -183,6 +183,9 @@ export default class ResponseUtilities {
             value: warningsData.entry.reasons.length ?
                 warningsData.entry.reasons.map(reason => ` - ${reason}`).join("\n") :
                 "N/A",
+        }, {
+            name: "Watch",
+            value: inlineCode(`${warningsData.entry.watchlist ? "✅" : "❌"}`),
         }])
 
         embed.setFooter(null)
