@@ -21,7 +21,8 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
         }
 
         const embed = EmbedUtilities.makeEmbed("Wrongfully auto-banned users")
-        embed.data.description = ""
+            .setDescription(
+                "The following users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days:")
         for (const [, ban] of await this.interaction.guild!.bans.fetch()) {
             if (ban.reason !== "Account was less than 30 days old") {
                 continue
