@@ -160,35 +160,32 @@ export default class ResponseUtilities {
     }
 
     static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
-        const embed = EmbedUtilities.makeEmbed(`Notes for ${options.user.tag}`,
-            options.user.displayAvatarURL({size: 4096}))
-        if (!options.entry) {
-            embed.setTitle("This user isn't in the database")
-            return {embeds: [embed]}
-        }
-
-        embed.setFooter({text: "Last edited"})
-            .setTimestamp(options.entry.lastEditedTime.toMillis())
-
         const parseResult = NotionUtilities.parseBlockObjects(options.blocks)
+        const firstEmbed = parseResult.embeds[0]!
         if (parseResult.unsupportedBlocks) {
             const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
-            EmbedUtilities.append(embed,
-                `• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`,
-                "\n")
+            firstEmbed.setDescription(`• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`)
         }
 
-        if (parseResult.fields.length > 25) {
-            EmbedUtilities.append(embed, `• Displaying the first 25 of ${parseResult.fields.length} notes`, "\n")
+        firstEmbed.setAuthor({
+            name: `Notes for ${options.user.tag}`,
+            iconURL: options.user.displayAvatarURL({size: 4096}),
+        })
+
+        if (!options.entry) {
+            firstEmbed.setTitle("This user isn't in the database")
+            return {embeds: parseResult.embeds}
         }
 
-        embed.addFields(parseResult.fields.slice(0, 25))
+        parseResult.embeds.at(-1)!
+            .setFooter({text: "Last edited"})
+            .setTimestamp(options.entry.lastEditedTime.toMillis())
 
-        if (!embed.data.fields?.length && !embed.data.description) {
-            embed.setTitle("This user has no notes")
+        if (!firstEmbed.data.fields?.length && !firstEmbed.data.image) {
+            firstEmbed.setTitle("This user has no notes")
         }
 
-        return this.addNotesButton({embeds: [embed]}, options.entry.url)
+        return this.addNotesButton({embeds: parseResult.embeds}, options.entry.url)
     }
 
     static generateWarningsResponse(options: WarningsData,

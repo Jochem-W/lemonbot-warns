@@ -1,8 +1,8 @@
 import {BlockObjectRequest, BlockObjectResponse, FileBlockResponse, RichTextItemResponse} from "../types/notion"
 import {
-    APIEmbedField,
     bold,
     codeBlock,
+    EmbedBuilder,
     hyperlink,
     inlineCode,
     italic,
@@ -15,19 +15,19 @@ import {NoteData, WarnData} from "./responseUtilities"
 import InteractionUtilities from "./interactionUtilities"
 
 export type ParseBlockObjectsResult = {
-    fields: APIEmbedField[]
+    embeds: EmbedBuilder[]
     unsupportedBlocks: number,
 }
 
 export default class NotionUtilities {
     static parseBlockObjects(blocks: BlockObjectResponse[]): ParseBlockObjectsResult {
-        const fields = [
-            {
-                name: "",
-                values: [] as string[],
-            },
-        ]
-        let unsupportedBlocks = 0
+        const result: ParseBlockObjectsResult = {
+            embeds: [new EmbedBuilder().setFields([{
+                name: " ",
+                value: " ",
+            }])],
+            unsupportedBlocks: 0,
+        }
 
         let currentListNumber = 1
         for (const block of blocks) {
@@ -35,55 +35,62 @@ export default class NotionUtilities {
                 currentListNumber = 1
             }
 
-            const lastField = fields[fields.length - 1]!
+            let lastEmbed = result.embeds.at(-1)!
+            if (lastEmbed.data.fields?.length === 25 || lastEmbed.data.image) {
+                lastEmbed = new EmbedBuilder().setFields([{
+                    name: " ",
+                    value: " ",
+                }])
+                result.embeds.push(lastEmbed)
+            }
+            const lastField = lastEmbed.data.fields!.at(-1)!
+
             switch (block.type) {
             case "paragraph":
-                lastField.values.push(block.paragraph.rich_text.map(this.richTextToString).join(""))
+                lastField.value += `${block.paragraph.rich_text.map(this.richTextToString).join("")}\n`
                 break
             case "heading_1":
-                fields.push({
+                lastEmbed.addFields([{
                     name: block.heading_1.rich_text.map(this.richTextToString).join(""),
-                    values: [],
-                })
+                    value: " ",
+                }])
                 break
             case "heading_2":
-                fields.push({
+                lastEmbed.addFields([{
                     name: block.heading_2.rich_text.map(this.richTextToString).join(""),
-                    values: [],
-                })
+                    value: " ",
+                }])
                 break
             case "heading_3":
-                fields.push({
+                lastEmbed.addFields([{
                     name: block.heading_3.rich_text.map(this.richTextToString).join(""),
-                    values: [],
-                })
+                    value: " ",
+                }])
                 break
             case "bulleted_list_item":
-                lastField.values.push(`• ${block.bulleted_list_item.rich_text.map(this.richTextToString)
-                    .join("")}`)
+                lastField.value += `• ${block.bulleted_list_item.rich_text.map(this.richTextToString).join("")}\n`
                 break
             case "numbered_list_item":
-                lastField.values.push(`${currentListNumber}. ${block.numbered_list_item.rich_text
-                    .map(this.richTextToString).join("")}`)
+                lastField.value +=
+                    `${currentListNumber}. ${block.numbered_list_item.rich_text.map(this.richTextToString).join("")}\n`
                 currentListNumber++
                 break
             case "quote":
-                lastField.values.push(`> ${block.quote.rich_text.map(this.richTextToString).join("")}`)
+                lastField.value += `> ${block.quote.rich_text.map(this.richTextToString).join("")}\n`
                 break
             case "to_do":
-                lastField.values.push(`${block.to_do.checked ?
-                    "✅" :
-                    "🟩"} ${block.to_do.rich_text.map(this.richTextToString).join("")}`)
+                lastField.value +=
+                    `${block.to_do.checked ? "✅" : "🟩"} ${block.to_do.rich_text.map(this.richTextToString).join("")}\n`
                 break
             case "toggle":
-                lastField.values.push(block.toggle.rich_text.map(this.richTextToString).join(""))
+                lastField.value += `${block.toggle.rich_text.map(this.richTextToString).join("")}\n`
                 break
             case "equation":
-                lastField.values.push(inlineCode(block.equation.expression))
+                lastField.value += `${inlineCode(block.equation.expression)}\n`
                 break
             case "code":
-                lastField.values.push(codeBlock(block.code.rich_text.map(this.richTextToString).join("")),
-                    block.code.language)
+                lastField.value +=
+                    `${codeBlock(block.code.rich_text.map(this.richTextToString).join(""), block.code.language)}\n`
                 break
             case "callout": {
                 let icon
@@ -96,8 +103,8 @@ export default class NotionUtilities {
                     break
                 }
 
-                lastField.values.push(codeBlock(`${icon} ${block.callout.rich_text.map(this.richTextToString)
-                    .join("")}`))
+                lastField.value +=
+                    `${codeBlock(`${icon} ${block.callout.rich_text.map(this.richTextToString).join("")}`)}\n`
                 break
             }
             case "embed": {
@@ -106,7 +113,7 @@ export default class NotionUtilities {
                     caption = "View embed"
                 }
 
-                lastField.values.push(hyperlink(caption, block.embed.url))
+                lastField.value += `${hyperlink(caption, block.embed.url)}\n`
                 break
             }
             case "bookmark": {
@@ -115,29 +122,37 @@ export default class NotionUtilities {
                     caption = "View bookmark"
                 }
 
-                lastField.values.push(hyperlink(caption, block.bookmark.url))
+                lastField.value += `${hyperlink(caption, block.bookmark.url)}\n`
                 break
             }
             case "image":
-                lastField.values.push(this.generateHyperlink(block.image, "View image"))
+                switch (block.image.type) {
+                case "external":
+                    lastEmbed.setImage(block.image.external.url)
+                    break
+                case "file":
+                    lastEmbed.setImage(block.image.file.url)
+                    break
+                }
+
                 break
             case "video":
-                lastField.values.push(this.generateHyperlink(block.video, "View video"))
+                lastField.value += `${this.generateHyperlink(block.video, "View video")}\n`
                 break
             case "pdf":
-                lastField.values.push(this.generateHyperlink(block.pdf, "View PDF"))
+                lastField.value += `${this.generateHyperlink(block.pdf, "View PDF")}\n`
                 break
             case "file":
-                lastField.values.push(this.generateHyperlink(block.file, "View file"))
+                lastField.value += `${this.generateHyperlink(block.file, "View file")}\n`
                 break
             case "audio":
-                lastField.values.push(this.generateHyperlink(block.audio, "View audio"))
+                lastField.value += `${this.generateHyperlink(block.audio, "View audio")}\n`
                 break
             case "link_preview":
-                lastField.values.push(hyperlink("View link", block.link_preview.url))
+                lastField.value += `${hyperlink("View link", block.link_preview.url)}\n`
                 break
             case "divider":
-                lastField.values.push(`───`)
+                lastField.value += "───\n"
                 break
             case "unsupported":
             case "template":
@@ -151,21 +166,43 @@ export default class NotionUtilities {
             case "link_to_page":
             case "table":
             case "table_row":
-                unsupportedBlocks++
+                result.unsupportedBlocks++
                 break
             }
         }
 
-        return {
-            unsupportedBlocks: unsupportedBlocks,
-            fields: fields.filter(f => f.name || f.values.length).map(f => {
-                const value = f.values.join("\n")
-                return {
-                    name: f.name ? f.name : "\u200b",
-                    value: value ? value : "\u200b",
+        for (let i = 0; i < result.embeds.length; i++) {
+            const embed = result.embeds[i]!
+            for (let j = 0; j < embed.data.fields!.length; j++) {
+                const field = embed.data.fields![j]!
+
+                field.name = field.name.trim()
+                field.value = field.value.trim()
+
+                if (!field.name && !field.value) {
+                    embed.data.fields!.splice(j, 1)
+                    j--
+                    continue
                 }
-            }),
+
+                if (!field.name) {
+                    field.name = "\u200b"
+                }
+
+                if (!field.value) {
+                    field.value = "\u200b"
+                }
+            }
+
+            if (embed.data.fields!.length === 0 && !embed.data.image) {
+                result.embeds.splice(i, 1)
+                i--
+            }
         }
+
+        result.embeds = result.embeds.slice(0, 10)
+
+        return result
     }
 
     static generateHyperlink(file: FileBlockResponse, defaultCaption: string): string {
