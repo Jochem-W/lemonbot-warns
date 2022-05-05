@@ -1,7 +1,6 @@
 import {ChatInputCommandInteraction, Collection, Snowflake} from "discord.js"
 import CommandConstructor from "./models/commandConstructor"
 import NoteCommand from "./commands/noteCommand"
-import NotesCommand from "./commands/notesCommand"
 import StatusCommand from "./commands/statusCommand"
 import SyncCommand from "./commands/syncCommand"
 import WarnCommand from "./commands/warnCommand"
@@ -15,7 +14,6 @@ export const ChatInputCommands = new Collection<Snowflake, CommandConstructor<Ch
 export const ChatInputCommandConstructors: Readonly<CommandConstructor<ChatInputCommandInteraction>[]> = [
     new CheckBansCommand(),
     new NoteCommand(),
-    new NotesCommand(),
     new StatusCommand(),
     new SyncCommand(),
     new WarnCommand(),

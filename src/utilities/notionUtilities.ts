@@ -200,7 +200,7 @@ export default class NotionUtilities {
             }
         }
 
-        result.embeds = result.embeds.slice(0, 10)
+        result.embeds = result.embeds.slice(0, 9)
 
         return result
     }

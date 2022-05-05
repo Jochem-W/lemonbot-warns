@@ -159,63 +159,41 @@ export default class ResponseUtilities {
         // } : undefined)
     }
 
-    static generateNotesResponse(options: NotesData): WebhookEditMessageOptions {
-        const parseResult = NotionUtilities.parseBlockObjects(options.blocks)
-        const firstEmbed = parseResult.embeds[0]!
-        if (parseResult.unsupportedBlocks) {
-            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
-            firstEmbed.setDescription(`• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`)
-        }
-
-        firstEmbed.setAuthor({
-            name: `Notes for ${options.user.tag}`,
-            iconURL: options.user.displayAvatarURL({size: 4096}),
-        })
-
-        if (!options.entry) {
-            firstEmbed.setTitle("This user isn't in the database")
-            return {embeds: parseResult.embeds}
-        }
-
-        parseResult.embeds.at(-1)!
-            .setFooter({text: "Last edited"})
-            .setTimestamp(options.entry.lastEditedTime.toMillis())
-
-        if (!firstEmbed.data.fields?.length && !firstEmbed.data.image) {
-            firstEmbed.setTitle("This user has no notes")
-        }
-
-        return this.addNotesButton({embeds: parseResult.embeds}, options.entry.url)
-    }
-
-    static generateWarningsResponse(options: WarningsData,
+    static generateWarningsResponse(warningsData: WarningsData,
+                                    notesData: NotesData,
                                     interaction?: CommandInteraction): WebhookEditMessageOptions {
-        const embed = EmbedUtilities.makeEmbed(`Warnings for ${options.user.tag}`,
-            options.user.displayAvatarURL({size: 4096}))
-        if (!options.entry) {
+        const embed = EmbedUtilities.makeEmbed(`Warnings for ${warningsData.user.tag}`,
+            warningsData.user.displayAvatarURL({size: 4096}))
+        if (!warningsData.entry) {
             embed.setTitle("This user isn't in the database")
             return {embeds: [embed]}
         }
 
+        const parseResult = NotionUtilities.parseBlockObjects(notesData.blocks)
+        if (parseResult.unsupportedBlocks) {
+            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
+            embed.setDescription(`• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`)
+        }
+
         embed.addFields([{
             name: "Current penalty level",
-            value: options.entry.currentPenaltyLevel,
+            value: warningsData.entry.currentPenaltyLevel,
         }, {
             name: "Reasons",
-            value: options.entry.reasons.length ?
-                options.entry.reasons.map(reason => ` - ${reason}`).join("\n") :
+            value: warningsData.entry.reasons.length ?
+                warningsData.entry.reasons.map(reason => ` - ${reason}`).join("\n") :
                 "N/A",
         }])
-            .setFooter({text: "Last edited"})
-            .setTimestamp(options.entry.lastEditedTime.toMillis())
 
-        return this.addNotesButton({embeds: [embed]}, options.entry.url)
-        // return this.addNotesButton({embeds: [embed]}, options.entry.url, interaction ? {
-        //     commandId: ChatInputCommands.findKey(command => command.name === "notes")!,
-        //     ephemeral: interaction.ephemeral ?? false,
-        //     sourceId: options.requester.id,
-        //     targetId: options.user.id,
-        // } : undefined)
+        embed.setFooter(null)
+            .setTimestamp(null)
+
+        const embeds = [embed, ...parseResult.embeds]
+        embeds.at(-1)!
+            .setFooter({text: "Last edited"})
+            .setTimestamp(warningsData.entry.lastEditedTime.toMillis())
+
+        return {embeds: embeds}
     }
 
     static addNotesButton<Type extends WebhookEditMessageOptions | MessageOptions>(options: Type, url: string): Type {

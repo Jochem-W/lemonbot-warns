@@ -2,7 +2,7 @@ import CommandConstructor from "../models/commandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, PermissionsBitField} from "discord.js"
 import ResponseUtilities, {WarningsData} from "../utilities/responseUtilities"
-import DatabaseUtilities from "../utilities/databaseUtilities"
+import InteractionUtilities from "../utilities/interactionUtilities"
 
 export default class WarningsCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
@@ -27,13 +27,16 @@ class ExecutableWarningsCommand extends ExecutableCommand<ChatInputCommandIntera
     }
 
     async execute() {
-        const user = this.interaction.options.getUser("user", true)
-        const data: WarningsData = {
-            user: user,
-            entry: await DatabaseUtilities.getEntry(user) ?? undefined,
+        const notesData = await InteractionUtilities.generateNotesData(this.interaction,
+            this.interaction.options.getUser("user", true))
+        const warningsData: WarningsData = {
+            user: notesData.user,
+            entry: notesData.entry,
             requester: this.interaction.user,
         }
 
-        await this.interaction.editReply(ResponseUtilities.generateWarningsResponse(data, this.interaction))
+        await this.interaction.editReply(ResponseUtilities.generateWarningsResponse(warningsData,
+            notesData,
+            this.interaction))
     }
 }
