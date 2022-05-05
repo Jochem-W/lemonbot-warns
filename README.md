@@ -5,6 +5,8 @@ Notion.
 
 ## Setup instructions
 
+The bot uses Docker to ensure a consistent build and runtime environment for all users.
+
 1. Install Docker by following [these instructions](https://docs.docker.com/get-docker/)
 2. On Linux, install the latest version of Docker Compose by following
    [these instructions](https://docs.docker.com/compose/cli-command/#installing-compose-v2)
@@ -12,8 +14,6 @@ Notion.
 4. Edit `docker-compose.yml` and `config.ts`
 
 ## Running instructions
-
-The bot uses Docker to ensure a consistent build and runtime environment for all users.
 
 * To start the bot, run `docker compose up`
     * Additionally, use the `-d` flag to run the bot in the background
