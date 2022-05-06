@@ -33,7 +33,7 @@ export type WarnData = {
     recipient: GuildMember | User,
     warnedBy: User,
     description: string,
-    reason: string,
+    reasons: string[],
     penalty: string,
     timestamp: DateTime,
     image?: string,
@@ -86,7 +86,7 @@ export default class ResponseUtilities {
     }
 
     static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
-        let administrationText = `• Reason: \`${options.reason}\`\n• Penalty level: \`${options.penalty}\``
+        let administrationText = `• Reason: \`${options.reasons.join(", ")}\`\n• Penalty level: \`${options.penalty}\``
         if (options.notified === true) {
             administrationText += `\n• DM sent: ${inlineCode("✅")}`
         } else if (options.notified === false) {

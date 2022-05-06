@@ -45,6 +45,14 @@ export default class WarnCommand extends CommandConstructor<ChatInputCommandInte
             .addAttachmentOption(option => option
                 .setName("image")
                 .setDescription("Optional image attachment that will also be sent to the user"))
+            .addStringOption(option => option
+                .setName("reason2")
+                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
+                .setAutocomplete(true))
+            .addStringOption(option => option
+                .setName("reason3")
+                .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
+                .setAutocomplete(true))
     }
 
     override async getAutocomplete(interaction: AutocompleteInteraction) {
@@ -57,7 +65,9 @@ export default class WarnCommand extends CommandConstructor<ChatInputCommandInte
             console.log("Submitting penalty autocomplete", options)
             return options
         }
-        case "reason": {
+        case "reason":
+        case "reason2":
+        case "reason3": {
             const options = (await DatabaseUtilities.getReasons()).map(level => ({
                 name: level,
                 value: level,
@@ -107,15 +117,25 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
             description: this.interaction.options.getString("description", true),
             image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
-            reason: this.interaction.options.getString("reason", true),
+            reasons: [this.interaction.options.getString("reason", true)],
             penalty: this.interaction.options.getString("penalty", true),
             url: "",
+        }
+
+        const reason2 = this.interaction.options.getString("reason2")
+        if (reason2) {
+            data.reasons.push(reason2)
+        }
+
+        const reason3 = this.interaction.options.getString("reason3")
+        if (reason3) {
+            data.reasons.push(reason3)
         }
 
         await DatabaseUtilities.updateEntry(data.recipient,
             InteractionUtilities.getName(data.recipient),
             data.penalty,
-            [data.reason])
+            data.reasons)
         data.url = await DatabaseUtilities.addNote(data.recipient, NotionUtilities.generateWarnNote(data))
 
         if (this.interaction.options.getBoolean("notify", true)) {

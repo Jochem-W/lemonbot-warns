@@ -286,7 +286,7 @@ export default class NotionUtilities {
                     rich_text: [
                         {
                             text: {
-                                content: `Warned by ${data.warnedBy.tag} for ${data.reason} `,
+                                content: `Warned by ${data.warnedBy.tag} for ${data.reasons.join(", ")} `,
                             },
                         },
                         {
