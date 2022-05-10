@@ -21,16 +21,21 @@ export type UploadAttachmentResult = {
     subtype: string,
 }
 
-export type FetchMemberOrUserOptions = {
-    guild?: GuildResolvable,
+type FetchMemberOrUserOptions = {
     client: Client,
+    guild?: GuildResolvable,
     user: UserResolvable,
     force?: boolean,
 }
 
 export default class InteractionUtilities {
+    static async fetchMemberOrUser(options: Omit<FetchMemberOrUserOptions, "guild"> | (FetchMemberOrUserOptions & { guild: undefined }),
+                                   force?: boolean): Promise<User>
+    static async fetchMemberOrUser(options: FetchMemberOrUserOptions & { guild: GuildResolvable },
+                                   force?: boolean): Promise<GuildMember>
+    static async fetchMemberOrUser(options: FetchMemberOrUserOptions, force?: boolean): Promise<GuildMember | User>
     static async fetchMemberOrUser(options: FetchMemberOrUserOptions, force?: boolean): Promise<GuildMember | User> {
-        let guild = options.guild ? await options.client.guilds.fetch({guild: options.guild}) : undefined
+        const guild = options.guild ? await options.client.guilds.fetch({guild: options.guild}) : undefined
         if (!guild) {
             return await options.client.users.fetch(options.user, {force: force})
         }

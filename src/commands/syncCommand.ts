@@ -44,7 +44,7 @@ class ExecutableSyncCommand extends ExecutableCommand<ChatInputCommandInteractio
         const embed = EmbedUtilities.makeEmbed("Synchronisation")
         await DatabaseUtilities.initialiseCache()
         for (const entry of update) {
-            await DatabaseUtilities.updateEntry(entry.id, entry.newName)
+            await DatabaseUtilities.updateEntry(entry.id, {name: entry.newName})
         }
 
         embed.addFields([{

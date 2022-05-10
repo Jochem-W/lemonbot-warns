@@ -23,6 +23,6 @@ export default class TagChangeHandler extends HandlerWrapper {
         }
 
         console.log(`Changing ${member.id}'s name to '${newName}' (partial: ${oldUser.partial})`)
-        await DatabaseUtilities.updateEntry(member, newName)
+        await DatabaseUtilities.updateEntry(member, {name: newName})
     }
 }

@@ -18,6 +18,17 @@ export type DatabaseEntry = {
     pageId: string
 }
 
+export type AddNotesData = {
+    content: BlockObjectRequest[],
+    name?: string,
+}
+
+export type CreateEntryData =
+    Pick<DatabaseEntry, "name" | "currentPenaltyLevel">
+    & Pick<Partial<DatabaseEntry>, "reasons" | "watchlist">
+
+export type UpdateEntryData = Pick<Partial<DatabaseEntry>, "name" | "currentPenaltyLevel" | "reasons" | "watchlist">
+
 export default class DatabaseUtilities {
     private static readonly cache = new LRUCache({
         ttl: Config.cacheTtl,
@@ -151,20 +162,18 @@ export default class DatabaseUtilities {
         }
     }
 
-    static async updateEntry(user: UserResolvable,
-                             name?: string,
-                             penaltyLevel?: string,
-                             reasons?: string[]): Promise<DatabaseEntry> {
+    static async updateEntry(user: UserResolvable, data: UpdateEntryData): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
-        if (!entry && name) {
-            return this.createEntry(user, name, penaltyLevel, reasons)
+        if (!entry && data.name && data.currentPenaltyLevel) {
+            // FIXME: don't cast
+            return this.createEntry(user, data as CreateEntryData)
         }
 
         if (!entry) {
-            throw new Error(`No entry found for ${user} and no name provided`)
+            throw new Error(`No entry found for ${user}`)
         }
 
-        this.updateCache(penaltyLevel, reasons)
+        this.updateCache(data.currentPenaltyLevel, data.reasons)
 
         return this.toDatabaseEntries(await Notion.pages.update({
             page_id: entry.pageId,
@@ -173,18 +182,18 @@ export default class DatabaseUtilities {
                     title: [
                         {
                             text: {
-                                content: name ?? entry.name,
+                                content: data.name ?? entry.name,
                             },
                         },
                     ],
                 },
                 "Penalty Level": {
                     select: {
-                        name: penaltyLevel ?? entry.currentPenaltyLevel,
+                        name: data.currentPenaltyLevel ?? entry.currentPenaltyLevel,
                     },
                 },
                 "Reasons": {
-                    multi_select: entry.reasons.concat(reasons ?? []).map(reason => {
+                    multi_select: entry.reasons.concat(data.reasons ?? []).map(reason => {
                         return {
                             name: reason,
                         }
@@ -194,16 +203,13 @@ export default class DatabaseUtilities {
         }))[0]!
     }
 
-    static async createEntry(user: UserResolvable,
-                             name: string,
-                             penaltyLevel = "0: Nothing",
-                             reasons?: string[]): Promise<DatabaseEntry> {
+    static async createEntry(user: UserResolvable, data: CreateEntryData) {
         const entry = await this.getEntry(user)
         if (entry) {
             throw new Error(`Entry already exists for ${user}`)
         }
 
-        this.updateCache(penaltyLevel, reasons)
+        this.updateCache(data.currentPenaltyLevel, data.reasons)
 
         const id = this.resolveUser(user)
         return this.toDatabaseEntries(await Notion.pages.create({
@@ -224,18 +230,18 @@ export default class DatabaseUtilities {
                     title: [
                         {
                             text: {
-                                content: name,
+                                content: data.name,
                             },
                         },
                     ],
                 },
                 "Penalty Level": {
                     select: {
-                        name: penaltyLevel,
+                        name: data.currentPenaltyLevel,
                     },
                 },
                 "Reasons": {
-                    multi_select: reasons?.map(reason => {
+                    multi_select: data.reasons?.map(reason => {
                         return {
                             name: reason,
                         }
@@ -245,10 +251,10 @@ export default class DatabaseUtilities {
         }))[0]!
     }
 
-    static async addNote(user: UserResolvable, content: BlockObjectRequest[], name?: string): Promise<string> {
+    static async addNotes(user: UserResolvable, data: AddNotesData): Promise<string> {
         let entry = await this.getEntry(user)
-        if (!entry && name) {
-            entry = await this.createEntry(user, name)
+        if (!entry && data.name) {
+            entry = await this.createEntry(user, {name: data.name, currentPenaltyLevel: "0: Nothing"})
         }
 
         if (!entry) {
@@ -257,7 +263,7 @@ export default class DatabaseUtilities {
 
         await Notion.blocks.children.append({
             block_id: entry.pageId,
-            children: content,
+            children: data.content,
         })
 
         return entry.url

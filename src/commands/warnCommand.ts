@@ -6,7 +6,6 @@ import {
     DiscordAPIError,
     PermissionsBitField,
     RESTJSONErrorCodes,
-    User,
 } from "discord.js"
 import {DateTime} from "luxon"
 import MIMEType from "whatwg-mimetype"
@@ -113,7 +112,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             warnedBy: await InteractionUtilities.fetchMemberOrUser({
                 client: this.interaction.client,
                 user: this.interaction.user,
-            }) as User,
+            }),
             timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
             description: this.interaction.options.getString("description", true),
             image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
@@ -132,13 +131,15 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             data.reasons.push(reason3)
         }
 
-        await DatabaseUtilities.updateEntry(data.recipient,
-            InteractionUtilities.getName(data.recipient),
-            data.penalty,
-            data.reasons)
-        data.url = await DatabaseUtilities.addNote(data.recipient, NotionUtilities.generateWarnNote(data))
+        await DatabaseUtilities.updateEntry(data.recipient, {
+            name: InteractionUtilities.getName(data.recipient),
+            currentPenaltyLevel: data.penalty,
+            reasons: data.reasons,
+        })
+        data.url = await DatabaseUtilities.addNotes(data.recipient, {content: NotionUtilities.generateWarnNote(data)})
 
         if (this.interaction.options.getBoolean("notify", true)) {
+            data.notified = false
             try {
                 await data.recipient.send(ResponseUtilities.generateWarnDm({
                     guildName: guild.name,
@@ -151,8 +152,6 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                     throw e
                 }
-
-                data.notified = false
             }
         }
 

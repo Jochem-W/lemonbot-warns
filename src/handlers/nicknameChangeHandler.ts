@@ -20,6 +20,6 @@ export default class NicknameChangeHandler extends HandlerWrapper {
         }
 
         console.log(`Changing ${newMember.id}'s name to '${newName}' (partial: ${oldMember.partial})`)
-        await DatabaseUtilities.updateEntry(newMember, newName)
+        await DatabaseUtilities.updateEntry(newMember, {name: newName})
     }
 }

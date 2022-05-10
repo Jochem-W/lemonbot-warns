@@ -51,8 +51,10 @@ class ExecutableNoteCommand extends ExecutableCommand<ChatInputCommandInteractio
             timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
         }
 
-        const content = await NotionUtilities.generateNote(data)
-        data.url = await DatabaseUtilities.addNote(data.target, content, InteractionUtilities.getName(data.target))
+        data.url = await DatabaseUtilities.addNotes(data.target, {
+            content: await NotionUtilities.generateNote(data),
+            name: InteractionUtilities.getName(data.target),
+        })
 
         await this.interaction.editReply(ResponseUtilities.generateNoteResponse(data, this.interaction))
     }
