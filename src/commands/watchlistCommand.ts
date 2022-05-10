@@ -8,7 +8,7 @@ import {
     inlineCode,
     MessageActionRowComponentBuilder,
     MessageComponentInteraction,
-    PermissionsBitField,
+    PermissionFlagsBits,
     WebhookEditMessageOptions,
 } from "discord.js"
 import CommandConstructor from "../models/commandConstructor"
@@ -18,7 +18,7 @@ import EmbedUtilities from "../utilities/embedUtilities"
 export default class WatchlistCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(WatchlistExecutableCommand, "watchlist", "List all users on the watchlist",
-            PermissionsBitField.Flags.ModerateMembers)
+            PermissionFlagsBits.ModerateMembers)
     }
 }
 

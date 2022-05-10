@@ -4,7 +4,7 @@ import {
     AutocompleteInteraction,
     ChatInputCommandInteraction,
     DiscordAPIError,
-    PermissionsBitField,
+    PermissionFlagsBits,
     RESTJSONErrorCodes,
 } from "discord.js"
 import {DateTime} from "luxon"
@@ -17,7 +17,7 @@ import DatabaseUtilities from "../utilities/databaseUtilities"
 export default class WarnCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableWarnCommand, "warn", "Warn a user and add them to the watchlist",
-            PermissionsBitField.Flags.ModerateMembers)
+            PermissionFlagsBits.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")

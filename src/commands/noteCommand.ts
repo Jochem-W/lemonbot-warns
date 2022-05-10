@@ -1,6 +1,6 @@
 import CommandConstructor from "../models/commandConstructor"
 import ExecutableCommand from "../models/executableCommand"
-import {ChatInputCommandInteraction, PermissionsBitField, User} from "discord.js"
+import {ChatInputCommandInteraction, PermissionFlagsBits, User} from "discord.js"
 import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import NotionUtilities from "../utilities/notionUtilities"
@@ -9,7 +9,7 @@ import DatabaseUtilities from "../utilities/databaseUtilities"
 
 export default class NoteCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
-        super(ExecutableNoteCommand, "note", "Add a note to a user", PermissionsBitField.Flags.ModerateMembers)
+        super(ExecutableNoteCommand, "note", "Add a note to a user", PermissionFlagsBits.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")

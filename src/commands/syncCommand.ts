@@ -1,6 +1,6 @@
 import CommandConstructor from "../models/commandConstructor"
 import ExecutableCommand from "../models/executableCommand"
-import {ChatInputCommandInteraction, PermissionsBitField} from "discord.js"
+import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
@@ -10,7 +10,7 @@ export default class SyncCommand extends CommandConstructor<ChatInputCommandInte
         super(ExecutableSyncCommand,
             "sync",
             "Update the names stored in the database and clear autocompletion cache",
-            PermissionsBitField.Flags.ModerateMembers)
+            PermissionFlagsBits.ModerateMembers)
     }
 }
 

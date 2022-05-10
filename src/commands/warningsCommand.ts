@@ -1,6 +1,6 @@
 import CommandConstructor from "../models/commandConstructor"
 import ExecutableCommand from "../models/executableCommand"
-import {ChatInputCommandInteraction, PermissionsBitField} from "discord.js"
+import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import ResponseUtilities, {WarningsData} from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 
@@ -9,7 +9,7 @@ export default class WarningsCommand extends CommandConstructor<ChatInputCommand
         super(ExecutableWarningsCommand,
             "warnings",
             "List a user's warnings",
-            PermissionsBitField.Flags.ModerateMembers)
+            PermissionFlagsBits.ModerateMembers)
         this.commandBuilder
             .addUserOption(option => option
                 .setName("user")
