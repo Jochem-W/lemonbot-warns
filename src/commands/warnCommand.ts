@@ -188,7 +188,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                         new ButtonBuilder()
                             .setLabel("Dismiss")
                             .setStyle(ButtonStyle.Danger)
-                            .setCustomId(`global:warn:dismiss:${newChannel.id}`),
+                            .setCustomId(`global:warn:dismiss:${data.recipient.user.id}:${newChannel.id}`),
                     ]),
                 ],
             })
