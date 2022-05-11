@@ -78,11 +78,19 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
             idle: 600000,
         }).on("collect", async collected => {
             if (collected.isMessageComponent()) {
+                if (collected.customId.startsWith("global:")) {
+                    return
+                }
+
                 await command.handleMessageComponent(collected)
                 return
             }
 
             if (collected.isModalSubmit()) {
+                if (collected.customId.startsWith("global:")) {
+                    return
+                }
+
                 await command.handleModalSubmit(collected)
                 return
             }
