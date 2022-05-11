@@ -172,9 +172,12 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             const newChannel = await guild.channels.create(channelName, {
                 type: ChannelType.GuildText,
                 parent: Config.warnCategory,
+                reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
-            await newChannel.permissionOverwrites.create(data.recipient, {ViewChannel: true})
+            await newChannel.permissionOverwrites.create(data.recipient, {ViewChannel: true}, {
+                reason: "Allow the user to-be-warned to view the channel",
+            })
             await newChannel.send({
                 ...ResponseUtilities.generateWarnDm({
                     guildName: guild.name,

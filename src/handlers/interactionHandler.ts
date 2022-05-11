@@ -45,7 +45,7 @@ export default class InteractionHandler extends HandlerWrapper {
                 }
 
                 await interaction.deferUpdate()
-                await guild.channels.delete(channelId)
+                await guild.channels.delete(channelId, "The warn was dismissed by the user")
                 break
             default:
                 throw new Error(`${interaction.customId} is invalid`)
