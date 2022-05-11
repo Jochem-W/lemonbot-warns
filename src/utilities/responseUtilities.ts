@@ -93,7 +93,8 @@ export default class ResponseUtilities {
             administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
         } else if (options.notified instanceof TextChannel) {
             administrationText +=
-                `\n• Notification: ${inlineCode(`✅ (mentioned in ${channelMention(options.notified.id)})`)}`
+                `\n• Notification: ${inlineCode(`✅ (mentioned in`)} ${channelMention(options.notified.id)} ${inlineCode(
+                    ")")}`
         } else if (options.notified === false) {
             administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM or mention)")}`
         } else {
