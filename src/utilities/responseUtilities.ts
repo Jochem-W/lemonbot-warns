@@ -6,6 +6,7 @@ import {
     bold,
     ButtonBuilder,
     ButtonStyle,
+    channelMention,
     CommandInteraction,
     GuildMember,
     inlineCode,
@@ -13,6 +14,7 @@ import {
     MessageActionRowComponentBuilder,
     MessageOptions,
     Snowflake,
+    TextChannel,
     User,
     WebhookEditMessageOptions,
 } from "discord.js"
@@ -37,7 +39,7 @@ export type WarnData = {
     penalty: string,
     timestamp: DateTime,
     image?: string,
-    notified?: "DM" | "Channel" | false,
+    notified?: "DM" | TextChannel | false,
     url: string,
 }
 
@@ -76,7 +78,7 @@ export default class ResponseUtilities {
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
-            .setFooter({text: "If you have any questions or would like to submit an appeal, please DM ModMail."})
+            .setFooter({text: "If you have any questions or would like to submit an appeal, please DM ModMail"})
 
         if (options.image) {
             embed.setImage(options.image)
@@ -89,10 +91,11 @@ export default class ResponseUtilities {
         let administrationText = `• Reason: \`${options.reasons.join(", ")}\`\n• Penalty level: \`${options.penalty}\``
         if (options.notified === "DM") {
             administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
-        } else if (options.notified === "Channel") {
-            administrationText += `\n• Notification: ${inlineCode("✅ (mentioned)")}`
+        } else if (options.notified instanceof TextChannel) {
+            administrationText +=
+                `\n• Notification: ${inlineCode(`✅ (mentioned in ${channelMention(options.notified.id)})`)}`
         } else if (options.notified === false) {
-            administrationText += `\n• Notification: ${inlineCode("❌ (failed to send)")}`
+            administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM or mention)")}`
         } else {
             administrationText += `\n• Notification: ${inlineCode("❌ (notify was False)")}`
         }

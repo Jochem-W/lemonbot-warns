@@ -193,7 +193,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                 ],
             })
 
-            data.notified = "Channel"
+            data.notified = newChannel
         }
 
         await this.interaction.editReply(ResponseUtilities.generateWarnResponse(data, this.interaction))
