@@ -7,15 +7,15 @@ specifiers:
   '@types/lru-cache': ^7.6.1
   '@types/luxon': ^2.3.2
   '@types/nanoid-dictionary': ^4.2.0
-  '@types/node': ^17.0.31
+  '@types/node': ^17.0.32
   '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
-  discord-api-types: ^0.32.0
+  discord-api-types: ^0.32.1
   discord.js: ^14.0.0-dev.1651493371-4ba0f56
   erlpack: github:discord/erlpack
-  firebase-admin: ^10.1.0
-  lru-cache: ^7.9.0
-  luxon: ^2.3.2
+  firebase-admin: ^10.2.0
+  lru-cache: ^7.10.0
+  luxon: ^2.4.0
   nanoid: ^3.3.4
   nanoid-dictionary: ^4.3.0
   typescript: ^4.6.4
@@ -29,13 +29,13 @@ dependencies:
   '@types/lru-cache': 7.6.1
   '@types/luxon': 2.3.2
   '@types/nanoid-dictionary': 4.2.0
-  '@types/node': 17.0.31
+  '@types/node': 17.0.32
   '@types/whatwg-mimetype': 2.1.1
-  discord-api-types: 0.32.0
+  discord-api-types: 0.32.1
   discord.js: 14.0.0-dev.1651493371-4ba0f56_d6955b83f926115bf12ffeabab6deaae
-  firebase-admin: 10.1.0
-  lru-cache: 7.9.0
-  luxon: 2.3.2
+  firebase-admin: 10.2.0
+  lru-cache: 7.10.0
+  luxon: 2.4.0
   nanoid: 3.3.4
   nanoid-dictionary: 4.3.0
   whatwg-mimetype: 3.0.0
@@ -133,6 +133,13 @@ packages:
       '@firebase/util': 1.5.2
     dev: false
 
+  /@firebase/database-types/0.9.8:
+    resolution: { integrity: sha512-bI7bwF5xc0nPi6Oa3JVt6JJdfhVAnEpCwgfTNILR4lYDPtxdxlRXhZzQ5lfqlCj7PR+drKh9RvMu6C24N1q04w== }
+    dependencies:
+      '@firebase/app-types': 0.7.0
+      '@firebase/util': 1.6.0
+    dev: false
+
   /@firebase/database/0.12.8:
     resolution: { integrity: sha512-JBQVfFLzfhxlQbl4OU6ov9fdsddkytBQdtSSR49cz48homj38ccltAhK6seum+BI7f28cV2LFHF9672lcN+qxA== }
     dependencies:
@@ -158,6 +165,12 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@firebase/util/1.6.0:
+    resolution: { integrity: sha512-6+hhqb4Zzjoo12xofTDHPkgW3FnN4ydBsjd5X2KuQI268DR3W3Ld64W/gkKPZrKRgUxeNeb+pykfP3qRe7q+vA== }
+    dependencies:
+      tslib: 2.4.0
+    dev: false
+
   /@google-cloud/firestore/4.15.1:
     resolution: { integrity: sha512-2PWsCkEF1W02QbghSeRsNdYKN1qavrHBP3m72gPDMHQSYrGULOaTi7fSJquQmAtc4iPVB2/x6h80rdLHTATQtA== }
     engines: { node: '>=10.10.0' }
@@ -165,7 +178,7 @@ packages:
     dependencies:
       fast-deep-equal: 3.1.3
       functional-red-black-tree: 1.0.1
-      google-gax: 2.30.3
+      google-gax: 2.30.4
       protobufjs: 6.11.2
     transitivePeerDependencies:
       - encoding
@@ -234,13 +247,13 @@ packages:
     resolution: { integrity: sha512-eBM03pu9hd3VqDQG+kHahiG1x80RGkkqqRb1Pchcwqej/KkAH95gAvKs6laqaHCycYaPK+TKuNQnOz9UXYA8qw== }
     engines: { node: ^8.13.0 || >=10.10.0 }
     dependencies:
-      '@grpc/proto-loader': 0.6.9
-      '@types/node': 17.0.31
+      '@grpc/proto-loader': 0.6.12
+      '@types/node': 17.0.32
     dev: false
     optional: true
 
-  /@grpc/proto-loader/0.6.9:
-    resolution: { integrity: sha512-UlcCS8VbsU9d3XTXGiEVFonN7hXk+oMXZtoHHG2oSA1/GcDP1q6OUgs20PzHDGizzyi8ufGSUDlk3O2NyY7leg== }
+  /@grpc/proto-loader/0.6.12:
+    resolution: { integrity: sha512-filTVbETFnxb9CyRX98zN18ilChTuf/C5scZ2xyaOTp0EHGq0/ufX8rjqXUcSb1Gpv7eZq4M2jDvbh9BogKnrg== }
     engines: { node: '>=6' }
     hasBin: true
     dependencies:
@@ -354,34 +367,21 @@ packages:
     resolution: { integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g== }
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
     dev: false
 
   /@types/connect/3.4.35:
     resolution: { integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ== }
     dependencies:
-      '@types/node': 17.0.31
-    dev: false
-
-  /@types/express-jwt/0.0.42:
-    resolution: { integrity: sha512-WszgUddvM1t5dPpJ3LhWNH8kfNN8GPIBrAGxgIYXVCEGx6Bx4A036aAuf/r5WH9DIEdlmp7gHOYvSM6U87B0ag== }
-    dependencies:
-      '@types/express': 4.17.13
-      '@types/express-unless': 0.5.3
+      '@types/node': 17.0.32
     dev: false
 
   /@types/express-serve-static-core/4.17.28:
     resolution: { integrity: sha512-P1BJAEAW3E2DJUlkgq4tOL3RyMunoWXqbSCygWo5ZIWTjUgN1YnaXWW4VWl/oc8vs/XoYibEGBKP0uZyF4AHig== }
     dependencies:
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
-    dev: false
-
-  /@types/express-unless/0.5.3:
-    resolution: { integrity: sha512-TyPLQaF6w8UlWdv4gj8i46B+INBVzURBNRahCozCSXfsK2VTlL1wNyTlMKw817VHygBtlcl5jfnPadlydr06Yw== }
-    dependencies:
-      '@types/express': 4.17.13
     dev: false
 
   /@types/express/4.17.13:
@@ -417,12 +417,12 @@ packages:
   /@types/node-fetch/2.6.1:
     resolution: { integrity: sha512-oMqjURCaxoSIsHSr1E47QHzbmzNR5rK8McHuNb11BOM9cHcIK3Avy0s/b2JlXHoQGTYS3NsvWzV1M0iK7l0wbA== }
     dependencies:
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
       form-data: 3.0.1
     dev: false
 
-  /@types/node/17.0.31:
-    resolution: { integrity: sha512-AR0x5HbXGqkEx9CadRH3EBYx/VkiUgZIhP4wvPn/+5KIsgpNoyFaRlVe0Zlx9gRtg8fA06a9tskE2MSN7TcG4Q== }
+  /@types/node/17.0.32:
+    resolution: { integrity: sha512-eAIcfAvhf/BkHcf4pkLJ7ECpBAhh9kcxRBpip9cTiO+hf+aJrsxYxBeS6OXvOd9WqNAJmavXVpZvY1rBjNsXmw== }
     dev: false
 
   /@types/qs/6.9.7:
@@ -437,7 +437,7 @@ packages:
     resolution: { integrity: sha512-nCkHGI4w7ZgAdNkrEu0bv+4xNV/XDqW+DydknebMOQwkpDGx8G+HTlj7R7ABI8i8nKxVw0wtKPi1D+lPOkh4YQ== }
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
     dev: false
 
   /@types/whatwg-mimetype/2.1.1:
@@ -447,7 +447,7 @@ packages:
   /@types/ws/8.5.3:
     resolution: { integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w== }
     dependencies:
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
     dev: false
 
   /abort-controller/3.0.0:
@@ -622,8 +622,8 @@ packages:
     resolution: { integrity: sha512-gpzXTvFVg7AjKVVJFH0oJGC0q0tO34iJGSHZNz9u3aqLxlD6LfxEs9wWVVikJqn9gra940oUTaPFizCkRDcEiA== }
     dev: false
 
-  /discord-api-types/0.32.0:
-    resolution: { integrity: sha512-i6HyCwWRocvtIcM7hamI3eQTCxLN/UvWtm/JktaXRSWDmASfhHam2juhej+e4U/Q/Fni1uUlyloMCBTL04Dl6Q== }
+  /discord-api-types/0.32.1:
+    resolution: { integrity: sha512-/ewl0CPYT5xjOC+SJ7wADJKjtpZfiiUaYXOP/Ns54lnBcv4Xqa4iKSqRF/w1fjiUvWTYN9W8UuOiyCHtmu5fJw== }
     dev: false
 
   /discord.js/14.0.0-dev.1651493371-4ba0f56_d6955b83f926115bf12ffeabab6deaae:
@@ -726,17 +726,18 @@ packages:
     dev: false
     optional: true
 
-  /firebase-admin/10.1.0:
-    resolution: { integrity: sha512-4i4wu+EFgNfY4+D4DxXkZcmbD832ozUMNvHMkOFQrf8upyp51n6jrDJS+wLok9sd62yeqcImbnsLOympGlISPA== }
+  /firebase-admin/10.2.0:
+    resolution: { integrity: sha512-6ehn5J9UEFgi4+naqYvozmGpnZae3cJLdwSkSsDc8/Y0eTBjVMFdf9N2ft7N81UNHA0N5DknOyXhlsdAdyBLCA== }
     engines: { node: '>=12.7.0' }
     dependencies:
       '@firebase/database-compat': 0.1.8
-      '@firebase/database-types': 0.9.7
-      '@types/node': 17.0.31
+      '@firebase/database-types': 0.9.8
+      '@types/node': 17.0.32
       dicer: 0.3.1
       jsonwebtoken: 8.5.1
-      jwks-rsa: 2.1.0
+      jwks-rsa: 2.1.1
       node-forge: 1.3.1
+      uuid: 8.3.2
     optionalDependencies:
       '@google-cloud/firestore': 4.15.1
       '@google-cloud/storage': 5.19.4
@@ -828,13 +829,13 @@ packages:
     dev: false
     optional: true
 
-  /google-gax/2.30.3:
-    resolution: { integrity: sha512-Zsd6hbJBMvAcJS3cYpAsmupvfsxygFR2meUZJcGeR7iUqYHCR/1Hf2aQNB9srrlXQMm91pNiUvW0Kz6Qld8QkA== }
+  /google-gax/2.30.4:
+    resolution: { integrity: sha512-/W4wWKjYcCXtd3Vz+ux7fN3MElbLVKGmHCCgA6kotigQgoDrLLueSvnXsck7qZaF39ooYnFhA58Rjr7RHe2heA== }
     engines: { node: '>=10' }
     hasBin: true
     dependencies:
       '@grpc/grpc-js': 1.6.7
-      '@grpc/proto-loader': 0.6.9
+      '@grpc/proto-loader': 0.6.12
       '@types/long': 4.0.2
       abort-controller: 3.0.0
       duplexify: 4.1.2
@@ -997,11 +998,11 @@ packages:
     dev: false
     optional: true
 
-  /jwks-rsa/2.1.0:
-    resolution: { integrity: sha512-GKOSDBWWBCiQTzawei6mEdRQvji5gecj8F9JwMt0ZOPnBPSmTjo5CKFvvbhE7jGPkU159Cpi0+OTLuABFcNOQQ== }
+  /jwks-rsa/2.1.1:
+    resolution: { integrity: sha512-NdtZuf1pvlnWgbCU2c9oRFdi+u8uWpwL6EMiordpasrNFNrGrQGNs7WQ9UiMT0/RG7vt4ElwyObNy04pIbsGCA== }
     engines: { node: '>=10 < 13 || >=14' }
     dependencies:
-      '@types/express-jwt': 0.0.42
+      '@types/express': 4.17.13
       debug: 4.3.4
       jose: 2.0.5
       limiter: 1.1.5
@@ -1090,8 +1091,8 @@ packages:
     dev: false
     optional: true
 
-  /lru-cache/7.9.0:
-    resolution: { integrity: sha512-lkcNMUKqdJk96TuIXUidxaPuEg5sJo/+ZyVE2BDFnuZGzwXem7d8582eG8vbu4todLfT14snP6iHriCHXXi5Rw== }
+  /lru-cache/7.10.0:
+    resolution: { integrity: sha512-mk5BXponDPbfvGlRuKBlh8YefbGXg61gUFunI/z78Cl+XXUgEs6PSvyoKVjfGLwT79Rk1V5w6M3w52p8eBm61Q== }
     engines: { node: '>=12' }
     dev: false
 
@@ -1102,8 +1103,8 @@ packages:
       lru-cache: 4.0.2
     dev: false
 
-  /luxon/2.3.2:
-    resolution: { integrity: sha512-MlAQQVMFhGk4WUA6gpfsy0QycnKP0+NlCBJRVRNPxxSIbjrCbQ65nrpJD3FVyJNZLuJ0uoqL57ye6BmDYgHaSw== }
+  /luxon/2.4.0:
+    resolution: { integrity: sha512-w+NAwWOUL5hO0SgwOHsMBAmZ15SoknmQXhSO0hIbJCAmPKSsGeK8MlmhYh2w6Iib38IxN2M+/ooXWLbeis7GuA== }
     engines: { node: '>=12' }
     dev: false
 
@@ -1224,7 +1225,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.2
-      '@types/node': 17.0.31
+      '@types/node': 17.0.32
       long: 4.0.0
     dev: false
     optional: true
@@ -1426,7 +1427,6 @@ packages:
     resolution: { integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg== }
     hasBin: true
     dev: false
-    optional: true
 
   /webidl-conversions/3.0.1:
     resolution: { integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE= }
