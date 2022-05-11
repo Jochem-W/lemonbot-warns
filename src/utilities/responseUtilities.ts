@@ -37,7 +37,7 @@ export type WarnData = {
     penalty: string,
     timestamp: DateTime,
     image?: string,
-    notified?: boolean,
+    notified?: "DM" | "Channel" | false,
     url: string,
 }
 
@@ -87,12 +87,14 @@ export default class ResponseUtilities {
 
     static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
         let administrationText = `• Reason: \`${options.reasons.join(", ")}\`\n• Penalty level: \`${options.penalty}\``
-        if (options.notified === true) {
-            administrationText += `\n• DM sent: ${inlineCode("✅")}`
+        if (options.notified === "DM") {
+            administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
+        } else if (options.notified === "Channel") {
+            administrationText += `\n• Notification: ${inlineCode("✅ (mentioned)")}`
         } else if (options.notified === false) {
-            administrationText += `\n• DM sent: ${inlineCode("❌ (DMs disabled/bot blocked)")}`
+            administrationText += `\n• Notification: ${inlineCode("❌ (failed to send)")}`
         } else {
-            administrationText += `\n• DM sent: ${inlineCode("❌ (notify was False)")}`
+            administrationText += `\n• Notification: ${inlineCode("❌ (notify was False)")}`
         }
 
         const recipientAvatar = (options.recipient instanceof GuildMember ?

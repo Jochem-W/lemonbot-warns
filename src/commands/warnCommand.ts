@@ -1,11 +1,18 @@
 import CommandConstructor from "../models/commandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {
+    ActionRowBuilder,
     AutocompleteInteraction,
+    ButtonBuilder,
+    ButtonStyle,
+    ChannelType,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    GuildMember,
+    MessageActionRowComponentBuilder,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
+    userMention,
 } from "discord.js"
 import {DateTime} from "luxon"
 import MIMEType from "whatwg-mimetype"
@@ -13,6 +20,9 @@ import NotionUtilities from "../utilities/notionUtilities"
 import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
+import {customAlphabet} from "nanoid"
+import {nolookalikesSafe} from "nanoid-dictionary"
+import {Config} from "../config"
 
 export default class WarnCommand extends CommandConstructor<ChatInputCommandInteraction> {
     constructor() {
@@ -147,12 +157,43 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                     image: data.image,
                     timestamp: data.timestamp,
                 }))
-                data.notified = true
+                data.notified = "DM"
             } catch (e) {
                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                     throw e
                 }
             }
+        }
+
+        if (data.notified === false && data.recipient instanceof GuildMember) {
+            const nanoid = customAlphabet(nolookalikesSafe)
+            const channelName = `${data.recipient.user.username}-${data.recipient.user.discriminator}-${nanoid(4)}`
+
+            const newChannel = await guild.channels.create(channelName, {
+                type: ChannelType.GuildText,
+                parent: Config.warnCategory,
+            })
+
+            await newChannel.permissionOverwrites.create(data.recipient, {ViewChannel: true})
+            await newChannel.send({
+                ...ResponseUtilities.generateWarnDm({
+                    guildName: guild.name,
+                    description: data.description,
+                    image: data.image,
+                    timestamp: data.timestamp,
+                }),
+                content: userMention(data.recipient.id),
+                components: [new ActionRowBuilder<MessageActionRowComponentBuilder>()
+                    .setComponents([
+                        new ButtonBuilder()
+                            .setLabel("Dismiss")
+                            .setStyle(ButtonStyle.Danger)
+                            .setCustomId(`global:warn:dismiss:${newChannel.id}`),
+                    ]),
+                ],
+            })
+
+            data.notified = "Channel"
         }
 
         await this.interaction.editReply(ResponseUtilities.generateWarnResponse(data, this.interaction))

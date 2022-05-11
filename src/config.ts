@@ -5,4 +5,5 @@ export const Config = {
     guildId: "CHANGE_ME", // Guild to enable the bot on
     privateChannels: ["ADD_CHANNEL_IDS_HERE"], // Channels that show non-ephemeral replies
     cacheTtl: 0, // Time in milliseconds to cache database data
+    warnCategory: "CHANGE_ME", // The category under which to create a channel to warn someone
 }
