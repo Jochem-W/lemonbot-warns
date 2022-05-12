@@ -78,7 +78,7 @@ export default class ResponseUtilities {
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
-            .setFooter({text: "If you have any questions or would like to submit an appeal, please DM ModMail"})
+            .setFooter({text: "If you have any questions, please DM ModMail"})
 
         if (options.image) {
             embed.setImage(options.image)
@@ -127,12 +127,6 @@ export default class ResponseUtilities {
         }
 
         return this.addNotesButton({embeds: [embed]}, options.url)
-        // return this.addNotesButton({embeds: [embed]}, options.url, interaction ? {
-        //     commandId: ChatInputCommands.findKey(command => command.name === "notes")!,
-        //     ephemeral: interaction.ephemeral ?? false,
-        //     sourceId: options.warnedBy.id,
-        //     targetId: options.recipient.id,
-        // } : undefined)
     }
 
     static generateNoteResponse(options: NoteData, interaction?: CommandInteraction): WebhookEditMessageOptions {
