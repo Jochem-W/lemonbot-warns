@@ -35,23 +35,15 @@ export default abstract class CommandConstructor<I extends CommandInteraction> {
         this.commandBuilder
             .setName(name)
             .setDescription(description)
-        this.memberPermissions = memberPermissions
+            .setDMPermission(false)
+            .setDefaultMemberPermissions(memberPermissions?.toString())
     }
 
     /**
      * Return the command data that can be sent to Discord.
      */
     build() {
-        if (this.memberPermissions) {
-            return {
-                ...this.commandBuilder.toJSON(),
-                default_member_permissions: this.memberPermissions.toString(),
-            }
-        }
-
-        return {
-            ...this.commandBuilder.toJSON(),
-        }
+        return this.commandBuilder.toJSON()
     }
 
     /**
