@@ -1,10 +1,10 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {DateTime, Duration} from "luxon"
 
-export default class StatusCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class StatusCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableStatusCommand, "status", "Display ping and uptime", PermissionFlagsBits.ModerateMembers)
     }

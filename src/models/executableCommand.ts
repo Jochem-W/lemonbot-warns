@@ -1,18 +1,8 @@
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonComponent,
-    ButtonStyle,
-    CommandInteraction,
-    ComponentType,
-    Message,
-    MessageActionRowComponentBuilder,
-    MessageComponentInteraction,
-    ModalSubmitInteraction,
-    SelectMenuBuilder,
-} from "discord.js"
+import {CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
+import InteractionUtilities from "../utilities/interactionUtilities"
+import {CustomId} from "./customId"
 
 /**
  * A command that was executed by a user.
@@ -37,15 +27,17 @@ export default abstract class ExecutableCommand<T extends CommandInteraction> {
     /**
      * Function that is called when a message component is interacted with.
      * @param interaction The interaction that was triggered.
+     * @param data
      */
-    async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+    async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {
     }
 
     /**
      * Function that is called when a modal is submitted
      * @param interaction The interaction that was triggered.
+     * @param data
      */
-    async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+    async handleModalSubmit(interaction: ModalSubmitInteraction, data: CustomId): Promise<void> {
     }
 
     /**
@@ -58,42 +50,7 @@ export default abstract class ExecutableCommand<T extends CommandInteraction> {
      * @protected
      */
     protected async disableButtons() {
-        const reply = await this.interaction.fetchReply()
-        if (!(reply instanceof Message)) {
-            await this.interaction.editReply({
-                embeds: reply.embeds,
-                components: reply.components?.map(row => {
-                    row.components.map(component => {
-                        if (component.type !== ComponentType.Button || component.style !== ButtonStyle.Link) {
-                            component.disabled = true
-                        }
-
-                        return component
-                    })
-                    return row
-                }),
-            })
-            return
-        }
-
-        await this.interaction.editReply({
-            embeds: reply.embeds,
-            components: reply.components?.map(row => new ActionRowBuilder<MessageActionRowComponentBuilder>()
-                .addComponents(row.components.map(component => {
-                    if (component instanceof ButtonComponent) {
-                        const builder = new ButtonBuilder(component.data)
-                        if (builder.data.style !== ButtonStyle.Link) {
-                            builder.setDisabled(true)
-                        }
-
-                        return builder
-                    }
-
-                    return new SelectMenuBuilder(component.data)
-                        .setDisabled(true)
-                })),
-            ),
-        })
+        await InteractionUtilities.disable(this.interaction)
     }
 
     protected async checkUser(interaction: MessageComponentInteraction) {

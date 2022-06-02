@@ -1,4 +1,4 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {
     ActionRowBuilder,
@@ -10,6 +10,7 @@ import {
     DiscordAPIError,
     GuildMember,
     MessageActionRowComponentBuilder,
+    MessageComponentInteraction,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
     userMention,
@@ -23,8 +24,10 @@ import DatabaseUtilities from "../utilities/databaseUtilities"
 import {customAlphabet} from "nanoid"
 import {nolookalikesSafe} from "nanoid-dictionary"
 import {Config} from "../config"
+import {CustomId, customId, InteractionScope} from "../models/customId"
+import EmbedUtilities from "../utilities/embedUtilities"
 
-export default class WarnCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class WarnCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableWarnCommand, "warn", "Warn a user and add them to the watchlist",
             PermissionFlagsBits.ModerateMembers)
@@ -62,6 +65,34 @@ export default class WarnCommand extends CommandConstructor<ChatInputCommandInte
                 .setName("reason3")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
                 .setAutocomplete(true))
+    }
+
+    override async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {
+        switch (data.secondary) {
+        case "dismiss":
+            const [channelId, userId] = data.tertiary
+            if (!channelId || !userId) {
+                throw new Error(`${interaction.customId} is invalid`)
+            }
+
+            if (interaction.user.id !== userId) {
+                await interaction.reply({
+                    embeds: [EmbedUtilities.makeEmbed("Something went wrong while handling this interaction",
+                        Config.failIcon,
+                        "You can't use this component!")],
+                    ephemeral: true,
+                })
+                return
+            }
+
+            const channel = await interaction.client.channels.fetch(channelId)
+            if (!channel) {
+                throw new Error(`Channel ${channelId} not found`)
+            }
+
+            await channel.delete()
+            await interaction.deferUpdate()
+        }
     }
 
     override async getAutocomplete(interaction: AutocompleteInteraction) {
@@ -191,7 +222,12 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                         new ButtonBuilder()
                             .setLabel("Dismiss")
                             .setStyle(ButtonStyle.Danger)
-                            .setCustomId(`global:warn:dismiss:${data.recipient.user.id}:${newChannel.id}`),
+                            .setCustomId(customId({
+                                scope: InteractionScope.Local,
+                                primary: this.interaction.commandId,
+                                secondary: "dismiss",
+                                tertiary: [newChannel.id, data.recipient.id],
+                            })),
                     ]),
                 ],
             })

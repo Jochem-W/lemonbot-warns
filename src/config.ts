@@ -6,4 +6,5 @@ export const Config = {
     privateChannels: ["ADD_CHANNEL_IDS_HERE"], // Channels that show non-ephemeral replies
     cacheTtl: 0, // Time in milliseconds to cache database data
     warnCategory: "CHANGE_ME", // The category under which to create a channel to warn someone
+    reportChannel: "CHANGE_ME", // The channel to send message reports to
 }

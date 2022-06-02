@@ -1,7 +1,7 @@
 import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
-import EmbedUtilities from "../utilities/embedUtilities"
-import {Config} from "../config"
+import {InteractionScope, parseCustomId} from "../models/customId"
+import {Commands} from "../commands"
 
 /**
  * Handler for interactions
@@ -12,60 +12,31 @@ export default class InteractionHandler extends HandlerWrapper {
     }
 
     private static async handleMessageComponent(interaction: MessageComponentInteraction) {
-        const [scope, command, subcommand, ...args] = interaction.customId.split(":")
-        if (scope !== "global") {
+        const data = parseCustomId(interaction.customId)
+        if (data.scope !== InteractionScope.Local) {
             return
         }
 
-        const guild = interaction.inGuild() ?
-            (interaction.guild ?? await interaction.client.guilds.fetch(interaction.guildId)) :
-            undefined
-
-        switch (command) {
-        case "warn":
-            switch (subcommand) {
-            case "dismiss":
-                if (!guild) {
-                    throw new Error(`${interaction} has to be in a guild`)
-                }
-
-                const [userId, channelId] = args
-                if (!userId || !channelId) {
-                    throw new Error(`${interaction.customId} is invalid`)
-                }
-
-                if (interaction.user.id !== userId) {
-                    await interaction.reply({
-                        embeds: [EmbedUtilities.makeEmbed("Something went wrong while handling this interaction",
-                            Config.failIcon,
-                            "You can't use this component!")],
-                        ephemeral: true,
-                    })
-                    return
-                }
-
-                await interaction.deferUpdate()
-                await guild.channels.delete(channelId, "The warn was dismissed by the user")
-                break
-            default:
-                throw new Error(`${interaction.customId} is invalid`)
-            }
-            break
-        default:
-            throw new Error(`${interaction.customId} is invalid`)
+        const command = Commands.get(data.primary)
+        if (command === undefined) {
+            throw new Error(`Command ${data.primary} not found`)
         }
+
+        await command.handleMessageComponent(interaction, data)
     }
 
     private static async handleModalSubmit(interaction: ModalSubmitInteraction) {
-        const [scope, command, ...args] = interaction.customId.split(":")
-        if (scope !== "global") {
+        const data = parseCustomId(interaction.customId)
+        if (data.scope !== InteractionScope.Local) {
             return
         }
 
-        switch (command) {
-        default:
-            throw new Error(`Unknown command: ${command} ${args.join(" ")}`)
+        const command = Commands.get(data.primary)
+        if (command === undefined) {
+            throw new Error(`Command ${data.primary} not found`)
         }
+
+        await command.handleModalSubmit(interaction, data)
     }
 
     async handle(interaction: Interaction) {

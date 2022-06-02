@@ -1,10 +1,10 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, inlineCode, PermissionFlagsBits, time} from "discord.js"
 import {DateTime} from "luxon"
 import EmbedUtilities from "../utilities/embedUtilities"
 
-export default class CheckBansCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class CheckBansCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableCheckBansCommand, "check-bans", "Check banned users", PermissionFlagsBits.ModerateMembers)
     }

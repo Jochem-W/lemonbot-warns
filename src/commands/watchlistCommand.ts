@@ -11,11 +11,12 @@ import {
     PermissionFlagsBits,
     WebhookEditMessageOptions,
 } from "discord.js"
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import DatabaseUtilities, {DatabaseEntry} from "../utilities/databaseUtilities"
 import EmbedUtilities from "../utilities/embedUtilities"
+import {CustomId, customId, InteractionScope} from "../models/customId"
 
-export default class WatchlistCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class WatchlistCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(WatchlistExecutableCommand, "watchlist", "List all users on the watchlist",
             PermissionFlagsBits.ModerateMembers)
@@ -32,12 +33,12 @@ class WatchlistExecutableCommand extends ExecutableCommand<ChatInputCommandInter
         super(interaction)
     }
 
-    override async handleMessageComponent(interaction: MessageComponentInteraction) {
+    override async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId) {
         if (!await this.checkUser(interaction)) {
             return
         }
 
-        switch (interaction.customId) {
+        switch (data.primary) {
         case "next":
             this.offset += this.count
             if (this.count + this.offset >= this.entries.length) {
@@ -102,7 +103,12 @@ ${bold("Reasons")}
                     new ButtonBuilder()
                         .setDisabled(this.offset === 0)
                         .setStyle(ButtonStyle.Primary)
-                        .setCustomId("previous")
+                        .setCustomId(customId({
+                            scope: InteractionScope.Collector,
+                            primary: "previous",
+                            secondary: "",
+                            tertiary: [],
+                        }))
                         .setEmoji("⬅️"),
                     new ButtonBuilder()
                         .setLabel("View on Notion")
@@ -111,7 +117,12 @@ ${bold("Reasons")}
                     new ButtonBuilder()
                         .setDisabled(this.offset + this.count >= this.entries.length)
                         .setStyle(ButtonStyle.Primary)
-                        .setCustomId("next")
+                        .setCustomId(customId({
+                            scope: InteractionScope.Collector,
+                            primary: "next",
+                            secondary: "",
+                            tertiary: [],
+                        }))
                         .setEmoji("➡️"),
                 ]),
             ],

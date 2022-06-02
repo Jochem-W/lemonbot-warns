@@ -1,4 +1,4 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits, User} from "discord.js"
 import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
@@ -7,7 +7,7 @@ import NotionUtilities from "../utilities/notionUtilities"
 import {DateTime} from "luxon"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 
-export default class NoteCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class NoteCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableNoteCommand, "note", "Add a note to a user", PermissionFlagsBits.ModerateMembers)
         this.commandBuilder

@@ -1,10 +1,10 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import ResponseUtilities, {WarningsData} from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 
-export default class WarningsCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class WarningsCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableWarningsCommand,
             "warnings",

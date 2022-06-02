@@ -1,5 +1,12 @@
-import {ChatInputCommandInteraction, Collection, Snowflake} from "discord.js"
-import CommandConstructor from "./models/commandConstructor"
+import {
+    ChatInputCommandInteraction,
+    Collection,
+    CommandInteraction,
+    MessageContextMenuCommandInteraction,
+    Snowflake,
+    UserContextMenuCommandInteraction,
+} from "discord.js"
+import SlashCommandConstructor from "./models/slashCommandConstructor"
 import NoteCommand from "./commands/noteCommand"
 import StatusCommand from "./commands/statusCommand"
 import SyncCommand from "./commands/syncCommand"
@@ -7,11 +14,13 @@ import WarnCommand from "./commands/warnCommand"
 import WarningsCommand from "./commands/warningsCommand"
 import WatchlistCommand from "./commands/watchlistCommand"
 import CheckBansCommand from "./commands/checkBansCommand"
+import ReportCommand from "./commands/reportCommand"
+import ContextCommandConstructor from "./models/contextCommandConstructor"
+import CommandConstructor from "./models/commandConstructor"
 
-// TODO: fix this
-export const ChatInputCommands = new Collection<Snowflake, CommandConstructor<ChatInputCommandInteraction>>()
+export const Commands = new Collection<Snowflake, CommandConstructor<CommandInteraction>>()
 
-export const ChatInputCommandConstructors: Readonly<CommandConstructor<ChatInputCommandInteraction>[]> = [
+export const ChatInputCommandConstructors: Readonly<SlashCommandConstructor<ChatInputCommandInteraction>[]> = [
     new CheckBansCommand(),
     new NoteCommand(),
     new StatusCommand(),
@@ -20,3 +29,9 @@ export const ChatInputCommandConstructors: Readonly<CommandConstructor<ChatInput
     new WarningsCommand(),
     new WatchlistCommand(),
 ]
+
+export const MessageContextMenuCommandConstructors: Readonly<ContextCommandConstructor<MessageContextMenuCommandInteraction>[]> = [
+    new ReportCommand(),
+]
+
+export const UserContextMenuCommandConstructors: Readonly<ContextCommandConstructor<UserContextMenuCommandInteraction>[]> = []

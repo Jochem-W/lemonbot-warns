@@ -1,11 +1,11 @@
-import CommandConstructor from "../models/commandConstructor"
+import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 
-export default class SyncCommand extends CommandConstructor<ChatInputCommandInteraction> {
+export default class SyncCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
         super(ExecutableSyncCommand,
             "sync",

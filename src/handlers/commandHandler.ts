@@ -2,7 +2,7 @@ import {AutocompleteInteraction, CommandInteraction, Interaction} from "discord.
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
-import {ChatInputCommands} from "../commands"
+import {Commands} from "../commands"
 
 /**
  * Handler for interactions
@@ -13,23 +13,23 @@ export default class CommandHandler extends HandlerWrapper {
     }
 
     private static async handleAutocomplete(interaction: AutocompleteInteraction) {
-        const command = ChatInputCommands.get(interaction.commandId)
+        const command = Commands.get(interaction.commandId)
         if (!command) {
             throw new Error(`Command not found for ${interaction}`)
         }
 
-        await interaction.respond(await command.getAutocomplete(interaction))
+        if (!command.getAutocomplete) {
+            throw new Error(`Command ${command.name} does not support autocomplete`)
+        }
+
+        await interaction.respond(await command.getAutocomplete(interaction) ?? [])
     }
 
     private static async handleCommand(interaction: CommandInteraction): Promise<void> {
         const errorEmbed = EmbedUtilities.makeEmbed("Something went wrong while executing the command", Config.failIcon)
             .setColor("#ff0000")
 
-        if (!interaction.isChatInputCommand()) {
-            return
-        }
-
-        const command = ChatInputCommands.get(interaction.commandId)
+        const command = Commands.get(interaction.commandId)
         if (!command) {
             await interaction.reply({
                 embeds: [errorEmbed.setTitle("This command doesn't exist")],
