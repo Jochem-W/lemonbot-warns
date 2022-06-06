@@ -16,16 +16,17 @@ import {
     TextInputStyle,
     underscore,
 } from "discord.js"
-import ContextCommandConstructor from "../models/contextCommandConstructor"
+import MessageContextMenuCommandConstructor from "../models/messageContextMenuCommandConstructor"
 import {customId, CustomId, InteractionScope} from "../models/customId"
 import MIMEType from "whatwg-mimetype"
 import {Config} from "../config"
 import EmbedUtilities from "../utilities/embedUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 
-export default class ReportCommand extends ContextCommandConstructor<MessageContextMenuCommandInteraction> {
+export default class MessageReportCommand
+    extends MessageContextMenuCommandConstructor<MessageContextMenuCommandInteraction> {
     constructor() {
-        super(ExecutableReportCommand, "Report message")
+        super(ExecutableMessageReportCommand, "Report message")
     }
 
     override async handleModalSubmit(interaction: ModalSubmitInteraction, data: CustomId) {
@@ -210,7 +211,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
     }
 }
 
-class ExecutableReportCommand extends ExecutableCommand<MessageContextMenuCommandInteraction> {
+class ExecutableMessageReportCommand extends ExecutableCommand<MessageContextMenuCommandInteraction> {
     constructor(interaction: MessageContextMenuCommandInteraction) {
         super(interaction)
     }

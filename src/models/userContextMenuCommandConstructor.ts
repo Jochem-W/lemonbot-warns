@@ -1,11 +1,11 @@
 import {
     ApplicationCommandType,
     ContextMenuCommandBuilder,
-    ContextMenuCommandInteraction,
     InteractionDeferReplyOptions,
     MessageComponentInteraction,
     ModalSubmitInteraction,
     PermissionResolvable,
+    UserContextMenuCommandInteraction,
 } from "discord.js"
 import ExecutableCommand from "./executableCommand"
 import CommandConstructor from "./commandConstructor"
@@ -14,7 +14,7 @@ import {CustomId} from "./customId"
 /**
  * A constructor for a command that can be executed by a user.
  */
-export default abstract class ContextCommandConstructor<I extends ContextMenuCommandInteraction>
+export default abstract class UserContextMenuCommandConstructor<I extends UserContextMenuCommandInteraction>
     implements CommandConstructor<I> {
     readonly commandBuilder = new ContextMenuCommandBuilder()
     readonly name: string
@@ -34,7 +34,7 @@ export default abstract class ContextCommandConstructor<I extends ContextMenuCom
         this.commandType = command
         this.name = name
         this.commandBuilder
-            .setType(ApplicationCommandType.Message)
+            .setType(ApplicationCommandType.User)
             .setName(name)
             .setDMPermission(false)
             .setDefaultMemberPermissions(memberPermissions?.toString())
