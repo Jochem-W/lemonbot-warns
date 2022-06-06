@@ -14,7 +14,6 @@ import WarnCommand from "./commands/warnCommand"
 import WarningsCommand from "./commands/warningsCommand"
 import WatchlistCommand from "./commands/watchlistCommand"
 import CheckBansCommand from "./commands/checkBansCommand"
-import ReportCommand from "./commands/reportCommand"
 import ContextCommandConstructor from "./models/contextCommandConstructor"
 import CommandConstructor from "./models/commandConstructor"
 
@@ -31,7 +30,7 @@ export const ChatInputCommandConstructors: Readonly<SlashCommandConstructor<Chat
 ]
 
 export const MessageContextMenuCommandConstructors: Readonly<ContextCommandConstructor<MessageContextMenuCommandInteraction>[]> = [
-    new ReportCommand(),
+    // new ReportCommand(),
 ]
 
 export const UserContextMenuCommandConstructors: Readonly<ContextCommandConstructor<UserContextMenuCommandInteraction>[]> = []
