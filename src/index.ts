@@ -22,7 +22,6 @@ const client = new Client({
     partials: [Partials.User, Partials.GuildMember],
 })
 
-// TODO
 const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
 ChatInputCommandConstructors.forEach(cw => {
     commandsBody.push(cw.build())
