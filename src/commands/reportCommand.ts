@@ -37,7 +37,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
             }
 
             const channel = await interaction.client.channels.fetch(channelId)
-            if (!channel?.isText()) {
+            if (!channel?.isTextBased()) {
                 throw new Error("Invalid channel")
             }
 
@@ -69,7 +69,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
             }
 
             const reportChannel = await interaction.client.channels.fetch(Config.reportChannel)
-            if (!reportChannel?.isText()) {
+            if (!reportChannel?.isTextBased()) {
                 throw new Error("Invalid report channel")
             }
 
@@ -152,7 +152,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
             }
 
             const channel = await interaction.client.channels.fetch(channelId)
-            if (!channel?.isText()) {
+            if (!channel?.isTextBased()) {
                 throw new Error(`Invalid channel ${channelId}`)
             }
 
@@ -167,7 +167,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
             }
 
             const originalChannel = await interaction.client.channels.fetch(interaction.channelId)
-            if (!originalChannel?.isText()) {
+            if (!originalChannel?.isTextBased()) {
                 throw new Error(`Invalid channel ${interaction.channelId}`)
             }
 
@@ -191,7 +191,7 @@ export default class ReportCommand extends ContextCommandConstructor<MessageCont
             }
 
             const originalChannel = await interaction.client.channels.fetch(interaction.channelId)
-            if (!originalChannel?.isText()) {
+            if (!originalChannel?.isTextBased()) {
                 throw new Error(`${interaction.customId} is invalid`)
             }
 

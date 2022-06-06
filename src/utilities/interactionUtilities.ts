@@ -118,7 +118,7 @@ export default class InteractionUtilities {
 
     static async disable(interaction: CommandInteraction | MessageComponentInteraction) {
         const channel = await interaction.client.channels.fetch(interaction.channelId)
-        if (!channel?.isText()) {
+        if (!channel?.isTextBased()) {
             throw new Error("Channel is not a text channel")
         }
 
