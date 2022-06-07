@@ -83,7 +83,24 @@ export default class InteractionUtilities {
         const mimeType = new MIMEType(attachment.contentType ?? "application/octet-stream")
         const file = StorageBucket.file(`${attachment.id}.${attachment.name?.split(".").pop() ?? "bin"}`)
 
-        const response = await fetch(attachment.url)
+        // FIXME: wait for discord.js update
+        let url = attachment.url
+        if (!url) {
+            if (typeof attachment.attachment === "string") {
+                try {
+                    url = new URL(attachment.attachment).toString()
+                } catch (e) {
+                    url = attachment.proxyURL
+                }
+            }
+        }
+
+        if (!url) {
+            console.error(attachment)
+            throw new Error(`Missing URL on attachment`)
+        }
+
+        const response = await fetch(url)
         if (!response.body) {
             throw new Error("No response body")
         }
