@@ -57,6 +57,12 @@ export default class WarnCommand extends SlashCommandConstructor<ChatInputComman
             .addAttachmentOption(option => option
                 .setName("image")
                 .setDescription("Optional image attachment that will also be sent to the user"))
+            .addAttachmentOption(option => option
+                .setName("image2")
+                .setDescription("Optional image attachment that will also be sent to the user"))
+            .addAttachmentOption(option => option
+                .setName("image3")
+                .setDescription("Optional image attachment that will also be sent to the user"))
             .addStringOption(option => option
                 .setName("reason2")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
@@ -130,9 +136,24 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             throw new Error("This command can only be used in a server")
         }
 
-        const image = this.interaction.options.getAttachment("image")
-        if (image && (!image.contentType || new MIMEType(image.contentType).type !== "image")) {
-            throw new Error("Only image attachments are supported")
+        const images: string[] = []
+        const attachments = [
+            this.interaction.options.getAttachment("image"),
+            this.interaction.options.getAttachment("image2"),
+            this.interaction.options.getAttachment("image3"),
+        ]
+
+        for (const attachment of attachments) {
+            if (!attachment) {
+                continue
+            }
+
+            if (!attachment.contentType || new MIMEType(attachment.contentType).type !== "image") {
+                throw new Error("Only image attachments are supported")
+            }
+
+            const result = await InteractionUtilities.uploadAttachment(attachment)
+            images.push(result.url)
         }
 
         const guild = await this.interaction.client.guilds.fetch({
@@ -152,7 +173,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             }),
             timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
             description: this.interaction.options.getString("description", true),
-            image: image ? (await InteractionUtilities.uploadAttachment(image)).url : undefined,
+            images: images,
             reasons: [this.interaction.options.getString("reason", true)],
             penalty: this.interaction.options.getString("penalty", true),
             url: "",
@@ -181,7 +202,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                 await data.recipient.send(ResponseUtilities.generateWarnDm({
                     guildName: guild.name,
                     description: data.description,
-                    image: data.image,
+                    images: data.images,
                     timestamp: data.timestamp,
                 }))
                 data.notified = "DM"
@@ -209,7 +230,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                 ...ResponseUtilities.generateWarnDm({
                     guildName: guild.name,
                     description: data.description,
-                    image: data.image,
+                    images: data.images,
                     timestamp: data.timestamp,
                 }),
                 content: userMention(data.recipient.id),

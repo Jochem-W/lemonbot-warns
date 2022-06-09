@@ -8,6 +8,7 @@ import {
     ButtonStyle,
     channelMention,
     CommandInteraction,
+    EmbedBuilder,
     GuildMember,
     inlineCode,
     italic,
@@ -27,7 +28,7 @@ import {BlockObjectResponse} from "../types/notion"
 export type WarnDmOptions = {
     guildName: string,
     description: string,
-    image?: string,
+    images: string[],
     timestamp: DateTime,
 }
 
@@ -38,7 +39,7 @@ export type WarnData = {
     reasons: string[],
     penalty: string,
     timestamp: DateTime,
-    image?: string,
+    images: string[],
     notified?: "DM" | TextChannel | false,
     url: string,
 }
@@ -74,17 +75,19 @@ export type NotesButtonData = {
 
 export default class ResponseUtilities {
     static generateWarnDm(options: WarnDmOptions): MessageOptions {
-        const embed = EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
-            .setColor("#ff0000")
-            .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
-            .setTimestamp(options.timestamp.toMillis())
-            .setFooter({text: "If you have any questions, please DM ModMail"})
+        const embeds = [
+            EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
+                .setColor("#ff0000")
+                .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
+                .setTimestamp(options.timestamp.toMillis())
+                .setFooter({text: "If you have any questions, please DM ModMail"}),
+        ]
 
-        if (options.image) {
-            embed.setImage(options.image)
+        for (const image of options.images) {
+            embeds.push(new EmbedBuilder().setImage(image).setColor("#ff0000"))
         }
 
-        return {embeds: [embed]}
+        return {embeds: embeds}
     }
 
     static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
@@ -104,7 +107,7 @@ export default class ResponseUtilities {
         const recipientAvatar = (options.recipient instanceof GuildMember ?
             options.recipient.user :
             options.recipient).displayAvatarURL({size: 4096})
-        const embed = EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
+        const embeds = [EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
             recipientAvatar)
             .addFields([
                 {
@@ -120,13 +123,13 @@ export default class ResponseUtilities {
                 text: `Warned by ${options.warnedBy.tag}`,
                 iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
             })
-            .setTimestamp(options.timestamp.toMillis())
+            .setTimestamp(options.timestamp.toMillis())]
 
-        if (options.image) {
-            embed.setImage(options.image)
+        for (const image of options.images) {
+            embeds.push(new EmbedBuilder().setImage(image))
         }
 
-        return this.addNotesButton({embeds: [embed]}, options.url)
+        return this.addNotesButton({embeds: embeds}, options.url)
     }
 
     static generateNoteResponse(options: NoteData, interaction?: CommandInteraction): WebhookEditMessageOptions {

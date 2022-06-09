@@ -312,11 +312,11 @@ export default class NotionUtilities {
             },
         ]
 
-        if (data.image) {
+        for (const image of data.images) {
             objects.push({
                 image: {
                     external: {
-                        url: data.image,
+                        url: image,
                     },
                 },
             })
