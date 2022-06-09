@@ -60,9 +60,6 @@ export default class WarnCommand extends SlashCommandConstructor<ChatInputComman
             .addAttachmentOption(option => option
                 .setName("image2")
                 .setDescription("Optional image attachment that will also be sent to the user"))
-            .addAttachmentOption(option => option
-                .setName("image3")
-                .setDescription("Optional image attachment that will also be sent to the user"))
             .addStringOption(option => option
                 .setName("reason2")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
@@ -140,7 +137,6 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
         const attachments = [
             this.interaction.options.getAttachment("image"),
             this.interaction.options.getAttachment("image2"),
-            this.interaction.options.getAttachment("image3"),
         ]
 
         for (const attachment of attachments) {
