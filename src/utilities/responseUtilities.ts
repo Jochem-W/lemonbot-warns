@@ -75,14 +75,21 @@ export type NotesButtonData = {
 
 export default class ResponseUtilities {
     static generateWarnDm(options: WarnDmOptions): MessageOptions {
-        const embeds = [
-            EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
-                .setColor("#ff0000")
-                .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
-                .setTimestamp(options.timestamp.toMillis())
-                .setFooter({text: "If you have any questions, please DM ModMail"}),
-        ]
+        const embed = EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
+            .setColor("#ff0000")
+            .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
+            .setTimestamp(options.timestamp.toMillis())
+            .setFooter({text: "If you have any questions, please DM ModMail"})
 
+        if (options.images.length < 2) {
+            if (options.images[0]) {
+                embed.setImage(options.images[0])
+            }
+
+            return {embeds: [embed]}
+        }
+
+        const embeds = [embed]
         for (const image of options.images) {
             embeds.push(new EmbedBuilder().setImage(image).setColor("#ff0000"))
         }
@@ -107,7 +114,7 @@ export default class ResponseUtilities {
         const recipientAvatar = (options.recipient instanceof GuildMember ?
             options.recipient.user :
             options.recipient).displayAvatarURL({size: 4096})
-        const embeds = [EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
+        const embed = EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
             recipientAvatar)
             .addFields([
                 {
@@ -123,8 +130,17 @@ export default class ResponseUtilities {
                 text: `Warned by ${options.warnedBy.tag}`,
                 iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
             })
-            .setTimestamp(options.timestamp.toMillis())]
+            .setTimestamp(options.timestamp.toMillis())
 
+        if (options.images.length < 2) {
+            if (options.images[0]) {
+                embed.setImage(options.images[0])
+            }
+
+            return this.addNotesButton({embeds: [embed]}, options.url)
+        }
+
+        const embeds = [embed]
         for (const image of options.images) {
             embeds.push(new EmbedBuilder().setImage(image))
         }
