@@ -81,7 +81,7 @@ export default class ResponseUtilities {
             .setTimestamp(options.timestamp.toMillis())
             .setFooter({text: "If you have any questions, please DM ModMail"})
 
-        if (options.images.length < 2) {
+        if (options.images.length <= 1) {
             if (options.images[0]) {
                 embed.setImage(options.images[0])
             }
@@ -132,7 +132,7 @@ export default class ResponseUtilities {
             })
             .setTimestamp(options.timestamp.toMillis())
 
-        if (options.images.length < 2) {
+        if (options.images.length <= 1) {
             if (options.images[0]) {
                 embed.setImage(options.images[0])
             }
