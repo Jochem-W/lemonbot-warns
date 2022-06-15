@@ -64,10 +64,6 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
             this.bans.push(`• ${inlineCode(ban.user.tag)} (created ${time(Math.floor(createdDate.toSeconds()), "R")})`)
         }
 
-        for (let i = 0; i < 100; i++) {
-            this.bans.push(i.toString())
-        }
-
         this.title =
             `The following ${this.bans.length.toString()} users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days.`
 
