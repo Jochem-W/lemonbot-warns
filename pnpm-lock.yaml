@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@discordjs/rest': 0.6.0-dev.1655165427-b4e28a8
+  '@discordjs/rest': ^0.6.0-dev.1655165427-b4e28a8
   '@notionhq/client': ^1.0.4
   '@tsconfig/node18': ^1.0.1
   '@types/luxon': ^2.3.2
@@ -10,7 +10,7 @@ specifiers:
   '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
   discord-api-types: ^0.34.0
-  discord.js: 14.0.0-dev.1655165434-b4e28a8
+  discord.js: ^14.0.0-dev.1655165434-b4e28a8
   erlpack: github:discord/erlpack
   firebase-admin: ^10.3.0
   lru-cache: ^7.10.1
