@@ -213,7 +213,8 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             const nanoid = customAlphabet(nolookalikesSafe)
             const channelName = `${data.recipient.user.username}-${data.recipient.user.discriminator}-${nanoid(4)}`
 
-            const newChannel = await guild.channels.create(channelName, {
+            const newChannel = await guild.channels.create({
+                name: channelName,
                 type: ChannelType.GuildText,
                 parent: Config.warnCategory,
                 reason: "Create a channel for privately warning a user that has DMs disabled",

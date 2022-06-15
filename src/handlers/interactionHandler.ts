@@ -2,6 +2,7 @@ import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import {InteractionScope, parseCustomId} from "../models/customId"
 import {Commands} from "../commands"
+import {InteractionType} from "discord-api-types/v10"
 
 /**
  * Handler for interactions
@@ -41,13 +42,13 @@ export default class InteractionHandler extends HandlerWrapper {
 
     async handle(interaction: Interaction) {
         try {
-            if (interaction.isMessageComponent()) {
-                await InteractionHandler.handleMessageComponent(interaction)
+            if (interaction.type === InteractionType.MessageComponent) {
+                await InteractionHandler.handleMessageComponent(interaction as MessageComponentInteraction)
                 return
             }
 
-            if (interaction.isModalSubmit()) {
-                await InteractionHandler.handleModalSubmit(interaction)
+            if (interaction.type === InteractionType.ModalSubmit) {
+                await InteractionHandler.handleModalSubmit(interaction as ModalSubmitInteraction)
                 return
             }
         } catch (e) {

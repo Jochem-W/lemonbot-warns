@@ -12,6 +12,7 @@ import {
 import ExecutableCommand from "./executableCommand"
 import CommandConstructor from "./commandConstructor"
 import {CustomId, InteractionScope, parseCustomId} from "./customId"
+import {InteractionType} from "discord-api-types/v10"
 
 /**
  * A constructor for a command that can be executed by a user.
@@ -73,23 +74,23 @@ export default abstract class SlashCommandConstructor<I extends CommandInteracti
             dispose: true,
             idle: 600000,
         }).on("collect", async collected => {
-            if (collected.isMessageComponent()) {
-                const data = parseCustomId(collected.customId)
+            if (collected.type === InteractionType.MessageComponent) {
+                const data = parseCustomId((collected as MessageComponentInteraction).customId)
                 if (data.scope !== InteractionScope.Collector) {
                     return
                 }
 
-                await command.handleMessageComponent(collected, data)
+                await command.handleMessageComponent(collected as MessageComponentInteraction, data)
                 return
             }
 
-            if (collected.isModalSubmit()) {
-                const data = parseCustomId(collected.customId)
+            if (collected.type === InteractionType.ModalSubmit) {
+                const data = parseCustomId((collected as ModalSubmitInteraction).customId)
                 if (data.scope !== InteractionScope.Collector) {
                     return
                 }
 
-                await command.handleModalSubmit(collected, data)
+                await command.handleModalSubmit(collected as ModalSubmitInteraction, data)
                 return
             }
 

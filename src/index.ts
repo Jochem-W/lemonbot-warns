@@ -41,6 +41,9 @@ UserContextMenuCommandConstructors.forEach(cw => {
 const rest = new REST({version: "10"}).setToken(Variables.discordToken);
 
 (async () => {
+    await rest.put(Routes.applicationCommands(Variables.discordApplicationId), {body: []})
+
+
     await DatabaseUtilities.initialiseCache()
     const applicationCommands = await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId,
         Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
