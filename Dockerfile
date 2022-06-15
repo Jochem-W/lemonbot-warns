@@ -3,8 +3,8 @@ FROM node:current-alpine AS builder
 ENV NODE_ENV=development
 WORKDIR /app
 
-# Copy package.json and lockfile
-COPY ["pnpm-lock.yaml", "package.json", "./"]
+# Copy package.json, lockfile and .npmrc
+COPY ["pnpm-lock.yaml", "package.json", ".npmrc", "./"]
 
 # Install dependencies
 RUN apk add --no-cache alpine-sdk python3 && \
