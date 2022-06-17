@@ -1,10 +1,9 @@
 import {
-    ApplicationCommandType,
     RESTPutAPIApplicationGuildCommandsJSONBody,
     RESTPutAPIApplicationGuildCommandsResult,
     Routes,
 } from "discord-api-types/v10"
-import {Client, IntentsBitField, Partials} from "discord.js"
+import {ApplicationCommandType, Client, IntentsBitField, Partials} from "discord.js"
 import {
     ChatInputCommandConstructors,
     Commands,

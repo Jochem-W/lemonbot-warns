@@ -23,6 +23,7 @@ import {pipeline} from "stream/promises"
 import MIMEType from "whatwg-mimetype"
 import {NotesData} from "./responseUtilities"
 import DatabaseUtilities from "./databaseUtilities"
+import {ReadableStream} from "stream/web"
 
 export type UploadAttachmentResult = {
     url: string,
@@ -88,8 +89,8 @@ export default class InteractionUtilities {
             throw new Error("No response body")
         }
 
-        // @ts-ignore TODO: wait for @types/node update
-        await pipeline(response.body, file.createWriteStream())
+        // FIXME
+        await pipeline(response.body as ReadableStream, file.createWriteStream())
 
         await file.makePublic()
 
