@@ -211,9 +211,7 @@ export default class ResponseUtilities {
             .setTimestamp(null)
 
         const embeds = [embed, ...parseResult.embeds]
-        embeds.at(-1)!
-            .setFooter({text: "Last edited"})
-            .setTimestamp(warningsData.entry.lastEditedTime.toMillis())
+        embeds.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(warningsData.entry.lastEditedTime.toMillis())
 
         return {embeds: embeds}
     }

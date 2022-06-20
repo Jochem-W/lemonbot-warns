@@ -35,7 +35,10 @@ export default class NotionUtilities {
                 currentListNumber = 1
             }
 
-            let lastEmbed = result.embeds.at(-1)!
+            let lastEmbed = result.embeds.at(-1)
+            if (!lastEmbed) {
+                throw new Error("No embed found")
+            }
             if (lastEmbed.data.fields?.length === 25 || lastEmbed.data.image) {
                 lastEmbed = new EmbedBuilder().setFields([{
                     name: " ",
@@ -43,7 +46,11 @@ export default class NotionUtilities {
                 }])
                 result.embeds.push(lastEmbed)
             }
-            const lastField = lastEmbed.data.fields!.at(-1)!
+            const lastField = lastEmbed.data.fields?.at(-1)
+
+            if (!lastField) {
+                throw new Error("No field found")
+            }
 
             switch (block.type) {
             case "paragraph":
@@ -172,15 +179,22 @@ export default class NotionUtilities {
         }
 
         for (let i = 0; i < result.embeds.length; i++) {
-            const embed = result.embeds[i]!
-            for (let j = 0; j < embed.data.fields!.length; j++) {
-                const field = embed.data.fields![j]!
+            const embed = result.embeds[i]
+            if (!embed?.data.fields) {
+                throw new Error("No fields found")
+            }
+
+            for (let j = 0; j < embed.data.fields.length; j++) {
+                const field = embed.data.fields[j]
+                if (!field) {
+                    throw new Error("No field found")
+                }
 
                 field.name = field.name.trim()
                 field.value = field.value.trim()
 
                 if (!field.name && !field.value) {
-                    embed.data.fields!.splice(j, 1)
+                    embed.data.fields.splice(j, 1)
                     j--
                     continue
                 }
@@ -194,7 +208,7 @@ export default class NotionUtilities {
                 }
             }
 
-            if (embed.data.fields!.length === 0 && !embed.data.image) {
+            if (embed.data.fields.length === 0 && !embed.data.image) {
                 result.embeds.splice(i, 1)
                 i--
             }

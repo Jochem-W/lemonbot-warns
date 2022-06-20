@@ -156,7 +156,7 @@ export default class DatabaseUtilities {
         case 0:
             return null
         case 1:
-            return this.toDatabaseEntries(queryResponse)[0]!
+            return this.toDatabaseEntries(queryResponse)[0] ?? null
         default:
             throw new Error(`Multiple entries found for ${id}`)
         }
@@ -166,7 +166,12 @@ export default class DatabaseUtilities {
         const entry = await this.getEntry(user)
         if (!entry && data.name && data.currentPenaltyLevel) {
             // FIXME: don't cast
-            return this.createEntry(user, data as CreateEntryData)
+            const newEntry = await this.createEntry(user, data as CreateEntryData)
+            if (!newEntry) {
+                throw new Error("Failed to create entry")
+            }
+
+            return newEntry
         }
 
         if (!entry) {
@@ -175,7 +180,7 @@ export default class DatabaseUtilities {
 
         this.updateCache(data.currentPenaltyLevel, data.reasons)
 
-        return this.toDatabaseEntries(await Notion.pages.update({
+        const updatedEntry = this.toDatabaseEntries(await Notion.pages.update({
             page_id: entry.pageId,
             properties: {
                 "Name [Server Nickname]": {
@@ -200,10 +205,16 @@ export default class DatabaseUtilities {
                     }),
                 },
             },
-        }))[0]!
+        }))[0]
+
+        if (!updatedEntry) {
+            throw new Error("Failed to update entry")
+        }
+
+        return updatedEntry
     }
 
-    static async createEntry(user: UserResolvable, data: CreateEntryData) {
+    static async createEntry(user: UserResolvable, data: CreateEntryData): Promise<DatabaseEntry> {
         const entry = await this.getEntry(user)
         if (entry) {
             throw new Error(`Entry already exists for ${user}`)
@@ -212,7 +223,7 @@ export default class DatabaseUtilities {
         this.updateCache(data.currentPenaltyLevel, data.reasons)
 
         const id = this.resolveUser(user)
-        return this.toDatabaseEntries(await Notion.pages.create({
+        const newEntry = this.toDatabaseEntries(await Notion.pages.create({
             parent: {
                 database_id: Variables.databaseId,
             },
@@ -248,7 +259,13 @@ export default class DatabaseUtilities {
                     }) ?? [],
                 },
             },
-        }))[0]!
+        }))[0]
+
+        if (!newEntry) {
+            throw new Error("Failed to create entry")
+        }
+
+        return newEntry
     }
 
     static async addNotes(user: UserResolvable, data: AddNotesData): Promise<string> {

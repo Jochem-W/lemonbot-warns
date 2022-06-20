@@ -51,7 +51,8 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
             throw new Error("This command can only be used in a server")
         }
 
-        for (const [, ban] of await this.interaction.guild!.bans.fetch()) {
+        const guild = this.interaction.guild ?? await this.interaction.client.guilds.fetch(this.interaction.guildId)
+        for (const [, ban] of await guild.bans.fetch()) {
             if (ban.reason !== "Account was less than 30 days old") {
                 continue
             }
@@ -78,16 +79,12 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
 
     private generateReply(): WebhookEditMessageOptions {
         const offset = this.page * this.userCount
-        let description: string | null = this.bans.slice(offset, offset + this.userCount).join("\n")
-        if (description.length === 0) {
-            description = null
-        }
 
         return {
             embeds: [
                 EmbedUtilities.makeEmbed("Wrongfully auto-banned users")
                     .setTitle(this.title)
-                    .setDescription(description),
+                    .setDescription(this.bans.slice(offset, offset + this.userCount).join("\n") || null),
             ],
             components: [
                 new ActionRowBuilder<MessageActionRowComponentBuilder>()

@@ -33,7 +33,7 @@ export default class MessageReportCommand
         switch (data.secondary) {
         case "report":
             const [channelId, messageId] = data.tertiary
-            if (channelId === undefined || messageId === undefined) {
+            if (!channelId || !messageId) {
                 throw new Error("Invalid customId")
             }
 
@@ -148,7 +148,7 @@ export default class MessageReportCommand
         switch (data.secondary) {
         case "delete": {
             const [channelId, messageId] = data.tertiary
-            if (channelId === undefined || messageId === undefined) {
+            if (!channelId || !messageId) {
                 throw new Error(`Invalid customId ${interaction.customId}`)
             }
 
@@ -178,7 +178,7 @@ export default class MessageReportCommand
             }
 
             await originalMessage.edit({
-                embeds: [new EmbedBuilder(originalMessage.embeds[0]!.data)
+                embeds: [new EmbedBuilder(originalMessage.embeds[0]?.data)
                     .setTitle(bold(underscore("Message deleted")))],
             })
 
@@ -202,7 +202,7 @@ export default class MessageReportCommand
             }
 
             await originalMessage.edit({
-                embeds: [new EmbedBuilder(originalMessage.embeds[0]!.data)
+                embeds: [new EmbedBuilder(originalMessage.embeds[0]?.data)
                     .setTitle(bold(underscore("Report dismissed")))],
             })
             break

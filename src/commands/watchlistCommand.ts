@@ -67,25 +67,29 @@ class WatchlistExecutableCommand extends ExecutableCommand<ChatInputCommandInter
         const embed = EmbedUtilities.makeEmbed("Watchlist")
 
         const entries = this.entries.slice(this.offset, this.offset + this.count)
-        for (let i = 0; i < entries.length; i++) {
+
+        let i = 0
+        for (const entry of entries) {
             embed.addFields([{
-                name: entries[i]!.name,
+                name: entry.name,
                 value: `${bold("Watch")}
-${inlineCode(`${entries[i]!.watchlist ? "✅" : "❌"}`)}
+${inlineCode(`${entry.watchlist ? "✅" : "❌"}`)}
 
 ${bold("Penalty level")}
-${inlineCode(entries[i]!.currentPenaltyLevel)}
+${inlineCode(entry.currentPenaltyLevel)}
 
 ${bold("Reasons")}
-• ${entries[i]!.reasons.map(inlineCode).join("\n• ")}`,
+• ${entry.reasons.map(inlineCode).join("\n• ")}`,
                 inline: true,
             }])
 
-            if (i !== entries.length - 1 && i % 2 === 1) {
+            i += 1
+            if (i === 2) {
                 embed.addFields([{
                     name: "\u200b",
                     value: "\u200b",
                 }])
+                i = 0
             }
         }
 

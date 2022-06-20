@@ -19,7 +19,7 @@ export default class InteractionHandler extends HandlerWrapper {
         }
 
         const command = Commands.get(data.primary)
-        if (command === undefined) {
+        if (!command) {
             throw new Error(`Command ${data.primary} not found`)
         }
 
@@ -33,7 +33,7 @@ export default class InteractionHandler extends HandlerWrapper {
         }
 
         const command = Commands.get(data.primary)
-        if (command === undefined) {
+        if (!command) {
             throw new Error(`Command ${data.primary} not found`)
         }
 
