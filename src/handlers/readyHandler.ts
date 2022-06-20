@@ -40,7 +40,7 @@ export default class ReadyHandler extends HandlerWrapper {
         }
 
         await channel.send({
-            body: userMention(Config.restartUser),
+            content: userMention(Config.restartUser),
             embeds: [EmbedUtilities.makeEmbed("Bot ready").setTitle(title)],
         })
 
