@@ -110,7 +110,7 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
                                 secondary: "",
                                 tertiary: [],
                             }))
-                            .setDisabled(this.page === this.lastPage)
+                            .setDisabled(this.page >= this.lastPage)
                             .setEmoji("➡️"),
                     ]),
             ],
