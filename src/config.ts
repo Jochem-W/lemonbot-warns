@@ -22,4 +22,10 @@ export const Config = {
 
     // The channel to send message reports to
     reportChannel: "CHANGE_ME",
+
+    // The channel to send restart notifications to
+    restartChannel: "CHANGE_ME",
+
+    // The user to mention when sending a restart notification
+    restartUser: "CHANGE_ME",
 }
