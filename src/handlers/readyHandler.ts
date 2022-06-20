@@ -21,16 +21,16 @@ export default class ReadyHandler extends HandlerWrapper {
             console.log("Running without a user")
         }
 
-        let title = "Reason: "
+        let title = "Bot "
         switch (await getState()) {
         case "UP":
-            title += "crash"
+            title += "crashed"
             break
         case "DOWN":
-            title += "restart"
+            title += "restarted"
             break
         case "RECREATE":
-            title += "update"
+            title += "updated"
             break
         }
 
@@ -41,7 +41,7 @@ export default class ReadyHandler extends HandlerWrapper {
 
         await channel.send({
             content: userMention(Config.restartUser),
-            embeds: [EmbedUtilities.makeEmbed("Bot ready").setTitle(title)],
+            embeds: [EmbedUtilities.makeEmbed(title)],
         })
 
         await setState("UP")
