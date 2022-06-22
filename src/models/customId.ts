@@ -4,7 +4,7 @@ export function customId(data: CustomId) {
 
 export function parseCustomId(customId: string): CustomId {
     const [scope, primary, secondary, ...tertiary] = customId.split(":")
-    if (!scope || !primary || !secondary) {
+    if (scope == undefined || primary == undefined || secondary == undefined) {
         throw new Error(`Invalid customId: ${customId}`)
     }
 
