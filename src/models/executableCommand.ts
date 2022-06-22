@@ -50,7 +50,29 @@ export default abstract class ExecutableCommand<T extends CommandInteraction> {
      * @protected
      */
     protected async disableButtons() {
-        await InteractionUtilities.disable(this.interaction)
+        const channel = await this.interaction.client.channels.fetch(this.interaction.channelId)
+        if (!channel?.isTextBased()) {
+            throw new Error("Channel is not a text channel")
+        }
+
+        let message = await this.interaction.fetchReply()
+        try {
+            message = await channel.messages.fetch({
+                message: message.id,
+                force: true,
+            })
+        } catch (e) {
+            if (!this.interaction.ephemeral) {
+                console.warn("Couldn't find non-ephemeral bot message")
+            }
+        }
+
+        const disabled = InteractionUtilities.disable({
+            embeds: message.embeds,
+            components: message.components.map(row => row.toJSON()),
+        })
+
+        await this.interaction.editReply(disabled)
     }
 
     protected async checkUser(interaction: MessageComponentInteraction) {

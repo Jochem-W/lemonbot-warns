@@ -1,9 +1,8 @@
-import {AutocompleteInteraction, CommandInteraction, Interaction} from "discord.js"
+import {AutocompleteInteraction, CommandInteraction, Interaction, InteractionType} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import EmbedUtilities from "../utilities/embedUtilities"
 import {Config} from "../config"
 import {Commands} from "../commands"
-import {InteractionType} from "discord-api-types/v10"
 
 /**
  * Handler for interactions

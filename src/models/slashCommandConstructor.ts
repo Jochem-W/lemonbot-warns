@@ -4,6 +4,7 @@ import {
     CommandInteraction,
     InteractionCollector,
     InteractionDeferReplyOptions,
+    InteractionType,
     MessageComponentInteraction,
     ModalSubmitInteraction,
     PermissionResolvable,
@@ -12,7 +13,6 @@ import {
 import ExecutableCommand from "./executableCommand"
 import CommandConstructor from "./commandConstructor"
 import {CustomId, InteractionScope, parseCustomId} from "./customId"
-import {InteractionType} from "discord-api-types/v10"
 
 /**
  * A constructor for a command that can be executed by a user.

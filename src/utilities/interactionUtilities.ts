@@ -1,20 +1,17 @@
 import {
     ActionRowBuilder,
+    APIActionRowComponent,
+    APIButtonComponent,
+    APISelectMenuComponent,
     Attachment,
-    ButtonBuilder,
-    ButtonComponent,
-    ButtonStyle,
     Client,
-    CommandInteraction,
     DiscordAPIError,
     GuildMember,
     GuildResolvable,
     Interaction,
     Message,
     MessageActionRowComponentBuilder,
-    MessageComponentInteraction,
     RESTJSONErrorCodes,
-    SelectMenuBuilder,
     User,
     UserResolvable,
 } from "discord.js"
@@ -36,6 +33,11 @@ type FetchMemberOrUserOptions = {
     guild?: GuildResolvable,
     user: UserResolvable,
     force?: boolean,
+}
+
+type PartialMessage = {
+    embeds: Message["embeds"],
+    components: APIActionRowComponent<APIButtonComponent | APISelectMenuComponent>[]
 }
 
 export default class InteractionUtilities {
@@ -117,43 +119,14 @@ export default class InteractionUtilities {
         return data
     }
 
-    static async disable(interaction: CommandInteraction | MessageComponentInteraction) {
-        const channel = await interaction.client.channels.fetch(interaction.channelId)
-        if (!channel?.isTextBased()) {
-            throw new Error("Channel is not a text channel")
-        }
-
-        let message: Message
-        if (interaction instanceof CommandInteraction) {
-            const reply = await interaction.fetchReply()
-            message = await channel.messages.fetch({
-                message: reply.id,
-                force: true,
-            })
-        } else {
-            message = await channel.messages.fetch({
-                message: interaction.message.id,
-                force: true,
-            })
-        }
-
-        await message.edit({
+    static disable(message: PartialMessage): PartialMessage {
+        return {
             embeds: message.embeds,
-            components: message.components?.map(row => new ActionRowBuilder<MessageActionRowComponentBuilder>()
-                .addComponents(row.components.map(component => {
-                    if (component instanceof ButtonComponent) {
-                        const builder = new ButtonBuilder(component.data)
-                        if (builder.data.style !== ButtonStyle.Link) {
-                            builder.setDisabled(true)
-                        }
-
-                        return builder
-                    }
-
-                    return new SelectMenuBuilder(component.data)
-                        .setDisabled(true)
-                })),
-            ),
-        })
+            components: message.components.map(row => {
+                const builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row)
+                builder.components.map(component => component.setDisabled(true))
+                return builder.toJSON()
+            }),
+        }
     }
 }

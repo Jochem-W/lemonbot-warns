@@ -1,8 +1,7 @@
-import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
+import {Interaction, InteractionType, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import {InteractionScope, parseCustomId} from "../models/customId"
 import {Commands} from "../commands"
-import {InteractionType} from "discord-api-types/v10"
 
 /**
  * Handler for interactions
