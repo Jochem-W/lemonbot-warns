@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@discordjs/rest': 0.6.0-dev.1655770141-94f7ca9
+  '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
   '@notionhq/client': ^1.0.4
   '@tsconfig/node18': ^1.0.1
   '@types/luxon': ^2.3.2
@@ -10,7 +10,7 @@ specifiers:
   '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
   discord-api-types: ^0.34.0
-  discord.js: 14.0.0-dev.1655770161-94f7ca9
+  discord.js: 14.0.0-dev.1655899441-a3799f9
   erlpack: github:discord/erlpack
   firebase-admin: ^11.0.0
   lru-cache: ^7.10.1
@@ -23,10 +23,10 @@ specifiers:
   zlib-sync: ^0.1.7
 
 dependencies:
-  '@discordjs/rest': 0.6.0-dev.1655770141-94f7ca9
+  '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
   '@notionhq/client': 1.0.4
   discord-api-types: 0.34.0
-  discord.js: 14.0.0-dev.1655770161-94f7ca9_22kvxa7zeyivx4jp72v2w3pkvy
+  discord.js: 14.0.0-dev.1655899441-a3799f9_22kvxa7zeyivx4jp72v2w3pkvy
   firebase-admin: 11.0.0_@firebase+app-types@0.7.0
   lru-cache: 7.10.1
   luxon: 2.4.0
@@ -50,28 +50,27 @@ devDependencies:
 
 packages:
 
-  /@discordjs/builders/0.16.0-dev.1655770448-94f7ca9:
-    resolution: { integrity: sha512-+Y/QA/lIuw2QehhRfpDDGHyCB06p9WcoYMPx7+eNl3gVeu1d4cnDh5XJcNt/PZFWe/qIXtxo/nrf9dQOXwn79w== }
+  /@discordjs/builders/0.16.0-dev.1655899432-a3799f9:
+    resolution: { integrity: sha512-lIiQP6l1Q4K9+mXwphkFuNgcV+Nr5B3uXwju4MRqzM/eiBBPDiC99Iz+5tB94ePU+vs3XbGAhA6hc49CPM+/qg== }
     engines: { node: '>=16.9.0' }
     dependencies:
       '@sapphire/shapeshift': 3.3.0
-      '@sindresorhus/is': 4.6.0
       discord-api-types: 0.33.5
       fast-deep-equal: 3.1.3
       ts-mixer: 6.0.1
       tslib: 2.4.0
     dev: false
 
-  /@discordjs/collection/0.8.0-dev.1655770159-94f7ca9:
-    resolution: { integrity: sha512-/2S4bU22rMrAgxdSzX4QroBQiZDANAxZSYm5SGjzgGmwxcLVwSEYTgy80220NUvvpllSHVhy4ykoZVTCOOFwoA== }
+  /@discordjs/collection/0.8.0-dev.1655899433-a3799f9:
+    resolution: { integrity: sha512-alX/6ufxVKIDef6uEuA3tNE3JO8O3PjQRw1BqWcs+Z5jI5zFitv9ska8YTKEX8wqDFPDqkbKXxrpBuieTP4/zQ== }
     engines: { node: '>=16.9.0' }
     dev: false
 
-  /@discordjs/rest/0.6.0-dev.1655770141-94f7ca9:
-    resolution: { integrity: sha512-2/sy/karagttxBoMZ61d13bwBZdVtGmuDDxU9r+MCpnTZdnE0BPiqwoksoZNkjYiF1tgnbFjlX9mHZcWVru6Pw== }
+  /@discordjs/rest/0.6.0-dev.1655899433-a3799f9:
+    resolution: { integrity: sha512-HLYLiZYiauQoJ4Ans86v8yNWOt3TWTktC9h29Agzg0L2/Rkbh14wvCaiMKcFRbS308LKu4RRjlnlkGkfduGfFg== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/collection': 0.8.0-dev.1655770159-94f7ca9
+      '@discordjs/collection': 0.8.0-dev.1655899433-a3799f9
       '@sapphire/async-queue': 1.3.1
       '@sapphire/snowflake': 3.2.2
       discord-api-types: 0.33.5
@@ -204,7 +203,7 @@ packages:
       ent: 2.2.0
       extend: 3.0.2
       gaxios: 5.0.0
-      google-auth-library: 8.0.2
+      google-auth-library: 8.0.3
       mime: 3.0.0
       mime-types: 2.1.35
       p-limit: 3.1.0
@@ -322,11 +321,6 @@ packages:
   /@sapphire/snowflake/3.2.2:
     resolution: { integrity: sha512-ula2O0kpSZtX9rKXNeQMrHwNd7E4jPDJYUXmEGTFdMRfyfMw+FPyh04oKMjAiDuOi64bYgVkOV3MjK+loImFhQ== }
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
-    dev: false
-
-  /@sindresorhus/is/4.6.0:
-    resolution: { integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw== }
-    engines: { node: '>=10' }
     dev: false
 
   /@tootallnate/once/2.0.0:
@@ -567,13 +561,13 @@ packages:
     resolution: { integrity: sha512-xwlhwiLZ11+8+ou1JlPOLJkwpu8qklm+aUm9JF06YC59fSo4CD7gQqsbUBxqevqheLx+WhRgJOHjDbjI0Q+Ecw== }
     dev: false
 
-  /discord.js/14.0.0-dev.1655770161-94f7ca9_22kvxa7zeyivx4jp72v2w3pkvy:
-    resolution: { integrity: sha512-OMh5DscGqjjJ1y4uYti13XT2yboVprUc+vsJq8QK6WsA959lYOkMshPqqulpU4eYM/uWZeyjkh1ff+4mpzzhQQ== }
+  /discord.js/14.0.0-dev.1655899441-a3799f9_22kvxa7zeyivx4jp72v2w3pkvy:
+    resolution: { integrity: sha512-2b57JcSJFca8SCZakXoTRhVimNpRXmAgr8axv/skmbJBbNu9ldlj3JlbWwok+mVDhoeaQ7ippZQY0cN8ivqyVA== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/builders': 0.16.0-dev.1655770448-94f7ca9
-      '@discordjs/collection': 0.8.0-dev.1655770159-94f7ca9
-      '@discordjs/rest': 0.6.0-dev.1655770141-94f7ca9
+      '@discordjs/builders': 0.16.0-dev.1655899432-a3799f9
+      '@discordjs/collection': 0.8.0-dev.1655899433-a3799f9
+      '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
       '@sapphire/snowflake': 3.2.2
       '@types/ws': 8.5.3
       discord-api-types: 0.33.5
@@ -772,8 +766,8 @@ packages:
     dev: false
     optional: true
 
-  /google-auth-library/8.0.2:
-    resolution: { integrity: sha512-HoG+nWFAThLovKpvcbYzxgn+nBJPTfAwtq0GxPN821nOO+21+8oP7MoEHfd1sbDulUFFGfcjJr2CnJ4YssHcyg== }
+  /google-auth-library/8.0.3:
+    resolution: { integrity: sha512-1eC6yaCrPfkv3bwtb3e0AOct7E7xR/uikDyXNo/j8Wd6a1ldRgAey5FmaDGNJnHNDPLtDiENQLYsA69eXOF5sA== }
     engines: { node: '>=12' }
     dependencies:
       arrify: 2.0.1
@@ -782,7 +776,7 @@ packages:
       fast-text-encoding: 1.0.4
       gaxios: 5.0.0
       gcp-metadata: 5.0.0
-      gtoken: 5.3.2
+      gtoken: 6.0.1
       jws: 4.0.0
       lru-cache: 6.0.0
     transitivePeerDependencies:
@@ -824,12 +818,34 @@ packages:
     dev: false
     optional: true
 
+  /google-p12-pem/4.0.0:
+    resolution: { integrity: sha512-lRTMn5ElBdDixv4a86bixejPSRk1boRtUowNepeKEVvYiFlkLuAJUVpEz6PfObDHYEKnZWq/9a2zC98xu62A9w== }
+    engines: { node: '>=12.0.0' }
+    hasBin: true
+    dependencies:
+      node-forge: 1.3.1
+    dev: false
+    optional: true
+
   /gtoken/5.3.2:
     resolution: { integrity: sha512-gkvEKREW7dXWF8NV8pVrKfW7WqReAmjjkMBh6lNCCGOM4ucS0r0YyXXl0r/9Yj8wcW/32ISkfc8h5mPTDbtifQ== }
     engines: { node: '>=10' }
     dependencies:
       gaxios: 4.3.3
       google-p12-pem: 3.1.4
+      jws: 4.0.0
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
+    optional: true
+
+  /gtoken/6.0.1:
+    resolution: { integrity: sha512-J0vebk6u6i4rLTM0lQq25SdusCLMvujYNZeAouyPvSbGlcjw7P8L3W9INIFnlXUx+AUD7TDoM1mgdhzH+XX7DQ== }
+    engines: { node: '>=12.0.0' }
+    dependencies:
+      gaxios: 4.3.3
+      google-p12-pem: 4.0.0
       jws: 4.0.0
     transitivePeerDependencies:
       - encoding
