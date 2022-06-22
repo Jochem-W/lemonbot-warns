@@ -74,29 +74,35 @@ export default abstract class SlashCommandConstructor<I extends CommandInteracti
             dispose: true,
             idle: 600000,
         }).on("collect", async collected => {
-            if (collected.type === InteractionType.MessageComponent) {
-                const data = parseCustomId((collected as MessageComponentInteraction).customId)
-                if (data.scope !== InteractionScope.Collector) {
+            try {
+                if (collected.type === InteractionType.MessageComponent) {
+                    const data = parseCustomId((collected as MessageComponentInteraction).customId)
+                    if (data.scope !== InteractionScope.Collector) {
+                        return
+                    }
+
+                    await command.handleMessageComponent(collected as MessageComponentInteraction, data)
                     return
                 }
 
-                await command.handleMessageComponent(collected as MessageComponentInteraction, data)
-                return
-            }
+                if (collected.type === InteractionType.ModalSubmit) {
+                    const data = parseCustomId((collected as ModalSubmitInteraction).customId)
+                    if (data.scope !== InteractionScope.Collector) {
+                        return
+                    }
 
-            if (collected.type === InteractionType.ModalSubmit) {
-                const data = parseCustomId((collected as ModalSubmitInteraction).customId)
-                if (data.scope !== InteractionScope.Collector) {
+                    await command.handleModalSubmit(collected as ModalSubmitInteraction, data)
                     return
                 }
-
-                await command.handleModalSubmit(collected as ModalSubmitInteraction, data)
-                return
+            } catch (e) {
+                console.error(`Unhandled error ${e} in InteractionCollector of command ${command} with interaction ${collected}`)
             }
-
-            throw new Error(`Unexpected interaction ${collected} on command ${command}`)
         }).on("end", async () => {
-            await command.cleanup()
+            try {
+                await command.cleanup()
+            } catch (e) {
+                console.error(`Unhandled error ${e} in InteractionCollector of command ${command} on cleanup`)
+            }
         })
 
         await command.execute()
