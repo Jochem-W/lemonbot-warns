@@ -23,7 +23,7 @@ import InteractionUtilities from "../utilities/interactionUtilities"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import {customAlphabet} from "nanoid"
 import {nolookalikesSafe} from "nanoid-dictionary"
-import {Config} from "../config"
+import Config from "../config"
 import {CustomId, customId, InteractionScope} from "../models/customId"
 import EmbedUtilities from "../utilities/embedUtilities"
 

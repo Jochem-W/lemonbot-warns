@@ -1,4 +1,4 @@
-import {Config} from "../config"
+import Config from "../config"
 import EmbedUtilities from "./embedUtilities"
 import {
     ActionRowBuilder,

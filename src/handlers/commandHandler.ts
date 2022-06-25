@@ -1,7 +1,7 @@
 import {AutocompleteInteraction, CommandInteraction, Interaction, InteractionType} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import EmbedUtilities from "../utilities/embedUtilities"
-import {Config} from "../config"
+import Config from "../config"
 import {Commands} from "../commands"
 
 /**

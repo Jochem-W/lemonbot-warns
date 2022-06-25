@@ -2,7 +2,7 @@ import {Client, userMention} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import {readFile, writeFile} from "fs/promises"
 import EmbedUtilities from "../utilities/embedUtilities"
-import {Config} from "../config"
+import Config from "../config"
 
 type State = "UP" | "DOWN" | "RECREATE"
 

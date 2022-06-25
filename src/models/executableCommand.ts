@@ -1,6 +1,6 @@
 import {CommandInteraction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
 import EmbedUtilities from "../utilities/embedUtilities"
-import {Config} from "../config"
+import Config from "../config"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import {CustomId} from "./customId"
 

@@ -1,4 +1,4 @@
-import {Config} from "../config"
+import Config from "../config"
 import {DateTime} from "luxon"
 import {EmbedBuilder} from "discord.js"
 

@@ -5,7 +5,7 @@ import {CreatePageResponse, QueryDatabaseResponse, UpdatePageResponse} from "@no
 import {DateTime} from "luxon"
 import {BlockObjectRequest, BlockObjectResponse} from "../types/notion"
 import LRUCache from "lru-cache"
-import {Config} from "../config"
+import Config from "../config"
 
 export type DatabaseEntry = {
     id: string
@@ -31,7 +31,7 @@ export type UpdateEntryData = Pick<Partial<DatabaseEntry>, "name" | "currentPena
 
 export default class DatabaseUtilities {
     private static readonly cache = new LRUCache({
-        ttl: Config.cacheTtl,
+        ttl: Config.cacheTtl.toMillis(),
         max: 2,
         ttlAutopurge: true,
         fetchMethod: async (key: string) => {

@@ -19,7 +19,7 @@
 // import MessageContextMenuCommandConstructor from "../models/messageContextMenuCommandConstructor"
 // import {customId, CustomId, InteractionScope} from "../models/customId"
 // import MIMEType from "whatwg-mimetype"
-// import {Config} from "../config"
+// import Config from "../config"
 // import EmbedUtilities from "../utilities/embedUtilities"
 // import InteractionUtilities from "../utilities/interactionUtilities"
 //

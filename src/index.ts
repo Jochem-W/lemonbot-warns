@@ -16,7 +16,7 @@ import {
 import {Variables} from "./variables"
 import {Handlers} from "./handlers"
 import {REST} from "@discordjs/rest"
-import {Config} from "./config"
+import Config from "./config"
 import DatabaseUtilities from "./utilities/databaseUtilities"
 
 const client = new Client({

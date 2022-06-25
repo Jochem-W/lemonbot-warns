@@ -2,7 +2,7 @@ import {PartialUser, User} from "discord.js"
 import HandlerWrapper from "../wrappers/handlerWrapper"
 import DatabaseUtilities from "../utilities/databaseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
-import {Config} from "../config"
+import Config from "../config"
 
 export default class TagChangeHandler extends HandlerWrapper {
     constructor() {
