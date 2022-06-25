@@ -13,9 +13,10 @@ import {
     MessageComponentInteraction,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
+    User,
     userMention,
 } from "discord.js"
-import {DateTime} from "luxon"
+import {DateTime, Duration} from "luxon"
 import MIMEType from "whatwg-mimetype"
 import NotionUtilities from "../utilities/notionUtilities"
 import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
@@ -47,9 +48,11 @@ export default class WarnCommand extends SlashCommandConstructor<ChatInputComman
                 .setRequired(true))
             .addStringOption(option => option
                 .setName("penalty")
-                .setDescription("New penalty level for the user (penalties have to be applied separately)")
+                .setDescription("Penalty level for the user, automatically applied if notify is True")
                 .setRequired(true)
-                .setAutocomplete(true))
+                .setChoices(...Config.penalties.map(penalty => {
+                    return {name: penalty.name, value: penalty.name}
+                })))
             .addBooleanOption(option => option
                 .setName("notify")
                 .setDescription("Whether to try to send a DM to the user or not")
@@ -100,12 +103,6 @@ export default class WarnCommand extends SlashCommandConstructor<ChatInputComman
 
     override async getAutocomplete(interaction: AutocompleteInteraction) {
         switch (interaction.options.getFocused(true).name) {
-        case "penalty": {
-            return (await DatabaseUtilities.getPenaltyLevels()).map(level => ({
-                name: level,
-                value: level,
-            }))
-        }
         case "reason":
         case "reason2":
         case "reason3": {
@@ -131,6 +128,12 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
     async execute() {
         if (!this.interaction.inGuild()) {
             throw new Error("This command can only be used in a server")
+        }
+
+        const penalty = Config.penalties.find(penalty => penalty.name ===
+            this.interaction.options.getString("penalty", true))
+        if (!penalty) {
+            throw new Error("Invalid penalty")
         }
 
         const images: string[] = []
@@ -171,7 +174,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             description: this.interaction.options.getString("description", true),
             images: images,
             reasons: [this.interaction.options.getString("reason", true)],
-            penalty: this.interaction.options.getString("penalty", true),
+            penalty: penalty,
             url: "",
         }
 
@@ -187,7 +190,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
 
         await DatabaseUtilities.updateEntry(data.recipient, {
             name: InteractionUtilities.getName(data.recipient),
-            currentPenaltyLevel: data.penalty,
+            currentPenaltyLevel: data.penalty.name,
             reasons: data.reasons,
         })
         data.url = await DatabaseUtilities.addNotes(data.recipient, {content: NotionUtilities.generateWarnNote(data)})
@@ -247,6 +250,33 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             })
 
             data.notified = newChannel
+        }
+
+        if (data.notified !== false && data.notified !== undefined) {
+            try {
+                if (penalty.penalty === "ban") {
+                    if (data.recipient instanceof User) {
+                        data.penalised = "not_in_server"
+                    } else {
+                        await data.recipient.ban({reason: `Banned by ${data.warnedBy.tag}`})
+                        data.penalised = "applied"
+                    }
+                } else if (penalty.penalty instanceof Duration) {
+                    if (data.recipient instanceof User) {
+                        data.penalised = "not_in_server"
+                    } else {
+                        await data.recipient.timeout(penalty.penalty.toMillis(), `Timed out by ${data.warnedBy.tag}`)
+                        data.penalised = "applied"
+                    }
+                } else if (penalty.penalty === null) {
+                    data.penalised = "applied"
+                }
+            } catch (e) {
+                console.warn("Couldn't apply penalty", e)
+                data.penalised = "error"
+            }
+        } else {
+            data.penalised = "not_notified"
         }
 
         await this.interaction.editReply(ResponseUtilities.generateWarnResponse(data, this.interaction))

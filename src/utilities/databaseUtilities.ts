@@ -45,15 +45,6 @@ export default class DatabaseUtilities {
 
                 return reasons.multi_select.options.map(o => o.name)
             }
-            case "penaltyLevels": {
-                const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
-                const penaltyLevel = database.properties["Penalty Level"]
-                if (!(penaltyLevel?.type === "select")) {
-                    throw new Error("Penalty level is not a select")
-                }
-
-                return penaltyLevel.select.options.map(o => o.name)
-            }
             default:
                 return null
             }
@@ -67,7 +58,23 @@ export default class DatabaseUtilities {
     static async initialiseCache() {
         this.cache.clear()
         await this.cache.fetch("reasons")
-        await this.cache.fetch("penaltyLevels")
+    }
+
+    static async checkPenalties(): Promise<void> {
+        const database = await Notion.databases.retrieve({database_id: Variables.databaseId})
+        const penaltyLevel = database.properties["Penalty Level"]
+        if (!(penaltyLevel?.type === "select")) {
+            throw new Error("Penalty level is not a select")
+        }
+
+        const notionPenaltyLevels = penaltyLevel.select.options.map(o => o.name)
+        const configPenaltyLevels = Config.penalties.map(penalty => penalty.name)
+
+        if (notionPenaltyLevels.length !==
+            configPenaltyLevels.length ||
+            !notionPenaltyLevels.every((n, _) => configPenaltyLevels.includes(n))) {
+            throw new Error("Penalty levels do not match")
+        }
     }
 
     static async getParentUrl(): Promise<string> {
@@ -91,15 +98,6 @@ export default class DatabaseUtilities {
 
         this.parentUrl = page.url
         return this.parentUrl
-    }
-
-    static async getPenaltyLevels(): Promise<string[]> {
-        const value = await this.cache.fetch<string[]>("penaltyLevels")
-        if (!value) {
-            throw new Error("Failed to fetch penalty levels")
-        }
-
-        return value
     }
 
     static async getReasons(): Promise<string[]> {

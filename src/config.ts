@@ -1,6 +1,11 @@
 import {Duration} from "luxon"
 import {Snowflake} from "discord.js"
 
+export type Penalty = {
+    name: string
+    penalty: null | Duration | "ban"
+}
+
 export default abstract class Config {
     // Icon that is used when someone is warned
     public static readonly warnIcon: string = "CHANGE_ME"
@@ -31,4 +36,12 @@ export default abstract class Config {
 
     // The user to mention when sending a restart notification
     public static readonly restartUser: Snowflake = "CHANGE_ME"
+
+    // List of penalties
+    public static readonly penalties: Penalty[] = [
+        {
+            name: "CHANGE_ME",
+            penalty: null,
+        },
+    ]
 }

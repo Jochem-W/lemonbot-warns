@@ -1,4 +1,4 @@
-import Config from "../config"
+import Config, {Penalty} from "../config"
 import EmbedUtilities from "./embedUtilities"
 import {
     ActionRowBuilder,
@@ -19,7 +19,7 @@ import {
     User,
     WebhookEditMessageOptions,
 } from "discord.js"
-import {DateTime} from "luxon"
+import {DateTime, Duration} from "luxon"
 import InteractionUtilities from "./interactionUtilities"
 import {DatabaseEntry} from "./databaseUtilities"
 import NotionUtilities from "./notionUtilities"
@@ -37,11 +37,12 @@ export type WarnData = {
     warnedBy: User,
     description: string,
     reasons: string[],
-    penalty: string,
+    penalty: Penalty,
     timestamp: DateTime,
     images: string[],
     notified?: "DM" | TextChannel | false,
     url: string,
+    penalised?: "applied" | "error" | "not_in_server" | "not_notified",
 }
 
 export type NoteData = {
@@ -98,7 +99,7 @@ export default class ResponseUtilities {
     }
 
     static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
-        let administrationText = `• Reason: \`${options.reasons.join(", ")}\`\n• Penalty level: \`${options.penalty}\``
+        let administrationText = `• Reason: \`${options.reasons.join(", ")}\`\n• Penalty level: \`${options.penalty.name}\``
         if (options.notified === "DM") {
             administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
         } else if (options.notified instanceof TextChannel) {
@@ -109,6 +110,32 @@ export default class ResponseUtilities {
             administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM or mention)")}`
         } else {
             administrationText += `\n• Notification: ${inlineCode("❌ (notify was False)")}`
+        }
+
+        switch (options.penalised) {
+        case "applied":
+            if (options.penalty.penalty instanceof Duration) {
+                administrationText +=
+                    `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.penalty.toHuman()})`)}`
+            } else if (options.penalty.penalty === "ban") {
+                administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
+            } else {
+                administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
+            }
+
+            break
+        case "error":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (an error occurred)")}`
+            break
+        case "not_in_server":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (user not in server)")}`
+            break
+        case "not_notified":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (user wasn't notified)")}`
+            break
+        default:
+            administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
+            break
         }
 
         const recipientAvatar = (options.recipient instanceof GuildMember ?
