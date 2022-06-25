@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
+  '@discordjs/rest': 0.6.0-dev.1656158624-c4653f9
   '@notionhq/client': ^1.0.4
   '@tsconfig/node18': ^1.0.1
   '@types/luxon': ^2.3.2
@@ -9,10 +9,10 @@ specifiers:
   '@types/node': ^18.0.0
   '@types/whatwg-mimetype': ^2.1.1
   bufferutil: ^4.0.6
-  discord.js: 14.0.0-dev.1655899441-a3799f9
+  discord.js: 14.0.0-dev.1656158629-c4653f9
   erlpack: github:discord/erlpack
   firebase-admin: ^11.0.0
-  lru-cache: ^7.10.1
+  lru-cache: ^7.10.2
   luxon: ^2.4.0
   nanoid: ^3.3.4
   nanoid-dictionary: ^4.3.0
@@ -22,11 +22,11 @@ specifiers:
   zlib-sync: ^0.1.7
 
 dependencies:
-  '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
+  '@discordjs/rest': 0.6.0-dev.1656158624-c4653f9
   '@notionhq/client': 1.0.4
-  discord.js: 14.0.0-dev.1655899441-a3799f9_22kvxa7zeyivx4jp72v2w3pkvy
+  discord.js: 14.0.0-dev.1656158629-c4653f9_22kvxa7zeyivx4jp72v2w3pkvy
   firebase-admin: 11.0.0_@firebase+app-types@0.7.0
-  lru-cache: 7.10.1
+  lru-cache: 7.10.2
   luxon: 2.4.0
   nanoid: 3.3.4
   nanoid-dictionary: 4.3.0
@@ -48,27 +48,27 @@ devDependencies:
 
 packages:
 
-  /@discordjs/builders/0.16.0-dev.1655899432-a3799f9:
-    resolution: { integrity: sha512-lIiQP6l1Q4K9+mXwphkFuNgcV+Nr5B3uXwju4MRqzM/eiBBPDiC99Iz+5tB94ePU+vs3XbGAhA6hc49CPM+/qg== }
+  /@discordjs/builders/0.16.0-dev.1656158607-c4653f9:
+    resolution: { integrity: sha512-kylgqqmw/6uO+5xy/0etmwjV0TL9HLuA9JtPFRt8Xwb9feRqKTYMSKxQ/SQl5HqBwWNzMxxUo2eqU44KqD/0BQ== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@sapphire/shapeshift': 3.3.0
+      '@sapphire/shapeshift': 3.3.1
       discord-api-types: 0.33.5
       fast-deep-equal: 3.1.3
       ts-mixer: 6.0.1
       tslib: 2.4.0
     dev: false
 
-  /@discordjs/collection/0.8.0-dev.1655899433-a3799f9:
-    resolution: { integrity: sha512-alX/6ufxVKIDef6uEuA3tNE3JO8O3PjQRw1BqWcs+Z5jI5zFitv9ska8YTKEX8wqDFPDqkbKXxrpBuieTP4/zQ== }
+  /@discordjs/collection/0.8.0-dev.1656158612-c4653f9:
+    resolution: { integrity: sha512-xQKf3cS0M6Q3NVsY7tSmNmSrbGKt6P/h2+O2H3+CZbTQNAQSpF+Y9Bwt44Jq0XjsxFvv8FKh8/tg5DtG9bOz8g== }
     engines: { node: '>=16.9.0' }
     dev: false
 
-  /@discordjs/rest/0.6.0-dev.1655899433-a3799f9:
-    resolution: { integrity: sha512-HLYLiZYiauQoJ4Ans86v8yNWOt3TWTktC9h29Agzg0L2/Rkbh14wvCaiMKcFRbS308LKu4RRjlnlkGkfduGfFg== }
+  /@discordjs/rest/0.6.0-dev.1656158624-c4653f9:
+    resolution: { integrity: sha512-LerWi+sNv4kXFgxZERzEOyrNsMZ5G7MpiWtG83zSCMyE/ySZZzeSvlDshPaL+yoReSo4Bq+LAbrX4EGznMhjFA== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/collection': 0.8.0-dev.1655899433-a3799f9
+      '@discordjs/collection': 0.8.0-dev.1656158612-c4653f9
       '@sapphire/async-queue': 1.3.1
       '@sapphire/snowflake': 3.2.2
       discord-api-types: 0.33.5
@@ -87,50 +87,50 @@ packages:
     resolution: { integrity: sha512-6fbHQwDv2jp/v6bXhBw2eSRbNBpxHcd1NBF864UksSMVIqIyri9qpJB1Mn6sGZE+bnDsSQBC5j2TbMxYsJQkQg== }
     dev: false
 
-  /@firebase/auth-interop-types/0.1.6_3jphpkbceomzc3ldsyffx23uza:
+  /@firebase/auth-interop-types/0.1.6_ee7bhenjigpuz3jknhp5542foa:
     resolution: { integrity: sha512-etIi92fW3CctsmR9e3sYM3Uqnoq861M0Id9mdOPF6PWIg38BXL5k4upCNBggGUpLIS0H1grMOvy/wn1xymwe2g== }
     peerDependencies:
       '@firebase/app-types': 0.x
       '@firebase/util': 1.x
     dependencies:
       '@firebase/app-types': 0.7.0
-      '@firebase/util': 1.6.1
+      '@firebase/util': 1.6.2
     dev: false
 
-  /@firebase/component/0.5.15:
-    resolution: { integrity: sha512-VRnZxmvtJmXupTPg37LxM0zdyMN54EXkmsFD4x5Bm4eZUay9VGnhfiGnE3m9Af/2hnURA2idIBN/23L6982iPQ== }
+  /@firebase/component/0.5.16:
+    resolution: { integrity: sha512-/pkl77mN9PT7dTSzNu1CrvIvd+z1CdePnEl+VITaeSBs9Ko7ZVvSIlzQLbSwqksXX3bAHpxej0Mg6mVKQiRVSw== }
     dependencies:
-      '@firebase/util': 1.6.1
+      '@firebase/util': 1.6.2
       tslib: 2.4.0
     dev: false
 
-  /@firebase/database-compat/0.2.1_@firebase+app-types@0.7.0:
-    resolution: { integrity: sha512-xpru5ZtO7um2FmfIw4gCAbkWpyOEwxzamU/5phuwze3ZihMdh+UrDrwrhvfqzQ/KIKXsK76Uyx5F3NCAS8+5eg== }
+  /@firebase/database-compat/0.2.2_@firebase+app-types@0.7.0:
+    resolution: { integrity: sha512-3wLHJ54WHMhrveCywCMbkspshFezN07PLOIsmqELM1+pmrg3bwMj9u/o3Equ0DwmESMnchp5sMxgzdBUOextJg== }
     dependencies:
-      '@firebase/component': 0.5.15
-      '@firebase/database': 0.13.1_@firebase+app-types@0.7.0
-      '@firebase/database-types': 0.9.9
+      '@firebase/component': 0.5.16
+      '@firebase/database': 0.13.2_@firebase+app-types@0.7.0
+      '@firebase/database-types': 0.9.10
       '@firebase/logger': 0.3.3
-      '@firebase/util': 1.6.1
+      '@firebase/util': 1.6.2
       tslib: 2.4.0
     transitivePeerDependencies:
       - '@firebase/app-types'
     dev: false
 
-  /@firebase/database-types/0.9.9:
-    resolution: { integrity: sha512-Zp86fHzQFZKYVM7yDWVAgVTeOJ39g2wT0ijeiN0jpHAHceeoV013q3jPIIGuooV2HMwWOTIBZGqh+DxrHMFyUw== }
+  /@firebase/database-types/0.9.10:
+    resolution: { integrity: sha512-2ji6nXRRsY+7hgU6zRhUtK0RmSjVWM71taI7Flgaw+BnopCo/lDF5HSwxp8z7LtiHlvQqeRA3Ozqx5VhlAbiKg== }
     dependencies:
       '@firebase/app-types': 0.7.0
-      '@firebase/util': 1.6.1
+      '@firebase/util': 1.6.2
     dev: false
 
-  /@firebase/database/0.13.1_@firebase+app-types@0.7.0:
-    resolution: { integrity: sha512-k6PeAzf9x9DG3AJtA6SkJsTD1ivOWvrV71VPOYabBch05QDB0HOYs1EauGhzqa6GOcYz+ncb4pNEkgFDvcnEfQ== }
+  /@firebase/database/0.13.2_@firebase+app-types@0.7.0:
+    resolution: { integrity: sha512-wKkBD4rq6PPv9gl1hNJNpl0R0bwJmXCJfDuvotjXmTcU7kV0AIaJ45GVhULkbSCApAAFC6QUJ91oasDUO1ZVxw== }
     dependencies:
-      '@firebase/auth-interop-types': 0.1.6_3jphpkbceomzc3ldsyffx23uza
-      '@firebase/component': 0.5.15
+      '@firebase/auth-interop-types': 0.1.6_ee7bhenjigpuz3jknhp5542foa
+      '@firebase/component': 0.5.16
       '@firebase/logger': 0.3.3
-      '@firebase/util': 1.6.1
+      '@firebase/util': 1.6.2
       faye-websocket: 0.11.4
       tslib: 2.4.0
     transitivePeerDependencies:
@@ -143,8 +143,8 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@firebase/util/1.6.1:
-    resolution: { integrity: sha512-+eDE6uG5GgvXYHbAzfP1mpJUX1VDBD+A8CjBeBoNAKAVAApMSDxDODqRcOq7NW7kFJXSUkMzDJWhnUIifX2R8w== }
+  /@firebase/util/1.6.2:
+    resolution: { integrity: sha512-VYDqEf/+mS7n0nPj6qJDJYFtKIEfOaTtQeNDsd3x+xp8HWvrbygWOexzeGicLP1dvEzrKr3eQGcJmmmYN3TIsA== }
     dependencies:
       tslib: 2.4.0
     dev: false
@@ -173,9 +173,9 @@ packages:
     dev: false
     optional: true
 
-  /@google-cloud/projectify/2.1.1:
-    resolution: { integrity: sha512-+rssMZHnlh0twl122gXY4/aCrk0G1acBqkHFfYddtsqpYXGxA29nj9V5V9SfC+GyOG00l650f6lG9KL+EpFEWQ== }
-    engines: { node: '>=10' }
+  /@google-cloud/projectify/3.0.0:
+    resolution: { integrity: sha512-HRkZsNmjScY6Li8/kb70wjGlDDyLkVk3KvoEo9uIoxSjYLJasGiCch9+PqRVDOCGUFvEIqyogl+BeqILL4OJHA== }
+    engines: { node: '>=12.0.0' }
     dev: false
     optional: true
 
@@ -185,13 +185,13 @@ packages:
     dev: false
     optional: true
 
-  /@google-cloud/storage/6.1.0:
-    resolution: { integrity: sha512-zqZwzpRWCJuPne7x9Vc2H79zANl0uh9bNPGis0xAuC88ZEvBXfQqYCAVyiL1YIxi7rf51l8wy9vBr1pONMfxxA== }
+  /@google-cloud/storage/6.2.0:
+    resolution: { integrity: sha512-evOiaIXj4Hjyksa0m67bf3PfCC7VEbVXeJ3EhOCpWZc8biZiLHWJqhfkeW1H6ZIbKn2bBA0JrIZRJc/u8YrF9w== }
     engines: { node: '>=12' }
     requiresBuild: true
     dependencies:
       '@google-cloud/paginator': 3.0.7
-      '@google-cloud/projectify': 2.1.1
+      '@google-cloud/projectify': 3.0.0
       '@google-cloud/promisify': 3.0.0
       abort-controller: 3.0.0
       arrify: 2.0.1
@@ -311,8 +311,8 @@ packages:
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
     dev: false
 
-  /@sapphire/shapeshift/3.3.0:
-    resolution: { integrity: sha512-6MNupTaIXtyVCHuejbTIE/Wmw35FKbpfRhiPCkxaQHm76iHICaWNO0oej0lipLb7vhK8mQHQn3zE6umOVvwGLw== }
+  /@sapphire/shapeshift/3.3.1:
+    resolution: { integrity: sha512-PB2e5JHWIMRz9HiN/sIWcNIzXjYvzc3OmeRHYICXreKhetDYf4Zufypr8A48Z/XZLzbMqIka6uoR+2dH58nksg== }
     engines: { node: '>=v14.0.0', npm: '>=7.0.0' }
     dev: false
 
@@ -555,13 +555,13 @@ packages:
     resolution: { integrity: sha512-dvO5M52v7m7Dy96+XUnzXNsQ/0npsYpU6dL205kAtEDueswoz3aU3bh1UMoK4cQmcGtB1YRyLKqp+DXi05lzFg== }
     dev: false
 
-  /discord.js/14.0.0-dev.1655899441-a3799f9_22kvxa7zeyivx4jp72v2w3pkvy:
-    resolution: { integrity: sha512-2b57JcSJFca8SCZakXoTRhVimNpRXmAgr8axv/skmbJBbNu9ldlj3JlbWwok+mVDhoeaQ7ippZQY0cN8ivqyVA== }
+  /discord.js/14.0.0-dev.1656158629-c4653f9_22kvxa7zeyivx4jp72v2w3pkvy:
+    resolution: { integrity: sha512-lgHs1LGbAdlpBY5te+8iXMEAoA5FFB9wzFLqfzTedLCDM5IKuadXVUxwLktUmQk/jjeAzGD4+lQ+eEVfWTvWXQ== }
     engines: { node: '>=16.9.0' }
     dependencies:
-      '@discordjs/builders': 0.16.0-dev.1655899432-a3799f9
-      '@discordjs/collection': 0.8.0-dev.1655899433-a3799f9
-      '@discordjs/rest': 0.6.0-dev.1655899433-a3799f9
+      '@discordjs/builders': 0.16.0-dev.1656158607-c4653f9
+      '@discordjs/collection': 0.8.0-dev.1656158612-c4653f9
+      '@discordjs/rest': 0.6.0-dev.1656158624-c4653f9
       '@sapphire/snowflake': 3.2.2
       '@types/ws': 8.5.3
       discord-api-types: 0.33.5
@@ -651,8 +651,8 @@ packages:
     engines: { node: '>=14' }
     dependencies:
       '@fastify/busboy': 1.1.0
-      '@firebase/database-compat': 0.2.1_@firebase+app-types@0.7.0
-      '@firebase/database-types': 0.9.9
+      '@firebase/database-compat': 0.2.2_@firebase+app-types@0.7.0
+      '@firebase/database-types': 0.9.10
       '@types/node': 18.0.0
       jsonwebtoken: 8.5.1
       jwks-rsa: 2.1.4
@@ -660,7 +660,7 @@ packages:
       uuid: 8.3.2
     optionalDependencies:
       '@google-cloud/firestore': 5.0.2
-      '@google-cloud/storage': 6.1.0
+      '@google-cloud/storage': 6.2.0
     transitivePeerDependencies:
       - '@firebase/app-types'
       - encoding
@@ -847,8 +847,8 @@ packages:
     dev: false
     optional: true
 
-  /http-parser-js/0.5.6:
-    resolution: { integrity: sha512-vDlkRPDJn93swjcjqMSaGSPABbIarsr1TLAui/gLDXzV5VsJNdXNzMYDyNBLQkjWQCJ1uizu8T2oDMhmGt0PRA== }
+  /http-parser-js/0.5.7:
+    resolution: { integrity: sha512-8gQM8ZcewlONQLnik2AKzS13euQhaZcu4rK5QBSYOszW0T1upLW9VA2MdWvTvMmRo42HjXp7igFmdROoBCCrfg== }
     dev: false
 
   /http-proxy-agent/5.0.0:
@@ -1037,8 +1037,8 @@ packages:
     dev: false
     optional: true
 
-  /lru-cache/7.10.1:
-    resolution: { integrity: sha512-BQuhQxPuRl79J5zSXRP+uNzPOyZw2oFI9JLRQ80XswSvg21KMKNtQza9eF42rfI/3Z40RvzBdXgziEkudzjo8A== }
+  /lru-cache/7.10.2:
+    resolution: { integrity: sha512-9zDbhgmXAUvUMPV81A705K3tVzcPiZL3Bf5/5JC/FjYJlLZ5AJCeqIRFHJqyBppiLosqF+uKB7p8/RDXylqBIw== }
     engines: { node: '>=12' }
     dev: false
 
@@ -1351,7 +1351,7 @@ packages:
     resolution: { integrity: sha512-b17KeDIQVjvb0ssuSDF2cYXSg2iztliJ4B9WdsuB6J952qCPKmnVq4DyW5motImXHDC1cBT/1UezrJVsKw5zjg== }
     engines: { node: '>=0.8.0' }
     dependencies:
-      http-parser-js: 0.5.6
+      http-parser-js: 0.5.7
       safe-buffer: 5.2.1
       websocket-extensions: 0.1.4
     dev: false
