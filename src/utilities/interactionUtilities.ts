@@ -26,29 +26,28 @@ export type UploadAttachmentResult = {
     subtype: string,
 }
 
-type FetchMemberOrUserOptions = {
+type FetchUserOptions = {
     client: Client,
-    guild?: GuildResolvable,
     user: UserResolvable,
     force?: boolean,
 }
 
+type FetchMemberOptions = FetchUserOptions & { guild: GuildResolvable }
+
 export default class InteractionUtilities {
-    static async fetchMemberOrUser(options: Omit<FetchMemberOrUserOptions, "guild"> | (FetchMemberOrUserOptions & { guild: undefined }),
-                                   force?: boolean): Promise<User>
-    static async fetchMemberOrUser(options: FetchMemberOrUserOptions & { guild: GuildResolvable },
-                                   force?: boolean): Promise<GuildMember>
-    static async fetchMemberOrUser(options: FetchMemberOrUserOptions, force?: boolean): Promise<GuildMember | User>
-    static async fetchMemberOrUser(options: FetchMemberOrUserOptions, force?: boolean): Promise<GuildMember | User> {
-        const guild = options.guild ? await options.client.guilds.fetch({guild: options.guild}) : undefined
+    static async fetchMemberOrUser(options: FetchUserOptions): Promise<User>
+    static async fetchMemberOrUser(options: FetchMemberOptions): Promise<GuildMember>
+    static async fetchMemberOrUser(options: FetchUserOptions | FetchMemberOptions): Promise<GuildMember | User>
+    static async fetchMemberOrUser(options: FetchUserOptions | FetchMemberOptions): Promise<GuildMember | User> {
+        const guild = "guild" in options ? await options.client.guilds.fetch({guild: options.guild}) : undefined
         if (!guild) {
-            return await options.client.users.fetch(options.user, {force: force})
+            return await options.client.users.fetch(options.user, {force: options.force})
         }
 
         try {
             return await guild.members.fetch({
                 user: options.user,
-                force: force,
+                force: options.force,
             })
         } catch (e) {
             if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownMember) {

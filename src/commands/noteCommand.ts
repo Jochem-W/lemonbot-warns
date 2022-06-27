@@ -1,6 +1,6 @@
 import SlashCommandConstructor from "../models/slashCommandConstructor"
 import ExecutableCommand from "../models/executableCommand"
-import {ChatInputCommandInteraction, PermissionFlagsBits, User} from "discord.js"
+import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import ResponseUtilities, {NoteData} from "../utilities/responseUtilities"
 import InteractionUtilities from "../utilities/interactionUtilities"
 import NotionUtilities from "../utilities/notionUtilities"
@@ -38,7 +38,7 @@ class ExecutableNoteCommand extends ExecutableCommand<ChatInputCommandInteractio
             author: await InteractionUtilities.fetchMemberOrUser({
                 client: this.interaction.client,
                 user: this.interaction.user,
-            }) as User,
+            }),
             target: await InteractionUtilities.fetchMemberOrUser({
                 client: this.interaction.client,
                 guild: this.interaction.guild ?? this.interaction.guildId ?? undefined,
