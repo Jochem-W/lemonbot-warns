@@ -265,7 +265,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                     if (data.recipient instanceof User) {
                         data.penalised = "not_in_server"
                     } else {
-                        await data.recipient.timeout(penalty.penalty.toMillis(), `Timed out by ${data.warnedBy.tag}`)
+                        await data.recipient.timeout(penalty.penalty.toMillis(), `Warned by ${data.warnedBy.tag}`)
                         data.penalised = "applied"
                     }
                 } else if (penalty.penalty === null) {
