@@ -1,19 +1,17 @@
 import {
     ActionRowBuilder,
-    APIActionRowComponent,
-    APIButtonComponent,
-    APISelectMenuComponent,
     Attachment,
     Client,
     DiscordAPIError,
     GuildMember,
     GuildResolvable,
     Interaction,
-    Message,
     MessageActionRowComponentBuilder,
+    MessageEditOptions,
     RESTJSONErrorCodes,
     User,
     UserResolvable,
+    WebhookEditMessageOptions,
 } from "discord.js"
 import {StorageBucket} from "../clients"
 import {pipeline} from "stream/promises"
@@ -33,11 +31,6 @@ type FetchMemberOrUserOptions = {
     guild?: GuildResolvable,
     user: UserResolvable,
     force?: boolean,
-}
-
-type PartialMessage = {
-    embeds: Message["embeds"],
-    components: APIActionRowComponent<APIButtonComponent | APISelectMenuComponent>[]
 }
 
 export default class InteractionUtilities {
@@ -119,12 +112,19 @@ export default class InteractionUtilities {
         return data
     }
 
-    static disable(message: PartialMessage): PartialMessage {
+    static disable<T extends WebhookEditMessageOptions | MessageEditOptions>(message: T): T {
         return {
-            embeds: message.embeds,
-            components: message.components.map(row => {
-                const builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row)
+            ...message,
+            components: message.components?.map(row => {
+                let builder: ActionRowBuilder<MessageActionRowComponentBuilder>
+                if ("toJSON" in row) {
+                    builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row.toJSON())
+                } else {
+                    builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row)
+                }
+
                 builder.components.map(component => component.setDisabled(true))
+
                 return builder.toJSON()
             }),
         }

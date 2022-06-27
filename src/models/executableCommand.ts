@@ -69,7 +69,7 @@ export default abstract class ExecutableCommand<T extends CommandInteraction> {
 
         const disabled = InteractionUtilities.disable({
             embeds: message.embeds,
-            components: message.components.map(row => row.toJSON()),
+            components: message.components,
         })
 
         await this.interaction.editReply(disabled)
