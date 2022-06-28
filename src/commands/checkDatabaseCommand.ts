@@ -74,20 +74,13 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
                     throw e
                 }
 
-                discrepancies.push({entry: entry, error: `In the database but not in the server`})
+                discrepancies.push({entry: entry, error: `Left the server`})
             }
         }
 
-        await this.interaction.editReply(codeBlock("json", JSON.stringify(discrepancies.map(discrepancy => {
-            return {
-                entry: {
-                    id: discrepancy.entry.id,
-                    name: discrepancy.entry.name,
-                    penalty: discrepancy.entry.currentPenaltyLevel,
-                },
-                error: discrepancy.error,
-            }
-        }), null, 2)))
+        await this.interaction.editReply(codeBlock(discrepancies.map(discrepancy => {
+            return `User: ${discrepancy.entry.name} (${discrepancy.entry.id})\nPenalty: ${discrepancy.entry.currentPenaltyLevel}\nError: ${discrepancy.error}`
+        }).join("\n\n")))
     }
 }
 
