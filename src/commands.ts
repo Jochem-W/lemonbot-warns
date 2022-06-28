@@ -17,6 +17,7 @@ import CheckBansCommand from "./commands/checkBansCommand"
 import MessageContextMenuCommandConstructor from "./models/messageContextMenuCommandConstructor"
 import CommandConstructor from "./models/commandConstructor"
 import UserContextMenuCommandConstructor from "./models/userContextMenuCommandConstructor"
+import CheckDatabaseCommand from "./commands/checkDatabaseCommand"
 // import MessageReportCommand from "./commands/messageReportCommand"
 
 export const Commands = new Collection<Snowflake, CommandConstructor<CommandInteraction>>()
@@ -29,6 +30,7 @@ export const ChatInputCommandConstructors: Readonly<SlashCommandConstructor<Chat
     new WarnCommand(),
     new WarningsCommand(),
     new WatchlistCommand(),
+    new CheckDatabaseCommand(),
 ]
 
 export const MessageContextMenuCommandConstructors: Readonly<MessageContextMenuCommandConstructor<MessageContextMenuCommandInteraction>[]> = [
