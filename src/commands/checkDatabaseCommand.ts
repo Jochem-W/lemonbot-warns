@@ -1,7 +1,7 @@
 import SlashCommandConstructor from "../models/slashCommandConstructor"
 import {
+    AttachmentBuilder,
     ChatInputCommandInteraction,
-    codeBlock,
     DiscordAPIError,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
@@ -78,9 +78,18 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
             }
         }
 
-        await this.interaction.editReply(codeBlock(discrepancies.map(discrepancy => {
-            return `User: ${discrepancy.entry.name} (${discrepancy.entry.id})\nPenalty: ${discrepancy.entry.currentPenaltyLevel}\nError: ${discrepancy.error}`
-        }).join("\n\n")))
+        await this.interaction.editReply({
+            files: [new AttachmentBuilder(Buffer.from(JSON.stringify(discrepancies.map(discrepancy => {
+                return {
+                    entry: {
+                        id: discrepancy.entry.id,
+                        name: discrepancy.entry.name,
+                        penalty: discrepancy.entry.currentPenaltyLevel,
+                    },
+                    error: discrepancy.error,
+                }
+            }), null, 4)), {name: "discrepancies.json"})],
+        })
     }
 }
 
