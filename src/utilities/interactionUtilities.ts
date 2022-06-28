@@ -9,6 +9,7 @@ import {
     MessageActionRowComponentBuilder,
     MessageEditOptions,
     RESTJSONErrorCodes,
+    Team,
     User,
     UserResolvable,
     WebhookEditMessageOptions,
@@ -56,6 +57,18 @@ export default class InteractionUtilities {
 
             return await options.client.users.fetch(options.user)
         }
+    }
+
+    static async checkOwner(interaction: Interaction): Promise<boolean> {
+        if (!interaction.client.application) {
+            return false
+        }
+
+        await interaction.client.application.fetch()
+        return interaction.client.application.owner instanceof Team ?
+            interaction.client.application.owner.members.has(interaction.user.id) :
+            interaction.client.application.owner === interaction.user
+
     }
 
     static getName(user: GuildMember | User): string {

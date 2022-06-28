@@ -1,15 +1,15 @@
 import SlashCommandConstructor from "../models/slashCommandConstructor"
 import {
     ChatInputCommandInteraction,
+    codeBlock,
     DiscordAPIError,
-    GuildMember,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
-    User,
 } from "discord.js"
 import ExecutableCommand from "../models/executableCommand"
-import DatabaseUtilities from "../utilities/databaseUtilities"
+import DatabaseUtilities, {DatabaseEntry} from "../utilities/databaseUtilities"
 import Config from "../config"
+import InteractionUtilities from "../utilities/interactionUtilities"
 
 export default class CheckDatabaseCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
     constructor() {
@@ -29,7 +29,11 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
     }
 
     async execute(): Promise<void> {
-        const discrepencies: [GuildMember | User, string][] = []
+        if (!await InteractionUtilities.checkOwner(this.interaction)) {
+            throw new Error("You must be the bot owner to use this command")
+        }
+
+        const discrepancies: { entry: DatabaseEntry, error: string }[] = []
 
         if (!this.interaction.inGuild()) {
             throw new Error("This command can only be used in a guild")
@@ -50,7 +54,7 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
                 }
 
                 if (penalty.penalty !== "ban") {
-                    discrepencies.push([ban.user, `Should not be banned`])
+                    discrepancies.push({entry: entry, error: `Should not be banned`})
                 }
 
                 continue
@@ -61,24 +65,29 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
             }
 
             try {
-                const member = await guild.members.fetch(entry.id)
+                await guild.members.fetch(entry.id)
                 if (penalty.penalty === "ban") {
-                    discrepencies.push([member, `Should be banned`])
+                    discrepancies.push({entry: entry, error: `Should be banned`})
                 }
-
-                continue
             } catch (e) {
                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownMember) {
                     throw e
                 }
 
-                discrepencies.push([await this.interaction.client.users.fetch(entry.id), `Should be in the server`])
+                discrepancies.push({entry: entry, error: `In the database but not in the server`})
             }
         }
 
-        console.log(discrepencies)
-
-        await this.interaction.editReply("Check the console!")
+        await this.interaction.editReply(codeBlock("json", JSON.stringify(discrepancies.map(discrepancy => {
+            return {
+                entry: {
+                    id: discrepancy.entry.id,
+                    name: discrepancy.entry.name,
+                    penalty: discrepancy.entry.currentPenaltyLevel,
+                },
+                error: discrepancy.error,
+            }
+        }), null, 2)))
     }
 }
 
