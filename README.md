@@ -7,9 +7,9 @@ Notion.
 
 The bot uses Docker to ensure a consistent build and runtime environment for all users.
 
-1. Install the **latest** version of Docker and Docker Compose
+1. Install the latest version of Docker and Docker Compose
 2. Clone the repository
-3. Edit `docker-compose.yml` and `config.ts`
+3. Edit `.env.example` and `firebase.example.json`
 
 ## Running instructions
 
