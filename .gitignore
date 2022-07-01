@@ -241,3 +241,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+### Custom
+status
+firebase.json
+

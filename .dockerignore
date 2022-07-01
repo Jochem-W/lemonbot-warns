@@ -244,8 +244,12 @@ $RECYCLE.BIN/
 ### Custom
 .github
 .dockerignore
+.env.example
 .gitignore
 docker-compose.yml
 Dockerfile
+firebase.example.json
 LICENSE
 README.md
+status
+
