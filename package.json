@@ -17,11 +17,11 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@discordjs/rest": "0.6.0-dev.1656158624-c4653f9",
+    "@discordjs/rest": "0.6.0-dev.1656677085-741b3c8",
     "@notionhq/client": "^1.0.4",
-    "discord.js": "14.0.0-dev.1656158629-c4653f9",
+    "discord.js": "14.0.0-dev.1656677097-741b3c8",
     "firebase-admin": "^11.0.0",
-    "lru-cache": "^7.10.2",
+    "lru-cache": "^7.12.0",
     "luxon": "^2.4.0",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
