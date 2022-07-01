@@ -1,6 +1,7 @@
 import {Client} from "@notionhq/client"
 import {Variables} from "./variables"
-import * as firebase from "firebase-admin"
+import {initializeApp} from "firebase-admin/app"
+import {getStorage} from "firebase-admin/storage"
 
 export const Notion = new Client({auth: Variables.notionToken})
-export const StorageBucket = firebase.initializeApp({storageBucket: Variables.storageBucket}).storage().bucket()
+export const StorageBucket = getStorage(initializeApp({storageBucket: Variables.storageBucket})).bucket()
