@@ -95,7 +95,7 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
             discrepancies.push({
                 entry: {
                     id: ban.user.id,
-                    name: ban.user.username,
+                    name: ban.user.tag,
                 }, error: "Member is banned, but not in the database",
             })
         }
