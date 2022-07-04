@@ -59,7 +59,7 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
                 continue
             }
 
-            if (ban && penalty.penalty !== "ban") {
+            if (ban && penalty.penalty !== "ban" && ban.reason !== "Account was less than 30 days old") {
                 discrepancies.push({entry, error: "Is banned, but has a penalty with no ban in the database"})
                 continue
             }
@@ -73,7 +73,7 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
                 }
             }
 
-            if (!ban && !member) {
+            if (!ban && !member && penalty.penalty !== "kick") {
                 discrepancies.push({entry, error: "Member is in the database, but not in the serve"})
             }
         }
