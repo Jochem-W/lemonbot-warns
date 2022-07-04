@@ -3,6 +3,7 @@ import {
     AttachmentBuilder,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    GuildMember,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
 } from "discord.js"
@@ -33,49 +34,62 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
             throw new Error("You must be the bot owner to use this command")
         }
 
-        const discrepancies: { entry: DatabaseEntry, error: string }[] = []
+        const discrepancies: { entry: Partial<DatabaseEntry>, error: string }[] = []
 
         if (!this.interaction.inGuild()) {
             throw new Error("This command can only be used in a guild")
         }
 
         const guild = this.interaction.guild ?? await this.interaction.client.guilds.fetch(this.interaction.guildId)
+        const bans = await guild.bans.fetch()
+        const entries: DatabaseEntry[] = []
         for await (const entry of DatabaseUtilities.getEntries()) {
+            entries.push(entry)
+        }
+
+        for (const entry of entries) {
             const penalty = Config.penalties.find(p => p.name === entry.currentPenaltyLevel)
             if (!penalty) {
                 throw new Error(`Unknown penalty level ${entry.currentPenaltyLevel}`)
             }
 
-            try {
-                const ban = await guild.bans.fetch(entry.id)
-                // TODO
-                if (ban.reason === "Account was less than 30 days old") {
-                    continue
-                }
-
-                if (penalty.penalty !== "ban") {
-                    discrepancies.push({entry: entry, error: `Should not be banned`})
-                }
-
+            const ban = bans.get(entry.id)
+            if (penalty.penalty === "ban" && !ban) {
+                discrepancies.push({entry, error: "Has a penalty with ban in the database, but isn't banned"})
                 continue
-            } catch (e) {
-                if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownBan) {
-                    throw e
-                }
             }
 
+            if (ban && penalty.penalty !== "ban") {
+                discrepancies.push({entry, error: "Is banned, but has a penalty with no ban in the database"})
+                continue
+            }
+
+            let member: GuildMember | undefined
             try {
-                await guild.members.fetch(entry.id)
-                if (penalty.penalty === "ban") {
-                    discrepancies.push({entry: entry, error: `Should be banned`})
-                }
+                member = await guild.members.fetch(entry.id)
             } catch (e) {
                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownMember) {
                     throw e
                 }
-
-                discrepancies.push({entry: entry, error: `Left the server`})
             }
+
+            if (!ban && !member) {
+                discrepancies.push({entry, error: "Member is in the database, but not in the serve"})
+            }
+        }
+
+        for (const [_, ban] of bans) {
+            const entry = entries.find(e => e.id === ban.user.id)
+            if (entry) {
+                continue
+            }
+
+            discrepancies.push({
+                entry: {
+                    id: ban.user.id,
+                    name: ban.user.username,
+                }, error: "Member is banned, but not in the database",
+            })
         }
 
         await this.interaction.editReply({
