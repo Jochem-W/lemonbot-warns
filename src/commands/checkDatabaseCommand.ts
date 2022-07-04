@@ -78,7 +78,7 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
             }
 
             if (!ban && !member && penalty.penalty !== "kick") {
-                discrepancies.push({entry, error: "Member is in the database, but not in the serve"})
+                discrepancies.push({entry, error: "Member is in the database, but not in the server"})
             }
         }
 
