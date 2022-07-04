@@ -3,7 +3,7 @@ import {Snowflake} from "discord.js"
 
 export type Penalty = {
     name: string
-    penalty: null | Duration | "ban"
+    penalty: null | Duration | "ban" | "kick"
 }
 
 export default abstract class Config {
