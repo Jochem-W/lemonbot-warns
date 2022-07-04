@@ -203,6 +203,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                     description: data.description,
                     images: data.images,
                     timestamp: data.timestamp,
+                    penalty: data.penalty,
                 }))
                 data.notified = "DM"
             } catch (e) {
@@ -232,6 +233,7 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                     description: data.description,
                     images: data.images,
                     timestamp: data.timestamp,
+                    penalty: data.penalty,
                 }),
                 content: userMention(data.recipient.id),
                 components: [new ActionRowBuilder<MessageActionRowComponentBuilder>()
@@ -252,20 +254,28 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             data.notified = newChannel
         }
 
+        const reason = `${ResponseUtilities.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag}`
         if (data.notified !== false && data.notified !== undefined) {
             try {
                 if (penalty.penalty === "ban") {
                     if (data.recipient instanceof User) {
                         data.penalised = "not_in_server"
                     } else {
-                        await data.recipient.ban({reason: `Banned by ${data.warnedBy.tag}`})
+                        await data.recipient.ban({reason: reason})
                         data.penalised = "applied"
                     }
                 } else if (penalty.penalty instanceof Duration) {
                     if (data.recipient instanceof User) {
                         data.penalised = "not_in_server"
                     } else {
-                        await data.recipient.timeout(penalty.penalty.toMillis(), `Warned by ${data.warnedBy.tag}`)
+                        await data.recipient.timeout(penalty.penalty.toMillis(), reason)
+                        data.penalised = "applied"
+                    }
+                } else if (penalty.penalty === "kick") {
+                    if (data.recipient instanceof User) {
+                        data.penalised = "not_in_server"
+                    } else {
+                        await data.recipient.kick(reason)
                         data.penalised = "applied"
                     }
                 } else if (penalty.penalty === null) {

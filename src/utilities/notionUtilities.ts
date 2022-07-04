@@ -11,7 +11,7 @@ import {
     underscore,
 } from "discord.js"
 import {DateTime} from "luxon"
-import {NoteData, WarnData} from "./responseUtilities"
+import ResponseUtilities, {NoteData, WarnData} from "./responseUtilities"
 import InteractionUtilities from "./interactionUtilities"
 
 export type ParseBlockObjectsResult = {
@@ -300,7 +300,8 @@ export default class NotionUtilities {
                     rich_text: [
                         {
                             text: {
-                                content: `Warned by ${data.warnedBy.tag} for ${data.reasons.join(", ")} `,
+                                content: `${ResponseUtilities.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag} for ${data.reasons.join(
+                                    ", ")} `,
                             },
                         },
                         {

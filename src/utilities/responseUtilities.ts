@@ -30,6 +30,7 @@ export type WarnDmOptions = {
     description: string,
     images: string[],
     timestamp: DateTime,
+    penalty: Penalty,
 }
 
 export type WarnData = {
@@ -76,7 +77,9 @@ export type NotesButtonData = {
 
 export default class ResponseUtilities {
     static generateWarnDm(options: WarnDmOptions): MessageOptions {
-        const embed = EmbedUtilities.makeEmbed(`You have been warned in ${options.guildName}`, Config.warnIcon)
+        const embed = EmbedUtilities.makeEmbed(`You have been ${ResponseUtilities.getPenaltyVerb(options.penalty,
+            true,
+            true)} ${options.guildName}`, Config.warnIcon)
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
@@ -96,6 +99,34 @@ export default class ResponseUtilities {
         }
 
         return {embeds: embeds}
+    }
+
+    static getPenaltyVerb(penalty: Penalty, includePreposition = false, lowercase = false) {
+        let verb = ""
+        let preposition = "in"
+        if (penalty.penalty instanceof Duration) {
+            verb = "Timed out"
+        } else {
+            switch (penalty.penalty) {
+            case "ban":
+                verb = "Banned"
+                preposition = "from"
+                break
+            case "kick":
+                verb = "Kicked"
+                preposition = "from"
+                break
+            case null:
+                verb = "Warned"
+                break
+            }
+        }
+
+        if (lowercase) {
+            verb = verb.toLowerCase()
+        }
+
+        return includePreposition ? `${verb} ${preposition}` : verb
     }
 
     static generateWarnResponse(options: WarnData, interaction?: CommandInteraction): WebhookEditMessageOptions {
@@ -141,7 +172,8 @@ export default class ResponseUtilities {
         const recipientAvatar = (options.recipient instanceof GuildMember ?
             options.recipient.user :
             options.recipient).displayAvatarURL({size: 4096})
-        const embed = EmbedUtilities.makeEmbed(`Warned ${InteractionUtilities.getTag(options.recipient)}`,
+        const embed = EmbedUtilities.makeEmbed(`${ResponseUtilities.getPenaltyVerb(options.penalty)} ${InteractionUtilities.getTag(
+                options.recipient)}`,
             recipientAvatar)
             .addFields([
                 {
@@ -154,7 +186,7 @@ export default class ResponseUtilities {
                 },
             ])
             .setFooter({
-                text: `Warned by ${options.warnedBy.tag}`,
+                text: `${ResponseUtilities.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`,
                 iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
             })
             .setTimestamp(options.timestamp.toMillis())
