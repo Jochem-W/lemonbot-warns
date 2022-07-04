@@ -48,18 +48,22 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
         }
 
         for (const entry of entries) {
+            const ban = bans.get(entry.id)
+            if (ban && ban.reason === "Account was less than 30 days old") {
+                continue
+            }
+
             const penalty = Config.penalties.find(p => p.name === entry.currentPenaltyLevel)
             if (!penalty) {
                 throw new Error(`Unknown penalty level ${entry.currentPenaltyLevel}`)
             }
 
-            const ban = bans.get(entry.id)
             if (penalty.penalty === "ban" && !ban) {
                 discrepancies.push({entry, error: "Has a penalty with ban in the database, but isn't banned"})
                 continue
             }
 
-            if (ban && penalty.penalty !== "ban" && ban.reason !== "Account was less than 30 days old") {
+            if (ban && penalty.penalty !== "ban") {
                 discrepancies.push({entry, error: "Is banned, but has a penalty with no ban in the database"})
                 continue
             }
@@ -79,6 +83,10 @@ class ExecutableCheckDatabaseCommand extends ExecutableCommand<ChatInputCommandI
         }
 
         for (const [_, ban] of bans) {
+            if (ban.reason === "Account was less than 30 days old") {
+                continue
+            }
+
             const entry = entries.find(e => e.id === ban.user.id)
             if (entry) {
                 continue
