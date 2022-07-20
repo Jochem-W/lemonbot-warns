@@ -21,12 +21,16 @@ export abstract class InteractionUtilities {
             idle: Duration.fromDurationLike({minutes: 15}).toMillis(),
             dispose: true,
         }).on("end", async () => {
-            const reply = await interaction.fetchReply()
-            await interaction.editReply(ResponseBuilder.disable({
-                embeds: reply.embeds,
-                components: reply.components,
-                files: reply.attachments.toJSON(),
-            }))
+            try {
+                const reply = await interaction.fetchReply()
+                await interaction.editReply(ResponseBuilder.disable({
+                    embeds: reply.embeds,
+                    components: reply.components,
+                    files: reply.attachments.toJSON(),
+                }))
+            } catch (e) {
+                console.error("Unhandled exception", e, "when handling interaction", interaction)
+            }
         })
     }
 

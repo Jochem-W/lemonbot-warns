@@ -79,26 +79,32 @@ export class CheckBansCommand extends ChatInputCommand {
         let page = 0
 
         const collector = await InteractionUtilities.collect(interaction)
+        // TODO: move try...catch elsewhere
         collector.on("collect", async collected => {
-            if (!(collected instanceof ButtonInteraction)) {
-                throw new Error(`Unhandled interaction ${collected}`)
-            }
+            try {
+                if (!(collected instanceof ButtonInteraction)) {
+                    console.error("Unhandled interaction", collected, "in collector for command", this)
+                    return
+                }
 
-            const customId = CustomId.fromString(collected.customId)
-            switch (customId.primary) {
-            case "next":
-                page++
-                break
-            case "previous":
-                page--
-                break
-            }
+                const customId = CustomId.fromString(collected.customId)
+                switch (customId.primary) {
+                case "next":
+                    page++
+                    break
+                case "previous":
+                    page--
+                    break
+                }
 
-            await collected.update(CheckBansCommand.buildResponse({
-                bans: bans,
-                page: page,
-                pageLimit: 25,
-            }))
+                await collected.update(CheckBansCommand.buildResponse({
+                    bans: bans,
+                    page: page,
+                    pageLimit: 25,
+                }))
+            } catch (e) {
+                console.error("Unhandled exception", e, "in collector for command", this, "with interaction", collected)
+            }
         })
 
         await interaction.editReply(CheckBansCommand.buildResponse({
