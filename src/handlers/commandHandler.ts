@@ -47,7 +47,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
                 return
             }
         } catch (e) {
-            if (!interaction.replied) {
+            if (!interaction.replied && !interaction.deferred) {
                 throw e
             }
 
