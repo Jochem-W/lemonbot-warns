@@ -1,5 +1,5 @@
 import {Notion} from "../clients"
-import {DateTime, Duration} from "luxon"
+import {DateTime} from "luxon"
 import {
     BlockObjectRequest,
     BlockObjectResponse,
@@ -15,6 +15,7 @@ import {
 } from "@notionhq/client/build/src/api-endpoints"
 import {Variables} from "../variables"
 import LRUCache from "lru-cache"
+import {Config} from "./config"
 
 async function getActualPageProperty(parameters: GetPagePropertyParameters): Promise<PagePropertyItemResponse> {
     const response = await Notion.pages.properties.retrieve(parameters)
@@ -57,7 +58,7 @@ export class NotionDatabase {
     private readonly namePropertyId: string
 
     private readonly cache = new LRUCache({
-        ttl: Duration.fromDurationLike({minutes: 15}).toMillis(),
+        ttl: Config.cacheTtl.toMillis(),
         ttlAutopurge: true,
         fetchMethod: async (key: string) => {
             switch (key) {
