@@ -299,7 +299,7 @@ export class WarnCommand extends ChatInputCommand {
             entry = await database.update(entry, {
                 currentPenaltyLevel: penalty.name,
                 name: NotionUtilities.formatName(member ?? user),
-                reasons: reasons,
+                reasons: (entry.reasons as SelectPropertyRequest[]).concat(reasons),
             })
         }
 
