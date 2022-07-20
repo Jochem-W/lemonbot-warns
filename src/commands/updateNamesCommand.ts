@@ -4,7 +4,7 @@ import {NotionDatabase} from "../models/notionDatabase"
 import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {NotionUtilities} from "../utilities/notionUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
-import {Config} from "../config"
+import {Config} from "../models/config"
 
 type ResponseOptions = {
     count: number

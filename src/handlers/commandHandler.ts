@@ -1,6 +1,6 @@
 import {AutocompleteInteraction, CommandInteraction, Interaction} from "discord.js"
 import {RegisteredCommands} from "../commands"
-import {Config} from "../config"
+import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 

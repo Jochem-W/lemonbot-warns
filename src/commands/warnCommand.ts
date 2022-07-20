@@ -29,7 +29,7 @@ import MIMEType from "whatwg-mimetype"
 import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {DateTime, Duration} from "luxon"
 import {NotionUtilities} from "../utilities/notionUtilities"
-import {Config, Penalty} from "../config"
+import {Config, Penalty} from "../models/config"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {FirebaseUtilities} from "../utilities/firebaseUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
@@ -140,7 +140,8 @@ export class WarnCommand extends ChatInputCommand {
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
         const tag = options.targetUser.tag
 
-        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.getPenaltyVerb(options.penalty)} ${tag}`, avatar)
+        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.getPenaltyVerb(options.penalty)} ${tag}`,
+            new URL(avatar))
             .addFields([
                 {
                     name: "Description",

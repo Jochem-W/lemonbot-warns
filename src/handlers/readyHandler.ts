@@ -1,6 +1,6 @@
 import {Client, userMention} from "discord.js"
 import {readFile, writeFile} from "fs/promises"
-import {Config} from "../config"
+import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 

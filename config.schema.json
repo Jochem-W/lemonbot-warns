@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Config",
+  "type": "object",
+  "properties": {
+    "warnIcon": {
+      "description": "The embed author icon to use in the warning message",
+      "type": "string",
+      "pattern": "^https://.+$"
+    },
+    "successIcon": {
+      "description": "The embed author icon to use on success",
+      "type": "string",
+      "pattern": "^https://.+$"
+    },
+    "failIcon": {
+      "description": "The embed author icon to use on fail",
+      "type": "string",
+      "pattern": "^https://.+$"
+    },
+    "guildId": {
+      "description": "The guild to register commands for",
+      "type": "string",
+      "pattern": "^\\d+$"
+    },
+    "privateChannels": {
+      "description": "List of channels where bot replies are publicly visible",
+      "type": "array",
+      "items": [
+        {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      ]
+    },
+    "cacheTtl": {
+      "description": "The duration of cached items in milliseconds",
+      "type": "integer"
+    },
+    "warnCategory": {
+      "description": "The category under which warning channels are created",
+      "type": "string",
+      "pattern": "^\\d+$"
+    },
+    "restartChannel": {
+      "description": "The channel to send restart messages in",
+      "type": "string",
+      "pattern": "^\\d+$"
+    },
+    "restartUser": {
+      "description": "The user that is mentioned in restart messages",
+      "type": "string",
+      "pattern": "^\\d+$"
+    },
+    "penalties": {
+      "description": "List of penalties",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name of the penalty",
+            "type": "string"
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "timeout": {
+                "description": "The duration of the timeout in milliseconds",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "timeout"
+            ]
+          },
+          {
+            "properties": {
+              "ban": {
+                "description": "Whether to ban the user",
+                "const": true
+              }
+            },
+            "required": [
+              "ban"
+            ]
+          },
+          {
+            "properties": {
+              "kick": {
+                "description": "Whether to kick the user",
+                "const": true
+              }
+            },
+            "required": [
+              "kick"
+            ]
+          },
+          {
+            "properties": {
+              "noPenalty": {
+                "description": "Whether to do nothing",
+                "const": true
+              }
+            },
+            "required": [
+              "noPenalty"
+            ]
+          }
+        ],
+        "required": [
+          "name"
+        ]
+      }
+    },
+    "discordApplicationId": {
+      "description": "The Discord application ID",
+      "type": "string",
+      "pattern": "^\\d+$"
+    }
+  },
+  "required": [
+    "warnIcon",
+    "successIcon",
+    "failIcon",
+    "guildId",
+    "privateChannels",
+    "cacheTtl",
+    "warnCategory",
+    "restartChannel",
+    "restartUser",
+    "penalties",
+    "discordApplicationId"
+  ]
+}

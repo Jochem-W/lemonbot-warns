@@ -1,0 +1,19 @@
+{
+  "warnIcon": null,
+  "successIcon": null,
+  "failIcon": null,
+  "guildId": null,
+  "privateChannels": [
+    null
+  ],
+  "cacheTtl": null,
+  "warnCategory": null,
+  "restartChannel": null,
+  "restartUser": null,
+  "penalties": [
+    {
+      "name": null
+    }
+  ],
+  "discordApplicationId": null
+}

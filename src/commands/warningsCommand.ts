@@ -26,7 +26,7 @@ export class WarningsCommand extends ChatInputCommand {
 
     public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions> {
         const embed = ResponseBuilder.makeEmbed(`Warnings for ${options.user.tag}`,
-            options.user.displayAvatarURL({size: 4096}))
+            new URL(options.user.displayAvatarURL({size: 4096})))
 
         const database = await NotionDatabase.getDefault()
         const entry = await database.getByDiscordId(options.user.id)

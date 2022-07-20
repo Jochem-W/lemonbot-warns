@@ -11,7 +11,7 @@ import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserConte
 import {REST} from "@discordjs/rest"
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
-import {Config} from "./config"
+import {Config} from "./models/config"
 import {NotionDatabase} from "./models/notionDatabase"
 
 const client = new Client({

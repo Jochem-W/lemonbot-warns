@@ -246,6 +246,8 @@ $RECYCLE.BIN/
 .dockerignore
 .env.example
 .gitignore
+config.example.json
+config.schema.json
 docker-compose.yml
 Dockerfile
 firebase.example.json

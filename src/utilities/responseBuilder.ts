@@ -9,7 +9,7 @@ import {
     WebhookEditMessageOptions,
 } from "discord.js"
 import {DateTime} from "luxon"
-import {Config} from "../config"
+import {Config} from "../models/config"
 
 export abstract class ResponseBuilder {
     public static makeEmbed(authorName: string,
@@ -19,7 +19,7 @@ export abstract class ResponseBuilder {
         return new EmbedBuilder()
             .setAuthor({
                 name: authorName,
-                iconURL: authorIcon,
+                iconURL: authorIcon.toString(),
             })
             .setTitle(title ?? null)
             .setDescription(description ?? null)
