@@ -65,10 +65,7 @@ export class NotionDatabase {
             case "reasons": {
                 const response = await Notion.databases.retrieve({database_id: this.databaseId})
                 const reasonsProperty = response.properties["Reasons"]
-                if (!reasonsProperty ||
-                    reasonsProperty.id !==
-                    this.reasonsPropertyId ||
-                    !(reasonsProperty.type === "multi_select")) {
+                if (reasonsProperty?.id !== this.reasonsPropertyId || !(reasonsProperty.type === "multi_select")) {
                     throw new Error(`No valid reasons property found for database ${this.databaseId}`)
                 }
 
