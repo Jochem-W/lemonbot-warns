@@ -25,8 +25,10 @@ export class UpdateNamesCommand extends ChatInputCommand {
         const database = await NotionDatabase.getDefault()
         const update = []
         for await (const entry of database.getMany()) {
-            const member = await InteractionUtilities.fetchMember(interaction, entry.id)
-            const name = NotionUtilities.formatName(member ?? await interaction.client.users.fetch(entry.id))
+            const member = await InteractionUtilities.fetchMember(interaction, entry.id, true)
+            const name = NotionUtilities.formatName(member ?? await interaction.client.users.fetch(entry.id, {
+                force: true,
+            }))
             if (entry.name !== name) {
                 update.push({
                     id: entry.id,

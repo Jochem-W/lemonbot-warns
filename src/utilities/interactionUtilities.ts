@@ -47,10 +47,15 @@ export abstract class InteractionUtilities {
         return guild
     }
 
-    public static async fetchMember(interaction: Interaction, user: UserResolvable): Promise<GuildMember | null> {
+    public static async fetchMember(interaction: Interaction,
+                                    user: UserResolvable,
+                                    force?: boolean): Promise<GuildMember | null> {
         const guild = await InteractionUtilities.fetchGuild(interaction)
         try {
-            return await guild?.members.fetch(user) ?? null
+            return await guild?.members.fetch({
+                user: user,
+                force: force,
+            }) ?? null
         } catch (e) {
             if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownUser) {
                 return null
