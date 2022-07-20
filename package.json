@@ -15,7 +15,7 @@
     "firebase-admin": "^11.0.0",
     "lru-cache": "^7.13.1",
     "luxon": "^3.0.1",
-    "nanoid": "3.3.4",
+    "nanoid": "4.0.0",
     "nanoid-dictionary": "^4.3.0",
     "whatwg-mimetype": "^3.0.0"
   },
