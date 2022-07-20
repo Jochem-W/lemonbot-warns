@@ -165,8 +165,7 @@ export class NotionUtilities {
     }
 
     public static generateWarnNote(data: ResponseOptions): BlockObjectRequest[] {
-        const reasonsText = data.reasons.map(reason => data.entry?.reasons.find(r => r.id === reason.id)?.name)
-            .join(", ")
+        const reasonsText = data.reasons.map(reason => reason.name).join(", ")
 
         const objects: BlockObjectRequest[] = [
             {

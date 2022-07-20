@@ -24,7 +24,7 @@ import {
     WebhookMessageOptions,
 } from "discord.js"
 import {NotionDatabase, NotionDatabaseEntry} from "../models/notionDatabase"
-import {SelectPropertyResponse} from "../types/notion"
+import {SelectPropertyRequest} from "../types/notion"
 import MIMEType from "whatwg-mimetype"
 import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {DateTime, Duration} from "luxon"
@@ -39,7 +39,7 @@ import {nolookalikesSafe} from "nanoid-dictionary"
 
 export type ResponseOptions = {
     entry: NotionDatabaseEntry
-    reasons: SelectPropertyResponse[]
+    reasons: SelectPropertyRequest[]
     penalty: Penalty
     targetUser: User
     targetMember?: GuildMember
@@ -235,7 +235,7 @@ export class WarnCommand extends ChatInputCommand {
             const database = await NotionDatabase.getDefault()
             const reasons = await database.getReasons()
             return reasons.map(reason => {
-                return {name: reason.name, value: reason.id}
+                return {name: reason.name, value: reason.name}
             })
         }
 
@@ -253,21 +253,13 @@ export class WarnCommand extends ChatInputCommand {
             throw new Error("Invalid penalty")
         }
 
-        const database = await NotionDatabase.getDefault()
-        const databaseReasons = await database.getReasons()
-
-        const reasons: SelectPropertyResponse[] = []
-        for (const reasonId of ["reason", "reason2", "reason3"].map(name => interaction.options.getString(name))) {
-            if (!reasonId) {
+        const reasons: SelectPropertyRequest[] = []
+        for (const name of ["reason", "reason2", "reason3"].map(option => interaction.options.getString(option))) {
+            if (!name || reasons.find(r => r.name === name)) {
                 continue
             }
 
-            const reason = databaseReasons.find(r => r.id === reasonId)
-            if (!reason) {
-                throw new Error(`Invalid reason ID: ${reasonId}`)
-            }
-
-            reasons.push(reason)
+            reasons.push({name: name})
         }
 
         const images: string[] = []
@@ -294,6 +286,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const member = await InteractionUtilities.fetchMember(interaction, user)
 
+        const database = await NotionDatabase.getDefault()
         let entry = await database.getByDiscordId(user.id)
         if (!entry) {
             entry = await database.create(user.id, {
