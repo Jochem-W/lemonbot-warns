@@ -57,7 +57,7 @@ export abstract class InteractionUtilities {
                 force: force,
             }) ?? null
         } catch (e) {
-            if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownUser) {
+            if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownMember) {
                 return null
             }
 
