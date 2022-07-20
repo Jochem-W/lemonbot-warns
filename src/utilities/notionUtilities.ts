@@ -157,7 +157,11 @@ export class NotionUtilities {
     }
 
     public static formatName(user: GuildMember | User) {
-        return user instanceof GuildMember ? `${user.user.tag} [${user.nickname}]` : user.tag
+        if (user instanceof GuildMember) {
+            return user.nickname ? `${user.user.tag} [${user.nickname}]` : user.user.tag
+        }
+
+        return user.tag
     }
 
     public static generateWarnNote(data: ResponseOptions): BlockObjectRequest[] {
