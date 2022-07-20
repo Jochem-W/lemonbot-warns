@@ -1,53 +1,57 @@
-import {Interaction, InteractionType, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
-import HandlerWrapper from "../wrappers/handlerWrapper"
-import {InteractionScope, parseCustomId} from "../models/customId"
-import {Commands} from "../commands"
+import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
+import {CustomId, InteractionScope} from "../models/customId"
+import {RegisteredCommands} from "../commands"
+import {Handler} from "../interfaces/handler"
 
-/**
- * Handler for interactions
- */
-export default class InteractionHandler extends HandlerWrapper {
-    constructor() {
-        super("interactionCreate")
-    }
 
-    private static async handleMessageComponent(interaction: MessageComponentInteraction) {
-        const data = parseCustomId(interaction.customId)
-        if (data.scope !== InteractionScope.Local) {
+export class InteractionHandler implements Handler<"interactionCreate"> {
+    public readonly event = "interactionCreate"
+
+    private static async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
+        const data = CustomId.fromString(interaction.customId)
+        if (data.scope !== InteractionScope.Instance) {
             return
         }
 
-        const command = Commands.get(data.primary)
+        const command = RegisteredCommands.get(data.primary)
         if (!command) {
             throw new Error(`Command ${data.primary} not found`)
+        }
+
+        if (!command.handleMessageComponent) {
+            throw new Error(`Command ${command} does not support static message component interactions`)
         }
 
         await command.handleMessageComponent(interaction, data)
     }
 
-    private static async handleModalSubmit(interaction: ModalSubmitInteraction) {
-        const data = parseCustomId(interaction.customId)
-        if (data.scope !== InteractionScope.Local) {
+    private static async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+        const data = CustomId.fromString(interaction.customId)
+        if (data.scope !== InteractionScope.Instance) {
             return
         }
 
-        const command = Commands.get(data.primary)
+        const command = RegisteredCommands.get(data.primary)
         if (!command) {
             throw new Error(`Command ${data.primary} not found`)
+        }
+
+        if (!command.handleModalSubmit) {
+            throw new Error(`Command ${command} does not support static message component interactions`)
         }
 
         await command.handleModalSubmit(interaction, data)
     }
 
-    async handle(interaction: Interaction) {
+    public async handle(interaction: Interaction): Promise<void> {
         try {
-            if (interaction.type === InteractionType.MessageComponent) {
-                await InteractionHandler.handleMessageComponent(interaction as MessageComponentInteraction)
+            if (interaction instanceof MessageComponentInteraction) {
+                await InteractionHandler.handleMessageComponent(interaction)
                 return
             }
 
-            if (interaction.type === InteractionType.ModalSubmit) {
-                await InteractionHandler.handleModalSubmit(interaction as ModalSubmitInteraction)
+            if (interaction instanceof ModalSubmitInteraction) {
+                await InteractionHandler.handleModalSubmit(interaction)
                 return
             }
         } catch (e) {

@@ -1,38 +1,61 @@
-import SlashCommandConstructor from "../models/slashCommandConstructor"
-import ExecutableCommand from "../models/executableCommand"
 import {
     ActionRowBuilder,
+    ApplicationCommandOptionChoiceData,
     AutocompleteInteraction,
+    bold,
     ButtonBuilder,
     ButtonStyle,
+    channelMention,
     ChannelType,
     ChatInputCommandInteraction,
     DiscordAPIError,
+    EmbedBuilder,
+    Guild,
     GuildMember,
+    inlineCode,
+    italic,
     MessageActionRowComponentBuilder,
-    MessageComponentInteraction,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
+    TextChannel,
     User,
     userMention,
+    WebhookEditMessageOptions,
+    WebhookMessageOptions,
 } from "discord.js"
-import {DateTime, Duration} from "luxon"
+import {NotionDatabase, NotionDatabaseEntry} from "../models/notionDatabase"
+import {SelectPropertyResponse} from "../types/notion"
 import MIMEType from "whatwg-mimetype"
-import NotionUtilities from "../utilities/notionUtilities"
-import ResponseUtilities, {WarnData} from "../utilities/responseUtilities"
-import InteractionUtilities from "../utilities/interactionUtilities"
-import DatabaseUtilities from "../utilities/databaseUtilities"
+import {InteractionUtilities} from "../utilities/interactionUtilities"
+import {DateTime, Duration} from "luxon"
+import {NotionUtilities} from "../utilities/notionUtilities"
+import {Config, Penalty} from "../config"
+import {ChatInputCommand} from "../models/chatInputCommand"
+import {FirebaseUtilities} from "../utilities/firebaseUtilities"
+import {ResponseBuilder} from "../utilities/responseBuilder"
+import {CustomId, InteractionScope} from "../models/customId"
 import {customAlphabet} from "nanoid"
 import {nolookalikesSafe} from "nanoid-dictionary"
-import Config from "../config"
-import {CustomId, customId, InteractionScope} from "../models/customId"
-import EmbedUtilities from "../utilities/embedUtilities"
 
-export default class WarnCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
-    constructor() {
-        super(ExecutableWarnCommand, "warn", "Warn a user and add them to the watchlist",
-            PermissionFlagsBits.ModerateMembers)
-        this.commandBuilder
+export type ResponseOptions = {
+    entry: NotionDatabaseEntry
+    reasons: SelectPropertyResponse[]
+    penalty: Penalty
+    targetUser: User
+    targetMember?: GuildMember
+    images: string[]
+    description: string
+    warnedBy: User
+    notified?: "DM" | TextChannel | false
+    penalised?: "applied" | "error" | "not_in_server" | "not_notified"
+    timestamp: DateTime
+    guild: Guild
+}
+
+export class WarnCommand extends ChatInputCommand {
+    public constructor() {
+        super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
+        this.builder
             .addUserOption(option => option
                 .setName("user")
                 .setDescription("Target user")
@@ -73,139 +96,239 @@ export default class WarnCommand extends SlashCommandConstructor<ChatInputComman
                 .setAutocomplete(true))
     }
 
-    override async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {
-        switch (data.secondary) {
-        case "dismiss":
-            const [channelId, userId] = data.tertiary
-            if (!channelId || !userId) {
-                throw new Error(`${interaction.customId} is invalid`)
-            }
-
-            if (interaction.user.id !== userId) {
-                await interaction.reply({
-                    embeds: [EmbedUtilities.makeEmbed("Something went wrong while handling this interaction",
-                        Config.failIcon,
-                        "You can't use this component!")],
-                    ephemeral: true,
-                })
-                return
-            }
-
-            const channel = await interaction.client.channels.fetch(channelId)
-            if (!channel) {
-                throw new Error(`Channel ${channelId} not found`)
-            }
-
-            await channel.delete()
-            await interaction.deferUpdate()
+    public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
+        const reasonsText = options.reasons.map(reason => reason.name).join(", ")
+        let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
+        if (options.notified === "DM") {
+            administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
+        } else if (options.notified instanceof TextChannel) {
+            administrationText +=
+                `\n• Notification: ${inlineCode(`✅ (mentioned in`)} ${channelMention(options.notified.id)} ${inlineCode(
+                    ")")}`
+        } else if (options.notified === false) {
+            administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM or mention)")}`
+        } else {
+            administrationText += `\n• Notification: ${inlineCode("❌ (notify was False)")}`
         }
+
+        switch (options.penalised) {
+        case "applied":
+            if (options.penalty.penalty instanceof Duration) {
+                administrationText +=
+                    `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.penalty.toHuman()})`)}`
+            } else if (options.penalty.penalty === "ban") {
+                administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
+            } else {
+                administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
+            }
+
+            break
+        case "error":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (an error occurred)")}`
+            break
+        case "not_in_server":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (user not in server)")}`
+            break
+        case "not_notified":
+            administrationText += `\n• Penalised: ${inlineCode("❌ (user wasn't notified)")}`
+            break
+        default:
+            administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
+            break
+        }
+
+        const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
+        const tag = options.targetUser.tag
+
+        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.getPenaltyVerb(options.penalty)} ${tag}`, avatar)
+            .addFields([
+                {
+                    name: "Description",
+                    value: options.description,
+                },
+                {
+                    name: "Administration",
+                    value: administrationText,
+                },
+            ])
+            .setFooter({
+                text: `${WarnCommand.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`,
+                iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
+            })
+            .setTimestamp(options.timestamp.toMillis())
+
+        if (options.images.length <= 1) {
+            if (options.images[0]) {
+                embed.setImage(options.images[0])
+            }
+
+            return ResponseBuilder.addNotesButton({embeds: [embed]}, options.entry?.url ?? "")
+        }
+
+        const embeds = [embed]
+        for (const image of options.images) {
+            embeds.push(new EmbedBuilder().setImage(image))
+        }
+
+        return ResponseBuilder.addNotesButton({embeds: embeds}, options.entry?.url ?? "")
     }
 
-    override async getAutocomplete(interaction: AutocompleteInteraction) {
+    public static buildDM(options: ResponseOptions): WebhookMessageOptions {
+        const embed = ResponseBuilder.makeEmbed(`You have been ${WarnCommand.getPenaltyVerb(options.penalty,
+            true,
+            true)} ${options.guild.name}`, Config.warnIcon)
+            .setColor("#ff0000")
+            .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
+            .setTimestamp(options.timestamp.toMillis())
+            .setFooter({text: "If you have any questions, please DM ModMail"})
+
+        if (options.images.length <= 1) {
+            if (options.images[0]) {
+                embed.setImage(options.images[0])
+            }
+
+            return {embeds: [embed]}
+        }
+
+        const embeds = [embed]
+        for (const image of options.images) {
+            embeds.push(new EmbedBuilder().setImage(image).setColor("#ff0000"))
+        }
+
+        return {embeds: embeds}
+    }
+
+    public static getPenaltyVerb(penalty: Penalty, includePreposition = false, lowercase = false): string {
+        let verb = ""
+        let preposition = "in"
+        if (penalty.penalty instanceof Duration) {
+            verb = "Timed out"
+        } else {
+            switch (penalty.penalty) {
+            case "ban":
+                verb = "Banned"
+                preposition = "from"
+                break
+            case "kick":
+                verb = "Kicked"
+                preposition = "from"
+                break
+            case null:
+                verb = "Warned"
+                break
+            }
+        }
+
+        if (lowercase) {
+            verb = verb.toLowerCase()
+        }
+
+        return includePreposition ? `${verb} ${preposition}` : verb
+    }
+
+    public async handleAutocompleteInteraction(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
         switch (interaction.options.getFocused(true).name) {
         case "reason":
         case "reason2":
-        case "reason3": {
-            return (await DatabaseUtilities.getReasons()).map(level => ({
-                name: level,
-                value: level,
-            }))
+        case "reason3":
+            const database = await NotionDatabase.getDefault()
+            const reasons = await database.getReasons()
+            return reasons.map(reason => {
+                return {name: reason.name, value: reason.id}
+            })
         }
-        default:
-            return []
-        }
-    }
-}
 
-class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteraction> {
-    constructor(interaction: ChatInputCommandInteraction) {
-        super(interaction)
+        throw new Error("This option does not support autocomplete")
     }
 
-    async cleanup() {
-    }
-
-    async execute() {
-        if (!this.interaction.inGuild()) {
+    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+        const guild = await InteractionUtilities.fetchGuild(interaction)
+        if (!guild) {
             throw new Error("This command can only be used in a server")
         }
 
-        const penalty = Config.penalties.find(penalty => penalty.name ===
-            this.interaction.options.getString("penalty", true))
+        const penalty = Config.penalties.find(p => p.name === interaction.options.getString("penalty", true))
         if (!penalty) {
             throw new Error("Invalid penalty")
         }
 
-        const images: string[] = []
-        const attachments = [
-            this.interaction.options.getAttachment("image"),
-            this.interaction.options.getAttachment("image2"),
-        ]
+        const database = await NotionDatabase.getDefault()
+        const databaseReasons = await database.getReasons()
 
-        for (const attachment of attachments) {
-            if (!attachment) {
+        const reasons: SelectPropertyResponse[] = []
+        for (const reasonId of ["reason", "reason2", "reason3"].map(name => interaction.options.getString(name))) {
+            if (!reasonId) {
                 continue
             }
 
-            if (!attachment.contentType || new MIMEType(attachment.contentType).type !== "image") {
-                throw new Error("Only image attachments are supported")
+            const reason = databaseReasons.find(r => r.id === reasonId)
+            if (!reason) {
+                throw new Error(`Invalid reason ID: ${reasonId}`)
             }
 
-            const result = await InteractionUtilities.uploadAttachment(attachment)
+            reasons.push(reason)
+        }
+
+        const images: string[] = []
+        for (const image of ["image", "image2"].map(name => interaction.options.getAttachment(name))) {
+            if (!image) {
+                continue
+            }
+
+            if (!image.contentType) {
+                throw new Error("Image has no content type")
+            }
+
+            const mimeType = new MIMEType(image.contentType)
+            if (mimeType.type !== "image") {
+                throw new Error("Only images are allowed")
+            }
+
+            const result = await FirebaseUtilities.uploadAttachment(image)
             images.push(result.url)
         }
 
-        const guild = await this.interaction.client.guilds.fetch({
-            guild: this.interaction.guild ?? this.interaction.guildId,
-            force: true,
-        })
+        const user = interaction.options.getUser("user", true)
+        const description = interaction.options.getString("description", true)
 
-        const data: WarnData = {
-            recipient: await InteractionUtilities.fetchMemberOrUser({
-                client: this.interaction.client,
-                guild: guild,
-                user: this.interaction.options.getUser("user", true),
-            }),
-            warnedBy: await InteractionUtilities.fetchMemberOrUser({
-                client: this.interaction.client,
-                user: this.interaction.user,
-            }),
-            timestamp: DateTime.fromMillis(this.interaction.createdTimestamp),
-            description: this.interaction.options.getString("description", true),
-            images: images,
-            reasons: [this.interaction.options.getString("reason", true)],
+        const member = await InteractionUtilities.fetchMember(interaction, user)
+
+        let entry = await database.getByDiscordId(user.id)
+        if (!entry) {
+            entry = await database.create(user.id, {
+                currentPenaltyLevel: penalty.name,
+                watchlist: false,
+                name: NotionUtilities.formatName(member ?? user),
+                reasons: reasons,
+            })
+        } else {
+            entry = await database.update(entry, {
+                currentPenaltyLevel: penalty.name,
+                name: NotionUtilities.formatName(member ?? user),
+                reasons: reasons,
+            })
+        }
+
+        const options: ResponseOptions = {
+            entry: entry,
+            reasons: reasons,
             penalty: penalty,
-            url: "",
+            targetUser: user,
+            targetMember: member ?? undefined,
+            images: images,
+            description: description,
+            warnedBy: interaction.user,
+            timestamp: DateTime.now(),
+            guild: guild,
         }
 
-        const reason2 = this.interaction.options.getString("reason2")
-        if (reason2) {
-            data.reasons.push(reason2)
-        }
+        await database.appendBlocks(entry, NotionUtilities.generateWarnNote(options))
 
-        const reason3 = this.interaction.options.getString("reason3")
-        if (reason3) {
-            data.reasons.push(reason3)
-        }
-
-        await DatabaseUtilities.updateEntry(data.recipient, {
-            name: InteractionUtilities.getName(data.recipient),
-            currentPenaltyLevel: data.penalty.name,
-            reasons: data.reasons,
-        })
-        data.url = await DatabaseUtilities.addNotes(data.recipient, {content: NotionUtilities.generateWarnNote(data)})
-
-        if (this.interaction.options.getBoolean("notify", true)) {
-            data.notified = false
+        if (interaction.options.getBoolean("notify", true)) {
+            options.notified = false
             try {
-                await data.recipient.send(ResponseUtilities.generateWarnDm({
-                    guildName: guild.name,
-                    description: data.description,
-                    images: data.images,
-                    timestamp: data.timestamp,
-                    penalty: data.penalty,
-                }))
-                data.notified = "DM"
+                await options.targetUser.send(WarnCommand.buildDM(options))
+                options.notified = "DM"
             } catch (e) {
                 if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                     throw e
@@ -213,9 +336,9 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
             }
         }
 
-        if (data.notified === false && data.recipient instanceof GuildMember) {
+        if (options.notified === false && options.targetMember) {
             const nanoid = customAlphabet(nolookalikesSafe)
-            const channelName = `${data.recipient.user.username}-${data.recipient.user.discriminator}-${nanoid(4)}`
+            const channelName = `${options.targetUser.username}-${options.targetUser.discriminator}-${nanoid(4)}`
 
             const newChannel = await guild.channels.create({
                 name: channelName,
@@ -224,71 +347,63 @@ class ExecutableWarnCommand extends ExecutableCommand<ChatInputCommandInteractio
                 reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
-            await newChannel.permissionOverwrites.create(data.recipient, {ViewChannel: true}, {
+            await newChannel.permissionOverwrites.create(options.targetMember, {ViewChannel: true}, {
                 reason: "Allow the user to-be-warned to view the channel",
             })
             await newChannel.send({
-                ...ResponseUtilities.generateWarnDm({
-                    guildName: guild.name,
-                    description: data.description,
-                    images: data.images,
-                    timestamp: data.timestamp,
-                    penalty: data.penalty,
-                }),
-                content: userMention(data.recipient.id),
+                ...WarnCommand.buildDM(options),
+                content: userMention(options.targetMember.id),
                 components: [new ActionRowBuilder<MessageActionRowComponentBuilder>()
                     .setComponents([
                         new ButtonBuilder()
                             .setLabel("Dismiss")
                             .setStyle(ButtonStyle.Danger)
-                            .setCustomId(customId({
-                                scope: InteractionScope.Local,
-                                primary: this.interaction.commandId,
-                                secondary: "dismiss",
-                                tertiary: [newChannel.id, data.recipient.id],
-                            })),
+                            .setCustomId(new CustomId(InteractionScope.Instance,
+                                interaction.commandId,
+                                "dismiss",
+                                [newChannel.id, options.targetMember.id]).toString()),
                     ]),
                 ],
             })
 
-            data.notified = newChannel
+            options.notified = newChannel
         }
 
-        const reason = `${ResponseUtilities.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag}`
-        if (data.notified !== false && data.notified !== undefined) {
+        const reason = `${WarnCommand.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`
+        if (options.notified !== false && options.notified !== undefined) {
             try {
                 if (penalty.penalty === "ban") {
-                    if (data.recipient instanceof User) {
-                        data.penalised = "not_in_server"
+                    if (options.targetMember) {
+                        await options.targetMember.ban({reason: reason})
+                        options.penalised = "applied"
                     } else {
-                        await data.recipient.ban({reason: reason})
-                        data.penalised = "applied"
+                        options.penalised = "not_in_server"
                     }
                 } else if (penalty.penalty instanceof Duration) {
-                    if (data.recipient instanceof User) {
-                        data.penalised = "not_in_server"
+                    if (options.targetMember) {
+                        await options.targetMember.timeout(penalty.penalty.toMillis(), reason)
+                        options.penalised = "applied"
                     } else {
-                        await data.recipient.timeout(penalty.penalty.toMillis(), reason)
-                        data.penalised = "applied"
+                        options.penalised = "not_in_server"
                     }
                 } else if (penalty.penalty === "kick") {
-                    if (data.recipient instanceof User) {
-                        data.penalised = "not_in_server"
+                    if (options.targetMember) {
+                        await options.targetMember.kick(reason)
+                        options.penalised = "applied"
                     } else {
-                        await data.recipient.kick(reason)
-                        data.penalised = "applied"
+                        options.penalised = "not_in_server"
                     }
                 } else if (penalty.penalty === null) {
-                    data.penalised = "applied"
+                    options.penalised = "applied"
                 }
             } catch (e) {
-                console.warn("Couldn't apply penalty", e)
-                data.penalised = "error"
+                console.error("Couldn't apply penalty", e)
+                options.penalised = "error"
             }
         } else {
-            data.penalised = "not_notified"
+            options.penalised = "not_notified"
         }
 
-        await this.interaction.editReply(ResponseUtilities.generateWarnResponse(data, this.interaction))
+        await interaction.editReply(WarnCommand.buildResponse(options))
     }
 }

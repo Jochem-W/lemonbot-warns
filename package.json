@@ -1,35 +1,35 @@
 {
-  "name": "warn-with-notion",
+  "name": "lemonbot-warns",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "compile": "tsc",
     "start": "node dist/index.js"
   },
   "author": "Jochem Waqué",
   "license": "AGPL-3.0-only",
-  "devDependencies": {
-    "@tsconfig/node18": "^1.0.1",
-    "@types/luxon": "^2.3.2",
-    "@types/nanoid-dictionary": "^4.2.0",
-    "@types/node": "^18.0.0",
-    "@types/whatwg-mimetype": "^2.1.1",
-    "typescript": "^4.7.4"
-  },
   "dependencies": {
-    "@discordjs/rest": "0.6.0-dev.1656677085-741b3c8",
-    "@notionhq/client": "^1.0.4",
-    "discord.js": "14.0.0-dev.1656677097-741b3c8",
+    "@discordjs/rest": "^1.0.0",
+    "@notionhq/client": "^2.0.0",
+    "discord.js": "^14.0.3",
     "firebase-admin": "^11.0.0",
-    "lru-cache": "^7.12.0",
-    "luxon": "^2.4.0",
-    "nanoid": "^3.3.4",
+    "lru-cache": "^7.13.1",
+    "luxon": "^3.0.1",
+    "nanoid": "3.3.4",
     "nanoid-dictionary": "^4.3.0",
     "whatwg-mimetype": "^3.0.0"
   },
+  "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "@types/luxon": "^3.0.0",
+    "@types/nanoid-dictionary": "^4.2.0",
+    "@types/node": "^18.0.6",
+    "@types/whatwg-mimetype": "^2.1.1",
+    "typescript": "^4.7.4"
+  },
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
-    "erlpack": "github:discord/erlpack",
+    "erlpack": "^0.1.4",
     "utf-8-validate": "^5.0.9",
     "zlib-sync": "^0.1.7"
   }

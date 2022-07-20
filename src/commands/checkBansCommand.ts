@@ -1,57 +1,68 @@
-import SlashCommandConstructor from "../models/slashCommandConstructor"
-import ExecutableCommand from "../models/executableCommand"
 import {
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonInteraction,
     ButtonStyle,
     ChatInputCommandInteraction,
     inlineCode,
     MessageActionRowComponentBuilder,
-    MessageComponentInteraction,
     PermissionFlagsBits,
     time,
     WebhookEditMessageOptions,
 } from "discord.js"
 import {DateTime} from "luxon"
-import EmbedUtilities from "../utilities/embedUtilities"
-import {CustomId, customId, InteractionScope} from "../models/customId"
+import {CustomId, InteractionScope} from "../models/customId"
+import {InteractionUtilities} from "../utilities/interactionUtilities"
+import {ResponseBuilder} from "../utilities/responseBuilder"
+import {ChatInputCommand} from "../models/chatInputCommand"
 
-export default class CheckBansCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
-    constructor() {
-        super(ExecutableCheckBansCommand, "check-bans", "Check banned users", PermissionFlagsBits.ModerateMembers)
-    }
+type ResponseOptions = {
+    bans: string[]
+    page: number
+    pageLimit: number
 }
 
-class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInteraction> {
-    private bans: string[] = []
-    private title = ""
-    private page = 0
-    private lastPage = 0
-    private userCount = 25
-
-    constructor(interaction: ChatInputCommandInteraction) {
-        super(interaction)
+export class CheckBansCommand extends ChatInputCommand {
+    public constructor() {
+        super("check-bans", "Check banned users", PermissionFlagsBits.ModerateMembers)
     }
 
-    override async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {
-        switch (data.primary) {
-        case "next":
-            this.page++
-            break
-        case "previous":
-            this.page--
-            break
+    public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
+        const offset = options.page * options.pageLimit
+        const lastPage = Math.ceil(options.bans.length / options.pageLimit) - 1
+
+        return {
+            embeds: [
+                ResponseBuilder.makeEmbed("Wrongfully auto-banned users")
+                    .setTitle(
+                        `The following ${options.bans.length.toString()} users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days.`)
+                    .setDescription(options.bans.slice(offset, offset + options.pageLimit).join("\n") || null),
+            ],
+            components: [
+                new ActionRowBuilder<MessageActionRowComponentBuilder>()
+                    .setComponents([
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Primary)
+                            .setCustomId(new CustomId(InteractionScope.Collector, "previous", "", []).toString())
+                            .setDisabled(options.page === 0)
+                            .setEmoji("⬅️"),
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Primary)
+                            .setCustomId(new CustomId(InteractionScope.Collector, "next", "", []).toString())
+                            .setDisabled(options.page >= lastPage)
+                            .setEmoji("➡️"),
+                    ]),
+            ],
         }
-
-        await interaction.update(this.generateReply())
     }
 
-    async execute() {
-        if (!this.interaction.inGuild()) {
+    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+        const guild = await InteractionUtilities.fetchGuild(interaction)
+        if (!guild) {
             throw new Error("This command can only be used in a server")
         }
 
-        const guild = this.interaction.guild ?? await this.interaction.client.guilds.fetch(this.interaction.guildId)
+        const bans: string[] = []
         for (const [, ban] of await guild.bans.fetch()) {
             if (ban.reason !== "Account was less than 30 days old") {
                 continue
@@ -62,55 +73,38 @@ class ExecutableCheckBansCommand extends ExecutableCommand<ChatInputCommandInter
                 continue
             }
 
-            this.bans.push(`• ${inlineCode(ban.user.tag)} (created ${time(Math.floor(createdDate.toSeconds()), "R")})`)
+            bans.push(`• ${inlineCode(ban.user.tag)} (created ${time(Math.floor(createdDate.toSeconds()), "R")})`)
         }
 
-        this.title =
-            `The following ${this.bans.length.toString()} users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days.`
+        let page = 0
 
-        this.lastPage = Math.ceil(this.bans.length / this.userCount) - 1
+        const collector = await InteractionUtilities.collect(interaction)
+        collector.on("collect", async collected => {
+            if (!(collected instanceof ButtonInteraction)) {
+                throw new Error(`Unhandled interaction ${collected}`)
+            }
 
-        await this.interaction.editReply(this.generateReply())
-    }
+            const customId = CustomId.fromString(collected.customId)
+            switch (customId.primary) {
+            case "next":
+                page++
+                break
+            case "previous":
+                page--
+                break
+            }
 
-    async cleanup() {
-        await this.disableButtons()
-    }
+            await collected.update(CheckBansCommand.buildResponse({
+                bans: bans,
+                page: page,
+                pageLimit: 25,
+            }))
+        })
 
-    private generateReply(): WebhookEditMessageOptions {
-        const offset = this.page * this.userCount
-
-        return {
-            embeds: [
-                EmbedUtilities.makeEmbed("Wrongfully auto-banned users")
-                    .setTitle(this.title)
-                    .setDescription(this.bans.slice(offset, offset + this.userCount).join("\n") || null),
-            ],
-            components: [
-                new ActionRowBuilder<MessageActionRowComponentBuilder>()
-                    .setComponents([
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Primary)
-                            .setCustomId(customId({
-                                scope: InteractionScope.Collector,
-                                primary: "previous",
-                                secondary: "",
-                                tertiary: [],
-                            }))
-                            .setDisabled(this.page === 0)
-                            .setEmoji("⬅️"),
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Primary)
-                            .setCustomId(customId({
-                                scope: InteractionScope.Collector,
-                                primary: "next",
-                                secondary: "",
-                                tertiary: [],
-                            }))
-                            .setDisabled(this.page >= this.lastPage)
-                            .setEmoji("➡️"),
-                    ]),
-            ],
-        }
+        await interaction.editReply(CheckBansCommand.buildResponse({
+            bans: bans,
+            page: page,
+            pageLimit: 25,
+        }))
     }
 }

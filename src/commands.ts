@@ -1,40 +1,24 @@
-import {
-    ChatInputCommandInteraction,
-    Collection,
-    CommandInteraction,
-    MessageContextMenuCommandInteraction,
-    Snowflake,
-    UserContextMenuCommandInteraction,
-} from "discord.js"
-import SlashCommandConstructor from "./models/slashCommandConstructor"
-import NoteCommand from "./commands/noteCommand"
-import StatusCommand from "./commands/statusCommand"
-import SyncCommand from "./commands/syncCommand"
-import WarnCommand from "./commands/warnCommand"
-import WarningsCommand from "./commands/warningsCommand"
-import WatchlistCommand from "./commands/watchlistCommand"
-import CheckBansCommand from "./commands/checkBansCommand"
-import MessageContextMenuCommandConstructor from "./models/messageContextMenuCommandConstructor"
-import CommandConstructor from "./models/commandConstructor"
-import UserContextMenuCommandConstructor from "./models/userContextMenuCommandConstructor"
-import CheckDatabaseCommand from "./commands/checkDatabaseCommand"
-// import MessageReportCommand from "./commands/messageReportCommand"
+import {Collection, CommandInteraction, Snowflake} from "discord.js"
+import {WarnCommand} from "./commands/warnCommand"
+import {MessageContextMenuCommand} from "./models/messageContextMenuCommand"
+import {Command} from "./interfaces/command"
+import {WarningsCommand} from "./commands/warningsCommand"
+import {UserContextMenuCommand} from "./models/userContextMenuCommand"
+import {CheckBansCommand} from "./commands/checkBansCommand"
+import {ChatInputCommand} from "./models/chatInputCommand"
+import {StatusCommand} from "./commands/statusCommand"
+import {UpdateNamesCommand} from "./commands/updateNamesCommand"
 
-export const Commands = new Collection<Snowflake, CommandConstructor<CommandInteraction>>()
-
-export const ChatInputCommandConstructors: Readonly<SlashCommandConstructor<ChatInputCommandInteraction>[]> = [
+export const SlashCommands: ChatInputCommand[] = [
     new CheckBansCommand(),
-    new NoteCommand(),
     new StatusCommand(),
-    new SyncCommand(),
+    new UpdateNamesCommand(),
     new WarnCommand(),
     new WarningsCommand(),
-    new WatchlistCommand(),
-    new CheckDatabaseCommand(),
 ]
 
-export const MessageContextMenuCommandConstructors: Readonly<MessageContextMenuCommandConstructor<MessageContextMenuCommandInteraction>[]> = [
-    // new MessageReportCommand(),
-]
+export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
 
-export const UserContextMenuCommandConstructors: Readonly<UserContextMenuCommandConstructor<UserContextMenuCommandInteraction>[]> = []
+export const UserContextMenuCommands: UserContextMenuCommand[] = []
+
+export const RegisteredCommands = new Collection<Snowflake, Command<CommandInteraction>>()

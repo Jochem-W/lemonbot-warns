@@ -3,25 +3,27 @@ import {
     bold,
     codeBlock,
     EmbedBuilder,
+    GuildMember,
     hyperlink,
     inlineCode,
     italic,
     strikethrough,
     time,
     underscore,
+    User,
 } from "discord.js"
 import {DateTime} from "luxon"
-import ResponseUtilities, {NoteData, WarnData} from "./responseUtilities"
-import InteractionUtilities from "./interactionUtilities"
+import {ResponseOptions, WarnCommand} from "../commands/warnCommand"
 
 export type ParseBlockObjectsResult = {
     embeds: EmbedBuilder[]
     unsupportedBlocks: number,
 }
 
-export default class NotionUtilities {
-    static parseBlockObjects(blocks: BlockObjectResponse[]): ParseBlockObjectsResult {
-        const result: ParseBlockObjectsResult = {
+export class NotionUtilities {
+    // TODO: check embed lengths and create additional messages
+    public static async parseBlockObjects(blocks: BlockObjectResponse[] | AsyncGenerator<BlockObjectResponse>): Promise<ParseBlockObjectsResult> {
+        let result: ParseBlockObjectsResult = {
             embeds: [new EmbedBuilder().setFields([{
                 name: " ",
                 value: " ",
@@ -30,151 +32,13 @@ export default class NotionUtilities {
         }
 
         let currentListNumber = 1
-        for (const block of blocks) {
-            if (block.type !== "numbered_list_item") {
-                currentListNumber = 1
+        if (blocks instanceof Array) {
+            for (const block of blocks) {
+                result = this.parseBlockObject(block, result, currentListNumber)
             }
-
-            let lastEmbed = result.embeds.at(-1)
-            if (!lastEmbed) {
-                throw new Error("No embed found")
-            }
-            if (lastEmbed.data.fields?.length === 25 || lastEmbed.data.image) {
-                lastEmbed = new EmbedBuilder().setFields([{
-                    name: " ",
-                    value: " ",
-                }])
-                result.embeds.push(lastEmbed)
-            }
-            const lastField = lastEmbed.data.fields?.at(-1)
-
-            if (!lastField) {
-                throw new Error("No field found")
-            }
-
-            switch (block.type) {
-            case "paragraph":
-                lastField.value += `${block.paragraph.rich_text.map(this.richTextToString).join("")}\n`
-                break
-            case "heading_1":
-                lastEmbed.addFields([{
-                    name: block.heading_1.rich_text.map(this.richTextToString).join(""),
-                    value: " ",
-                }])
-                break
-            case "heading_2":
-                lastEmbed.addFields([{
-                    name: block.heading_2.rich_text.map(this.richTextToString).join(""),
-                    value: " ",
-                }])
-                break
-            case "heading_3":
-                lastEmbed.addFields([{
-                    name: block.heading_3.rich_text.map(this.richTextToString).join(""),
-                    value: " ",
-                }])
-                break
-            case "bulleted_list_item":
-                lastField.value += `• ${block.bulleted_list_item.rich_text.map(this.richTextToString).join("")}\n`
-                break
-            case "numbered_list_item":
-                lastField.value +=
-                    `${currentListNumber}. ${block.numbered_list_item.rich_text.map(this.richTextToString).join("")}\n`
-                currentListNumber++
-                break
-            case "quote":
-                lastField.value += `> ${block.quote.rich_text.map(this.richTextToString).join("")}\n`
-                break
-            case "to_do":
-                lastField.value +=
-                    `${block.to_do.checked ? "✅" : "🟩"} ${block.to_do.rich_text.map(this.richTextToString).join("")}\n`
-                break
-            case "toggle":
-                lastField.value += `${block.toggle.rich_text.map(this.richTextToString).join("")}\n`
-                break
-            case "equation":
-                lastField.value += `${inlineCode(block.equation.expression)}\n`
-                break
-            case "code":
-                lastField.value +=
-                    `${codeBlock(block.code.rich_text.map(this.richTextToString).join(""), block.code.language)}\n`
-                break
-            case "callout": {
-                let icon
-                switch (block.callout.icon?.type) {
-                case "emoji":
-                    icon = block.callout.icon.emoji
-                    break
-                default:
-                    icon = "❗"
-                    break
-                }
-
-                lastField.value +=
-                    `${codeBlock(`${icon} ${block.callout.rich_text.map(this.richTextToString).join("")}`)}\n`
-                break
-            }
-            case "embed": {
-                let caption = block.embed.caption.map(this.richTextToString).join("")
-                if (!caption) {
-                    caption = "View embed"
-                }
-
-                lastField.value += `${hyperlink(caption, block.embed.url)}\n`
-                break
-            }
-            case "bookmark": {
-                let caption = block.bookmark.caption.map(this.richTextToString).join("")
-                if (!caption) {
-                    caption = "View bookmark"
-                }
-
-                lastField.value += `${hyperlink(caption, block.bookmark.url)}\n`
-                break
-            }
-            case "image":
-                switch (block.image.type) {
-                case "external":
-                    lastEmbed.setImage(block.image.external.url)
-                    break
-                case "file":
-                    lastEmbed.setImage(block.image.file.url)
-                    break
-                }
-
-                break
-            case "video":
-                lastField.value += `${this.generateHyperlink(block.video, "View video")}\n`
-                break
-            case "pdf":
-                lastField.value += `${this.generateHyperlink(block.pdf, "View PDF")}\n`
-                break
-            case "file":
-                lastField.value += `${this.generateHyperlink(block.file, "View file")}\n`
-                break
-            case "audio":
-                lastField.value += `${this.generateHyperlink(block.audio, "View audio")}\n`
-                break
-            case "link_preview":
-                lastField.value += `${hyperlink("View link", block.link_preview.url)}\n`
-                break
-            case "divider":
-                lastField.value += "───\n"
-                break
-            case "unsupported":
-            case "template":
-            case "synced_block":
-            case "child_page":
-            case "child_database":
-            case "breadcrumb":
-            case "table_of_contents":
-            case "column_list":
-            case "column":
-            case "link_to_page":
-            case "table":
-            case "table_row":
-                result.unsupportedBlocks++
-                break
+        } else {
+            for await (const block of blocks) {
+                result = this.parseBlockObject(block, result, currentListNumber)
             }
         }
 
@@ -214,12 +78,10 @@ export default class NotionUtilities {
             }
         }
 
-        result.embeds = result.embeds.slice(0, 9)
-
         return result
     }
 
-    static generateHyperlink(file: FileBlockResponse, defaultCaption: string): string {
+    public static generateHyperlink(file: FileBlockResponse, defaultCaption: string): string {
         let caption = file.caption.map(this.richTextToString).join("")
         if (!caption) {
             caption = defaultCaption
@@ -240,11 +102,12 @@ export default class NotionUtilities {
         return hyperlink(caption, url)
     }
 
-    static richTextToString(richText: RichTextItemResponse): string {
+    public static richTextToString(richText: RichTextItemResponse): string {
         let text
         switch (richText.type) {
         case "text":
-            text = richText.text.link ? hyperlink(richText.text.content, richText.text.link.url) : richText.text.content
+            text = richText.text.link ? hyperlink(richText.text.content, richText.text.link.url) :
+                richText.text.content
             break
         case "mention":
             switch (richText.mention.type) {
@@ -293,15 +156,21 @@ export default class NotionUtilities {
         return text
     }
 
-    static generateWarnNote(data: WarnData): BlockObjectRequest[] {
+    public static formatName(user: GuildMember | User) {
+        return user instanceof GuildMember ? `${user.user.tag} [${user.nickname}]` : user.tag
+    }
+
+    public static generateWarnNote(data: ResponseOptions): BlockObjectRequest[] {
+        const reasonsText = data.reasons.map(reason => data.entry?.reasons.find(r => r.id === reason.id)?.name)
+            .join(", ")
+
         const objects: BlockObjectRequest[] = [
             {
                 heading_1: {
                     rich_text: [
                         {
                             text: {
-                                content: `${ResponseUtilities.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag} for ${data.reasons.join(
-                                    ", ")} `,
+                                content: `${WarnCommand.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag} for ${reasonsText} `,
                             },
                         },
                         {
@@ -340,93 +209,155 @@ export default class NotionUtilities {
         return objects
     }
 
-    static async generateNote(data: NoteData): Promise<BlockObjectRequest[]> {
-        const objects: BlockObjectRequest[] = []
-        if (data.title) {
-            objects.push({
-                heading_1: {
-                    rich_text: [{
-                        text: {
-                            content: data.title,
-                        },
-                    }],
-                },
-            })
+    private static parseBlockObject(block: BlockObjectResponse,
+                                    result: ParseBlockObjectsResult,
+                                    currentListNumber: number): ParseBlockObjectsResult {
+        if (block.type !== "numbered_list_item") {
+            currentListNumber = 1
         }
 
-        objects.push({
-            paragraph: {
-                rich_text: [{
-                    text: {
-                        content: data.body,
-                    },
-                }],
-            },
-        })
+        let lastEmbed = result.embeds.at(-1)
+        if (!lastEmbed) {
+            throw new Error("No embed found")
+        }
+        if (lastEmbed.data.fields?.length === 25 || lastEmbed.data.image) {
+            lastEmbed = new EmbedBuilder().setFields([{
+                name: " ",
+                value: " ",
+            }])
+            result.embeds.push(lastEmbed)
+        }
+        const lastField = lastEmbed.data.fields?.at(-1)
 
-        if (data.attachment) {
-            const result = await InteractionUtilities.uploadAttachment(data.attachment)
-            switch (result.type) {
-            case "image":
-                objects.push({
-                    image: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "video":
-                objects.push({
-                    video: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "audio":
-                objects.push({
-                    audio: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
-                break
-            case "application":
-                if (result.subtype === "pdf") {
-                    objects.push({
-                        pdf: {
-                            external: {
-                                url: result.url,
-                            },
-                        },
-                    })
-                    break
-                } else {
-                    objects.push({
-                        file: {
-                            external: {
-                                url: result.url,
-                            },
-                        },
-                    })
-                }
+        if (!lastField) {
+            throw new Error("No field found")
+        }
 
+        switch (block.type) {
+        case "paragraph":
+            lastField.value += `${block.paragraph.rich_text.map(this.richTextToString).join("")}\n`
+            break
+        case "heading_1":
+            lastEmbed.addFields([{
+                name: block.heading_1.rich_text.map(this.richTextToString).join(""),
+                value: " ",
+            }])
+            break
+        case "heading_2":
+            lastEmbed.addFields([{
+                name: block.heading_2.rich_text.map(this.richTextToString).join(""),
+                value: " ",
+            }])
+            break
+        case "heading_3":
+            lastEmbed.addFields([{
+                name: block.heading_3.rich_text.map(this.richTextToString).join(""),
+                value: " ",
+            }])
+            break
+        case "bulleted_list_item":
+            lastField.value += `• ${block.bulleted_list_item.rich_text.map(this.richTextToString).join("")}\n`
+            break
+        case "numbered_list_item":
+            lastField.value +=
+                `${currentListNumber}. ${block.numbered_list_item.rich_text.map(this.richTextToString).join("")}\n`
+            currentListNumber++
+            break
+        case "quote":
+            lastField.value += `> ${block.quote.rich_text.map(this.richTextToString).join("")}\n`
+            break
+        case "to_do":
+            lastField.value +=
+                `${block.to_do.checked ? "✅" : "🟩"} ${block.to_do.rich_text.map(this.richTextToString).join("")}\n`
+            break
+        case "toggle":
+            lastField.value += `${block.toggle.rich_text.map(this.richTextToString).join("")}\n`
+            break
+        case "equation":
+            lastField.value += `${inlineCode(block.equation.expression)}\n`
+            break
+        case "code":
+            lastField.value +=
+                `${codeBlock(block.code.rich_text.map(this.richTextToString).join(""), block.code.language)}\n`
+            break
+        case "callout": {
+            let icon
+            switch (block.callout.icon?.type) {
+            case "emoji":
+                icon = block.callout.icon.emoji
                 break
             default:
-                objects.push({
-                    file: {
-                        external: {
-                            url: result.url,
-                        },
-                    },
-                })
+                icon = "❗"
                 break
             }
+
+            lastField.value +=
+                `${codeBlock(`${icon} ${block.callout.rich_text.map(this.richTextToString).join("")}`)}\n`
+            break
+        }
+        case "embed": {
+            let caption = block.embed.caption.map(this.richTextToString).join("")
+            if (!caption) {
+                caption = "View embed"
+            }
+
+            lastField.value += `${hyperlink(caption, block.embed.url)}\n`
+            break
+        }
+        case "bookmark": {
+            let caption = block.bookmark.caption.map(this.richTextToString).join("")
+            if (!caption) {
+                caption = "View bookmark"
+            }
+
+            lastField.value += `${hyperlink(caption, block.bookmark.url)}\n`
+            break
+        }
+        case "image":
+            switch (block.image.type) {
+            case "external":
+                lastEmbed.setImage(block.image.external.url)
+                break
+            case "file":
+                lastEmbed.setImage(block.image.file.url)
+                break
+            }
+
+            break
+        case "video":
+            lastField.value += `${this.generateHyperlink(block.video, "View video")}\n`
+            break
+        case "pdf":
+            lastField.value += `${this.generateHyperlink(block.pdf, "View PDF")}\n`
+            break
+        case "file":
+            lastField.value += `${this.generateHyperlink(block.file, "View file")}\n`
+            break
+        case "audio":
+            lastField.value += `${this.generateHyperlink(block.audio, "View audio")}\n`
+            break
+        case "link_preview":
+            lastField.value += `${hyperlink("View link", block.link_preview.url)}\n`
+            break
+        case "divider":
+            lastField.value += "───\n"
+            break
+        case "unsupported":
+        case "template":
+        case "synced_block":
+        case "child_page":
+        case "child_database":
+        case "breadcrumb":
+        case "table_of_contents":
+        case "column_list":
+        case "column":
+        case "link_to_page":
+        case "table":
+        case "table_row":
+            result.unsupportedBlocks++
+            break
         }
 
-        return objects
+        return result
     }
 }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/warn-with-notion.iml" filepath="$PROJECT_DIR$/.idea/warn-with-notion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/lemonbot-warns.iml" filepath="$PROJECT_DIR$/.idea/lemonbot-warns.iml" />
     </modules>
   </component>
 </project>

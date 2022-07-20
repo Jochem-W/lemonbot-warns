@@ -1,17 +1,15 @@
-import HandlerWrapper from "./wrappers/handlerWrapper"
-import ReadyHandler from "./handlers/readyHandler"
-import NicknameChangeHandler from "./handlers/nicknameChangeHandler"
-import TagChangeHandler from "./handlers/tagChangeHandler"
-import CommandHandler from "./handlers/commandHandler"
-import InteractionHandler from "./handlers/interactionHandler"
+import {ClientEvents} from "discord.js"
+import {ReadyHandler} from "./handlers/readyHandler"
+import {InteractionHandler} from "./handlers/interactionHandler"
+import {Handler} from "./interfaces/handler"
+import {CommandHandler} from "./handlers/commandHandler"
+import {NicknameChangeHandler} from "./handlers/tagChangeHandler"
+import {TagChangeHandler} from "./handlers/nicknameChangeHandler"
 
-/**
- * @description The event handlers list which fires on each received event.
- */
-export const Handlers: HandlerWrapper[] = [
-    new ReadyHandler(),
-    new NicknameChangeHandler(),
-    new TagChangeHandler(),
+export const Handlers: Handler<keyof ClientEvents>[] = [
     new CommandHandler(),
     new InteractionHandler(),
+    new NicknameChangeHandler(),
+    new ReadyHandler(),
+    new TagChangeHandler(),
 ]

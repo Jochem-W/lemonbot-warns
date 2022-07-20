@@ -6,7 +6,7 @@ export type Penalty = {
     penalty: null | Duration | "ban" | "kick"
 }
 
-export default abstract class Config {
+export abstract class Config {
     // Icon that is used when someone is warned
     public static readonly warnIcon: string = "CHANGE_ME"
 
@@ -28,9 +28,6 @@ export default abstract class Config {
     // The category under which to create a channel to warn someone
     public static readonly warnCategory: Snowflake = "CHANGE_ME"
 
-    // The channel to send message reports to
-    public static readonly reportChannel: Snowflake = "CHANGE_ME"
-
     // The channel to send restart notifications to
     public static readonly restartChannel: Snowflake = "CHANGE_ME"
 
@@ -44,4 +41,7 @@ export default abstract class Config {
             penalty: null,
         },
     ]
+
+    // Discord Application ID
+    public static readonly discordApplicationId: Snowflake = "CHANGE_ME"
 }

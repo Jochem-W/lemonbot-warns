@@ -1,20 +1,15 @@
 import {Client, userMention} from "discord.js"
-import HandlerWrapper from "../wrappers/handlerWrapper"
 import {readFile, writeFile} from "fs/promises"
-import EmbedUtilities from "../utilities/embedUtilities"
-import Config from "../config"
+import {Config} from "../config"
+import {Handler} from "../interfaces/handler"
+import {ResponseBuilder} from "../utilities/responseBuilder"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
-/**
- * Handler for ready
- */
-export default class ReadyHandler extends HandlerWrapper {
-    constructor() {
-        super("ready")
-    }
+export class ReadyHandler implements Handler<"ready"> {
+    public readonly event = "ready"
 
-    async handle(client: Client) {
+    public async handle(client: Client<true>): Promise<void> {
         if (client.user) {
             console.log(`Running as: ${client.user.tag}`)
         } else {
@@ -41,7 +36,7 @@ export default class ReadyHandler extends HandlerWrapper {
 
         await channel.send({
             content: userMention(Config.restartUser),
-            embeds: [EmbedUtilities.makeEmbed(title)],
+            embeds: [ResponseBuilder.makeEmbed(title)],
         })
 
         await setState("UP")
@@ -53,7 +48,7 @@ export default class ReadyHandler extends HandlerWrapper {
     }
 }
 
-async function setState(status: State) {
+async function setState(status: State): Promise<void> {
     await writeFile("status", status, {encoding: "utf8"})
 }
 

@@ -1,28 +1,21 @@
-import {PartialUser, User} from "discord.js"
-import HandlerWrapper from "../wrappers/handlerWrapper"
-import DatabaseUtilities from "../utilities/databaseUtilities"
-import InteractionUtilities from "../utilities/interactionUtilities"
-import Config from "../config"
+import {GuildMember, PartialGuildMember} from "discord.js"
+import {NotionDatabase} from "../models/notionDatabase"
+import {NotionUtilities} from "../utilities/notionUtilities"
+import {Handler} from "../interfaces/handler"
 
-export default class TagChangeHandler extends HandlerWrapper {
-    constructor() {
-        super("userUpdate")
-    }
+export class NicknameChangeHandler implements Handler<"guildMemberUpdate"> {
+    public readonly event = "guildMemberUpdate"
 
-    async handle(oldUser: User | PartialUser, newUser: User) {
-        if (!oldUser.partial && oldUser.tag === newUser.tag) {
+    public async handle(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember): Promise<void> {
+        if (!oldMember.partial && oldMember.nickname === newMember.nickname) {
             return
         }
 
-        const guild = await newUser.client.guilds.fetch(Config.guildId)
-        const member = await guild.members.fetch(newUser)
-        const newName = InteractionUtilities.getName(member)
-        const entry = await DatabaseUtilities.getEntry(member)
-        if (!entry || entry.name === newName) {
-            return
+        const database = await NotionDatabase.getDefault()
+        try {
+            const entry = await database.update(newMember, {name: NotionUtilities.formatName(newMember)})
+            console.log(`Changed ${newMember.id}'s name to '${entry.name}' (partial: ${oldMember.partial})`)
+        } catch (e) {
         }
-
-        console.log(`Changing ${member.id}'s name to '${newName}' (partial: ${oldUser.partial})`)
-        await DatabaseUtilities.updateEntry(member, {name: newName})
     }
 }

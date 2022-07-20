@@ -1,51 +1,46 @@
 import {
     ApplicationCommandType,
     Client,
-    IntentsBitField,
+    GatewayIntentBits,
     Partials,
     RESTPutAPIApplicationGuildCommandsJSONBody,
     RESTPutAPIApplicationGuildCommandsResult,
     Routes,
 } from "discord.js"
-import {
-    ChatInputCommandConstructors,
-    Commands,
-    MessageContextMenuCommandConstructors,
-    UserContextMenuCommandConstructors,
-} from "./commands"
-import {Variables} from "./variables"
-import {Handlers} from "./handlers"
+import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserContextMenuCommands} from "./commands"
 import {REST} from "@discordjs/rest"
-import Config from "./config"
-import DatabaseUtilities from "./utilities/databaseUtilities"
+import {Handlers} from "./handlers"
+import {Variables} from "./variables"
+import {Config} from "./config"
+import {NotionDatabase} from "./models/notionDatabase"
 
 const client = new Client({
-    intents: [IntentsBitField.Flags.GuildMembers],
+    intents: [GatewayIntentBits.GuildMembers],
     partials: [Partials.User, Partials.GuildMember],
 })
 
 const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
-ChatInputCommandConstructors.forEach(cw => {
-    commandsBody.push(cw.build())
-    console.log(`Constructed command '${cw.name}'`)
+SlashCommands.forEach(cw => {
+    commandsBody.push(cw.toJSON())
+    console.log(`Constructed command '${cw.builder.name}'`)
 })
 
-MessageContextMenuCommandConstructors.forEach(cw => {
-    commandsBody.push(cw.build())
-    console.log(`Constructed command '${cw.name}'`)
+MessageContextMenuCommands.forEach(cw => {
+    commandsBody.push(cw.toJSON())
+    console.log(`Constructed command '${cw.builder.name}'`)
 })
 
-UserContextMenuCommandConstructors.forEach(cw => {
-    commandsBody.push(cw.build())
-    console.log(`Constructed command '${cw.name}'`)
+UserContextMenuCommands.forEach(cw => {
+    commandsBody.push(cw.toJSON())
+    console.log(`Constructed command '${cw.builder.name}'`)
 })
 
 const rest = new REST({version: "10"}).setToken(Variables.discordToken);
 
 (async () => {
-    await DatabaseUtilities.checkPenalties()
-    await DatabaseUtilities.initialiseCache()
-    const applicationCommands = await rest.put(Routes.applicationGuildCommands(Variables.discordApplicationId,
+    await NotionDatabase.getDefault()
+
+    const applicationCommands = await rest.put(Routes.applicationGuildCommands(Config.discordApplicationId,
         Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
 
@@ -53,46 +48,45 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
     for (const applicationCommand of applicationCommands) {
         switch (applicationCommand.type) {
         case ApplicationCommandType.ChatInput: {
-            const wrapper = ChatInputCommandConstructors.find(cw => cw.name === applicationCommand.name)
+            const wrapper = SlashCommands.find(command => command.builder.name === applicationCommand.name)
             if (!wrapper) {
                 throw new Error(`Command '${applicationCommand.name}' not found`)
             }
 
-            Commands.set(applicationCommand.id, wrapper)
+            RegisteredCommands.set(applicationCommand.id, wrapper)
             break
         }
         case ApplicationCommandType.User:
-            const wrapper = UserContextMenuCommandConstructors.find(cw => cw.name === applicationCommand.name)
-            if (!wrapper) {
+            const command = UserContextMenuCommands.find(
+                command => command.builder.name === applicationCommand.name)
+            if (!command) {
                 throw new Error(`Command '${applicationCommand.name}' not found`)
             }
 
-            Commands.set(applicationCommand.id, wrapper)
+            RegisteredCommands.set(applicationCommand.id, command)
             break
         case ApplicationCommandType.Message: {
-            const wrapper = MessageContextMenuCommandConstructors.find(cw => cw.name === applicationCommand.name)
+            const wrapper = MessageContextMenuCommands.find(
+                command => command.builder.name === applicationCommand.name)
             if (!wrapper) {
                 throw new Error(`Command '${applicationCommand.name}' not found`)
             }
 
-            Commands.set(applicationCommand.id, wrapper)
+            RegisteredCommands.set(applicationCommand.id, wrapper)
             break
         }
-        default:
-            throw new Error(`Unknown command type '${applicationCommand.type}'`)
         }
     }
 
-    Handlers.forEach(h => {
-        client.on(h.eventName, async (...args) => {
+    for (const handler of Handlers) {
+        client.on(handler.event, async (...args) => {
             try {
-                await h.handle(...args)
+                await handler.handle(...args)
             } catch (e) {
-                console.error("Unhandled error", e, "while handling an event using", h)
+                console.error("Unhandled exception", e)
             }
         })
-        console.log(`Registered '${h.constructor.name}' handler for '${h.eventName}'`)
-    })
+    }
 
     await client.login(Variables.discordToken)
 })()

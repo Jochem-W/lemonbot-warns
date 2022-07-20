@@ -1,42 +1,40 @@
-import SlashCommandConstructor from "../models/slashCommandConstructor"
-import ExecutableCommand from "../models/executableCommand"
-import {ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
-import EmbedUtilities from "../utilities/embedUtilities"
+import {ChatInputCommand} from "../models/chatInputCommand"
+import {ChatInputCommandInteraction, PermissionFlagsBits, WebhookEditMessageOptions} from "discord.js"
 import {DateTime, Duration} from "luxon"
+import {ResponseBuilder} from "../utilities/responseBuilder"
 
-export default class StatusCommand extends SlashCommandConstructor<ChatInputCommandInteraction> {
-    constructor() {
-        super(ExecutableStatusCommand, "status", "Display ping and uptime", PermissionFlagsBits.ModerateMembers)
-    }
+type ResponseOptions = {
+    ping: number
 }
 
-class ExecutableStatusCommand extends ExecutableCommand<ChatInputCommandInteraction> {
-    constructor(interaction: ChatInputCommandInteraction) {
-        super(interaction)
+export class StatusCommand extends ChatInputCommand {
+    public constructor() {
+        super("status", "Display ping and uptime", PermissionFlagsBits.ModerateMembers)
     }
 
-    async cleanup() {
-    }
-
-    async execute() {
+    public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
         const since = DateTime.now().minus(Duration.fromDurationLike({seconds: process.uptime()})).toUnixInteger()
         const uptime = Duration.fromMillis(process.uptime() * 1000)
             .shiftTo("days", "hours", "minutes", "seconds")
             .normalize()
 
-        const embed = EmbedUtilities.makeEmbed("Status")
-            .addFields([{
-                name: "Ping",
-                value: `${this.interaction.client.ws.ping}ms`,
-            }, {
-                name: "Uptime",
-                value: `Up since <t:${since}>\nUp for \`${uptime.toHuman({
-                    listStyle: "long",
-                    notation: "compact",
-                    unitDisplay: "short",
-                })}\``,
-            }])
+        return {
+            embeds: [ResponseBuilder.makeEmbed("Status")
+                .addFields([{
+                    name: "Ping",
+                    value: `${options.ping}ms`,
+                }, {
+                    name: "Uptime",
+                    value: `Up since <t:${since}>\nUp for \`${uptime.toHuman({
+                        listStyle: "long",
+                        notation: "compact",
+                        unitDisplay: "short",
+                    })}\``,
+                }])],
+        }
+    }
 
-        await this.interaction.editReply({embeds: [embed]})
+    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+        await interaction.editReply(StatusCommand.buildResponse({ping: interaction.client.ws.ping}))
     }
 }

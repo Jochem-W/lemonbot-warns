@@ -1,34 +1,36 @@
-export function customId(data: CustomId) {
-    return `${data.scope}:${data.primary}:${data.secondary}:${data.tertiary.join(":")}`
-}
-
-export function parseCustomId(customId: string): CustomId {
-    const [scope, primary, secondary, ...tertiary] = customId.split(":")
-    if (scope == undefined || primary == undefined || secondary == undefined) {
-        throw new Error(`Invalid customId: ${customId}`)
-    }
-
-    return {
-        scope: scope as InteractionScope,
-        primary,
-        secondary,
-        tertiary,
-    }
-}
-
-export type CustomId = {
-    scope: InteractionScope
-    primary: string
-    secondary: string
-    tertiary: string[]
-}
-
-type InteractionScope = "g" | "l" | "c";
+type InteractionScope = "i" | "c"
 export const InteractionScope = {
-    get Local(): InteractionScope {
-        return "l"
+    get Instance(): InteractionScope {
+        return "i"
     },
     get Collector(): InteractionScope {
         return "c"
     },
+}
+
+export class CustomId {
+    public scope: InteractionScope
+    public primary: string
+    public secondary: string
+    public tertiary: string[]
+
+    public constructor(scope: InteractionScope, primary: string, secondary: string, tertiary: string[]) {
+        this.scope = scope as InteractionScope
+        this.primary = primary
+        this.secondary = secondary
+        this.tertiary = tertiary
+    }
+
+    public static fromString(data: string): CustomId {
+        const [scope, primary, secondary, ...tertiary] = data.split(":")
+        if (scope == undefined || primary == undefined || secondary == undefined) {
+            throw new Error(`Invalid customId: ${data}`)
+        }
+
+        return new CustomId(scope as InteractionScope, primary, secondary, tertiary)
+    }
+
+    public toString(): string {
+        return `${this.scope}:${this.primary}:${this.secondary}:${this.tertiary.join(":")}`
+    }
 }
