@@ -15,6 +15,7 @@ import {
     inlineCode,
     italic,
     MessageActionRowComponentBuilder,
+    MessageComponentInteraction,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
     TextChannel,
@@ -399,5 +400,34 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         await interaction.editReply(WarnCommand.buildResponse(options))
+    }
+
+    public async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {
+        if (data.secondary !== "dismiss") {
+            return
+        }
+
+        const [channelId, userId] = data.tertiary
+        if (!channelId || !userId) {
+            throw new Error(`${interaction.customId} is invalid`)
+        }
+
+        if (interaction.user.id !== userId) {
+            await interaction.reply({
+                embeds: [ResponseBuilder.makeEmbed("Something went wrong while handling this interaction",
+                    Config.failIcon,
+                    "You can't use this component!")],
+                ephemeral: true,
+            })
+            return
+        }
+
+        const channel = await interaction.client.channels.fetch(channelId)
+        if (!channel) {
+            throw new Error(`Channel ${channelId} not found`)
+        }
+
+        await channel.delete()
+        await interaction.deferUpdate()
     }
 }
