@@ -1,4 +1,4 @@
-import {BlockObjectRequest, BlockObjectResponse, FileBlockResponse, RichTextItemResponse} from "../types/notion"
+import {BlockObjectResponse, RichTextItemResponse} from "@notionhq/client/build/src/api-endpoints"
 import {
     bold,
     codeBlock,
@@ -14,6 +14,7 @@ import {
 } from "discord.js"
 import {DateTime} from "luxon"
 import {ResponseOptions, WarnCommand} from "../commands/warnCommand"
+import {BlockObjectRequest, FileBlockObjectFileResponse} from "../types/notion"
 
 export type ParseBlockObjectsResult = {
     embeds: EmbedBuilder[]
@@ -81,7 +82,7 @@ export class NotionUtilities {
         return result
     }
 
-    public static generateHyperlink(file: FileBlockResponse, defaultCaption: string): string {
+    public static generateHyperlink(file: FileBlockObjectFileResponse, defaultCaption: string): string {
         let caption = file.caption.map(this.richTextToString).join("")
         if (!caption) {
             caption = defaultCaption

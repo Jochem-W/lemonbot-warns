@@ -1,23 +1,17 @@
 import {Notion} from "../clients"
 import {DateTime} from "luxon"
-import {
-    BlockObjectRequest,
-    BlockObjectResponse,
-    PagePropertyItemResponse,
-    SelectPropertyRequest,
-    SelectPropertyResponse,
-} from "../types/notion"
-import {
-    GetPagePropertyParameters,
-    ListBlockChildrenParameters,
-    QueryDatabaseParameters,
-    UpdatePageParameters,
-} from "@notionhq/client/build/src/api-endpoints"
+import {BlockObjectRequest, BlockObjectResponse, SelectPropertyRequest, SelectPropertyResponse} from "../types/notion"
 import {Variables} from "../variables"
 import LRUCache from "lru-cache"
 import {Config} from "./config"
+import {
+    GetPagePropertyParameters,
+    PropertyItemObjectResponse,
+    UpdatePageParameters,
+} from "@notionhq/client/build/src/api-endpoints"
+import {isFullBlock, isFullPage, iteratePaginatedAPI} from "@notionhq/client"
 
-async function getActualPageProperty(parameters: GetPagePropertyParameters): Promise<PagePropertyItemResponse> {
+async function getActualPageProperty(parameters: GetPagePropertyParameters): Promise<PropertyItemObjectResponse> {
     const response = await Notion.pages.properties.retrieve(parameters)
     if (response.type === "property_item") {
         if (response.results.length === 0 || response.results.length > 1) {
@@ -101,52 +95,51 @@ export class NotionDatabase {
 
     public static async fromPage(id: string): Promise<NotionDatabase> {
         const page = await Notion.pages.retrieve({page_id: id})
-        if (!("url" in page)) {
-            throw new Error("Page does not have a url")
+        if (!isFullPage(page)) {
+            throw new Error(`Page ${page} is not a full page`)
         }
 
-        const parameters: ListBlockChildrenParameters = {block_id: id}
-        do {
-            const response = await Notion.blocks.children.list(parameters)
-            for (let child of response.results) {
-                if (!("type" in child) || child.type !== "child_database") {
-                    continue
-                }
-
-                const database = await Notion.databases.retrieve({database_id: child.id})
-                const idProperty = database.properties["ID"]
-                const lastEditedTimeProperty = database.properties["Last edited time"]
-                const penaltyLevelProperty = database.properties["Penalty Level"]
-                const watchlistProperty = database.properties["Watchlist"]
-                const lastEditedByProperty = database.properties["Last edited by"]
-                const reasonsProperty = database.properties["Reasons"]
-                const nameProperty = database.properties["Name [Server Nickname]"]
-                if (!idProperty || !lastEditedTimeProperty || !penaltyLevelProperty || !watchlistProperty ||
-                    !lastEditedByProperty || !reasonsProperty || !nameProperty) {
-                    continue
-                }
-
-                if (idProperty.type !== "rich_text" || lastEditedTimeProperty.type !== "last_edited_time" ||
-                    penaltyLevelProperty.type !== "select" || watchlistProperty.type !== "checkbox" ||
-                    lastEditedByProperty.type !== "last_edited_by" || reasonsProperty.type !== "multi_select" ||
-                    nameProperty.type !== "title") {
-                    throw new Error("Invalid database properties")
-                }
-
-                const notionDatabase = new NotionDatabase(database.id,
-                    idProperty.id,
-                    lastEditedTimeProperty.id,
-                    penaltyLevelProperty.id,
-                    watchlistProperty.id,
-                    lastEditedByProperty.id,
-                    reasonsProperty.id,
-                    nameProperty.id,
-                    page.url)
-                await notionDatabase.cache.fetch("reasons")
-                return notionDatabase
+        for await (const child of iteratePaginatedAPI(Notion.blocks.children.list, {block_id: id})) {
+            if (!isFullBlock(child)) {
+                throw new Error(`Block ${child} is not a full block`)
             }
-            parameters.start_cursor = response.next_cursor ?? undefined
-        } while (parameters.start_cursor)
+
+            if (child.type !== "child_database") {
+                continue
+            }
+
+            const database = await Notion.databases.retrieve({database_id: child.id})
+            const idProperty = database.properties["ID"]
+            const lastEditedTimeProperty = database.properties["Last edited time"]
+            const penaltyLevelProperty = database.properties["Penalty Level"]
+            const watchlistProperty = database.properties["Watchlist"]
+            const lastEditedByProperty = database.properties["Last edited by"]
+            const reasonsProperty = database.properties["Reasons"]
+            const nameProperty = database.properties["Name [Server Nickname]"]
+            if (!idProperty || !lastEditedTimeProperty || !penaltyLevelProperty || !watchlistProperty ||
+                !lastEditedByProperty || !reasonsProperty || !nameProperty) {
+                continue
+            }
+
+            if (idProperty.type !== "rich_text" || lastEditedTimeProperty.type !== "last_edited_time" ||
+                penaltyLevelProperty.type !== "select" || watchlistProperty.type !== "checkbox" ||
+                lastEditedByProperty.type !== "last_edited_by" || reasonsProperty.type !== "multi_select" ||
+                nameProperty.type !== "title") {
+                throw new Error("Invalid database properties")
+            }
+
+            const notionDatabase = new NotionDatabase(database.id,
+                idProperty.id,
+                lastEditedTimeProperty.id,
+                penaltyLevelProperty.id,
+                watchlistProperty.id,
+                lastEditedByProperty.id,
+                reasonsProperty.id,
+                nameProperty.id,
+                page.url)
+            await notionDatabase.cache.fetch("reasons")
+            return notionDatabase
+        }
 
         throw new Error("No database found")
     }
@@ -165,7 +158,7 @@ export class NotionDatabase {
     }
 
     public async* getMany(): AsyncGenerator<NotionDatabaseEntry> {
-        const parameters: QueryDatabaseParameters = {
+        for await (const result of iteratePaginatedAPI(Notion.databases.query, {
             database_id: this.databaseId,
             sorts: [
                 {
@@ -181,15 +174,9 @@ export class NotionDatabase {
                     direction: "ascending",
                 },
             ],
+        })) {
+            yield await this.getByPageId(result.id, isFullPage(result) ? result.url : undefined)
         }
-        do {
-            const response = await Notion.databases.query(parameters)
-            for (const result of response.results) {
-                yield await this.getByPageId(result.id, "url" in result ? result.url : undefined)
-            }
-
-            parameters.start_cursor = response.next_cursor ?? undefined
-        } while (parameters.start_cursor)
     }
 
     public async getByDiscordId(id: string): Promise<NotionDatabaseEntry | null> {
@@ -212,7 +199,7 @@ export class NotionDatabase {
             return null
         }
 
-        return await this.getByPageId(result.id, "url" in result ? result.url : undefined)
+        return await this.getByPageId(result.id, isFullPage(result) ? result.url : undefined)
     }
 
     public async create(id: string, data: Required<NotionDatabaseEntryEdit>): Promise<NotionDatabaseEntry> {
@@ -228,7 +215,7 @@ export class NotionDatabase {
             properties: this.getProperties(data, id),
         })
 
-        return await this.getByPageId(response.id)
+        return await this.getByPageId(response.id, isFullPage(response) ? response.url : undefined)
     }
 
     public async update(target: { pageId: string } | { id: string } | NotionDatabaseEntry,
@@ -243,7 +230,7 @@ export class NotionDatabase {
             properties: this.getProperties(data),
         })
 
-        return await this.getByPageId(response.id)
+        return await this.getByPageId(response.id, isFullPage(response) ? response.url : undefined)
     }
 
     public async appendBlocks(target: { pageId: string } | { id: string },
@@ -273,19 +260,13 @@ export class NotionDatabase {
             target = {pageId: fullEntry.pageId}
         }
 
-        const parameters: ListBlockChildrenParameters = {block_id: target.pageId}
-        do {
-            const response = await Notion.blocks.children.list(parameters)
-            for (const child of response.results) {
-                if (!("type" in child)) {
-                    throw new Error(`No type found for block ${child.id}`)
-                }
-
-                yield child
+        for await (const child of iteratePaginatedAPI(Notion.blocks.children.list, {block_id: target.pageId})) {
+            if (!isFullBlock(child)) {
+                throw new Error(`Block ${child} is not a full block`)
             }
 
-            parameters.start_cursor = response.next_cursor ?? undefined
-        } while (parameters.start_cursor)
+            yield child
+        }
     }
 
     private getProperties(data: NotionDatabaseEntryEdit, id?: string): NonNullable<UpdatePageParameters["properties"]> {
@@ -316,8 +297,8 @@ export class NotionDatabase {
     private async getByPageId(pageId: string, pageUrl?: string): Promise<NotionDatabaseEntry> {
         if (!pageUrl) {
             const response = await Notion.pages.retrieve({page_id: pageId})
-            if (!("url" in response)) {
-                throw new Error("URL not found for page")
+            if (!isFullPage(response)) {
+                throw new Error(`Page ${pageId} is not a full page`)
             }
 
             pageUrl = response.url
