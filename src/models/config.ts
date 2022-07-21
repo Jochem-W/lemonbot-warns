@@ -114,7 +114,11 @@ export abstract class Config {
             if ("timeout" in penalty) {
                 return {
                     name: penalty.name,
-                    penalty: Duration.fromMillis(penalty.timeout),
+                    penalty: Duration.fromObject(Object.fromEntries(Object.entries(Duration.fromMillis(penalty.timeout)
+                        .shiftTo("weeks", "days", "hours", "minutes", "seconds", "milliseconds")
+                        .normalize()
+                        .toObject())
+                        .filter(([, value]) => value !== 0))),
                 }
             }
 
