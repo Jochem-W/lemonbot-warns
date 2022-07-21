@@ -20,6 +20,6 @@ The bot uses Docker to ensure a consistent build and runtime environment.
 
 ## License
 
-Source code contained in this repository is licensed under the GNU Affero General Public License version 3. If run a
-modified version of this code on a server, the modified source code must be accessible to its users. For more
-information, see the LICENSE file.
+Source code contained in this repository is licensed under the GNU Affero General Public License version 3. If you run a
+modified version of this software on a server, the modified source code must be accessible to users of the software. For
+more information, see the LICENSE file.
