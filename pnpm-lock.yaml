@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@discordjs/rest': ^1.0.0
-  '@notionhq/client': ^2.0.0
+  '@notionhq/client': ^2.1.0
   '@tsconfig/node18': ^1.0.1
   '@types/luxon': ^3.0.0
   '@types/nanoid-dictionary': ^4.2.0
@@ -23,7 +23,7 @@ specifiers:
 
 dependencies:
   '@discordjs/rest': 1.0.0
-  '@notionhq/client': 2.0.0
+  '@notionhq/client': 2.1.0
   discord.js: 14.0.3_22kvxa7zeyivx4jp72v2w3pkvy
   firebase-admin: 11.0.0_@firebase+app-types@0.7.0
   lru-cache: 7.13.1
@@ -53,7 +53,7 @@ packages:
     engines: { node: '>=16.9.0' }
     dependencies:
       '@sapphire/shapeshift': 3.5.1
-      discord-api-types: 0.36.2
+      discord-api-types: 0.36.3
       fast-deep-equal: 3.1.3
       ts-mixer: 6.0.1
       tslib: 2.4.0
@@ -71,7 +71,7 @@ packages:
       '@discordjs/collection': 1.0.0
       '@sapphire/async-queue': 1.3.2
       '@sapphire/snowflake': 3.2.2
-      discord-api-types: 0.36.2
+      discord-api-types: 0.36.3
       file-type: 17.1.2
       tslib: 2.4.0
       undici: 5.8.0
@@ -239,8 +239,8 @@ packages:
     dev: false
     optional: true
 
-  /@notionhq/client/2.0.0:
-    resolution: { integrity: sha512-S3pNOoeKxdpog3jSTzFtJ7OivB/ubxn1MK9a5T7/eYtsdulyL0eqAt/btY0S9QEPCKVNKjnZbYMdV+E4x8eItA== }
+  /@notionhq/client/2.1.0:
+    resolution: { integrity: sha512-EQx0n8aVoAwfQdHoqq1VyL82G4+TZwR3WCBNZhm5Qke+yMFK15g/jDX/Y67f6rOmWAOphCJcm4SFx0TkWVHwGg== }
     engines: { node: '>=12' }
     dependencies:
       '@types/node-fetch': 2.6.2
@@ -559,8 +559,8 @@ packages:
     engines: { node: '>=0.4.0' }
     dev: false
 
-  /discord-api-types/0.36.2:
-    resolution: { integrity: sha512-TunPAvzwneK/m5fr4hxH3bMsrtI22nr9yjfHyo5NBGMjpsAauGNiGCmwoFf0oO3jSd2mZiKUvZwCKDaB166u2Q== }
+  /discord-api-types/0.36.3:
+    resolution: { integrity: sha512-bz/NDyG0KBo/tY14vSkrwQ/n3HKPf87a0WFW/1M9+tXYK+vp5Z5EksawfCWo2zkAc6o7CClc0eff1Pjrqznlwg== }
     dev: false
 
   /discord.js/14.0.3_22kvxa7zeyivx4jp72v2w3pkvy:
@@ -572,7 +572,7 @@ packages:
       '@discordjs/rest': 1.0.0
       '@sapphire/snowflake': 3.2.2
       '@types/ws': 8.5.3
-      discord-api-types: 0.36.2
+      discord-api-types: 0.36.3
       fast-deep-equal: 3.1.3
       lodash.snakecase: 4.1.1
       tslib: 2.4.0
