@@ -25,7 +25,7 @@ export class ReadyHandler implements Handler<"ready"> {
             title += "restarted"
             break
         case "RECREATE":
-            title += "updated"
+            title += "redeployed"
             break
         }
 
