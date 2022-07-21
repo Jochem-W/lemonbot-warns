@@ -113,10 +113,10 @@ export class WarnCommand extends ChatInputCommand {
 
         switch (options.penalised) {
         case "applied":
-            if (options.penalty.penalty instanceof Duration) {
+            if (options.penalty.value instanceof Duration) {
                 administrationText +=
-                    `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.penalty.toHuman()})`)}`
-            } else if (options.penalty.penalty === "ban") {
+                    `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.value.toHuman()})`)}`
+            } else if (options.penalty.value === "ban") {
                 administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
             } else {
                 administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
@@ -202,10 +202,10 @@ export class WarnCommand extends ChatInputCommand {
     public static getPenaltyVerb(penalty: Penalty, includePreposition = false, lowercase = false): string {
         let verb = ""
         let preposition = "in"
-        if (penalty.penalty instanceof Duration) {
+        if (penalty.value instanceof Duration) {
             verb = "Timed out"
         } else {
-            switch (penalty.penalty) {
+            switch (penalty.value) {
             case "ban":
                 verb = "Banned"
                 preposition = "from"
@@ -366,28 +366,28 @@ export class WarnCommand extends ChatInputCommand {
         const reason = `${WarnCommand.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`
         if (options.notified !== false && options.notified !== undefined) {
             try {
-                if (penalty.penalty === "ban") {
+                if (penalty.value === "ban") {
                     if (options.targetMember) {
                         await options.targetMember.ban({reason: reason})
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.penalty instanceof Duration) {
+                } else if (penalty.value instanceof Duration) {
                     if (options.targetMember) {
-                        await options.targetMember.timeout(penalty.penalty.toMillis(), reason)
+                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.penalty === "kick") {
+                } else if (penalty.value === "kick") {
                     if (options.targetMember) {
                         await options.targetMember.kick(reason)
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.penalty === null) {
+                } else if (penalty.value === null) {
                     options.penalised = "applied"
                 }
             } catch (e) {

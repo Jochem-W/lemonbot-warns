@@ -4,7 +4,7 @@ import {readFileSync} from "fs"
 
 export type Penalty = {
     name: string
-    penalty: null | Duration | "ban" | "kick"
+    value: null | Duration | "ban" | "kick"
 }
 
 type ConfigData = {
@@ -114,7 +114,7 @@ export abstract class Config {
             if ("timeout" in penalty) {
                 return {
                     name: penalty.name,
-                    penalty: Duration.fromObject(Object.fromEntries(Object.entries(Duration.fromMillis(penalty.timeout)
+                    value: Duration.fromObject(Object.fromEntries(Object.entries(Duration.fromMillis(penalty.timeout)
                         .shiftTo("weeks", "days", "hours", "minutes", "seconds", "milliseconds")
                         .normalize()
                         .toObject())
@@ -125,20 +125,20 @@ export abstract class Config {
             if ("ban" in penalty) {
                 return {
                     name: penalty.name,
-                    penalty: "ban",
+                    value: "ban",
                 }
             }
 
             if ("kick" in penalty) {
                 return {
                     name: penalty.name,
-                    penalty: "kick",
+                    value: "kick",
                 }
             }
 
             return {
                 name: penalty.name,
-                penalty: null,
+                value: null,
             }
         })
         Config._discordApplicationId = data.discordApplicationId
