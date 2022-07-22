@@ -3,7 +3,7 @@ import {CustomId, InteractionScope} from "../models/customId"
 import {RegisteredCommands} from "../commands"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
-import {CommandNotFoundByNameError, NoMessageComponentHandlerError} from "../errors"
+import {CommandNotFoundByIdError, CommandNotFoundByNameError, NoMessageComponentHandlerError} from "../errors"
 
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
@@ -35,7 +35,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
 
         const command = RegisteredCommands.get(data.primary)
         if (!command) {
-            throw new CommandNotFoundByNameError(data.primary)
+            throw new CommandNotFoundByIdError(data.primary)
         }
 
         if (!command.handleModalSubmit) {
