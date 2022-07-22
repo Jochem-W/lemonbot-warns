@@ -19,6 +19,7 @@ type ConfigData = {
     restartUser: string
     penalties: ({ name: string } & ({ timeout: number } | { ban: true } | { kick: true } | { noPenalty: true }))[]
     discordApplicationId: string
+    warnLogsChannel: string
 }
 
 export abstract class Config {
@@ -99,6 +100,13 @@ export abstract class Config {
         return Config._discordApplicationId
     }
 
+    private static _warnLogsChannel: Snowflake
+
+    // Warn logs channel
+    public static get warnLogsChannel(): Snowflake {
+        return Config._warnLogsChannel
+    }
+
     public static load() {
         const data: ConfigData = JSON.parse(readFileSync("config.json", "utf-8"))
         Config._warnIcon = new URL(data.warnIcon)
@@ -142,6 +150,7 @@ export abstract class Config {
             }
         })
         Config._discordApplicationId = data.discordApplicationId
+        Config._warnLogsChannel = data.warnLogsChannel
     }
 }
 

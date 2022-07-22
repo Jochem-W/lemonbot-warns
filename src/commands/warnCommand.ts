@@ -41,6 +41,7 @@ import {
     ChannelNotFoundError,
     GuildOnlyError,
     ImageOnlyError,
+    InvalidChannelTypeError,
     InvalidCustomIdError,
     InvalidPenaltyError,
     NoAutocompleteHandlerError,
@@ -258,6 +259,15 @@ export class WarnCommand extends ChatInputCommand {
             throw new GuildOnlyError()
         }
 
+        const warnLogsChannel = await guild.channels.fetch(Config.warnLogsChannel)
+        if (!warnLogsChannel) {
+            throw new ChannelNotFoundError(Config.warnLogsChannel)
+        }
+
+        if (!warnLogsChannel.isTextBased() || warnLogsChannel.type !== ChannelType.GuildText) {
+            throw new InvalidChannelTypeError(warnLogsChannel, ChannelType.GuildText)
+        }
+
         const penaltyName = interaction.options.getString("penalty", true)
         const penalty = Config.penalties.find(p => p.name === penaltyName)
         if (!penalty) {
@@ -409,7 +419,11 @@ export class WarnCommand extends ChatInputCommand {
             options.penalised = "not_notified"
         }
 
-        await interaction.editReply(WarnCommand.buildResponse(options))
+        const response = WarnCommand.buildResponse(options)
+        await interaction.editReply(response)
+        if (interaction.channelId !== warnLogsChannel.id) {
+            await warnLogsChannel.send(response)
+        }
     }
 
     public async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {

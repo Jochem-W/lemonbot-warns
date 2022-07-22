@@ -118,6 +118,11 @@
       "description": "The Discord application ID",
       "type": "string",
       "pattern": "^\\d+$"
+    },
+    "warnLogsChannel": {
+      "description": "The channel to send warning logs in",
+      "type": "string",
+      "pattern": "^\\d+$"
     }
   },
   "required": [
@@ -131,6 +136,7 @@
     "restartChannel",
     "restartUser",
     "penalties",
-    "discordApplicationId"
+    "discordApplicationId",
+    "warnLogsChannel"
   ]
 }
