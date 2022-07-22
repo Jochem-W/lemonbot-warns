@@ -55,10 +55,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                 }
 
                 console.error(e)
-                await interaction.reply({
-                    ephemeral: interaction.ephemeral ?? undefined,
-                    embeds: [ResponseBuilder.makeErrorEmbed(e)],
-                })
+                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 
             return
@@ -73,10 +70,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                 }
 
                 console.error(e)
-                await interaction.reply({
-                    ephemeral: interaction.ephemeral ?? undefined,
-                    embeds: [ResponseBuilder.makeErrorEmbed(e)],
-                })
+                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 
             return
