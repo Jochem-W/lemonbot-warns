@@ -26,6 +26,11 @@ export abstract class ResponseBuilder {
             .setTimestamp(DateTime.now().toMillis())
     }
 
+    public static makeErrorEmbed(error: Error): EmbedBuilder {
+        return ResponseBuilder.makeEmbed("An error has occurred", Config.failIcon, error.message)
+            .setColor("#ff0000")
+    }
+
     public static append(embed: EmbedBuilder, content: string, separator = "\n\n"): EmbedBuilder {
         const last = embed.data.fields?.at(embed.data.fields.length - 1)
         if (!last) {

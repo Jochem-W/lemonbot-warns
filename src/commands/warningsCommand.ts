@@ -29,7 +29,7 @@ export class WarningsCommand extends ChatInputCommand {
             new URL(options.user.displayAvatarURL({size: 4096})))
 
         const database = await NotionDatabase.getDefault()
-        const entry = await database.getByDiscordId(options.user.id)
+        const entry = await database.get({id: options.user.id})
         if (!entry) {
             embed.setTitle("This user isn't in the database")
             return {embeds: [embed]}

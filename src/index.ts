@@ -13,6 +13,7 @@ import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Config} from "./models/config"
 import {NotionDatabase} from "./models/notionDatabase"
+import {CommandNotFoundByNameError} from "./errors"
 
 const client = new Client({
     intents: [GatewayIntentBits.GuildMembers],
@@ -50,7 +51,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
         case ApplicationCommandType.ChatInput: {
             const wrapper = SlashCommands.find(command => command.builder.name === applicationCommand.name)
             if (!wrapper) {
-                throw new Error(`Command '${applicationCommand.name}' not found`)
+                throw new CommandNotFoundByNameError(applicationCommand.name)
             }
 
             RegisteredCommands.set(applicationCommand.id, wrapper)
@@ -60,7 +61,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
             const command = UserContextMenuCommands.find(
                 command => command.builder.name === applicationCommand.name)
             if (!command) {
-                throw new Error(`Command '${applicationCommand.name}' not found`)
+                throw new CommandNotFoundByNameError(applicationCommand.name)
             }
 
             RegisteredCommands.set(applicationCommand.id, command)
@@ -69,7 +70,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
             const wrapper = MessageContextMenuCommands.find(
                 command => command.builder.name === applicationCommand.name)
             if (!wrapper) {
-                throw new Error(`Command '${applicationCommand.name}' not found`)
+                throw new CommandNotFoundByNameError(applicationCommand.name)
             }
 
             RegisteredCommands.set(applicationCommand.id, wrapper)
@@ -83,7 +84,7 @@ const rest = new REST({version: "10"}).setToken(Variables.discordToken);
             try {
                 await handler.handle(...args)
             } catch (e) {
-                console.error("Unhandled exception", e)
+                console.error(e)
             }
         })
     }

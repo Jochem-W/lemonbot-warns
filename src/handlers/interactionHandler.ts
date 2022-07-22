@@ -2,6 +2,8 @@ import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "
 import {CustomId, InteractionScope} from "../models/customId"
 import {RegisteredCommands} from "../commands"
 import {Handler} from "../interfaces/handler"
+import {ResponseBuilder} from "../utilities/responseBuilder"
+import {CommandNotFoundByNameError, NoMessageComponentHandlerError} from "../errors"
 
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
@@ -15,11 +17,11 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
 
         const command = RegisteredCommands.get(data.primary)
         if (!command) {
-            throw new Error(`Command ${data.primary} not found`)
+            throw new CommandNotFoundByNameError(data.primary)
         }
 
         if (!command.handleMessageComponent) {
-            throw new Error(`Command ${command} does not support static message component interactions`)
+            throw new NoMessageComponentHandlerError(command)
         }
 
         await command.handleMessageComponent(interaction, data)
@@ -33,29 +35,51 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
 
         const command = RegisteredCommands.get(data.primary)
         if (!command) {
-            throw new Error(`Command ${data.primary} not found`)
+            throw new CommandNotFoundByNameError(data.primary)
         }
 
         if (!command.handleModalSubmit) {
-            throw new Error(`Command ${command} does not support static message component interactions`)
+            throw new NoMessageComponentHandlerError(command)
         }
 
         await command.handleModalSubmit(interaction, data)
     }
 
     public async handle(interaction: Interaction): Promise<void> {
-        try {
-            if (interaction instanceof MessageComponentInteraction) {
+        if (interaction instanceof MessageComponentInteraction) {
+            try {
                 await InteractionHandler.handleMessageComponent(interaction)
-                return
+            } catch (e) {
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                console.error(e)
+                await interaction.reply({
+                    ephemeral: interaction.ephemeral ?? undefined,
+                    embeds: [ResponseBuilder.makeErrorEmbed(e)],
+                })
             }
 
-            if (interaction instanceof ModalSubmitInteraction) {
+            return
+        }
+
+        if (interaction instanceof ModalSubmitInteraction) {
+            try {
                 await InteractionHandler.handleModalSubmit(interaction)
-                return
+            } catch (e) {
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                console.error(e)
+                await interaction.reply({
+                    ephemeral: interaction.ephemeral ?? undefined,
+                    embeds: [ResponseBuilder.makeErrorEmbed(e)],
+                })
             }
-        } catch (e) {
-            console.error("Encountered an unhandled error", e, "while handling interaction", interaction)
+
+            return
         }
     }
 }

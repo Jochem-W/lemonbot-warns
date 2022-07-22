@@ -3,6 +3,7 @@ import {RegisteredCommands} from "../commands"
 import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
+import {CommandNotFoundByIdError, NoAutocompleteHandlerError, NoPermissionError} from "../errors"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
     public readonly event = "interactionCreate"
@@ -10,11 +11,11 @@ export class CommandHandler implements Handler<"interactionCreate"> {
     private static async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
         const command = RegisteredCommands.get(interaction.commandId)
         if (!command) {
-            throw new Error(`Command not found for ${interaction}`)
+            throw new CommandNotFoundByIdError(interaction.commandId)
         }
 
         if (!command.handleAutocompleteInteraction) {
-            throw new Error(`Command ${command} does not support autocomplete`)
+            throw new NoAutocompleteHandlerError(command)
         }
 
         await interaction.respond(await command.handleAutocompleteInteraction(interaction) ?? [])
@@ -23,12 +24,12 @@ export class CommandHandler implements Handler<"interactionCreate"> {
     private static async handleCommand(interaction: CommandInteraction): Promise<void> {
         const command = RegisteredCommands.get(interaction.commandId)
         if (!command) {
-            throw new Error(`Command not found for ${interaction}`)
+            throw new CommandNotFoundByIdError(interaction.commandId)
         }
 
         if (command.builder.default_member_permissions &&
             !interaction.memberPermissions?.has(BigInt(command.builder.default_member_permissions), true)) {
-            throw new Error(`You don't have the required permissions for this command`)
+            throw new NoPermissionError()
         }
 
         await command.handleCommandInteraction(interaction)
@@ -40,25 +41,20 @@ export class CommandHandler implements Handler<"interactionCreate"> {
             return
         }
 
-        try {
-            if (interaction instanceof CommandInteraction) {
-                await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+        if (interaction instanceof CommandInteraction) {
+            await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+            try {
                 await CommandHandler.handleCommand(interaction)
-                return
-            }
-        } catch (e) {
-            if (!interaction.replied && !interaction.deferred) {
-                throw e
+            } catch (e) {
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                console.error(e)
+                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 
-            await interaction.editReply({
-                embeds: [
-                    ResponseBuilder.makeEmbed("An error has occurred",
-                        Config.failIcon,
-                        e instanceof Error ? e.message : `${e}`)
-                        .setColor("#ff0000"),
-                ],
-            })
+            return
         }
     }
 }

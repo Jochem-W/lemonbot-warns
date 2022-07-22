@@ -37,6 +37,15 @@ import {ResponseBuilder} from "../utilities/responseBuilder"
 import {CustomId, InteractionScope} from "../models/customId"
 import {customAlphabet} from "nanoid"
 import {nolookalikesSafe} from "nanoid-dictionary"
+import {
+    ChannelNotFoundError,
+    GuildOnlyError,
+    ImageOnlyError,
+    InvalidCustomIdError,
+    InvalidPenaltyError,
+    NoAutocompleteHandlerError,
+    NoContentTypeError,
+} from "../errors"
 
 export type ResponseOptions = {
     entry: NotionDatabaseEntry
@@ -234,24 +243,25 @@ export class WarnCommand extends ChatInputCommand {
         case "reason2":
         case "reason3":
             const database = await NotionDatabase.getDefault()
-            const reasons = await database.getReasons()
+            const reasons = await database.fetchFromCache("reasons")
             return reasons.map(reason => {
                 return {name: reason.name, value: reason.name}
             })
         }
 
-        throw new Error("This option does not support autocomplete")
+        throw new NoAutocompleteHandlerError(this)
     }
 
     public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
         const guild = await InteractionUtilities.fetchGuild(interaction)
         if (!guild) {
-            throw new Error("This command can only be used in a server")
+            throw new GuildOnlyError()
         }
 
-        const penalty = Config.penalties.find(p => p.name === interaction.options.getString("penalty", true))
+        const penaltyName = interaction.options.getString("penalty", true)
+        const penalty = Config.penalties.find(p => p.name === penaltyName)
         if (!penalty) {
-            throw new Error("Invalid penalty")
+            throw new InvalidPenaltyError(penaltyName)
         }
 
         const reasons: SelectPropertyRequest[] = []
@@ -270,12 +280,12 @@ export class WarnCommand extends ChatInputCommand {
             }
 
             if (!image.contentType) {
-                throw new Error("Image has no content type")
+                throw new NoContentTypeError(image)
             }
 
             const mimeType = new MIMEType(image.contentType)
             if (mimeType.type !== "image") {
-                throw new Error("Only images are allowed")
+                throw new ImageOnlyError(image)
             }
 
             const result = await FirebaseUtilities.uploadAttachment(image)
@@ -288,7 +298,7 @@ export class WarnCommand extends ChatInputCommand {
         const member = await InteractionUtilities.fetchMember(interaction, user)
 
         const database = await NotionDatabase.getDefault()
-        let entry = await database.getByDiscordId(user.id)
+        let entry = await database.get({id: user.id})
         if (!entry) {
             entry = await database.create(user.id, {
                 currentPenaltyLevel: penalty.name,
@@ -392,7 +402,7 @@ export class WarnCommand extends ChatInputCommand {
                     options.penalised = "applied"
                 }
             } catch (e) {
-                console.error("Couldn't apply penalty", e)
+                console.error(e)
                 options.penalised = "error"
             }
         } else {
@@ -409,7 +419,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const [channelId, userId] = data.tertiary
         if (!channelId || !userId) {
-            throw new Error(`${interaction.customId} is invalid`)
+            throw new InvalidCustomIdError(data)
         }
 
         if (interaction.user.id !== userId) {
@@ -424,7 +434,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const channel = await interaction.client.channels.fetch(channelId)
         if (!channel) {
-            throw new Error(`Channel ${channelId} not found`)
+            throw new ChannelNotFoundError(channelId)
         }
 
         await channel.delete()

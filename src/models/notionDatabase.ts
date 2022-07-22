@@ -10,12 +10,27 @@ import {
     UpdatePageParameters,
 } from "@notionhq/client/build/src/api-endpoints"
 import {isFullBlock, isFullPage, iteratePaginatedAPI} from "@notionhq/client"
+import {
+    DatabaseCacheError,
+    DuplicateEntriesError,
+    EntryAlreadyExistsError,
+    InvalidDatabaseError,
+    InvalidDatabasePropertyTypeError,
+    InvalidDatabasePropertyTypesError,
+    InvalidPagePropertyTypesError,
+    InvalidPagePropertyValueError,
+    NoDatabaseError,
+    PageNotFoundByIdError,
+    PageNotFoundByTitleError,
+    PartialBlockError,
+    PartialPageError,
+} from "../errors"
 
 async function getActualPageProperty(parameters: GetPagePropertyParameters): Promise<PropertyItemObjectResponse> {
     const response = await Notion.pages.properties.retrieve(parameters)
     if (response.type === "property_item") {
-        if (response.results.length === 0 || response.results.length > 1) {
-            throw new Error(`Expected 1 result, got ${response.results.length}`)
+        if (response.results.length !== 1) {
+            throw new InvalidPagePropertyValueError(parameters.page_id, parameters.property_id, response.results)
         }
 
         return response.results[0]!
@@ -59,8 +74,11 @@ export class NotionDatabase {
             case "reasons": {
                 const response = await Notion.databases.retrieve({database_id: this.databaseId})
                 const reasonsProperty = response.properties["Reasons"]
-                if (reasonsProperty?.id !== this.reasonsPropertyId || !(reasonsProperty.type === "multi_select")) {
-                    throw new Error(`No valid reasons property found for database ${this.databaseId}`)
+                if (!reasonsProperty || reasonsProperty.id !== this.reasonsPropertyId) {
+                    throw new InvalidDatabaseError(this.databaseId, "Database has no \"Reasons\" property")
+                }
+                if (reasonsProperty.type !== "multi_select") {
+                    throw new InvalidDatabasePropertyTypeError(response.id, reasonsProperty.name, reasonsProperty.type)
                 }
 
                 return reasonsProperty.multi_select.options
@@ -96,12 +114,12 @@ export class NotionDatabase {
     public static async fromPage(id: string): Promise<NotionDatabase> {
         const page = await Notion.pages.retrieve({page_id: id})
         if (!isFullPage(page)) {
-            throw new Error(`Page ${page} is not a full page`)
+            throw new PartialPageError(page.id)
         }
 
         for await (const child of iteratePaginatedAPI(Notion.blocks.children.list, {block_id: id})) {
             if (!isFullBlock(child)) {
-                throw new Error(`Block ${child} is not a full block`)
+                throw new PartialBlockError(child.id)
             }
 
             if (child.type !== "child_database") {
@@ -125,7 +143,7 @@ export class NotionDatabase {
                 penaltyLevelProperty.type !== "select" || watchlistProperty.type !== "checkbox" ||
                 lastEditedByProperty.type !== "last_edited_by" || reasonsProperty.type !== "multi_select" ||
                 nameProperty.type !== "title") {
-                throw new Error("Invalid database properties")
+                throw new InvalidDatabasePropertyTypesError(database.id)
             }
 
             const notionDatabase = new NotionDatabase(database.id,
@@ -141,20 +159,16 @@ export class NotionDatabase {
             return notionDatabase
         }
 
-        throw new Error("No database found")
+        throw new NoDatabaseError()
     }
 
-    public async getReasons(force?: boolean): Promise<SelectPropertyResponse[]> {
-        if (force || !this.cache.has("reasons")) {
-            await this.cache.fetch("reasons")
+    public async fetchFromCache(key: string, force?: boolean) {
+        const result = await this.cache.fetch(key, {forceRefresh: force})
+        if (!result) {
+            throw new DatabaseCacheError(this.databaseId, key)
         }
 
-        const reasons = this.cache.get("reasons")
-        if (!reasons) {
-            throw new Error("No reasons found")
-        }
-
-        return reasons
+        return result
     }
 
     public async* getMany(): AsyncGenerator<NotionDatabaseEntry> {
@@ -179,19 +193,23 @@ export class NotionDatabase {
         }
     }
 
-    public async getByDiscordId(id: string): Promise<NotionDatabaseEntry | null> {
+    public async get(target: { id: string } | { pageId: string }): Promise<NotionDatabaseEntry | null> {
+        if ("pageId" in target) {
+            return await this.getByPageId(target.pageId)
+        }
+
         const response = await Notion.databases.query({
             database_id: this.databaseId,
             filter: {
                 property: this.idPropertyId,
                 rich_text: {
-                    equals: id,
+                    equals: target.id,
                 },
             },
         })
 
         if (response.results.length > 1) {
-            throw new Error(`Multiple entries found for id ${id}`)
+            throw new DuplicateEntriesError(this.databaseId, target.id)
         }
 
         const result = response.results[0]
@@ -203,8 +221,8 @@ export class NotionDatabase {
     }
 
     public async create(id: string, data: Required<NotionDatabaseEntryEdit>): Promise<NotionDatabaseEntry> {
-        if (await this.getByDiscordId(id)) {
-            throw new Error(`Entry for id ${id} already exists`)
+        if (await this.get({id: id})) {
+            throw new EntryAlreadyExistsError(this.databaseId, id)
         }
 
         const response = await Notion.pages.create({
@@ -220,9 +238,11 @@ export class NotionDatabase {
 
     public async update(target: { pageId: string } | { id: string } | NotionDatabaseEntry,
                         data: NotionDatabaseEntryEdit): Promise<NotionDatabaseEntry> {
-        const fullEntry = await ("pageId" in target ? this.getByPageId(target.pageId) : this.getByDiscordId(target.id))
+        const fullEntry = await this.get(target)
         if (!fullEntry) {
-            throw new Error(`No entry found for ${target}`)
+            throw ("pageId" in target ?
+                new PageNotFoundByIdError(target.pageId) :
+                new PageNotFoundByTitleError(target.id))
         }
 
         const response = await Notion.pages.update({
@@ -236,9 +256,9 @@ export class NotionDatabase {
     public async appendBlocks(target: { pageId: string } | { id: string },
                               blocks: BlockObjectRequest[]): Promise<void> {
         if (!("pageId" in target)) {
-            const fullEntry = await this.getByDiscordId(target.id)
+            const fullEntry = await this.get(target)
             if (!fullEntry) {
-                throw new Error(`No entry found for id ${target.id}`)
+                throw new PageNotFoundByTitleError(target.id)
             }
 
             target = {pageId: fullEntry.pageId}
@@ -252,9 +272,9 @@ export class NotionDatabase {
 
     public async* getBlocks(target: { pageId: string } | { id: string }): AsyncGenerator<BlockObjectResponse> {
         if (!("pageId" in target)) {
-            const fullEntry = await this.getByDiscordId(target.id)
+            const fullEntry = await this.get(target)
             if (!fullEntry) {
-                throw new Error(`No entry found for id ${target.id}`)
+                throw new PageNotFoundByTitleError(target.id)
             }
 
             target = {pageId: fullEntry.pageId}
@@ -262,7 +282,7 @@ export class NotionDatabase {
 
         for await (const child of iteratePaginatedAPI(Notion.blocks.children.list, {block_id: target.pageId})) {
             if (!isFullBlock(child)) {
-                throw new Error(`Block ${child} is not a full block`)
+                throw new PartialBlockError(child.id)
             }
 
             yield child
@@ -298,7 +318,7 @@ export class NotionDatabase {
         if (!pageUrl) {
             const response = await Notion.pages.retrieve({page_id: pageId})
             if (!isFullPage(response)) {
-                throw new Error(`Page ${pageId} is not a full page`)
+                throw new PartialPageError(pageId)
             }
 
             pageUrl = response.url
@@ -337,11 +357,11 @@ export class NotionDatabase {
             penaltyLevelProperty.type !== "select" || watchlistProperty.type !== "checkbox" ||
             lastEditedByProperty.type !== "last_edited_by" || reasonsProperty.type !== "multi_select" ||
             nameProperty.type !== "title") {
-            throw new Error(`Unexpected property type for page ${pageId}`)
+            throw new InvalidPagePropertyTypesError(pageId)
         }
 
         if (!penaltyLevelProperty.select) {
-            throw new Error(`No penalty level found for page ${pageId}`)
+            throw new InvalidPagePropertyValueError(pageId, penaltyLevelProperty.id, penaltyLevelProperty.select)
         }
 
         return {

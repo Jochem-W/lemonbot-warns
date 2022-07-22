@@ -15,6 +15,7 @@ import {
 import {DateTime} from "luxon"
 import {ResponseOptions, WarnCommand} from "../commands/warnCommand"
 import {BlockObjectRequest, FileBlockObjectFileResponse} from "../types/notion"
+import {InvalidEmbedError} from "../errors"
 
 export type ParseBlockObjectsResult = {
     embeds: EmbedBuilder[]
@@ -46,13 +47,13 @@ export class NotionUtilities {
         for (let i = 0; i < result.embeds.length; i++) {
             const embed = result.embeds[i]
             if (!embed?.data.fields) {
-                throw new Error("No fields found")
+                throw new InvalidEmbedError("No fields found")
             }
 
             for (let j = 0; j < embed.data.fields.length; j++) {
                 const field = embed.data.fields[j]
                 if (!field) {
-                    throw new Error("No field found")
+                    throw new InvalidEmbedError("No field found")
                 }
 
                 field.name = field.name.trim()
@@ -222,7 +223,7 @@ export class NotionUtilities {
 
         let lastEmbed = result.embeds.at(-1)
         if (!lastEmbed) {
-            throw new Error("No embed found")
+            throw new InvalidEmbedError("No embed found")
         }
         if (lastEmbed.data.fields?.length === 25 || lastEmbed.data.image) {
             lastEmbed = new EmbedBuilder().setFields([{
@@ -234,7 +235,7 @@ export class NotionUtilities {
         const lastField = lastEmbed.data.fields?.at(-1)
 
         if (!lastField) {
-            throw new Error("No field found")
+            throw new InvalidEmbedError("No field found")
         }
 
         switch (block.type) {

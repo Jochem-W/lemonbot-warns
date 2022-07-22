@@ -15,6 +15,7 @@ import {CustomId, InteractionScope} from "../models/customId"
 import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChatInputCommand} from "../models/chatInputCommand"
+import {GuildOnlyError} from "../errors"
 
 type ResponseOptions = {
     bans: string[]
@@ -59,7 +60,7 @@ export class CheckBansCommand extends ChatInputCommand {
     public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
         const guild = await InteractionUtilities.fetchGuild(interaction)
         if (!guild) {
-            throw new Error("This command can only be used in a server")
+            throw new GuildOnlyError()
         }
 
         const bans: string[] = []

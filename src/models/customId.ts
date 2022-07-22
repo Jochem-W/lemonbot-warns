@@ -1,3 +1,5 @@
+import {InvalidCustomIdError} from "../errors"
+
 type InteractionScope = "i" | "c"
 export const InteractionScope = {
     get Instance(): InteractionScope {
@@ -24,7 +26,7 @@ export class CustomId {
     public static fromString(data: string): CustomId {
         const [scope, primary, secondary, ...tertiary] = data.split(":")
         if (scope == undefined || primary == undefined || secondary == undefined) {
-            throw new Error(`Invalid customId: ${data}`)
+            throw new InvalidCustomIdError(data)
         }
 
         return new CustomId(scope as InteractionScope, primary, secondary, tertiary)

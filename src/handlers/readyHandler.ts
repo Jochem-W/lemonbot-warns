@@ -1,8 +1,9 @@
-import {Client, userMention} from "discord.js"
+import {ChannelType, Client, userMention} from "discord.js"
 import {readFile, writeFile} from "fs/promises"
 import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
+import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -30,8 +31,12 @@ export class ReadyHandler implements Handler<"ready"> {
         }
 
         const channel = await client.channels.fetch(Config.restartChannel)
-        if (!channel?.isTextBased()) {
-            throw new Error("Restart channel isn't a text channel")
+        if (!channel) {
+            throw new ChannelNotFoundError(Config.restartChannel)
+        }
+
+        if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+            throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
         }
 
         await channel.send({
