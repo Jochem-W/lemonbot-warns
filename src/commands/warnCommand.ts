@@ -96,7 +96,20 @@ export class WarnCommand extends ChatInputCommand {
                 .setDescription("Optional image attachment that will also be sent to the user"))
             .addAttachmentOption(option => option
                 .setName("image2")
-                .setDescription("Optional image attachment that will also be sent to the user"))
+                .setDescription(
+                    "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"))
+            .addAttachmentOption(option => option
+                .setName("image3")
+                .setDescription(
+                    "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"))
+            .addAttachmentOption(option => option
+                .setName("image4")
+                .setDescription(
+                    "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"))
+            .addAttachmentOption(option => option
+                .setName("image5")
+                .setDescription(
+                    "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"))
             .addStringOption(option => option
                 .setName("reason2")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
@@ -284,7 +297,8 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         const images: string[] = []
-        for (const image of ["image", "image2"].map(name => interaction.options.getAttachment(name))) {
+        for (const image of
+            ["image", "image2", "image3", "image4", "image5"].map(name => interaction.options.getAttachment(name))) {
             if (!image) {
                 continue
             }
