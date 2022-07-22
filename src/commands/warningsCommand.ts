@@ -24,15 +24,16 @@ export class WarningsCommand extends ChatInputCommand {
                 .setRequired(true))
     }
 
-    public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions> {
+    public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions[]> {
         const embed = ResponseBuilder.makeEmbed(`Warnings for ${options.user.tag}`,
             new URL(options.user.displayAvatarURL({size: 4096})))
+        const messages = [{embeds: [embed]}]
 
         const database = await NotionDatabase.getDefault()
         const entry = await database.get({id: options.user.id})
         if (!entry) {
             embed.setTitle("This user isn't in the database")
-            return {embeds: [embed]}
+            return messages
         }
 
         const parseResult = await NotionUtilities.parseBlockObjects(database.getBlocks(entry))
@@ -56,15 +57,31 @@ export class WarningsCommand extends ChatInputCommand {
         embed.setFooter(null)
             .setTimestamp(null)
 
-        const embeds = [embed, ...parseResult.embeds.slice(0, 9)]
-        embeds.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(entry.lastEditedTime.toMillis())
+        for (const warnEmbed of parseResult.embeds) {
+            const lastMessage = messages.at(-1)
+            if (lastMessage?.embeds?.length === 10) {
+                messages.push({embeds: [warnEmbed]})
+                continue
+            }
 
-        return {embeds: embeds}
+            lastMessage?.embeds?.push(warnEmbed)
+        }
+
+        messages.at(-1)?.embeds?.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(entry.lastEditedTime.toMillis())
+        return messages
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-        await interaction.editReply(await WarningsCommand.buildResponse({
+        const messages = await WarningsCommand.buildResponse({
             user: interaction.options.getUser("user", true),
-        }))
+        })
+
+        await interaction.editReply(messages[0]!)
+        for (const message of messages.slice(1)) {
+            await interaction.followUp({
+                ...message,
+                ephemeral: interaction.ephemeral ?? undefined,
+            })
+        }
     }
 }
