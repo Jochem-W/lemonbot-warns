@@ -251,7 +251,7 @@ export class WarnCommand extends ChatInputCommand {
         return includePreposition ? `${verb} ${preposition}` : verb
     }
 
-    public async handleAutocompleteInteraction(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
+    public async handleAutocomplete(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
         switch (interaction.options.getFocused(true).name) {
         case "reason":
         case "reason2":

@@ -14,11 +14,11 @@ export class CommandHandler implements Handler<"interactionCreate"> {
             throw new CommandNotFoundByIdError(interaction.commandId)
         }
 
-        if (!command.handleAutocompleteInteraction) {
+        if (!command.handleAutocomplete) {
             throw new NoAutocompleteHandlerError(command)
         }
 
-        await interaction.respond(await command.handleAutocompleteInteraction(interaction) ?? [])
+        await interaction.respond(await command.handleAutocomplete(interaction) ?? [])
     }
 
     private static async handleCommand(interaction: CommandInteraction): Promise<void> {

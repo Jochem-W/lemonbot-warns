@@ -19,6 +19,6 @@ export interface Command<T> extends JSONEncodable<RESTPostAPIApplicationCommands
 
     handleModalSubmit?(interaction: ModalSubmitInteraction, data: CustomId): Promise<void>
 
-    handleAutocompleteInteraction?(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]>
+    handleAutocomplete?(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]>
 }
 

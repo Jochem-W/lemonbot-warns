@@ -7,7 +7,7 @@ import {Command} from "../interfaces/command"
 
 export abstract class MessageContextMenuCommand implements Command<MessageContextMenuCommandInteraction> {
     public builder = new ContextMenuCommandBuilder()
-    public handleAutocompleteInteraction = undefined
+    public handleAutocomplete = undefined
 
     protected constructor(name: string) {
         this.builder
