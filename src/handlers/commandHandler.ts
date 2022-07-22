@@ -53,7 +53,9 @@ export class CommandHandler implements Handler<"interactionCreate"> {
 
             await interaction.editReply({
                 embeds: [
-                    ResponseBuilder.makeEmbed("An error has occurred", Config.failIcon, `${e}`)
+                    ResponseBuilder.makeEmbed("An error has occurred",
+                        Config.failIcon,
+                        e instanceof Error ? e.message : `${e}`)
                         .setColor("#ff0000"),
                 ],
             })
