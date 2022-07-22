@@ -32,7 +32,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
             throw new NoPermissionError()
         }
 
-        await command.handleCommandInteraction(interaction)
+        await command.handle(interaction)
     }
 
     public async handle(interaction: Interaction): Promise<void> {

@@ -21,7 +21,7 @@ export class UpdateNamesCommand extends ChatInputCommand {
         }
     }
 
-    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+    public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const database = await NotionDatabase.getDefault()
         const update = []
         for await (const entry of database.getMany()) {

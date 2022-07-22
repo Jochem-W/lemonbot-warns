@@ -34,7 +34,7 @@ export class StatusCommand extends ChatInputCommand {
         }
     }
 
-    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+    public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         await interaction.editReply(StatusCommand.buildResponse({ping: interaction.client.ws.ping}))
     }
 }

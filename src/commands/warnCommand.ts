@@ -252,7 +252,7 @@ export class WarnCommand extends ChatInputCommand {
         throw new NoAutocompleteHandlerError(this)
     }
 
-    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+    public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const guild = await InteractionUtilities.fetchGuild(interaction)
         if (!guild) {
             throw new GuildOnlyError()

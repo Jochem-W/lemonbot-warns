@@ -62,7 +62,7 @@ export class WarningsCommand extends ChatInputCommand {
         return {embeds: embeds}
     }
 
-    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+    public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         await interaction.editReply(await WarningsCommand.buildResponse({
             user: interaction.options.getUser("user", true),
         }))

@@ -13,7 +13,7 @@ import {CustomId} from "../models/customId"
 export interface Command<T> extends JSONEncodable<RESTPostAPIApplicationCommandsJSONBody> {
     builder: SlashCommandBuilder | ContextMenuCommandBuilder
 
-    handleCommandInteraction(interaction: T): Promise<void>
+    handle(interaction: T): Promise<void>
 
     handleMessageComponent?(interaction: MessageComponentInteraction, data: CustomId): Promise<void>
 

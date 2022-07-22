@@ -14,7 +14,7 @@ export abstract class MessageContextMenuCommand implements Command<MessageContex
             .setName(name)
     }
 
-    public abstract handleCommandInteraction(interaction: MessageContextMenuCommandInteraction): Promise<void>
+    public abstract handle(interaction: MessageContextMenuCommandInteraction): Promise<void>
 
     public toJSON(): RESTPostAPIApplicationCommandsJSONBody {
         return this.builder.toJSON()

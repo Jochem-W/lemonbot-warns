@@ -12,7 +12,7 @@ export abstract class ChatInputCommand implements Command<ChatInputCommandIntera
             .setDMPermission(false)
     }
 
-    public abstract handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void>
+    public abstract handle(interaction: ChatInputCommandInteraction): Promise<void>
 
     public toJSON(): RESTPostAPIApplicationCommandsJSONBody {
         return this.builder.toJSON()

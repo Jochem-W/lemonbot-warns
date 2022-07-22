@@ -57,7 +57,7 @@ export class CheckBansCommand extends ChatInputCommand {
         }
     }
 
-    public async handleCommandInteraction(interaction: ChatInputCommandInteraction): Promise<void> {
+    public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const guild = await InteractionUtilities.fetchGuild(interaction)
         if (!guild) {
             throw new GuildOnlyError()
