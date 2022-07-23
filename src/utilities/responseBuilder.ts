@@ -29,6 +29,7 @@ export abstract class ResponseBuilder {
     public static makeErrorEmbed(error: Error): EmbedBuilder {
         return ResponseBuilder.makeEmbed("An error has occurred", Config.failIcon, error.message)
             .setColor("#ff0000")
+            .setFooter({text: error.constructor.name})
     }
 
     public static append(embed: EmbedBuilder, content: string, separator = "\n\n"): EmbedBuilder {
