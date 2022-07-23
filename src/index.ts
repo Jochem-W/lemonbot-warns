@@ -1,6 +1,7 @@
 import {
     ApplicationCommandType,
     Client,
+    CommandInteraction,
     GatewayIntentBits,
     Partials,
     RESTPutAPIApplicationGuildCommandsJSONBody,
@@ -8,75 +9,51 @@ import {
     Routes,
 } from "discord.js"
 import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserContextMenuCommands} from "./commands"
-import {REST} from "@discordjs/rest"
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Config} from "./models/config"
 import {NotionDatabase} from "./models/notionDatabase"
 import {CommandNotFoundByNameError} from "./errors"
+import {Command} from "./interfaces/command"
 
 const client = new Client({
     intents: [GatewayIntentBits.GuildMembers],
     partials: [Partials.User, Partials.GuildMember],
 })
+client.rest.setToken(Variables.discordToken)
 
 const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
-SlashCommands.forEach(cw => {
-    commandsBody.push(cw.toJSON())
-    console.log(`Constructed command '${cw.builder.name}'`)
-})
-
-MessageContextMenuCommands.forEach(cw => {
-    commandsBody.push(cw.toJSON())
-    console.log(`Constructed command '${cw.builder.name}'`)
-})
-
-UserContextMenuCommands.forEach(cw => {
-    commandsBody.push(cw.toJSON())
-    console.log(`Constructed command '${cw.builder.name}'`)
-})
-
-const rest = new REST({version: "10"}).setToken(Variables.discordToken);
+for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserContextMenuCommands]) {
+    commandsBody.push(command.toJSON())
+    console.log(`Constructed command '${command.builder.name}'`)
+}
 
 (async () => {
     await NotionDatabase.getDefault()
 
-    const applicationCommands = await rest.put(Routes.applicationGuildCommands(Config.discordApplicationId,
+    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(Config.discordApplicationId,
         Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
 
-    // TODO
     for (const applicationCommand of applicationCommands) {
+        let command: Command<CommandInteraction> | undefined
         switch (applicationCommand.type) {
-        case ApplicationCommandType.ChatInput: {
-            const wrapper = SlashCommands.find(command => command.builder.name === applicationCommand.name)
-            if (!wrapper) {
-                throw new CommandNotFoundByNameError(applicationCommand.name)
-            }
-
-            RegisteredCommands.set(applicationCommand.id, wrapper)
+        case ApplicationCommandType.ChatInput:
+            command = SlashCommands.find(command => command.builder.name === applicationCommand.name)
             break
-        }
         case ApplicationCommandType.User:
-            const command = UserContextMenuCommands.find(
-                command => command.builder.name === applicationCommand.name)
-            if (!command) {
-                throw new CommandNotFoundByNameError(applicationCommand.name)
-            }
-
-            RegisteredCommands.set(applicationCommand.id, command)
+            command = UserContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
             break
-        case ApplicationCommandType.Message: {
-            const wrapper = MessageContextMenuCommands.find(
-                command => command.builder.name === applicationCommand.name)
-            if (!wrapper) {
-                throw new CommandNotFoundByNameError(applicationCommand.name)
-            }
-
-            RegisteredCommands.set(applicationCommand.id, wrapper)
+        case ApplicationCommandType.Message:
+            command = MessageContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
             break
         }
+
+        if (!command) {
+            throw new CommandNotFoundByNameError(applicationCommand.name)
         }
+
+        RegisteredCommands.set(applicationCommand.id, command)
     }
 
     for (const handler of Handlers) {
