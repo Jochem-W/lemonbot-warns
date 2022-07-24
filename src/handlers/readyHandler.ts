@@ -43,7 +43,10 @@ export class ReadyHandler implements Handler<"ready"> {
 
         await setState("UP")
 
-        process.on("SIGTERM", () => {
+        process.on("SIGINT", () => process.exit())
+        process.on("SIGTERM", () => process.exit())
+        process.on("exit", () => {
+            console.log("exit")
             client.destroy()
             setStateSync("DOWN")
         })
