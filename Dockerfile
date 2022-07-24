@@ -15,7 +15,7 @@ RUN apk add --no-cache alpine-sdk python3 && \
 COPY . .
 
 # Compile Typescript and remove dev packages
-RUN npm run compile && \
+RUN pnpm tsc && \
     pnpm prune --prod
 
 
@@ -28,4 +28,4 @@ WORKDIR /app
 COPY --from=builder /app .
 
 # Run
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]
