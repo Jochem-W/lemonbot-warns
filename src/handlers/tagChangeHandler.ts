@@ -15,7 +15,7 @@ export class NicknameChangeHandler implements Handler<"guildMemberUpdate"> {
         const database = await NotionDatabase.getDefault()
         try {
             const entry = await database.update(newMember, {name: NotionUtilities.formatName(newMember)})
-            console.log(`Changed ${newMember.id}'s name to '${entry.name}' (partial: ${oldMember.partial})`)
+            console.log(`Changed ${newMember.id}'s name to '${entry.name}'`)
         } catch (e) {
             if (!(e instanceof PageNotFoundError)) {
                 console.error(e)

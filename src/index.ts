@@ -28,7 +28,7 @@ for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserC
     console.log(`Constructed command '${command.builder.name}'`)
 }
 
-(async () => {
+void (async () => {
     await NotionDatabase.getDefault()
 
     const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(Config.discordApplicationId,
@@ -38,15 +38,15 @@ for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserC
     for (const applicationCommand of applicationCommands) {
         let command: Command<CommandInteraction> | undefined
         switch (applicationCommand.type) {
-        case ApplicationCommandType.ChatInput:
-            command = SlashCommands.find(command => command.builder.name === applicationCommand.name)
-            break
-        case ApplicationCommandType.User:
-            command = UserContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
-            break
-        case ApplicationCommandType.Message:
-            command = MessageContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
-            break
+            case ApplicationCommandType.ChatInput:
+                command = SlashCommands.find(command => command.builder.name === applicationCommand.name)
+                break
+            case ApplicationCommandType.User:
+                command = UserContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
+                break
+            case ApplicationCommandType.Message:
+                command = MessageContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
+                break
         }
 
         if (!command) {

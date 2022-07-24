@@ -6,7 +6,7 @@ import {NotionUtilities} from "../utilities/notionUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {Config} from "../models/config"
 
-type ResponseOptions = {
+interface ResponseOptions {
     count: number
 }
 

@@ -17,7 +17,7 @@ export class CustomId {
     public tertiary: string[]
 
     public constructor(scope: InteractionScope, primary: string, secondary: string, tertiary: string[]) {
-        this.scope = scope as InteractionScope
+        this.scope = scope
         this.primary = primary
         this.secondary = secondary
         this.tertiary = tertiary

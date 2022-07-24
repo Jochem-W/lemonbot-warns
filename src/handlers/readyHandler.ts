@@ -4,6 +4,7 @@ import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
+import {writeFileSync} from "fs"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -11,23 +12,19 @@ export class ReadyHandler implements Handler<"ready"> {
     public readonly event = "ready"
 
     public async handle(client: Client<true>): Promise<void> {
-        if (client.user) {
-            console.log(`Running as: ${client.user.tag}`)
-        } else {
-            console.log("Running without a user")
-        }
+        console.log(`Running as: ${client.user.tag}`)
 
         let title = "Bot "
         switch (await getState()) {
-        case "UP":
-            title += "crashed"
-            break
-        case "DOWN":
-            title += "restarted"
-            break
-        case "RECREATE":
-            title += "redeployed"
-            break
+            case "UP":
+                title += "crashed"
+                break
+            case "DOWN":
+                title += "restarted"
+                break
+            case "RECREATE":
+                title += "redeployed"
+                break
         }
 
         const channel = await client.channels.fetch(Config.restartChannel)
@@ -46,15 +43,19 @@ export class ReadyHandler implements Handler<"ready"> {
 
         await setState("UP")
 
-        process.on("SIGTERM", async () => {
+        process.on("SIGTERM", () => {
             client.destroy()
-            await setState("DOWN")
+            setStateSync("DOWN")
         })
     }
 }
 
 async function setState(status: State): Promise<void> {
     await writeFile("status", status, {encoding: "utf8"})
+}
+
+function setStateSync(status: State): void {
+    writeFileSync("status", status, {encoding: "utf8"})
 }
 
 async function getState(): Promise<State> {

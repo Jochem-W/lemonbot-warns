@@ -48,7 +48,7 @@ import {
     NoContentTypeError,
 } from "../errors"
 
-export type ResponseOptions = {
+export interface ResponseOptions {
     entry: NotionDatabaseEntry
     reasons: SelectPropertyRequest[]
     penalty: Penalty
@@ -136,29 +136,29 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         switch (options.penalised) {
-        case "applied":
-            if (options.penalty.value instanceof Duration) {
-                administrationText +=
-                    `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.value.toHuman()})`)}`
-            } else if (options.penalty.value === "ban") {
-                administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
-            } else {
-                administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
-            }
+            case "applied":
+                if (options.penalty.value instanceof Duration) {
+                    administrationText +=
+                        `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.value.toHuman()})`)}`
+                } else if (options.penalty.value === "ban") {
+                    administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
+                } else {
+                    administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
+                }
 
-            break
-        case "error":
-            administrationText += `\n• Penalised: ${inlineCode("❌ (an error occurred)")}`
-            break
-        case "not_in_server":
-            administrationText += `\n• Penalised: ${inlineCode("❌ (user not in server)")}`
-            break
-        case "not_notified":
-            administrationText += `\n• Penalised: ${inlineCode("❌ (user wasn't notified)")}`
-            break
-        default:
-            administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
-            break
+                break
+            case "error":
+                administrationText += `\n• Penalised: ${inlineCode("❌ (an error occurred)")}`
+                break
+            case "not_in_server":
+                administrationText += `\n• Penalised: ${inlineCode("❌ (user not in server)")}`
+                break
+            case "not_notified":
+                administrationText += `\n• Penalised: ${inlineCode("❌ (user wasn't notified)")}`
+                break
+            default:
+                administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
+                break
         }
 
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
@@ -187,7 +187,7 @@ export class WarnCommand extends ChatInputCommand {
                 embed.setImage(options.images[0])
             }
 
-            return ResponseBuilder.addNotesButton({embeds: [embed]}, options.entry?.url ?? "")
+            return ResponseBuilder.addNotesButton({embeds: [embed]}, options.entry.url)
         }
 
         const embeds = [embed]
@@ -195,7 +195,7 @@ export class WarnCommand extends ChatInputCommand {
             embeds.push(new EmbedBuilder().setImage(image))
         }
 
-        return ResponseBuilder.addNotesButton({embeds: embeds}, options.entry?.url ?? "")
+        return ResponseBuilder.addNotesButton({embeds: embeds}, options.entry.url)
     }
 
     public static buildDM(options: ResponseOptions): WebhookMessageOptions {
@@ -230,17 +230,17 @@ export class WarnCommand extends ChatInputCommand {
             verb = "Timed out"
         } else {
             switch (penalty.value) {
-            case "ban":
-                verb = "Banned"
-                preposition = "from"
-                break
-            case "kick":
-                verb = "Kicked"
-                preposition = "from"
-                break
-            case null:
-                verb = "Warned"
-                break
+                case "ban":
+                    verb = "Banned"
+                    preposition = "from"
+                    break
+                case "kick":
+                    verb = "Kicked"
+                    preposition = "from"
+                    break
+                case null:
+                    verb = "Warned"
+                    break
             }
         }
 
@@ -253,14 +253,15 @@ export class WarnCommand extends ChatInputCommand {
 
     public async handleAutocomplete(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
         switch (interaction.options.getFocused(true).name) {
-        case "reason":
-        case "reason2":
-        case "reason3":
-            const database = await NotionDatabase.getDefault()
-            const reasons = await database.fetchFromCache("reasons")
-            return reasons.map(reason => {
-                return {name: reason.name, value: reason.name}
-            })
+            case "reason":
+            case "reason2":
+            case "reason3": {
+                const database = await NotionDatabase.getDefault()
+                const reasons = await database.fetchFromCache("reasons")
+                return reasons.map(reason => {
+                    return {name: reason.name, value: reason.name}
+                })
+            }
         }
 
         throw new NoAutocompleteHandlerError(this)
@@ -422,7 +423,7 @@ export class WarnCommand extends ChatInputCommand {
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.value === null) {
+                } else {
                     options.penalised = "applied"
                 }
             } catch (e) {

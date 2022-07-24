@@ -29,17 +29,17 @@ import {
 async function getActualPageProperty(parameters: GetPagePropertyParameters): Promise<PropertyItemObjectResponse> {
     const response = await Notion.pages.properties.retrieve(parameters)
     if (response.type === "property_item") {
-        if (response.results.length !== 1) {
+        if (!response.results[0] || response.results.length !== 1) {
             throw new InvalidPagePropertyValueError(parameters.page_id, parameters.property_id, response.results)
         }
 
-        return response.results[0]!
+        return response.results[0]
     }
 
     return response
 }
 
-export type NotionDatabaseEntry = {
+export interface NotionDatabaseEntry {
     id: string
     lastEditedTime: DateTime
     currentPenaltyLevel: string
@@ -71,24 +71,27 @@ export class NotionDatabase {
         ttlAutopurge: true,
         fetchMethod: async (key: string) => {
             switch (key) {
-            case "reasons": {
-                const response = await Notion.databases.retrieve({database_id: this.databaseId})
-                const reasonsProperty = response.properties["Reasons"]
-                if (!reasonsProperty || reasonsProperty.id !== this.reasonsPropertyId) {
-                    throw new InvalidDatabaseError(this.databaseId, "Database has no \"Reasons\" property")
-                }
-                if (reasonsProperty.type !== "multi_select") {
-                    throw new InvalidDatabasePropertyTypeError(response.id, reasonsProperty.name, reasonsProperty.type)
-                }
+                case "reasons": {
+                    const response = await Notion.databases.retrieve({database_id: this.databaseId})
+                    const reasonsProperty = response.properties["Reasons"]
+                    if (!reasonsProperty || reasonsProperty.id !== this.reasonsPropertyId) {
+                        throw new InvalidDatabaseError(this.databaseId, "Database has no \"Reasons\" property")
+                    }
+                    if (reasonsProperty.type !== "multi_select") {
+                        throw new InvalidDatabasePropertyTypeError(response.id,
+                            reasonsProperty.name,
+                            reasonsProperty.type)
+                    }
 
-                return reasonsProperty.multi_select.options
-            }
-            default:
-                return null
+                    return reasonsProperty.multi_select.options
+                }
+                default:
+                    return null
             }
         },
-        disposeAfter: async (_, key) => {
-            await this.cache.fetch(key)
+        disposeAfter: (_, key) => {
+            this.cache.fetch(key)
+                .catch(e => console.error("Unhandled exception", e, "when fetching", key, "after dispose"))
         },
     })
 

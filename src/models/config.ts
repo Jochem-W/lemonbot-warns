@@ -2,12 +2,12 @@ import {Duration} from "luxon"
 import {Snowflake} from "discord.js"
 import {readFileSync} from "fs"
 
-export type Penalty = {
+export interface Penalty {
     name: string
     value: null | Duration | "ban" | "kick"
 }
 
-type ConfigData = {
+interface ConfigData {
     warnIcon: string
     successIcon: string
     failIcon: string
@@ -108,7 +108,7 @@ export abstract class Config {
     }
 
     public static load() {
-        const data: ConfigData = JSON.parse(readFileSync("config.json", "utf-8"))
+        const data = JSON.parse(readFileSync("config.json", "utf-8")) as ConfigData
         Config._warnIcon = new URL(data.warnIcon)
         Config._successIcon = new URL(data.successIcon)
         Config._failIcon = new URL(data.failIcon)

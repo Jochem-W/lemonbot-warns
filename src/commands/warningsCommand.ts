@@ -9,8 +9,9 @@ import {NotionDatabase} from "../models/notionDatabase"
 import {NotionUtilities} from "../utilities/notionUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChatInputCommand} from "../models/chatInputCommand"
+import {BotError} from "../errors"
 
-type ResponseOptions = {
+interface ResponseOptions {
     user: User
 }
 
@@ -59,15 +60,15 @@ export class WarningsCommand extends ChatInputCommand {
 
         for (const warnEmbed of parseResult.embeds) {
             const lastMessage = messages.at(-1)
-            if (lastMessage?.embeds?.length === 10) {
+            if (lastMessage?.embeds.length === 10) {
                 messages.push({embeds: [warnEmbed]})
                 continue
             }
 
-            lastMessage?.embeds?.push(warnEmbed)
+            lastMessage?.embeds.push(warnEmbed)
         }
 
-        messages.at(-1)?.embeds?.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(entry.lastEditedTime.toMillis())
+        messages.at(-1)?.embeds.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(entry.lastEditedTime.toMillis())
         return messages
     }
 
@@ -76,7 +77,11 @@ export class WarningsCommand extends ChatInputCommand {
             user: interaction.options.getUser("user", true),
         })
 
-        await interaction.editReply(messages[0]!)
+        if (!messages[0]) {
+            throw new BotError("Response has 0 messages")
+        }
+
+        await interaction.editReply(messages[0])
         for (const message of messages.slice(1)) {
             await interaction.followUp({
                 ...message,

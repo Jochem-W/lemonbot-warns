@@ -4,7 +4,7 @@ import {Attachment} from "discord.js"
 import MIMEType from "whatwg-mimetype"
 import {StorageBucket} from "../clients"
 
-export type UploadAttachmentResult = {
+interface UploadAttachmentResult {
     url: string
     type: string
     subtype: string

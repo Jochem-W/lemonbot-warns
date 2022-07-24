@@ -18,7 +18,7 @@ import {ChatInputCommand} from "../models/chatInputCommand"
 import {GuildOnlyError} from "../errors"
 import {InteractionCollectorHelper} from "../models/interactionCollectorHelper"
 
-type ResponseOptions = {
+interface ResponseOptions {
     bans: string[]
     page: number
     pageLimit: number
@@ -89,12 +89,12 @@ export class CheckBansCommand extends ChatInputCommand {
 
             const customId = CustomId.fromString(collected.customId)
             switch (customId.primary) {
-            case "next":
-                page++
-                break
-            case "previous":
-                page--
-                break
+                case "next":
+                    page++
+                    break
+                case "previous":
+                    page--
+                    break
             }
 
             await collected.update(CheckBansCommand.buildResponse({

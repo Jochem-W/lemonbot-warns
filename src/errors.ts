@@ -159,7 +159,7 @@ export class InvalidPagePropertyTypesError extends InvalidPageError {
 }
 
 export class InvalidPagePropertyValueError extends InvalidPageError {
-    public constructor(pageId: string, property: string, value: any) {
+    public constructor(pageId: string, property: string, value: unknown) {
         super(pageId, `Property "${property}" has invalid value "${value}".`)
     }
 }

@@ -3,7 +3,7 @@ import {ChatInputCommandInteraction, PermissionFlagsBits, WebhookEditMessageOpti
 import {DateTime, Duration} from "luxon"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 
-type ResponseOptions = {
+interface ResponseOptions {
     ping: number
 }
 

@@ -42,7 +42,7 @@ export class InteractionCollectorHelper {
         return new InteractionCollectorHelper(interaction, collector)
     }
 
-    public addListener(listener: (collected: CollectedInteraction) => Promise<void>): InteractionCollectorHelper {
+    public addListener(listener: (collected: CollectedInteraction) => Promise<void>): this {
         this.collector.on("collect", async (collected) => {
             try {
                 await listener(collected)

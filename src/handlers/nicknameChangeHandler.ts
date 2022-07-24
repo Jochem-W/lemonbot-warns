@@ -15,7 +15,7 @@ export class TagChangeHandler implements Handler<"userUpdate"> {
         const database = await NotionDatabase.getDefault()
         try {
             const entry = await database.update(newUser, {name: NotionUtilities.formatName(newUser)})
-            console.log(`Changed ${newUser.id}'s name to '${entry.name}' (partial: ${newUser.partial})`)
+            console.log(`Changed ${newUser.id}'s name to '${entry.name}'`)
         } catch (e) {
             if (!(e instanceof PageNotFoundError)) {
                 console.error(e)

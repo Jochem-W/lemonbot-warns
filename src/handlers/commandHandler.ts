@@ -18,7 +18,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
             throw new NoAutocompleteHandlerError(command)
         }
 
-        await interaction.respond(await command.handleAutocomplete(interaction) ?? [])
+        await interaction.respond(await command.handleAutocomplete(interaction))
     }
 
     private static async handleCommand(interaction: CommandInteraction): Promise<void> {
