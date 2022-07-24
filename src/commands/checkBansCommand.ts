@@ -16,6 +16,7 @@ import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {GuildOnlyError} from "../errors"
+import {InteractionCollectorHelper} from "../models/interactionCollectorHelper"
 
 type ResponseOptions = {
     bans: string[]
@@ -79,39 +80,37 @@ export class CheckBansCommand extends ChatInputCommand {
 
         let page = 0
 
-        const collector = await InteractionUtilities.collect(interaction)
-        // TODO: move try...catch elsewhere
-        collector.on("collect", async collected => {
-            try {
-                if (!(collected instanceof ButtonInteraction)) {
-                    console.error("Unhandled interaction", collected, "in collector for command", this)
-                    return
-                }
-
-                const customId = CustomId.fromString(collected.customId)
-                switch (customId.primary) {
-                case "next":
-                    page++
-                    break
-                case "previous":
-                    page--
-                    break
-                }
-
-                await collected.update(CheckBansCommand.buildResponse({
-                    bans: bans,
-                    page: page,
-                    pageLimit: 25,
-                }))
-            } catch (e) {
-                console.error("Unhandled exception", e, "in collector for command", this, "with interaction", collected)
+        const collector = await InteractionCollectorHelper.create(interaction)
+        collector.addListener(async collected => {
+            if (!(collected instanceof ButtonInteraction)) {
+                console.error("Unhandled interaction", collected, "in collector for command", this)
+                return
             }
+
+            const customId = CustomId.fromString(collected.customId)
+            switch (customId.primary) {
+            case "next":
+                page++
+                break
+            case "previous":
+                page--
+                break
+            }
+
+            await collected.update(CheckBansCommand.buildResponse({
+                bans: bans,
+                page: page,
+                pageLimit: 25,
+            }))
         })
 
-        await interaction.editReply(CheckBansCommand.buildResponse({
+        const response = CheckBansCommand.buildResponse({
             bans: bans,
             page: page,
             pageLimit: 25,
-        }))
+        })
+
+        await interaction.editReply(response)
+        collector.updateComponents(response.components)
     }
 }

@@ -4,7 +4,6 @@ import {
     ButtonStyle,
     EmbedBuilder,
     MessageActionRowComponentBuilder,
-    MessageEditOptions,
     MessageOptions,
     WebhookEditMessageOptions,
 } from "discord.js"
@@ -42,24 +41,6 @@ export abstract class ResponseBuilder {
 
         last.value = last.value === "..." ? content : `${last.value}${separator}${content}`
         return embed
-    }
-
-    public static disable<T extends WebhookEditMessageOptions | MessageEditOptions>(message: T): T {
-        return {
-            ...message,
-            components: message.components?.map(row => {
-                let builder: ActionRowBuilder<MessageActionRowComponentBuilder>
-                if ("toJSON" in row) {
-                    builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row.toJSON())
-                } else {
-                    builder = new ActionRowBuilder<MessageActionRowComponentBuilder>(row)
-                }
-
-                builder.components.map(component => component.setDisabled(true))
-
-                return builder.toJSON()
-            }),
-        }
     }
 
     public static addNotesButton<T extends WebhookEditMessageOptions | MessageOptions>(options: T, url: string): T {
