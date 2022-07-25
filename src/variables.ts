@@ -4,4 +4,5 @@ export const Variables = {
     notionPageId: process.env["NOTION_PAGE_ID"] as string,
     storageBucket: process.env["STORAGE_BUCKET"] as string,
     dataDirectory: process.env["DATA_DIRECTORY"] as string,
+    commitHash: process.env["COMMIT_HASH"],
 }

@@ -1,7 +1,8 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits, WebhookEditMessageOptions} from "discord.js"
-import {DateTime, Duration} from "luxon"
+import {Duration} from "luxon"
 import {ResponseBuilder} from "../utilities/responseBuilder"
+import {Variables} from "../variables"
 
 interface ResponseOptions {
     ping: number
@@ -13,24 +14,26 @@ export class StatusCommand extends ChatInputCommand {
     }
 
     public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
-        const since = DateTime.now().minus(Duration.fromDurationLike({seconds: process.uptime()})).toUnixInteger()
         const uptime = Duration.fromMillis(process.uptime() * 1000)
             .shiftTo("days", "hours", "minutes", "seconds")
             .normalize()
 
         return {
             embeds: [ResponseBuilder.makeEmbed("Status")
-                .addFields([{
+                .addFields({
                     name: "Ping",
                     value: `${options.ping}ms`,
                 }, {
                     name: "Uptime",
-                    value: `Up since <t:${since}>\nUp for \`${uptime.toHuman({
+                    value: `Up for \`${uptime.toHuman({
                         listStyle: "long",
                         notation: "compact",
                         unitDisplay: "short",
                     })}\``,
-                }])],
+                }, {
+                    name: "Version",
+                    value: Variables.commitHash ?? "unknown",
+                })],
         }
     }
 
