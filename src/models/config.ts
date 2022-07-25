@@ -1,8 +1,6 @@
 import {Duration} from "luxon"
 import {Snowflake} from "discord.js"
 import {readFileSync} from "fs"
-import {Variables} from "../variables"
-import path from "path"
 
 export interface Penalty {
     name: string
@@ -110,7 +108,7 @@ export abstract class Config {
     }
 
     public static load() {
-        const data = JSON.parse(readFileSync(path.join(Variables.dataDirectory, "config.json"), "utf-8")) as ConfigData
+        const data = JSON.parse(readFileSync("config.json", "utf-8")) as ConfigData
         Config._warnIcon = new URL(data.warnIcon)
         Config._successIcon = new URL(data.successIcon)
         Config._failIcon = new URL(data.failIcon)
