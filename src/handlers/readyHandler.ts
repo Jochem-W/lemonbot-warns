@@ -70,7 +70,7 @@ async function getChangelog(): Promise<string | null> {
     // FIXME
     const octokit = new Octokit({auth: Variables.githubToken})
     const response = await octokit.rest.repos.compareCommits({
-        base: previousVersion,
+        base: previousVersion.trim(),
         head: Variables.commitHash,
         owner: "Jochem-W",
         repo: "lemonbot-warns",
