@@ -7,5 +7,5 @@ services:
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: firebase.json
     volumes:
-      - ./version:/app/version
+      - ./persisted:/app/persisted
     restart: unless-stopped

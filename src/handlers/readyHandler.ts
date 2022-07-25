@@ -1,5 +1,5 @@
 import {ChannelType, Client, codeBlock, userMention} from "discord.js"
-import {readFile, writeFile} from "fs/promises"
+import {mkdir, readFile, writeFile} from "fs/promises"
 import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
@@ -62,7 +62,7 @@ async function getChangelog(): Promise<string | null> {
 
     let previousVersion
     try {
-        previousVersion = await readFile("version", {encoding: "utf8"})
+        previousVersion = await readFile("persisted/version", {encoding: "utf8"})
     } catch (e) {
         return null
     }
@@ -100,12 +100,35 @@ async function getChangelog(): Promise<string | null> {
     return codeBlock(description)
 }
 
+type ArbitraryObject = Record<string, unknown>;
+
+function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
+    return isArbitraryObject(error) &&
+        error instanceof Error &&
+        (typeof error["errno"] === "number" || typeof error["errno"] === "undefined") &&
+        (typeof error["code"] === "string" || typeof error["code"] === "undefined") &&
+        (typeof error["path"] === "string" || typeof error["path"] === "undefined") &&
+        (typeof error["syscall"] === "string" || typeof error["syscall"] === "undefined")
+}
+
+function isArbitraryObject(potentialObject: unknown): potentialObject is ArbitraryObject {
+    return typeof potentialObject === "object" && potentialObject !== null
+}
+
 async function setVersion(): Promise<void> {
     if (!Variables.commitHash) {
         return
     }
 
-    await writeFile("version", Variables.commitHash, {encoding: "utf8"})
+    try {
+        await mkdir("persisted", {recursive: true})
+    } catch (e) {
+        if (!isErrnoException(e) || e.code !== "EEXIST") {
+            throw e
+        }
+    }
+
+    await writeFile("persisted/version", Variables.commitHash, {encoding: "utf8"})
 }
 
 async function setState(status: State): Promise<void> {
