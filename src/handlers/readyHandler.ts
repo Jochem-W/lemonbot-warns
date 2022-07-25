@@ -77,7 +77,8 @@ async function getChangelog(): Promise<string | null> {
     })
 
     let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`
-    for (const commit of response.data.commits) {
+    response.data.commits.reverse()
+    for (const commit of response.data.commits.reverse()) {
         description += `\n  ${commit.sha.slice(0, 7)} ${commit.commit.message.split("\n")[0]}`
     }
 
@@ -85,6 +86,7 @@ async function getChangelog(): Promise<string | null> {
 
     const files: { name: string, changes: string }[] = []
     if (response.data.files) {
+        response.data.files.sort((a, b) => a.filename.localeCompare(b.filename))
         for (const file of response.data.files) {
             files.push({name: file.filename, changes: `${file.additions}+ ${file.deletions}-`})
         }
