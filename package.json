@@ -12,6 +12,7 @@
     "luxon": "^3.0.1",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
+    "octokit": "^2.0.4",
     "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {

@@ -6,4 +6,6 @@ services:
     env_file: .env
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: firebase.json
+    volumes:
+      - ./version:/app/version
     restart: unless-stopped

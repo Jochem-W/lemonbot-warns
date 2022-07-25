@@ -1,10 +1,12 @@
-import {ChannelType, Client, userMention} from "discord.js"
+import {ChannelType, Client, codeBlock, userMention} from "discord.js"
 import {readFile, writeFile} from "fs/promises"
 import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 import {writeFileSync} from "fs"
+import {Variables} from "../variables"
+import {Octokit} from "octokit"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -38,10 +40,11 @@ export class ReadyHandler implements Handler<"ready"> {
 
         await channel.send({
             content: userMention(Config.restartUser),
-            embeds: [ResponseBuilder.makeEmbed(title)],
+            embeds: [ResponseBuilder.makeEmbed(title).setDescription(await getChangelog())],
         })
 
         await setState("UP")
+        await setVersion()
 
         process.on("SIGINT", () => process.exit())
         process.on("SIGTERM", () => process.exit())
@@ -50,6 +53,57 @@ export class ReadyHandler implements Handler<"ready"> {
             setStateSync("DOWN")
         })
     }
+}
+
+async function getChangelog(): Promise<string | null> {
+    if (!Variables.commitHash) {
+        return null
+    }
+
+    let previousVersion
+    try {
+        previousVersion = await readFile("version", {encoding: "utf8"})
+    } catch (e) {
+        return null
+    }
+
+    // FIXME
+    const octokit = new Octokit({auth: Variables.githubToken})
+    const response = await octokit.rest.repos.compareCommits({
+        base: previousVersion,
+        head: Variables.commitHash,
+        owner: "Jochem-W",
+        repo: "lemonbot-warns",
+    })
+
+    let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`
+    for (const commit of response.data.commits) {
+        description += `\n  ${commit.sha.slice(0, 7)} ${commit.commit.message.split("\n")[0]}`
+    }
+
+    description += "\n\nchanges:"
+
+    const files: { name: string, changes: string }[] = []
+    if (response.data.files) {
+        for (const file of response.data.files) {
+            files.push({name: file.filename, changes: `${file.additions}+ ${file.deletions}-`})
+        }
+    }
+
+    const longestName = files.reduce((longest, file) => Math.max(longest, file.name.length), 0)
+    for (const file of files) {
+        description += `\n  ${file.name.padEnd(longestName)} | ${file.changes}`
+    }
+
+    return codeBlock(description)
+}
+
+async function setVersion(): Promise<void> {
+    if (!Variables.commitHash) {
+        return
+    }
+
+    await writeFile("version", Variables.commitHash, {encoding: "utf8"})
 }
 
 async function setState(status: State): Promise<void> {
