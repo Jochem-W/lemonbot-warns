@@ -6,4 +6,7 @@ services:
     env_file: .env
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: firebase.json
+      DATA_DIRECTORY: /etc/lemonbot-warns
+    volumes:
+      - ../docker/data/lemonbot-warns:/etc/lemonbot-warns
     restart: unless-stopped
