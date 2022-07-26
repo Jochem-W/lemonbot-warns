@@ -67,6 +67,10 @@ async function getChangelog(): Promise<string | null> {
         return null
     }
 
+    if (previousVersion === Variables.commitHash) {
+        return null
+    }
+
     // FIXME
     const octokit = new Octokit({auth: Variables.githubToken})
     const response = await octokit.rest.repos.compareCommits({
