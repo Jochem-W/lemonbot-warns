@@ -84,17 +84,29 @@ async function getChangelog(): Promise<string | null> {
 
     description += "\n\nchanges:"
 
-    const files: { name: string, changes: string }[] = []
+    let namePad = 0
+    let additionsPad = 0
+    let deletionsPad = 0
+    const files: { name: string, additions: string, deletions: string }[] = []
     if (response.data.files) {
         response.data.files.sort((a, b) => a.filename.localeCompare(b.filename))
-        for (const file of response.data.files) {
-            files.push({name: file.filename, changes: `${file.additions}+ ${file.deletions}-`})
+        for (const rawFile of response.data.files) {
+            const file = {
+                name: rawFile.filename,
+                additions: rawFile.additions.toString(),
+                deletions: rawFile.deletions.toString(),
+            }
+            files.push(file)
+            namePad = Math.max(namePad, file.name.length)
+            additionsPad = Math.max(additionsPad, file.additions.length)
+            deletionsPad = Math.max(deletionsPad, file.deletions.length)
         }
     }
 
-    const longestName = files.reduce((longest, file) => Math.max(longest, file.name.length), 0)
     for (const file of files) {
-        description += `\n  ${file.name.padEnd(longestName)} | ${file.changes}`
+        description +=
+            `\n  ${file.name.padEnd(namePad)} | ${file.additions.padStart(additionsPad)}+ ${file.deletions.padStart(
+                deletionsPad)}-`
     }
 
     return codeBlock(description)
