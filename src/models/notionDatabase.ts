@@ -67,7 +67,7 @@ export class NotionDatabase {
     private readonly namePropertyId: string
 
     private readonly cache = new LRUCache({
-        ttl: Config.cacheTtl.toMillis(),
+        ttl: Config.bot.cacheTtl.toMillis(),
         ttlAutopurge: true,
         fetchMethod: async (key: string) => {
             switch (key) {

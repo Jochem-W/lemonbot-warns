@@ -12,7 +12,7 @@ import {Config} from "../models/config"
 
 export abstract class ResponseBuilder {
     public static makeEmbed(authorName: string,
-                            authorIcon = Config.successIcon,
+                            authorIcon = Config.icons.success,
                             title?: string,
                             description?: string): EmbedBuilder {
         return new EmbedBuilder()
@@ -26,7 +26,7 @@ export abstract class ResponseBuilder {
     }
 
     public static makeErrorEmbed(error: Error): EmbedBuilder {
-        return ResponseBuilder.makeEmbed("An error has occurred", Config.failIcon, error.message)
+        return ResponseBuilder.makeEmbed("An error has occurred", Config.icons.fail, error.message)
             .setColor("#ff0000")
             .setFooter({text: error.constructor.name})
     }

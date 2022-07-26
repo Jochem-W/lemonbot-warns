@@ -29,9 +29,9 @@ export class ReadyHandler implements Handler<"ready"> {
                 break
         }
 
-        const channel = await client.channels.fetch(Config.restartChannel)
+        const channel = await client.channels.fetch(Config.guild.restart.channel)
         if (!channel) {
-            throw new ChannelNotFoundError(Config.restartChannel)
+            throw new ChannelNotFoundError(Config.guild.restart.channel)
         }
 
         if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
@@ -39,7 +39,7 @@ export class ReadyHandler implements Handler<"ready"> {
         }
 
         await channel.send({
-            content: userMention(Config.restartUser),
+            content: userMention(Config.guild.restart.user),
             embeds: [ResponseBuilder.makeEmbed(title).setDescription(await getChangelog())],
         })
 
@@ -76,8 +76,8 @@ async function getChangelog(): Promise<string | null> {
     const response = await octokit.rest.repos.compareCommits({
         base: previousVersion.trim(),
         head: Variables.commitHash,
-        owner: Config.repositoryOwner,
-        repo: Config.repositoryName,
+        owner: Config.repository.owner,
+        repo: Config.repository.name,
     })
 
     let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`

@@ -42,7 +42,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
         }
 
         if (interaction instanceof CommandInteraction) {
-            await interaction.deferReply({ephemeral: !Config.privateChannels.includes(interaction.channelId)})
+            await interaction.deferReply({ephemeral: !Config.guild.privateChannels.includes(interaction.channelId)})
             try {
                 await CommandHandler.handleCommand(interaction)
             } catch (e) {

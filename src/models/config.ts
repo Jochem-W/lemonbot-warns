@@ -7,133 +7,127 @@ export interface Penalty {
     value: null | Duration | "ban" | "kick"
 }
 
-interface ConfigData {
-    warnIcon: string
-    successIcon: string
-    failIcon: string
-    guildId: string
-    privateChannels: string[]
-    cacheTtl: number
-    warnCategory: string
-    restartChannel: string
-    restartUser: string
+interface RawConfig {
+    bot: {
+        applicationId: string
+        cacheTtl: number
+    }
+    guild: {
+        id: string
+        privateChannels: string[]
+        restart: {
+            channel: string
+            user: string
+        }
+        warnCategory: string
+        warnLogsChannel: string
+    }
+    icons: {
+        fail: string
+        success: string
+        warning: string
+    }
     penalties: ({ name: string } & ({ timeout: number } | { ban: true } | { kick: true } | { noPenalty: true }))[]
-    discordApplicationId: string
-    warnLogsChannel: string
-    repositoryOwner: string
-    repositoryName: string
+    repository: {
+        name: string
+        owner: string
+    }
+}
+
+class BotConfig {
+    public readonly applicationId: Snowflake
+    public readonly cacheTtl: Duration
+
+    public constructor(data: RawConfig["bot"]) {
+        this.applicationId = data.applicationId
+        this.cacheTtl = Duration.fromObject({seconds: data.cacheTtl})
+    }
+}
+
+class GuildConfig {
+    public readonly id: Snowflake
+    public readonly privateChannels: Snowflake[]
+    public readonly restart: GuildRestartConfig
+    public readonly warnCategory: Snowflake
+    public readonly warnLogsChannel: Snowflake
+
+    public constructor(data: RawConfig["guild"]) {
+        this.id = data.id
+        this.privateChannels = [...data.privateChannels]
+        this.restart = new GuildRestartConfig(data.restart)
+        this.warnCategory = data.warnCategory
+        this.warnLogsChannel = data.warnLogsChannel
+    }
+}
+
+class GuildRestartConfig {
+    public readonly channel: Snowflake
+    public readonly user: Snowflake
+
+    public constructor(data: RawConfig["guild"]["restart"]) {
+        this.channel = data.channel
+        this.user = data.user
+    }
+}
+
+class IconsConfig {
+    public readonly fail: URL
+    public readonly success: URL
+    public readonly warning: URL
+
+    public constructor(data: RawConfig["icons"]) {
+        this.fail = new URL(data.fail)
+        this.success = new URL(data.success)
+        this.warning = new URL(data.warning)
+    }
+}
+
+class RepositoryConfig {
+    public readonly name: string
+    public readonly owner: string
+
+    public constructor(data: RawConfig["repository"]) {
+        this.name = data.name
+        this.owner = data.owner
+    }
 }
 
 export abstract class Config {
-    private static _warnIcon: URL
+    private static _bot: BotConfig
 
-    // Icon that is used when someone is warned
-    public static get warnIcon(): URL {
-        return Config._warnIcon
+    public static get bot(): BotConfig {
+        return Config._bot
     }
 
-    private static _successIcon: URL
+    private static _guild: GuildConfig
 
-    // Icon that is used on success
-    public static get successIcon(): URL {
-        return Config._successIcon
+    public static get guild(): GuildConfig {
+        return Config._guild
     }
 
-    private static _failIcon: URL
+    private static _icons: IconsConfig
 
-    // Icon that is used on fail
-    public static get failIcon(): URL {
-        return Config._failIcon
-    }
-
-    private static _guildId: Snowflake
-
-    // Guild to enable the bot on
-    public static get guildId(): Snowflake {
-        return Config._guildId
-    }
-
-    private static _privateChannels: Snowflake[]
-
-    // Channels that show non-ephemeral replies
-    public static get privateChannels(): Snowflake[] {
-        return Config._privateChannels
-    }
-
-    private static _cacheTtl: Duration
-
-    // Time in milliseconds to cache database data
-    public static get cacheTtl(): Duration {
-        return Config._cacheTtl
-    }
-
-    private static _warnCategory: Snowflake
-
-    // The category under which to create a channel to warn someone
-    public static get warnCategory(): Snowflake {
-        return Config._warnCategory
-    }
-
-    private static _restartChannel: Snowflake
-
-    // The channel to send restart notifications to
-    public static get restartChannel(): Snowflake {
-        return Config._restartChannel
-    }
-
-    private static _restartUser: Snowflake
-
-    // The user to mention when sending a restart notification
-    public static get restartUser(): Snowflake {
-        return Config._restartUser
+    public static get icons(): IconsConfig {
+        return Config._icons
     }
 
     private static _penalties: Penalty[]
 
-    // List of penalties
     public static get penalties(): Penalty[] {
         return Config._penalties
     }
 
-    private static _discordApplicationId: Snowflake
+    private static _repository: RepositoryConfig
 
-    // Discord Application ID
-    public static get discordApplicationId(): Snowflake {
-        return Config._discordApplicationId
+    public static get repository(): RepositoryConfig {
+        return Config._repository
     }
 
-    private static _warnLogsChannel: Snowflake
-
-    // Warn logs channel
-    public static get warnLogsChannel(): Snowflake {
-        return Config._warnLogsChannel
-    }
-
-    private static _repositoryOwner: string
-
-    // GitHub repository owner
-    public static get repositoryOwner(): string {
-        return Config._repositoryOwner
-    }
-
-    private static _repositoryName: string
-
-    // GitHub repository name
-    public static get repositoryName(): string {
-        return Config._repositoryName
-    }
-
-    public static load() {
-        const data = JSON.parse(readFileSync("config.json", "utf-8")) as ConfigData
-        Config._warnIcon = new URL(data.warnIcon)
-        Config._successIcon = new URL(data.successIcon)
-        Config._failIcon = new URL(data.failIcon)
-        Config._guildId = data.guildId
-        Config._privateChannels = [...data.privateChannels]
-        Config._cacheTtl = Duration.fromMillis(data.cacheTtl)
-        Config._warnCategory = data.warnCategory
-        Config._restartChannel = data.restartChannel
-        Config._restartUser = data.restartUser
+    public static loadSync() {
+        const data = JSON.parse(readFileSync("config.json", "utf-8")) as RawConfig
+        Config._bot = new BotConfig(data.bot)
+        Config._guild = new GuildConfig(data.guild)
+        Config._icons = new IconsConfig(data.icons)
         Config._penalties = data.penalties.map(penalty => {
             if ("timeout" in penalty) {
                 return {
@@ -165,11 +159,8 @@ export abstract class Config {
                 value: null,
             }
         })
-        Config._discordApplicationId = data.discordApplicationId
-        Config._warnLogsChannel = data.warnLogsChannel
-        Config._repositoryOwner = data.repositoryOwner
-        Config._repositoryName = data.repositoryName
+        Config._repository = new RepositoryConfig(data.repository)
     }
 }
 
-Config.load()
+Config.loadSync()

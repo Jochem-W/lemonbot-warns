@@ -17,7 +17,9 @@ export class UpdateNamesCommand extends ChatInputCommand {
 
     public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
         return {
-            embeds: [ResponseBuilder.makeEmbed("Updated names", Config.successIcon, `${options.count} names updated`)],
+            embeds: [ResponseBuilder.makeEmbed("Updated names",
+                Config.icons.success,
+                `${options.count} names updated`)],
         }
     }
 

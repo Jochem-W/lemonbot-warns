@@ -201,7 +201,7 @@ export class WarnCommand extends ChatInputCommand {
     public static buildDM(options: ResponseOptions): WebhookMessageOptions {
         const embed = ResponseBuilder.makeEmbed(`You have been ${WarnCommand.getPenaltyVerb(options.penalty,
             true,
-            true)} ${options.guild.name}`, Config.warnIcon)
+            true)} ${options.guild.name}`, Config.icons.warning)
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
@@ -273,9 +273,9 @@ export class WarnCommand extends ChatInputCommand {
             throw new GuildOnlyError()
         }
 
-        const warnLogsChannel = await guild.channels.fetch(Config.warnLogsChannel)
+        const warnLogsChannel = await guild.channels.fetch(Config.guild.warnLogsChannel)
         if (!warnLogsChannel) {
-            throw new ChannelNotFoundError(Config.warnLogsChannel)
+            throw new ChannelNotFoundError(Config.guild.warnLogsChannel)
         }
 
         if (!warnLogsChannel.isTextBased() || warnLogsChannel.type !== ChannelType.GuildText) {
@@ -373,7 +373,7 @@ export class WarnCommand extends ChatInputCommand {
             const newChannel = await guild.channels.create({
                 name: channelName,
                 type: ChannelType.GuildText,
-                parent: Config.warnCategory,
+                parent: Config.guild.warnCategory,
                 reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
@@ -454,7 +454,7 @@ export class WarnCommand extends ChatInputCommand {
         if (interaction.user.id !== userId) {
             await interaction.reply({
                 embeds: [ResponseBuilder.makeEmbed("Something went wrong while handling this interaction",
-                    Config.failIcon,
+                    Config.icons.fail,
                     "You can't use this component!")],
                 ephemeral: true,
             })

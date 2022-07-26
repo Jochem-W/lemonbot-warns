@@ -1,23 +1,27 @@
 {
   "$schema": "config.schema.json",
-  "warnIcon": null,
-  "successIcon": null,
-  "failIcon": null,
-  "guildId": null,
-  "privateChannels": [
-    null
-  ],
-  "cacheTtl": null,
-  "warnCategory": null,
-  "restartChannel": null,
-  "restartUser": null,
-  "penalties": [
-    {
-      "name": null
-    }
-  ],
-  "discordApplicationId": null,
-  "warnLogsChannel": null,
-  "repositoryName": null,
-  "repositoryOwner": null
+  "bot": {
+    "applicationId": "",
+    "cacheTtl": 0
+  },
+  "guild": {
+    "id": "",
+    "privateChannels": [],
+    "restart": {
+      "channel": "",
+      "user": ""
+    },
+    "warnCategory": "",
+    "warnLogsChannel": ""
+  },
+  "icons": {
+    "fail": "",
+    "success": "",
+    "warning": ""
+  },
+  "penalties": [],
+  "repository": {
+    "owner": "",
+    "name": ""
+  }
 }

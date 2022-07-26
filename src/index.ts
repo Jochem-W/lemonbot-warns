@@ -31,8 +31,8 @@ for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserC
 void (async () => {
     await NotionDatabase.getDefault()
 
-    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(Config.discordApplicationId,
-        Config.guildId), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
+    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(Config.bot.applicationId,
+        Config.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
 
     for (const applicationCommand of applicationCommands) {
