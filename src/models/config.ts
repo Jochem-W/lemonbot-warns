@@ -20,6 +20,8 @@ interface ConfigData {
     penalties: ({ name: string } & ({ timeout: number } | { ban: true } | { kick: true } | { noPenalty: true }))[]
     discordApplicationId: string
     warnLogsChannel: string
+    repositoryOwner: string
+    repositoryName: string
 }
 
 export abstract class Config {
@@ -107,6 +109,20 @@ export abstract class Config {
         return Config._warnLogsChannel
     }
 
+    private static _repositoryOwner: string
+
+    // GitHub repository owner
+    public static get repositoryOwner(): string {
+        return Config._repositoryOwner
+    }
+
+    private static _repositoryName: string
+
+    // GitHub repository name
+    public static get repositoryName(): string {
+        return Config._repositoryName
+    }
+
     public static load() {
         const data = JSON.parse(readFileSync("config.json", "utf-8")) as ConfigData
         Config._warnIcon = new URL(data.warnIcon)
@@ -151,6 +167,8 @@ export abstract class Config {
         })
         Config._discordApplicationId = data.discordApplicationId
         Config._warnLogsChannel = data.warnLogsChannel
+        Config._repositoryOwner = data.repositoryOwner
+        Config._repositoryName = data.repositoryName
     }
 }
 

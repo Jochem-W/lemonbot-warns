@@ -17,5 +17,7 @@
     }
   ],
   "discordApplicationId": null,
-  "warnLogsChannel": null
+  "warnLogsChannel": null,
+  "repositoryName": null,
+  "repositoryOwner": null
 }

@@ -123,6 +123,14 @@
       "description": "The channel to send warning logs in",
       "type": "string",
       "pattern": "^\\d+$"
+    },
+    "repositoryOwner": {
+      "description": "The owner of the repository",
+      "type": "string"
+    },
+    "repositoryName": {
+      "description": "The name of the repository",
+      "type": "string"
     }
   },
   "required": [
@@ -137,6 +145,8 @@
     "restartUser",
     "penalties",
     "discordApplicationId",
-    "warnLogsChannel"
+    "warnLogsChannel",
+    "repositoryOwner",
+    "repositoryName"
   ]
 }

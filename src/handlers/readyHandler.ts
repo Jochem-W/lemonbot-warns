@@ -76,8 +76,8 @@ async function getChangelog(): Promise<string | null> {
     const response = await octokit.rest.repos.compareCommits({
         base: previousVersion.trim(),
         head: Variables.commitHash,
-        owner: "Jochem-W",
-        repo: "lemonbot-warns",
+        owner: Config.repositoryOwner,
+        repo: Config.repositoryName,
     })
 
     let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`
