@@ -427,7 +427,7 @@ export class WarnCommand extends ChatInputCommand {
             options.notified = newChannel
         }
 
-        const reason = WarnCommand.formatTitle(options)
+        const reason = WarnCommand.formatTitle(options, {includeReasons: true})
         if (options.notified !== false && options.notified !== undefined) {
             try {
                 if (penalty.value === "ban") {
