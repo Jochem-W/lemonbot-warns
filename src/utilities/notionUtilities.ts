@@ -171,15 +171,13 @@ export class NotionUtilities {
     }
 
     public static generateWarnNote(data: ResponseOptions): BlockObjectRequest[] {
-        const reasonsText = data.reasons.map(reason => reason.name).join(", ")
-
         const objects: BlockObjectRequest[] = [
             {
                 heading_1: {
                     rich_text: [
                         {
                             text: {
-                                content: `${WarnCommand.getPenaltyVerb(data.penalty)} by ${data.warnedBy.tag} for ${reasonsText} `,
+                                content: WarnCommand.formatTitle(data, {includeReasons: true}),
                             },
                         },
                         {

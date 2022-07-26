@@ -120,6 +120,59 @@ export class WarnCommand extends ChatInputCommand {
                 .setAutocomplete(true))
     }
 
+    public static formatTitle(data: ResponseOptions, options?: {
+        ignoreNotified?: boolean
+        includeReasons?: boolean
+        includeGuild?: boolean
+        lowercase?: boolean
+        verbOnly?: boolean
+    }) {
+        let title: string
+        let preposition: string
+        if (!options?.ignoreNotified && !data.notified) {
+            title = "Silently warned"
+            preposition = "in"
+        } else if (data.penalty.value instanceof Duration) {
+            title = "Timed out"
+            preposition = "in"
+        } else {
+            switch (data.penalty.value) {
+                case "kick":
+                    title = "Kicked"
+                    preposition = "from"
+                    break
+                case "ban":
+                    title = "Banned"
+                    preposition = "from"
+                    break
+                default:
+                    title = "Warned"
+                    preposition = "in"
+                    break
+            }
+        }
+
+        if (options?.lowercase) {
+            title = title.toLowerCase()
+        }
+
+        if (options?.includeGuild) {
+            title += ` ${preposition} ${data.guild.name}`
+        }
+
+        if (options?.verbOnly) {
+            return title
+        }
+
+        title += ` by ${data.warnedBy.tag} `
+        if (!options?.includeReasons) {
+            return title
+        }
+
+        title += `for ${data.reasons.map(reason => reason.name).join(", ")}`
+        return title
+    }
+
     public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
         const reasonsText = options.reasons.map(reason => reason.name).join(", ")
         let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
@@ -164,7 +217,7 @@ export class WarnCommand extends ChatInputCommand {
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
         const tag = options.targetUser.tag
 
-        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.getPenaltyVerb(options.penalty)} ${tag}`,
+        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.formatTitle(options, {verbOnly: true})} ${tag}`,
             new URL(avatar))
             .addFields([
                 {
@@ -177,7 +230,7 @@ export class WarnCommand extends ChatInputCommand {
                 },
             ])
             .setFooter({
-                text: `${WarnCommand.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`,
+                text: WarnCommand.formatTitle(options),
                 iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
             })
             .setTimestamp(options.timestamp.toMillis())
@@ -199,9 +252,12 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     public static buildDM(options: ResponseOptions): WebhookMessageOptions {
-        const embed = ResponseBuilder.makeEmbed(`You have been ${WarnCommand.getPenaltyVerb(options.penalty,
-            true,
-            true)} ${options.guild.name}`, Config.icons.warning)
+        const embed = ResponseBuilder.makeEmbed(`You have been ${WarnCommand.formatTitle(options, {
+            ignoreNotified: true,
+            includeGuild: true,
+            lowercase: true,
+            verbOnly: true,
+        })}`, Config.icons.warning)
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
@@ -221,34 +277,6 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         return {embeds: embeds}
-    }
-
-    public static getPenaltyVerb(penalty: Penalty, includePreposition = false, lowercase = false): string {
-        let verb = ""
-        let preposition = "in"
-        if (penalty.value instanceof Duration) {
-            verb = "Timed out"
-        } else {
-            switch (penalty.value) {
-                case "ban":
-                    verb = "Banned"
-                    preposition = "from"
-                    break
-                case "kick":
-                    verb = "Kicked"
-                    preposition = "from"
-                    break
-                case null:
-                    verb = "Warned"
-                    break
-            }
-        }
-
-        if (lowercase) {
-            verb = verb.toLowerCase()
-        }
-
-        return includePreposition ? `${verb} ${preposition}` : verb
     }
 
     public async handleAutocomplete(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
@@ -399,7 +427,7 @@ export class WarnCommand extends ChatInputCommand {
             options.notified = newChannel
         }
 
-        const reason = `${WarnCommand.getPenaltyVerb(options.penalty)} by ${options.warnedBy.tag}`
+        const reason = WarnCommand.formatTitle(options)
         if (options.notified !== false && options.notified !== undefined) {
             try {
                 if (penalty.value === "ban") {
