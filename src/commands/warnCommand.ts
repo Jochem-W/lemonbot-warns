@@ -46,6 +46,7 @@ import {
     InvalidPenaltyError,
     NoAutocompleteHandlerError,
     NoContentTypeError,
+    reportError,
 } from "../errors"
 
 export interface ResponseOptions {
@@ -455,7 +456,11 @@ export class WarnCommand extends ChatInputCommand {
                     options.penalised = "applied"
                 }
             } catch (e) {
-                console.error(e)
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                await reportError(interaction.client, e)
                 options.penalised = "error"
             }
         } else {

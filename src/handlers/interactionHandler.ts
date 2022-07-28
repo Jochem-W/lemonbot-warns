@@ -3,7 +3,12 @@ import {CustomId, InteractionScope} from "../models/customId"
 import {RegisteredCommands} from "../commands"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
-import {CommandNotFoundByIdError, CommandNotFoundByNameError, NoMessageComponentHandlerError} from "../errors"
+import {
+    CommandNotFoundByIdError,
+    CommandNotFoundByNameError,
+    NoMessageComponentHandlerError,
+    reportError,
+} from "../errors"
 
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
@@ -54,7 +59,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                     throw e
                 }
 
-                console.error(e)
+                await reportError(interaction.client, e)
                 await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 
@@ -69,7 +74,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                     throw e
                 }
 
-                console.error(e)
+                await reportError(interaction.client, e)
                 await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 

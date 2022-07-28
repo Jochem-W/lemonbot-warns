@@ -3,7 +3,7 @@ import {RegisteredCommands} from "../commands"
 import {Config} from "../models/config"
 import {Handler} from "../interfaces/handler"
 import {ResponseBuilder} from "../utilities/responseBuilder"
-import {CommandNotFoundByIdError, NoAutocompleteHandlerError, NoPermissionError} from "../errors"
+import {CommandNotFoundByIdError, NoAutocompleteHandlerError, NoPermissionError, reportError} from "../errors"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
     public readonly event = "interactionCreate"
@@ -50,7 +50,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
                     throw e
                 }
 
-                console.error(e)
+                await reportError(interaction.client, e)
                 await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
             }
 

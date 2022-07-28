@@ -18,7 +18,7 @@ export class NicknameChangeHandler implements Handler<"guildMemberUpdate"> {
             console.log(`Changed ${newMember.id}'s name to '${entry.name}'`)
         } catch (e) {
             if (!(e instanceof PageNotFoundError)) {
-                console.error(e)
+                throw e
             }
         }
     }

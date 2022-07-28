@@ -27,6 +27,11 @@
       "description": "Guild configuration",
       "type": "object",
       "properties": {
+        "errorChannel": {
+          "description": "The channel to log errors in",
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
         "id": {
           "description": "The guild to register commands for",
           "type": "string",
@@ -74,6 +79,7 @@
         }
       },
       "required": [
+        "errorChannel",
         "id",
         "privateChannels",
         "restart",

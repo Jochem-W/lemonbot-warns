@@ -18,7 +18,7 @@ export class TagChangeHandler implements Handler<"userUpdate"> {
             console.log(`Changed ${newUser.id}'s name to '${entry.name}'`)
         } catch (e) {
             if (!(e instanceof PageNotFoundError)) {
-                console.error(e)
+                throw e
             }
         }
     }

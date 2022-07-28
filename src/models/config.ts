@@ -13,6 +13,7 @@ interface RawConfig {
         cacheTtl: number
     }
     guild: {
+        errorChannel: string
         id: string
         privateChannels: string[]
         restart: {
@@ -45,6 +46,7 @@ class BotConfig {
 }
 
 class GuildConfig {
+    public readonly errorChannel: Snowflake
     public readonly id: Snowflake
     public readonly privateChannels: Snowflake[]
     public readonly restart: GuildRestartConfig
@@ -52,6 +54,7 @@ class GuildConfig {
     public readonly warnLogsChannel: Snowflake
 
     public constructor(data: RawConfig["guild"]) {
+        this.errorChannel = data.errorChannel
         this.id = data.id
         this.privateChannels = [...data.privateChannels]
         this.restart = new GuildRestartConfig(data.restart)

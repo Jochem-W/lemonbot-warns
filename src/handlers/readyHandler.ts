@@ -64,6 +64,10 @@ async function getChangelog(): Promise<string | null> {
     try {
         previousVersion = await readFile("persisted/version", {encoding: "utf8"})
     } catch (e) {
+        if (!isErrnoException(e) || e.code !== "ENOENT") {
+            throw e
+        }
+
         return null
     }
 
@@ -159,6 +163,10 @@ async function getState(): Promise<State> {
     try {
         return await readFile("status", "utf8") as State
     } catch (e) {
+        if (!isErrnoException(e) || e.code !== "ENOENT") {
+            throw e
+        }
+
         return "RECREATE"
     }
 }

@@ -9,6 +9,7 @@ import {
 } from "discord.js"
 import {Duration} from "luxon"
 import {ResponseBuilder} from "../utilities/responseBuilder"
+import {reportError} from "../errors"
 
 export class InteractionCollectorHelper {
     private collector: InteractionCollector<CollectedInteraction>
@@ -17,7 +18,7 @@ export class InteractionCollectorHelper {
 
     private constructor(interaction: CommandInteraction, collector: InteractionCollector<CollectedInteraction>) {
         this.interaction = interaction
-        this.collector = collector.on("end", async (_, reason) => {
+        this.collector = collector.on("end", async () => {
             try {
                 await interaction.editReply({components: this.components})
             } catch (e) {
@@ -25,7 +26,7 @@ export class InteractionCollectorHelper {
                     throw e
                 }
 
-                console.error("Unhandled exception", e, "when ending collector", collector, "with reason", reason)
+                await reportError(interaction.client, e)
             }
         })
     }
@@ -48,11 +49,11 @@ export class InteractionCollectorHelper {
                 await listener(collected)
             } catch (e) {
                 if (!(e instanceof Error)) {
-                    console.error("Unhandled error", e, "on collected interaction", collected)
                     throw e
                 }
 
-                console.error(e)
+                await reportError(this.interaction.client, e)
+
                 const message: InteractionReplyOptions = {
                     embeds: [ResponseBuilder.makeErrorEmbed(e)],
                     ephemeral: this.interaction.ephemeral ?? undefined,

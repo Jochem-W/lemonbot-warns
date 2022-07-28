@@ -13,7 +13,7 @@ import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {Config} from "./models/config"
 import {NotionDatabase} from "./models/notionDatabase"
-import {CommandNotFoundByNameError} from "./errors"
+import {CommandNotFoundByNameError, reportError} from "./errors"
 import {Command} from "./interfaces/command"
 
 const client = new Client({
@@ -61,7 +61,11 @@ void (async () => {
             try {
                 await handler.handle(...args)
             } catch (e) {
-                console.error(e)
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                await reportError(client, e)
             }
         })
     }

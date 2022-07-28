@@ -1,6 +1,8 @@
 import {Command} from "./interfaces/command"
-import {Attachment, Channel, ChannelType, CommandInteraction} from "discord.js"
+import {Attachment, Channel, ChannelType, Client, CommandInteraction} from "discord.js"
 import {CustomId} from "./models/customId"
+import {ResponseBuilder} from "./utilities/responseBuilder"
+import {Config} from "./models/config"
 
 class CustomError extends Error {
     public constructor(message: string) {
@@ -204,4 +206,18 @@ export class InvalidEmbedError extends CustomError {
     public constructor(message: string) {
         super(message)
     }
+}
+
+export async function reportError(client: Client, error: Error): Promise<void> {
+    console.error(error)
+    const channel = await client.channels.fetch(Config.guild.errorChannel)
+    if (!channel) {
+        throw new ChannelNotFoundError(Config.guild.errorChannel)
+    }
+
+    if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+        throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
+    }
+
+    await channel.send({embeds: [ResponseBuilder.makeErrorEmbed(error)]})
 }
