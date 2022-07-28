@@ -95,43 +95,18 @@ class RepositoryConfig {
     }
 }
 
-export abstract class Config {
-    private static _bot: BotConfig
+class Config {
+    private readonly _bot: BotConfig
+    private readonly _guild: GuildConfig
+    private readonly _icons: IconsConfig
+    private readonly _penalties: Penalty[]
+    private readonly _repository: RepositoryConfig
 
-    public static get bot(): BotConfig {
-        return Config._bot
-    }
-
-    private static _guild: GuildConfig
-
-    public static get guild(): GuildConfig {
-        return Config._guild
-    }
-
-    private static _icons: IconsConfig
-
-    public static get icons(): IconsConfig {
-        return Config._icons
-    }
-
-    private static _penalties: Penalty[]
-
-    public static get penalties(): Penalty[] {
-        return Config._penalties
-    }
-
-    private static _repository: RepositoryConfig
-
-    public static get repository(): RepositoryConfig {
-        return Config._repository
-    }
-
-    public static loadSync() {
-        const data = JSON.parse(readFileSync("config.json", "utf-8")) as RawConfig
-        Config._bot = new BotConfig(data.bot)
-        Config._guild = new GuildConfig(data.guild)
-        Config._icons = new IconsConfig(data.icons)
-        Config._penalties = data.penalties.map(penalty => {
+    private constructor(data: RawConfig) {
+        this._bot = new BotConfig(data.bot)
+        this._guild = new GuildConfig(data.guild)
+        this._icons = new IconsConfig(data.icons)
+        this._penalties = data.penalties.map(penalty => {
             if ("timeout" in penalty) {
                 return {
                     name: penalty.name,
@@ -162,8 +137,32 @@ export abstract class Config {
                 value: null,
             }
         })
-        Config._repository = new RepositoryConfig(data.repository)
+        this._repository = new RepositoryConfig(data.repository)
+    }
+
+    public get bot(): BotConfig {
+        return this._bot
+    }
+
+    public get guild(): GuildConfig {
+        return this._guild
+    }
+
+    public get icons(): IconsConfig {
+        return this._icons
+    }
+
+    public get penalties(): Penalty[] {
+        return this._penalties
+    }
+
+    public get repository(): RepositoryConfig {
+        return this._repository
+    }
+
+    public static loadSync() {
+        return new Config(JSON.parse(readFileSync("config.json", "utf-8")) as RawConfig)
     }
 }
 
-Config.loadSync()
+export const DefaultConfig = Config.loadSync()

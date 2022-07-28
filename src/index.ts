@@ -11,7 +11,7 @@ import {
 import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserContextMenuCommands} from "./commands"
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
-import {Config} from "./models/config"
+import {DefaultConfig} from "./models/config"
 import {NotionDatabase} from "./models/notionDatabase"
 import {CommandNotFoundByNameError, reportError} from "./errors"
 import {Command} from "./interfaces/command"
@@ -31,8 +31,8 @@ for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserC
 void (async () => {
     await NotionDatabase.getDefault()
 
-    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(Config.bot.applicationId,
-        Config.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
+    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(DefaultConfig.bot.applicationId,
+        DefaultConfig.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
 
     for (const applicationCommand of applicationCommands) {

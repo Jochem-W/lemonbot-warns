@@ -6,10 +6,10 @@ import {
     WebhookEditMessageOptions,
 } from "discord.js"
 import {NotionDatabase} from "../models/notionDatabase"
-import {NotionUtilities} from "../utilities/notionUtilities"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {BotError} from "../errors"
+import {makeEmbed} from "../utilities/responseBuilder"
+import {parseBlockObjects} from "../utilities/notionUtilities"
 
 interface ResponseOptions {
     user: User
@@ -26,7 +26,7 @@ export class WarningsCommand extends ChatInputCommand {
     }
 
     public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions[]> {
-        const embed = ResponseBuilder.makeEmbed(`Warnings for ${options.user.tag}`,
+        const embed = makeEmbed(`Warnings for ${options.user.tag}`,
             new URL(options.user.displayAvatarURL({size: 4096})))
         const messages = [{embeds: [embed]}]
 
@@ -37,7 +37,7 @@ export class WarningsCommand extends ChatInputCommand {
             return messages
         }
 
-        const parseResult = await NotionUtilities.parseBlockObjects(database.getBlocks(entry))
+        const parseResult = await parseBlockObjects(database.getBlocks(entry))
         if (parseResult.unsupportedBlocks) {
             const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
             embed.setDescription(

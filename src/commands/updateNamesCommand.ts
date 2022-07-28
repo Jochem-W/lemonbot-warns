@@ -1,10 +1,10 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {ChatInputCommandInteraction, PermissionFlagsBits, WebhookEditMessageOptions} from "discord.js"
 import {NotionDatabase} from "../models/notionDatabase"
-import {InteractionUtilities} from "../utilities/interactionUtilities"
-import {NotionUtilities} from "../utilities/notionUtilities"
-import {ResponseBuilder} from "../utilities/responseBuilder"
-import {Config} from "../models/config"
+import {DefaultConfig} from "../models/config"
+import {makeEmbed} from "../utilities/responseBuilder"
+import {fetchMember} from "../utilities/interactionUtilities"
+import {formatName} from "../utilities/notionUtilities"
 
 interface ResponseOptions {
     count: number
@@ -17,8 +17,8 @@ export class UpdateNamesCommand extends ChatInputCommand {
 
     public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
         return {
-            embeds: [ResponseBuilder.makeEmbed("Updated names",
-                Config.icons.success,
+            embeds: [makeEmbed("Updated names",
+                DefaultConfig.icons.success,
                 `${options.count} names updated`)],
         }
     }
@@ -27,8 +27,8 @@ export class UpdateNamesCommand extends ChatInputCommand {
         const database = await NotionDatabase.getDefault()
         const update = []
         for await (const entry of database.getMany()) {
-            const member = await InteractionUtilities.fetchMember(interaction, entry.id, true)
-            const name = NotionUtilities.formatName(member ?? await interaction.client.users.fetch(entry.id, {
+            const member = await fetchMember(interaction, entry.id, true)
+            const name = formatName(member ?? await interaction.client.users.fetch(entry.id, {
                 force: true,
             }))
             if (entry.name !== name) {

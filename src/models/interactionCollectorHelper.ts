@@ -8,8 +8,8 @@ import {
     WebhookEditMessageOptions,
 } from "discord.js"
 import {Duration} from "luxon"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {reportError} from "../errors"
+import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class InteractionCollectorHelper {
     private collector: InteractionCollector<CollectedInteraction>
@@ -55,7 +55,7 @@ export class InteractionCollectorHelper {
                 await reportError(this.interaction.client, e)
 
                 const message: InteractionReplyOptions = {
-                    embeds: [ResponseBuilder.makeErrorEmbed(e)],
+                    embeds: [makeErrorEmbed(e)],
                     ephemeral: this.interaction.ephemeral ?? undefined,
                 }
 

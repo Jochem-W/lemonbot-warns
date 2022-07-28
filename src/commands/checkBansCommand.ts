@@ -12,11 +12,11 @@ import {
 } from "discord.js"
 import {DateTime} from "luxon"
 import {CustomId, InteractionScope} from "../models/customId"
-import {InteractionUtilities} from "../utilities/interactionUtilities"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {GuildOnlyError} from "../errors"
 import {InteractionCollectorHelper} from "../models/interactionCollectorHelper"
+import {makeEmbed} from "../utilities/responseBuilder"
+import {fetchGuild} from "../utilities/interactionUtilities"
 
 interface ResponseOptions {
     bans: string[]
@@ -35,7 +35,7 @@ export class CheckBansCommand extends ChatInputCommand {
 
         return {
             embeds: [
-                ResponseBuilder.makeEmbed("Wrongfully auto-banned users")
+                makeEmbed("Wrongfully auto-banned users")
                     .setTitle(
                         `The following ${options.bans.length.toString()} users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days.`)
                     .setDescription(options.bans.slice(offset, offset + options.pageLimit).join("\n") || null),
@@ -59,7 +59,7 @@ export class CheckBansCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-        const guild = await InteractionUtilities.fetchGuild(interaction)
+        const guild = await fetchGuild(interaction)
         if (!guild) {
             throw new GuildOnlyError()
         }

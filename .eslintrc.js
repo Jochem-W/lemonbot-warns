@@ -9,9 +9,6 @@ module.exports = {
         // What's the point of string interpolation if you use this rule?
         "@typescript-eslint/restrict-template-expressions": "off",
 
-        // FIXME
-        "@typescript-eslint/no-extraneous-class": "off",
-
         // This rule doesn't seem to work well with @typescript-eslint/no-non-null-assertion
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
     },

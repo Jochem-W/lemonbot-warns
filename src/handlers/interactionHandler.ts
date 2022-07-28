@@ -2,13 +2,13 @@ import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "
 import {CustomId, InteractionScope} from "../models/customId"
 import {RegisteredCommands} from "../commands"
 import {Handler} from "../interfaces/handler"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {
     CommandNotFoundByIdError,
     CommandNotFoundByNameError,
     NoMessageComponentHandlerError,
     reportError,
 } from "../errors"
+import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
@@ -60,7 +60,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                 }
 
                 await reportError(interaction.client, e)
-                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
+                await interaction.editReply({embeds: [makeErrorEmbed(e)]})
             }
 
             return
@@ -75,7 +75,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
                 }
 
                 await reportError(interaction.client, e)
-                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
+                await interaction.editReply({embeds: [makeErrorEmbed(e)]})
             }
 
             return

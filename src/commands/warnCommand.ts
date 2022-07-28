@@ -27,13 +27,9 @@ import {
 import {NotionDatabase, NotionDatabaseEntry} from "../models/notionDatabase"
 import {SelectPropertyRequest} from "../types/notion"
 import MIMEType from "whatwg-mimetype"
-import {InteractionUtilities} from "../utilities/interactionUtilities"
 import {DateTime, Duration} from "luxon"
-import {NotionUtilities} from "../utilities/notionUtilities"
-import {Config, Penalty} from "../models/config"
+import {DefaultConfig, Penalty} from "../models/config"
 import {ChatInputCommand} from "../models/chatInputCommand"
-import {FirebaseUtilities} from "../utilities/firebaseUtilities"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {CustomId, InteractionScope} from "../models/customId"
 import {customAlphabet} from "nanoid"
 import {nolookalikesSafe} from "nanoid-dictionary"
@@ -48,6 +44,10 @@ import {
     NoContentTypeError,
     reportError,
 } from "../errors"
+import {addNotesButton, makeEmbed} from "../utilities/responseBuilder"
+import {fetchGuild, fetchMember} from "../utilities/interactionUtilities"
+import {uploadAttachment} from "../utilities/firebaseUtilities"
+import {formatName, generateWarnNote} from "../utilities/notionUtilities"
 
 export interface ResponseOptions {
     entry: NotionDatabaseEntry
@@ -85,7 +85,7 @@ export class WarnCommand extends ChatInputCommand {
                 .setName("penalty")
                 .setDescription("Penalty level for the user, automatically applied if notify is True")
                 .setRequired(true)
-                .setChoices(...Config.penalties.map(penalty => {
+                .setChoices(...DefaultConfig.penalties.map(penalty => {
                     return {name: penalty.name, value: penalty.name}
                 })))
             .addBooleanOption(option => option
@@ -218,7 +218,7 @@ export class WarnCommand extends ChatInputCommand {
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
         const tag = options.targetUser.tag
 
-        const embed = ResponseBuilder.makeEmbed(`${WarnCommand.formatTitle(options, {verbOnly: true})} ${tag}`,
+        const embed = makeEmbed(`${WarnCommand.formatTitle(options, {verbOnly: true})} ${tag}`,
             new URL(avatar))
             .addFields([
                 {
@@ -241,7 +241,7 @@ export class WarnCommand extends ChatInputCommand {
                 embed.setImage(options.images[0])
             }
 
-            return ResponseBuilder.addNotesButton({embeds: [embed]}, options.entry.url)
+            return addNotesButton({embeds: [embed]}, options.entry.url)
         }
 
         const embeds = [embed]
@@ -249,16 +249,16 @@ export class WarnCommand extends ChatInputCommand {
             embeds.push(new EmbedBuilder().setImage(image))
         }
 
-        return ResponseBuilder.addNotesButton({embeds: embeds}, options.entry.url)
+        return addNotesButton({embeds: embeds}, options.entry.url)
     }
 
     public static buildDM(options: ResponseOptions): WebhookMessageOptions {
-        const embed = ResponseBuilder.makeEmbed(`You have been ${WarnCommand.formatTitle(options, {
+        const embed = makeEmbed(`You have been ${WarnCommand.formatTitle(options, {
             ignoreNotified: true,
             includeGuild: true,
             lowercase: true,
             verbOnly: true,
-        })}`, Config.icons.warning)
+        })}`, DefaultConfig.icons.warning)
             .setColor("#ff0000")
             .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
             .setTimestamp(options.timestamp.toMillis())
@@ -297,14 +297,14 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-        const guild = await InteractionUtilities.fetchGuild(interaction)
+        const guild = await fetchGuild(interaction)
         if (!guild) {
             throw new GuildOnlyError()
         }
 
-        const warnLogsChannel = await guild.channels.fetch(Config.guild.warnLogsChannel)
+        const warnLogsChannel = await guild.channels.fetch(DefaultConfig.guild.warnLogsChannel)
         if (!warnLogsChannel) {
-            throw new ChannelNotFoundError(Config.guild.warnLogsChannel)
+            throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
         }
 
         if (!warnLogsChannel.isTextBased() || warnLogsChannel.type !== ChannelType.GuildText) {
@@ -312,7 +312,7 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         const penaltyName = interaction.options.getString("penalty", true)
-        const penalty = Config.penalties.find(p => p.name === penaltyName)
+        const penalty = DefaultConfig.penalties.find(p => p.name === penaltyName)
         if (!penalty) {
             throw new InvalidPenaltyError(penaltyName)
         }
@@ -342,14 +342,14 @@ export class WarnCommand extends ChatInputCommand {
                 throw new ImageOnlyError(image)
             }
 
-            const result = await FirebaseUtilities.uploadAttachment(image)
+            const result = await uploadAttachment(image)
             images.push(result.url)
         }
 
         const user = interaction.options.getUser("user", true)
         const description = interaction.options.getString("description", true)
 
-        const member = await InteractionUtilities.fetchMember(interaction, user)
+        const member = await fetchMember(interaction, user)
 
         const database = await NotionDatabase.getDefault()
         let entry = await database.get({id: user.id})
@@ -357,13 +357,13 @@ export class WarnCommand extends ChatInputCommand {
             entry = await database.create(user.id, {
                 currentPenaltyLevel: penalty.name,
                 watchlist: false,
-                name: NotionUtilities.formatName(member ?? user),
+                name: formatName(member ?? user),
                 reasons: reasons,
             })
         } else {
             entry = await database.update(entry, {
                 currentPenaltyLevel: penalty.name,
-                name: NotionUtilities.formatName(member ?? user),
+                name: formatName(member ?? user),
                 reasons: (entry.reasons as SelectPropertyRequest[]).concat(reasons),
             })
         }
@@ -381,7 +381,7 @@ export class WarnCommand extends ChatInputCommand {
             guild: guild,
         }
 
-        await database.appendBlocks(entry, NotionUtilities.generateWarnNote(options))
+        await database.appendBlocks(entry, generateWarnNote(options))
 
         if (interaction.options.getBoolean("notify", true)) {
             options.notified = false
@@ -402,7 +402,7 @@ export class WarnCommand extends ChatInputCommand {
             const newChannel = await guild.channels.create({
                 name: channelName,
                 type: ChannelType.GuildText,
-                parent: Config.guild.warnCategory,
+                parent: DefaultConfig.guild.warnCategory,
                 reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
@@ -486,8 +486,8 @@ export class WarnCommand extends ChatInputCommand {
 
         if (interaction.user.id !== userId) {
             await interaction.reply({
-                embeds: [ResponseBuilder.makeEmbed("Something went wrong while handling this interaction",
-                    Config.icons.fail,
+                embeds: [makeEmbed("Something went wrong while handling this interaction",
+                    DefaultConfig.icons.fail,
                     "You can't use this component!")],
                 ephemeral: true,
             })

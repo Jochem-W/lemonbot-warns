@@ -1,8 +1,8 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {ChatInputCommandInteraction, inlineCode, PermissionFlagsBits, WebhookEditMessageOptions} from "discord.js"
 import {Duration} from "luxon"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {Variables} from "../variables"
+import {makeEmbed} from "../utilities/responseBuilder"
 
 interface ResponseOptions {
     ping: number
@@ -22,7 +22,7 @@ export class StatusCommand extends ChatInputCommand {
             .filter(([, value]) => value !== 0)))
 
         return {
-            embeds: [ResponseBuilder.makeEmbed("Status")
+            embeds: [makeEmbed("Status")
                 .addFields({
                     name: "Ping",
                     value: inlineCode(`${options.ping}ms`),

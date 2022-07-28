@@ -1,8 +1,8 @@
 import {PartialUser, User} from "discord.js"
 import {NotionDatabase} from "../models/notionDatabase"
-import {NotionUtilities} from "../utilities/notionUtilities"
 import {Handler} from "../interfaces/handler"
 import {PageNotFoundError} from "../errors"
+import {formatName} from "../utilities/notionUtilities"
 
 export class TagChangeHandler implements Handler<"userUpdate"> {
     public readonly event = "userUpdate"
@@ -14,7 +14,7 @@ export class TagChangeHandler implements Handler<"userUpdate"> {
 
         const database = await NotionDatabase.getDefault()
         try {
-            const entry = await database.update(newUser, {name: NotionUtilities.formatName(newUser)})
+            const entry = await database.update(newUser, {name: formatName(newUser)})
             console.log(`Changed ${newUser.id}'s name to '${entry.name}'`)
         } catch (e) {
             if (!(e instanceof PageNotFoundError)) {

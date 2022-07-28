@@ -1,9 +1,9 @@
 import {AutocompleteInteraction, CommandInteraction, Interaction} from "discord.js"
 import {RegisteredCommands} from "../commands"
-import {Config} from "../models/config"
+import {DefaultConfig} from "../models/config"
 import {Handler} from "../interfaces/handler"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {CommandNotFoundByIdError, NoAutocompleteHandlerError, NoPermissionError, reportError} from "../errors"
+import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
     public readonly event = "interactionCreate"
@@ -42,7 +42,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
         }
 
         if (interaction instanceof CommandInteraction) {
-            await interaction.deferReply({ephemeral: !Config.guild.privateChannels.includes(interaction.channelId)})
+            await interaction.deferReply({ephemeral: !DefaultConfig.guild.privateChannels.includes(interaction.channelId)})
             try {
                 await CommandHandler.handleCommand(interaction)
             } catch (e) {
@@ -51,7 +51,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
                 }
 
                 await reportError(interaction.client, e)
-                await interaction.editReply({embeds: [ResponseBuilder.makeErrorEmbed(e)]})
+                await interaction.editReply({embeds: [makeErrorEmbed(e)]})
             }
 
             return

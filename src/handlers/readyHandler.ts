@@ -1,12 +1,12 @@
 import {ChannelType, Client, codeBlock, userMention} from "discord.js"
 import {mkdir, readFile, writeFile} from "fs/promises"
-import {Config} from "../models/config"
+import {DefaultConfig} from "../models/config"
 import {Handler} from "../interfaces/handler"
-import {ResponseBuilder} from "../utilities/responseBuilder"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 import {writeFileSync} from "fs"
 import {Variables} from "../variables"
 import {Octokit} from "octokit"
+import {makeEmbed} from "../utilities/responseBuilder"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -29,9 +29,9 @@ export class ReadyHandler implements Handler<"ready"> {
                 break
         }
 
-        const channel = await client.channels.fetch(Config.guild.restart.channel)
+        const channel = await client.channels.fetch(DefaultConfig.guild.restart.channel)
         if (!channel) {
-            throw new ChannelNotFoundError(Config.guild.restart.channel)
+            throw new ChannelNotFoundError(DefaultConfig.guild.restart.channel)
         }
 
         if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
@@ -39,8 +39,8 @@ export class ReadyHandler implements Handler<"ready"> {
         }
 
         await channel.send({
-            content: userMention(Config.guild.restart.user),
-            embeds: [ResponseBuilder.makeEmbed(title).setDescription(await getChangelog())],
+            content: userMention(DefaultConfig.guild.restart.user),
+            embeds: [makeEmbed(title).setDescription(await getChangelog())],
         })
 
         await setState("UP")
@@ -80,8 +80,8 @@ async function getChangelog(): Promise<string | null> {
     const response = await octokit.rest.repos.compareCommits({
         base: previousVersion.trim(),
         head: Variables.commitHash,
-        owner: Config.repository.owner,
-        repo: Config.repository.name,
+        owner: DefaultConfig.repository.owner,
+        repo: DefaultConfig.repository.name,
     })
 
     let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`

@@ -3,7 +3,7 @@ import {DateTime} from "luxon"
 import {BlockObjectRequest, BlockObjectResponse, SelectPropertyRequest, SelectPropertyResponse} from "../types/notion"
 import {Variables} from "../variables"
 import LRUCache from "lru-cache"
-import {Config} from "./config"
+import {DefaultConfig} from "./config"
 import {
     GetPagePropertyParameters,
     PropertyItemObjectResponse,
@@ -67,7 +67,7 @@ export class NotionDatabase {
     private readonly namePropertyId: string
 
     private readonly cache = new LRUCache({
-        ttl: Config.bot.cacheTtl.toMillis(),
+        ttl: DefaultConfig.bot.cacheTtl.toMillis(),
         ttlAutopurge: true,
         fetchMethod: async (key: string) => {
             switch (key) {
