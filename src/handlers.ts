@@ -5,6 +5,7 @@ import {Handler} from "./interfaces/handler"
 import {CommandHandler} from "./handlers/commandHandler"
 import {NicknameChangeHandler} from "./handlers/tagChangeHandler"
 import {TagChangeHandler} from "./handlers/nicknameChangeHandler"
+import {MemberRemoveHandler} from "./handlers/memberRemoveHandler"
 
 export const Handlers: Handler<keyof ClientEvents>[] = [
     new CommandHandler(),
@@ -12,4 +13,5 @@ export const Handlers: Handler<keyof ClientEvents>[] = [
     new NicknameChangeHandler(),
     new ReadyHandler(),
     new TagChangeHandler(),
+    new MemberRemoveHandler(),
 ]
