@@ -242,16 +242,16 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Custom
-.github
 .dockerignore
 .env.example
+.eslintignore
+.eslintrc.js
+.github
 .gitignore
 config.example.json
 config.schema.json
 docker-compose.yml
-Dockerfile
 firebase.example.json
-LICENSE
-README.md
-status
 persisted
+status
+tsconfig.debug.json

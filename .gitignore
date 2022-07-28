@@ -242,7 +242,7 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Custom
-status
-firebase.json
 config.json
+firebase.json
 persisted
+status
