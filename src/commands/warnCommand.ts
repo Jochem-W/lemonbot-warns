@@ -383,7 +383,8 @@ export class WarnCommand extends ChatInputCommand {
 
         await database.appendBlocks(entry, generateWarnNote(options))
 
-        if (interaction.options.getBoolean("notify", true)) {
+        const notify = interaction.options.getBoolean("notify", true)
+        if (notify) {
             options.notified = false
             try {
                 await options.targetUser.send(WarnCommand.buildDM(options))
@@ -429,7 +430,7 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         const reason = WarnCommand.formatTitle(options, {includeReasons: true})
-        if (options.notified !== false && options.notified !== undefined) {
+        if (notify) {
             try {
                 if (penalty.value === "ban") {
                     if (options.targetMember) {
