@@ -184,7 +184,7 @@ export class WarnCommand extends ChatInputCommand {
                 `\n• Notification: ${inlineCode(`✅ (mentioned in`)} ${channelMention(options.notified.id)} ${inlineCode(
                     ")")}`
         } else if (options.notified === false) {
-            administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM or mention)")}`
+            administrationText += `\n• Notification: ${inlineCode("❌ (failed to DM)")}`
         } else {
             administrationText += `\n• Notification: ${inlineCode("❌ (notify was False)")}`
         }
@@ -396,7 +396,7 @@ export class WarnCommand extends ChatInputCommand {
             }
         }
 
-        if (options.notified === false && options.targetMember) {
+        if (options.notified === false && options.targetMember && penalty.value !== "ban" && penalty.value !== "kick") {
             const nanoid = customAlphabet(nolookalikesSafe)
             const channelName = `${options.targetUser.username}-${options.targetUser.discriminator}-${nanoid(4)}`
 
