@@ -468,7 +468,17 @@ export class WarnCommand extends ChatInputCommand {
 
         await database.appendBlocks(entry, generateWarnNote(options))
         const response = WarnCommand.buildResponse(options)
-        await interaction.editReply(response)
+        try {
+            await interaction.editReply(response)
+        } catch (e) {
+            if (!(e instanceof DiscordAPIError) || e.code !== RESTJSONErrorCodes.UnknownMessage) {
+                throw e
+            }
+
+            await warnLogsChannel.send(response)
+            return
+        }
+
         if (interaction.channelId !== warnLogsChannel.id) {
             await warnLogsChannel.send(response)
         }
