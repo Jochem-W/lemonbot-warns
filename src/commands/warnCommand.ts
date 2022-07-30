@@ -381,9 +381,46 @@ export class WarnCommand extends ChatInputCommand {
             guild: guild,
         }
 
-        await database.appendBlocks(entry, generateWarnNote(options))
-
         const notify = interaction.options.getBoolean("notify", true)
+        const reason = WarnCommand.formatTitle(options, {includeReasons: true})
+        if (notify) {
+            try {
+                if (penalty.value === "ban") {
+                    if (options.targetMember) {
+                        await options.targetMember.ban({reason: reason})
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else if (penalty.value instanceof Duration) {
+                    if (options.targetMember) {
+                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else if (penalty.value === "kick") {
+                    if (options.targetMember) {
+                        await options.targetMember.kick(reason)
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else {
+                    options.penalised = "applied"
+                }
+            } catch (e) {
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                await reportError(interaction.client, e)
+                options.penalised = "error"
+            }
+        } else {
+            options.penalised = "not_notified"
+        }
+
         if (notify) {
             options.notified = false
             try {
@@ -429,45 +466,7 @@ export class WarnCommand extends ChatInputCommand {
             options.notified = newChannel
         }
 
-        const reason = WarnCommand.formatTitle(options, {includeReasons: true})
-        if (notify) {
-            try {
-                if (penalty.value === "ban") {
-                    if (options.targetMember) {
-                        await options.targetMember.ban({reason: reason})
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else if (penalty.value instanceof Duration) {
-                    if (options.targetMember) {
-                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else if (penalty.value === "kick") {
-                    if (options.targetMember) {
-                        await options.targetMember.kick(reason)
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else {
-                    options.penalised = "applied"
-                }
-            } catch (e) {
-                if (!(e instanceof Error)) {
-                    throw e
-                }
-
-                await reportError(interaction.client, e)
-                options.penalised = "error"
-            }
-        } else {
-            options.penalised = "not_notified"
-        }
-
+        await database.appendBlocks(entry, generateWarnNote(options))
         const response = WarnCommand.buildResponse(options)
         await interaction.editReply(response)
         if (interaction.channelId !== warnLogsChannel.id) {
