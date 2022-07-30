@@ -176,7 +176,7 @@ export function generateWarnNote(data: ResponseOptions): BlockObjectRequest[] {
                 rich_text: [
                     {
                         text: {
-                            content: WarnCommand.formatTitle(data, {includeReasons: true}),
+                            content: WarnCommand.formatTitle(data, {includeReasons: true}) + " ",
                         },
                     },
                     {
