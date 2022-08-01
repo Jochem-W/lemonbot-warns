@@ -1,7 +1,7 @@
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle,
+    ButtonStyle, codeBlock,
     EmbedBuilder,
     MessageActionRowComponentBuilder,
     MessageOptions,
@@ -25,9 +25,15 @@ export function makeEmbed(authorName: string,
 }
 
 export function makeErrorEmbed(error: Error): EmbedBuilder {
-    return makeEmbed("An error has occurred", DefaultConfig.icons.fail, error.message)
+    if (error.stack) {
+        return makeEmbed("An unexpected error has occurred", DefaultConfig.icons.fail)
+            .setDescription(codeBlock(error.stack))
+            .setColor("#ff0000")
+    }
+
+    return makeEmbed(error.constructor.name, DefaultConfig.icons.fail)
+        .setDescription(codeBlock(error.message))
         .setColor("#ff0000")
-        .setFooter({text: error.constructor.name})
 }
 
 export function append(embed: EmbedBuilder, content: string, separator = "\n\n"): EmbedBuilder {
