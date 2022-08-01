@@ -1,7 +1,8 @@
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle, codeBlock,
+    ButtonStyle,
+    codeBlock,
     EmbedBuilder,
     MessageActionRowComponentBuilder,
     MessageOptions,
