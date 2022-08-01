@@ -1,7 +1,6 @@
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonInteraction,
     ButtonStyle,
     ChatInputCommandInteraction,
     inlineCode,
@@ -82,7 +81,7 @@ export class CheckBansCommand extends ChatInputCommand {
 
         const collector = await InteractionCollectorHelper.create(interaction)
         collector.addListener(async collected => {
-            if (!(collected instanceof ButtonInteraction)) {
+            if (!collected.isButton()) {
                 console.error("Unhandled interaction", collected, "in collector for command", this)
                 return
             }
