@@ -62,6 +62,7 @@ export interface ResponseOptions {
     penalised?: "applied" | "error" | "not_in_server" | "not_notified"
     timestamp: DateTime
     guild: Guild
+    notify: boolean
 }
 
 export class WarnCommand extends ChatInputCommand {
@@ -122,7 +123,6 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     public static formatTitle(data: ResponseOptions, options?: {
-        ignoreNotified?: boolean
         includeReasons?: boolean
         includeGuild?: boolean
         lowercase?: boolean
@@ -130,7 +130,7 @@ export class WarnCommand extends ChatInputCommand {
     }) {
         let title: string
         let preposition: string
-        if (!options?.ignoreNotified && !data.notified) {
+        if (!data.notify) {
             title = "Silently warned"
             preposition = "in"
         } else if (data.penalty.value instanceof Duration) {
@@ -254,7 +254,6 @@ export class WarnCommand extends ChatInputCommand {
 
     public static buildDM(options: ResponseOptions): WebhookMessageOptions {
         const embed = makeEmbed(`You have been ${WarnCommand.formatTitle(options, {
-            ignoreNotified: true,
             includeGuild: true,
             lowercase: true,
             verbOnly: true,
@@ -379,49 +378,11 @@ export class WarnCommand extends ChatInputCommand {
             warnedBy: interaction.user,
             timestamp: DateTime.now(),
             guild: guild,
+            notify: interaction.options.getBoolean("notify", true),
         }
 
-        const notify = interaction.options.getBoolean("notify", true)
-        const reason = WarnCommand.formatTitle(options, {includeReasons: true})
-        if (notify) {
-            try {
-                if (penalty.value === "ban") {
-                    if (options.targetMember) {
-                        await options.targetMember.ban({reason: reason})
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else if (penalty.value instanceof Duration) {
-                    if (options.targetMember) {
-                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else if (penalty.value === "kick") {
-                    if (options.targetMember) {
-                        await options.targetMember.kick(reason)
-                        options.penalised = "applied"
-                    } else {
-                        options.penalised = "not_in_server"
-                    }
-                } else {
-                    options.penalised = "applied"
-                }
-            } catch (e) {
-                if (!(e instanceof Error)) {
-                    throw e
-                }
 
-                await reportError(interaction.client, e)
-                options.penalised = "error"
-            }
-        } else {
-            options.penalised = "not_notified"
-        }
-
-        if (notify) {
+        if (options.notify) {
             options.notified = false
             try {
                 await options.targetUser.send(WarnCommand.buildDM(options))
@@ -464,6 +425,45 @@ export class WarnCommand extends ChatInputCommand {
             })
 
             options.notified = newChannel
+        }
+
+        const reason = WarnCommand.formatTitle(options, {includeReasons: true})
+        if (options.notify) {
+            try {
+                if (penalty.value === "ban") {
+                    if (options.targetMember) {
+                        await options.targetMember.ban({reason: reason})
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else if (penalty.value instanceof Duration) {
+                    if (options.targetMember) {
+                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else if (penalty.value === "kick") {
+                    if (options.targetMember) {
+                        await options.targetMember.kick(reason)
+                        options.penalised = "applied"
+                    } else {
+                        options.penalised = "not_in_server"
+                    }
+                } else {
+                    options.penalised = "applied"
+                }
+            } catch (e) {
+                if (!(e instanceof Error)) {
+                    throw e
+                }
+
+                await reportError(interaction.client, e)
+                options.penalised = "error"
+            }
+        } else {
+            options.penalised = "not_notified"
         }
 
         await database.appendBlocks(entry, generateWarnNote(options))
