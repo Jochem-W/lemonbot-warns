@@ -5,8 +5,8 @@ import {Handler} from "../interfaces/handler"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 import {writeFileSync} from "fs"
 import {Variables} from "../variables"
-import {Octokit} from "octokit"
 import {makeEmbed} from "../utilities/responseBuilder"
+import {Octokit} from "@octokit/rest"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
