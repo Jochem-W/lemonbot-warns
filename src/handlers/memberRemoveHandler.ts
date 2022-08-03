@@ -10,7 +10,6 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
 
     public async handle(member: GuildMember | PartialGuildMember): Promise<void> {
         const user = await member.client.users.fetch(member.id)
-
         const database = await NotionDatabase.getDefault()
         try {
             const entry = await database.update(user, {name: formatName(user)})
@@ -33,7 +32,12 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
         }
 
         for (const child of warnCategory.children.cache.values()) {
-            if (child.type === ChannelType.GuildText && child.topic === user.id) {
+            if (child.type !== ChannelType.GuildText) {
+                continue
+            }
+
+            const messages = await child.messages.fetch({limit: 1})
+            if (messages.some(message => message.author === member.client.user && message.mentions.has(user))) {
                 await child.delete()
             }
         }

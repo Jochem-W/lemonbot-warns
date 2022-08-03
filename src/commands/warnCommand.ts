@@ -402,7 +402,6 @@ export class WarnCommand extends ChatInputCommand {
                 name: channelName,
                 type: ChannelType.GuildText,
                 parent: DefaultConfig.guild.warnCategory,
-                topic: options.targetMember.id,
                 reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
