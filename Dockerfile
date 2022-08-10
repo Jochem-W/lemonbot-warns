@@ -16,7 +16,7 @@ COPY . .
 
 # Compile Typescript and remove dev packages
 RUN pnpm tsc && \
-    prisma generate && \
+    pnpm prisma generate && \
     pnpm prune --prod
 
 
