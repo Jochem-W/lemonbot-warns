@@ -9,3 +9,11 @@ services:
     volumes:
       - ./persisted:/app/persisted
     restart: unless-stopped
+  db:
+    image: postgres:latest
+    env_file: .env.db
+    environment:
+      POSTGRES_USER: lemonbot-warns
+    volumes:
+      - ./persisted/db:/var/lib/postgresql/data
+    restart: unless-stopped

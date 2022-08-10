@@ -48,6 +48,7 @@ import {addNotesButton, makeEmbed} from "../utilities/responseBuilder"
 import {fetchGuild, fetchMember} from "../utilities/interactionUtilities"
 import {uploadAttachment} from "../utilities/firebaseUtilities"
 import {formatName, generateWarnNote} from "../utilities/notionUtilities"
+import {Prisma} from "../clients"
 
 export interface ResponseOptions {
     entry: NotionDatabaseEntry
@@ -482,6 +483,35 @@ export class WarnCommand extends ChatInputCommand {
         if (interaction.channelId !== warnLogsChannel.id) {
             await warnLogsChannel.send(response)
         }
+
+        await Prisma.warning.create({
+            data: {
+                createdAt: interaction.createdAt,
+                description: options.description,
+                images: options.images,
+                silent: !options.notify,
+                warnedBy: options.warnedBy.id,
+                penalty: {
+                    connect: {
+                        name: options.penalty.name,
+                    },
+                },
+                reasons: {
+                    connect: options.reasons.map(reason => ({name: reason.name})),
+                },
+                user: {
+                    connectOrCreate: {
+                        where: {
+                            discordId: options.targetUser.id,
+                        },
+                        create: {
+                            discordId: options.targetUser.id,
+                            priority: false,
+                        },
+                    },
+                },
+            },
+        })
     }
 
     public async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {

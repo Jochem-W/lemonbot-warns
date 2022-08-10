@@ -243,6 +243,7 @@ $RECYCLE.BIN/
 
 ### Custom
 .dockerignore
+.env.db.example
 .env.example
 .eslintignore
 .eslintrc.js

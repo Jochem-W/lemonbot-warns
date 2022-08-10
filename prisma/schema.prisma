@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Colour {
+  LIGHT_GREY
+  GREY
+  RED
+  ORANGE
+  AMBER
+  YELLOW
+  LIME
+  GREEN
+  EMERALD
+  TEAL
+  CYAN
+  SKY
+  BLUE
+  INDIGO
+  VIOLET
+  PURPLE
+  FUCHSIA
+  PINK
+  ROSE
+}
+
+model User {
+  id Int @id @default(autoincrement())
+
+  discordId String  @unique
+  priority  Boolean
+
+  currentPenalty   Penalty? @relation(fields: [currentPenaltyId], references: [id])
+  currentPenaltyId Int?
+
+  warnings Warning[]
+}
+
+model Warning {
+  id Int @id @default(autoincrement())
+
+  createdAt   DateTime
+  description String
+  images      String[]
+  silent      Boolean
+  warnedBy    String
+
+  penalty   Penalty @relation(fields: [penaltyId], references: [id])
+  penaltyId Int
+
+  reasons Reason[]
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model Reason {
+  id Int @id @default(autoincrement())
+
+  colour Colour
+  name   String @unique
+
+  warnings Warning[]
+}
+
+model Penalty {
+  id Int @id @default(autoincrement())
+
+  colour Colour
+  name   String @unique
+
+  ban     Boolean
+  kick    Boolean
+  timeout Int?
+
+  users User[]
+
+  warnings Warning[]
+}

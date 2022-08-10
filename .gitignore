@@ -242,6 +242,7 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Custom
+.env.db
 config.json
 firebase.json
 persisted

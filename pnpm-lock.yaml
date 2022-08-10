@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@notionhq/client': ^2.1.1
   '@octokit/rest': ^19.0.3
+  '@prisma/client': ^4.2.0
   '@tsconfig/node18': ^1.0.1
   '@types/luxon': ^3.0.0
   '@types/nanoid-dictionary': ^4.2.0
@@ -19,6 +20,7 @@ specifiers:
   luxon: ^3.0.1
   nanoid: ^3.3.4
   nanoid-dictionary: ^4.3.0
+  prisma: ^4.2.0
   typescript: ^4.7.4
   utf-8-validate: ^5.0.9
   whatwg-mimetype: ^3.0.0
@@ -27,6 +29,7 @@ specifiers:
 dependencies:
   '@notionhq/client': 2.1.1
   '@octokit/rest': 19.0.3
+  '@prisma/client': 4.2.0_prisma@4.2.0
   discord.js: 14.1.2_22kvxa7zeyivx4jp72v2w3pkvy
   firebase-admin: 11.0.1_@firebase+app-types@0.7.0
   lru-cache: 7.13.2
@@ -50,6 +53,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.32.0_iosr3hrei2tubxveewluhu5lhy
   '@typescript-eslint/parser': 5.32.0_qugx7qdu5zevzvxaiqyxfiwquq
   eslint: 8.21.0
+  prisma: 4.2.0
   typescript: 4.7.4
 
 packages:
@@ -445,6 +449,28 @@ packages:
     resolution: { integrity: sha512-UdkG3mLEqXgnlKsWanWcgb6dOjUzJ+XC5f+aWw30qrtjxeNUSfKX1cd5FBzOaXQumoe9nIqeZUvrRJS03HCCtw== }
     engines: { node: '>=10.13.0' }
     dev: false
+
+  /@prisma/client/4.2.0_prisma@4.2.0:
+    resolution: { integrity: sha512-Q/X8fi1UBufCrkdLk188sC/roiGxEm1V3qU4uEP5SyleO5n2A+FyC62S7+4I0hu57CU3c7Ls3YjqPiZyTHVGOw== }
+    engines: { node: '>=14.17' }
+    requiresBuild: true
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+    dependencies:
+      '@prisma/engines-version': 4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826
+      prisma: 4.2.0
+    dev: false
+
+  /@prisma/engines-version/4.2.0-33.2920a97877e12e055c1333079b8d19cee7f33826:
+    resolution: { integrity: sha512-tktkqdiwqE4QhmE088boPt+FwPj1Jub/zk+5F6sEfcRHzO5yz9jyMD5HFVtiwxZPLx/8Xg9ElnuTi8E5lWVQFQ== }
+    dev: false
+
+  /@prisma/engines/4.2.0:
+    resolution: { integrity: sha512-tefRwCVDwLqk0WrBLErYR26uKKxzLSlKvRyADFiQn/fizJhqk9nxMXH8F6SE4w6r/szUQTzIJ4vheJKQ4dYKpw== }
+    requiresBuild: true
 
   /@protobufjs/aspromise/1.1.2:
     resolution: { integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ== }
@@ -1991,6 +2017,14 @@ packages:
     resolution: { integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g== }
     engines: { node: '>= 0.8.0' }
     dev: true
+
+  /prisma/4.2.0:
+    resolution: { integrity: sha512-EswC2+mFi2oKQ/IDVkokDxwAsuiuYH4gKGkNNMAQ+86f3qwOo4tiVubCRxrQp5d61F+Yf+30f8Sv0zwWMnj0XQ== }
+    engines: { node: '>=14.17' }
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 4.2.0
 
   /proto3-json-serializer/0.1.9:
     resolution: { integrity: sha512-A60IisqvnuI45qNRygJjrnNjX2TMdQGMY+57tR3nul3ZgO2zXkR9OGR8AXxJhkqx84g0FTnrfi3D5fWMSdANdQ== }

@@ -8,7 +8,8 @@ The bot uses Docker to ensure a consistent build and runtime environment.
 
 1. Install the latest version of Docker and Docker Compose
 2. Clone the repository
-3. Edit `.env.example`, `firebase.example.json` and `config.example.json`
+3. Edit `.env.example`, `.env.db.example`, `firebase.example.json` and `config.example.json`
+4. Push the Prisma schema to the database using `prisma db push`
 
 ## Running the bot
 
