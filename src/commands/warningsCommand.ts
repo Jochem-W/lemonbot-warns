@@ -1,5 +1,6 @@
 import {
     ChatInputCommandInteraction,
+    GuildMember,
     inlineCode,
     PermissionFlagsBits,
     User,
@@ -9,10 +10,12 @@ import {NotionDatabase} from "../models/notionDatabase"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {BotError} from "../errors"
 import {makeEmbed} from "../utilities/responseBuilder"
-import {parseBlockObjects} from "../utilities/notionUtilities"
+import {formatName, parseBlockObjects} from "../utilities/notionUtilities"
+import {fetchMember} from "../utilities/interactionUtilities"
 
 interface ResponseOptions {
     user: User
+    member?: GuildMember
 }
 
 export class WarningsCommand extends ChatInputCommand {
@@ -26,7 +29,7 @@ export class WarningsCommand extends ChatInputCommand {
     }
 
     public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions[]> {
-        const embed = makeEmbed(`Warnings for ${options.user.tag}`,
+        const embed = makeEmbed(`Warnings for ${formatName(options.member ?? options.user)}`,
             new URL(options.user.displayAvatarURL({size: 4096})))
         const messages = [{embeds: [embed]}]
 
@@ -73,8 +76,11 @@ export class WarningsCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+        const user = interaction.options.getUser("user", true)
+
         const messages = await WarningsCommand.buildResponse({
-            user: interaction.options.getUser("user", true),
+            user,
+            member: await fetchMember(interaction, user) ?? undefined,
         })
 
         if (!messages[0]) {
