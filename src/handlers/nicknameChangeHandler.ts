@@ -6,6 +6,7 @@ import {formatName} from "../utilities/notionUtilities"
 
 export class NicknameChangeHandler implements Handler<"guildMemberUpdate"> {
     public readonly event = "guildMemberUpdate"
+    public readonly once = false
 
     public async handle(oldMember: GuildMember | PartialGuildMember, newMember: GuildMember): Promise<void> {
         if (!oldMember.partial && oldMember.nickname === newMember.nickname) {

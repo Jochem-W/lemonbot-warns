@@ -7,6 +7,7 @@ import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
     public readonly event = "interactionCreate"
+    public readonly once = false
 
     private static async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
         const command = RegisteredCommands.get(interaction.commandId)

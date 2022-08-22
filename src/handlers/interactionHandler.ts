@@ -13,6 +13,7 @@ import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
     public readonly event = "interactionCreate"
+    public readonly once = false
 
     private static async handleMessageComponent(interaction: MessageComponentInteraction): Promise<void> {
         const data = CustomId.fromString(interaction.customId)

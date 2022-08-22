@@ -6,6 +6,7 @@ import {formatName} from "../utilities/notionUtilities"
 
 export class TagChangeHandler implements Handler<"userUpdate"> {
     public readonly event = "userUpdate"
+    public readonly once = false
 
     public async handle(oldUser: User | PartialUser, newUser: User): Promise<void> {
         if (!oldUser.partial && oldUser.tag === oldUser.tag) {

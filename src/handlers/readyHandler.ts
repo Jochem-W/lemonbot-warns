@@ -12,6 +12,7 @@ type State = "UP" | "DOWN" | "RECREATE"
 
 export class ReadyHandler implements Handler<"ready"> {
     public readonly event = "ready"
+    public readonly once = true
 
     public async handle(client: Client<true>): Promise<void> {
         console.log(`Running as: ${client.user.tag}`)
