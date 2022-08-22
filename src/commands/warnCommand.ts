@@ -406,9 +406,15 @@ export class WarnCommand extends ChatInputCommand {
                 reason: "Create a channel for privately warning a user that has DMs disabled",
             })
 
-            await newChannel.permissionOverwrites.create(options.targetMember, {ViewChannel: true}, {
-                reason: "Allow the user to-be-warned to view the channel",
-            })
+            await newChannel.permissionOverwrites.create(options.targetMember,
+                {
+                    ViewChannel: true,
+                    SendMessages: false,
+                    AddReactions: false,
+                    ReadMessageHistory: true,
+                    UseApplicationCommands: true,
+                },
+                {reason: "Allow the user to-be-warned to view the channel"})
             await newChannel.send({
                 ...WarnCommand.buildDM(options),
                 content: userMention(options.targetMember.id),
