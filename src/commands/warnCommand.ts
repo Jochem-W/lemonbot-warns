@@ -439,7 +439,10 @@ export class WarnCommand extends ChatInputCommand {
             try {
                 if (penalty.value === "ban") {
                     if (options.targetMember) {
-                        await options.targetMember.ban({reason: reason})
+                        await options.targetMember.ban({
+                            reason: reason,
+                            deleteMessageDays: 7,
+                        })
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"
