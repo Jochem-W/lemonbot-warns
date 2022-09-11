@@ -64,6 +64,7 @@ export interface ResponseOptions {
     timestamp: DateTime
     guild: Guild
     notify: boolean
+    deleteMessages?: boolean
 }
 
 export class WarnCommand extends ChatInputCommand {
@@ -121,6 +122,10 @@ export class WarnCommand extends ChatInputCommand {
                 .setName("reason3")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
                 .setAutocomplete(true))
+            .addBooleanOption(option => option
+                .setName("delete-messages")
+                .setDescription(
+                    "Delete the last 7 days of messages when banning the user (only valid for ban penalties)"))
     }
 
     public static formatTitle(data: ResponseOptions, options?: {
@@ -214,6 +219,10 @@ export class WarnCommand extends ChatInputCommand {
             default:
                 administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
                 break
+        }
+
+        if (options.deleteMessages && options.penalty.value === "ban") {
+            administrationText += `\n• Delete messages: ${inlineCode("✅ (last 7 days)")}`
         }
 
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
@@ -380,6 +389,7 @@ export class WarnCommand extends ChatInputCommand {
             timestamp: DateTime.now(),
             guild: guild,
             notify: interaction.options.getBoolean("notify", true),
+            deleteMessages: interaction.options.getBoolean("delete-messages") ?? true,
         }
 
 
@@ -441,7 +451,7 @@ export class WarnCommand extends ChatInputCommand {
                     if (options.targetMember) {
                         await options.targetMember.ban({
                             reason: reason,
-                            deleteMessageDays: 7,
+                            deleteMessageDays: options.deleteMessages ? 7 : undefined,
                         })
                         options.penalised = "applied"
                     } else {
