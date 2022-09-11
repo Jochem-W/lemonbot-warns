@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Build Prisma engines
 RUN apk add --no-cache alpine-sdk openssl-dev perl protoc && \
-    wget -qO- https://github.com/prisma/prisma-engines/archive/refs/tags/4.2.0.tar.gz | tar xz --strip-components=1 -C /app && \
+    wget -qO- https://github.com/prisma/prisma-engines/archive/refs/tags/4.3.0.tar.gz | tar xz --strip-components=1 -C /app && \
     source .envrc && \
     cargo build --release
 

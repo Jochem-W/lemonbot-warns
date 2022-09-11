@@ -5,28 +5,28 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@notionhq/client": "^2.1.1",
+    "@notionhq/client": "^2.2.0",
     "@octokit/rest": "^19.0.4",
-    "@prisma/client": "^4.2.1",
+    "@prisma/client": "^4.3.1",
     "discord.js": "^14.3.0",
     "firebase-admin": "^11.0.1",
     "lru-cache": "^7.14.0",
-    "luxon": "^3.0.1",
+    "luxon": "^3.0.3",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
     "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {
     "@tsconfig/node18": "^1.0.1",
-    "@types/luxon": "^3.0.0",
+    "@types/luxon": "^3.0.1",
     "@types/nanoid-dictionary": "^4.2.0",
-    "@types/node": "^18.7.9",
+    "@types/node": "^18.7.16",
     "@types/whatwg-mimetype": "^2.1.1",
-    "@typescript-eslint/eslint-plugin": "^5.33.1",
-    "@typescript-eslint/parser": "^5.33.1",
-    "eslint": "^8.22.0",
-    "prisma": "^4.2.1",
-    "typescript": "^4.7.4"
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "eslint": "^8.23.0",
+    "prisma": "^4.3.1",
+    "typescript": "^4.8.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
