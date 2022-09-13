@@ -32,14 +32,15 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
             throw new InvalidChannelTypeError(warnCategory, ChannelType.GuildCategory)
         }
 
-        for (const child of warnCategory.children.cache.values()) {
-            if (child.type !== ChannelType.GuildText) {
+        for (const [, channel] of await warnCategory.guild.channels.fetch()) {
+            if (!channel.isTextBased() || channel.parent !== warnCategory) {
                 continue
             }
 
-            const messages = await child.messages.fetch({limit: 1})
+            const messages = await channel.messages.fetch({limit: 1})
             if (messages.some(message => message.author === member.client.user && message.mentions.has(user))) {
-                await child.delete()
+                await channel.delete()
+                break
             }
         }
     }
