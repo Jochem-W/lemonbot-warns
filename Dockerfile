@@ -29,6 +29,12 @@ ENV NODE_ENV=production \
     COMMIT_HASH=$commit_hash
 WORKDIR /app
 
+# Install openssl
+RUN apt-get update && \
+    apt-get -y openssl && \
+    rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
+
+
 # Copy all files (including source :/)
 COPY --from=builder /app .
 
