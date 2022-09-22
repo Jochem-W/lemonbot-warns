@@ -5,7 +5,7 @@ import {
     codeBlock,
     EmbedBuilder,
     MessageActionRowComponentBuilder,
-    MessageOptions,
+    MessageCreateOptions,
     WebhookEditMessageOptions,
 } from "discord.js"
 import {DateTime} from "luxon"
@@ -49,7 +49,7 @@ export function append(embed: EmbedBuilder, content: string, separator = "\n\n")
     return embed
 }
 
-export function addNotesButton<T extends WebhookEditMessageOptions | MessageOptions>(options: T, url: string): T {
+export function addNotesButton<T extends WebhookEditMessageOptions | MessageCreateOptions>(options: T, url: string): T {
     if (!options.components) {
         options.components = []
     }

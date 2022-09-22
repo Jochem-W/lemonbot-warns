@@ -16,13 +16,13 @@ import {
     italic,
     MessageActionRowComponentBuilder,
     MessageComponentInteraction,
+    MessageCreateOptions,
     PermissionFlagsBits,
     RESTJSONErrorCodes,
     TextChannel,
     User,
     userMention,
-    WebhookEditMessageOptions,
-    WebhookMessageOptions,
+    WebhookCreateMessageOptions,
 } from "discord.js"
 import {NotionDatabase, NotionDatabaseEntry} from "../models/notionDatabase"
 import {SelectPropertyRequest} from "../types/notion"
@@ -180,7 +180,7 @@ export class WarnCommand extends ChatInputCommand {
         return title
     }
 
-    public static buildResponse(options: ResponseOptions): WebhookEditMessageOptions {
+    public static buildResponse(options: ResponseOptions): MessageCreateOptions {
         const reasonsText = options.reasons.map(reason => reason.name).join(", ")
         let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
         if (options.notified === "DM") {
@@ -262,7 +262,7 @@ export class WarnCommand extends ChatInputCommand {
         return addNotesButton({embeds: embeds}, options.entry.url)
     }
 
-    public static buildDM(options: ResponseOptions): WebhookMessageOptions {
+    public static buildDM(options: ResponseOptions): WebhookCreateMessageOptions {
         const embed = makeEmbed(`You have been ${WarnCommand.formatTitle(options, {
             includeGuild: true,
             lowercase: true,

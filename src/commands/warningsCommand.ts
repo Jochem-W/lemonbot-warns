@@ -91,6 +91,7 @@ export class WarningsCommand extends ChatInputCommand {
         for (const message of messages.slice(1)) {
             await interaction.followUp({
                 ...message,
+                content: message.content ?? undefined,
                 ephemeral: interaction.ephemeral ?? undefined,
             })
         }
