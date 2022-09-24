@@ -41,7 +41,7 @@ class BotConfig {
 
     public constructor(data: RawConfig["bot"]) {
         this.applicationId = data.applicationId
-        this.cacheTtl = Duration.fromObject({seconds: data.cacheTtl})
+        this.cacheTtl = Duration.fromMillis(data.cacheTtl)
     }
 }
 
