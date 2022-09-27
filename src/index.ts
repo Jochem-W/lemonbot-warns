@@ -1,21 +1,8 @@
-import {
-    ApplicationCommandType,
-    Client,
-    CommandInteraction,
-    GatewayIntentBits,
-    Partials,
-    RESTPutAPIApplicationGuildCommandsJSONBody,
-    RESTPutAPIApplicationGuildCommandsResult,
-    Routes,
-} from "discord.js"
-import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserContextMenuCommands} from "./commands"
+import {Client, GatewayIntentBits, Partials} from "discord.js"
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
-import {DefaultConfig} from "./models/config"
-import {CommandNotFoundByNameError, reportError} from "./errors"
-import {Command} from "./interfaces/command"
-import {WarnCommand} from "./commands/warnCommand"
-import {Prisma} from "./clients"
+import {reportError} from "./errors"
+import {ReRegisterCommand} from "./commands/reRegisterCommand"
 
 const client = new Client({
     intents: [GatewayIntentBits.GuildMembers],
@@ -24,38 +11,7 @@ const client = new Client({
 client.rest.setToken(Variables.discordToken)
 
 void (async () => {
-    SlashCommands.push(new WarnCommand(await Prisma.penalty.findMany(), await Prisma.reason.findMany()))
-
-    const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
-    for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserContextMenuCommands]) {
-        commandsBody.push(command.toJSON())
-        console.log(`Constructed command '${command.builder.name}'`)
-    }
-
-    const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(DefaultConfig.bot.applicationId,
-        DefaultConfig.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
-    console.log("Commands updated")
-
-    for (const applicationCommand of applicationCommands) {
-        let command: Command<CommandInteraction> | undefined
-        switch (applicationCommand.type) {
-            case ApplicationCommandType.ChatInput:
-                command = SlashCommands.find(command => command.builder.name === applicationCommand.name)
-                break
-            case ApplicationCommandType.User:
-                command = UserContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
-                break
-            case ApplicationCommandType.Message:
-                command = MessageContextMenuCommands.find(command => command.builder.name === applicationCommand.name)
-                break
-        }
-
-        if (!command) {
-            throw new CommandNotFoundByNameError(applicationCommand.name)
-        }
-
-        RegisteredCommands.set(applicationCommand.id, command)
-    }
+    await ReRegisterCommand.register(client.rest)
 
     for (const handler of Handlers) {
         if (handler.once) {

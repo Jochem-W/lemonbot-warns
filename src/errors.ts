@@ -100,6 +100,12 @@ export class InvalidChannelTypeError extends BotError {
     }
 }
 
+export class OwnerOnlyError extends BotError {
+    public constructor() {
+        super("This command can only be used by the bot owner.")
+    }
+}
+
 export class InvalidEmbedError extends CustomError {
     public constructor(message: string) {
         super(message)
