@@ -301,7 +301,7 @@ export class WarnCommand extends ChatInputCommand {
             throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
         }
 
-        if (!warnLogsChannel.isTextBased() || warnLogsChannel.type !== ChannelType.GuildText) {
+        if (warnLogsChannel.type !== ChannelType.GuildText) {
             throw new InvalidChannelTypeError(warnLogsChannel, ChannelType.GuildText)
         }
 
@@ -313,7 +313,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const reasons: string[] = []
         for (const name of ["reason", "reason2", "reason3"].map(option => interaction.options.getString(option))) {
-            if (!name || reasons.find(r => r === name)) {
+            if (!name || reasons.includes(name)) {
                 continue
             }
 

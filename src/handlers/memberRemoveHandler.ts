@@ -20,7 +20,7 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
         }
 
         for (const [, channel] of await warnCategory.guild.channels.fetch()) {
-            if (!channel?.isTextBased() || channel.parent !== warnCategory) {
+            if (channel?.parent !== warnCategory || channel.type !== ChannelType.GuildText) {
                 continue
             }
 

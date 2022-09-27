@@ -113,7 +113,7 @@ export async function reportError(client: Client, error: Error): Promise<void> {
         throw new ChannelNotFoundError(DefaultConfig.guild.errorChannel)
     }
 
-    if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+    if (channel.type !== ChannelType.GuildText) {
         throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
     }
 

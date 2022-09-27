@@ -81,7 +81,7 @@ export class WarningsCommand extends ChatInputCommand {
         })
 
         for (const warning of entry.warnings) {
-            const warningEmbeds = warning.images.map(image => new EmbedBuilder().setImage(image))
+            const warningEmbeds: EmbedBuilder[] = warning.images.map(image => new EmbedBuilder().setImage(image))
             if (!warningEmbeds.length) {
                 warningEmbeds.push(new EmbedBuilder())
             }

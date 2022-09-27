@@ -35,7 +35,7 @@ export class ReadyHandler implements Handler<"ready"> {
             throw new ChannelNotFoundError(DefaultConfig.guild.restart.channel)
         }
 
-        if (!channel.isTextBased() || channel.type !== ChannelType.GuildText) {
+        if (channel.type !== ChannelType.GuildText) {
             throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
         }
 
