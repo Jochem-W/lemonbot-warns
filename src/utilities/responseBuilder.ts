@@ -4,8 +4,10 @@ import {
     ButtonStyle,
     codeBlock,
     EmbedBuilder,
+    GuildMember,
     MessageActionRowComponentBuilder,
     MessageCreateOptions,
+    User,
     WebhookEditMessageOptions,
 } from "discord.js"
 import {DateTime} from "luxon"
@@ -64,4 +66,12 @@ export function addNotesButton<T extends WebhookEditMessageOptions | MessageCrea
     )
 
     return options
+}
+
+export function formatName(user: GuildMember | User) {
+    if (user instanceof GuildMember) {
+        return user.nickname ? `${user.user.tag} [${user.nickname}]` : user.user.tag
+    }
+
+    return user.tag
 }

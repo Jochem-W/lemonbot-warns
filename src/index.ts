@@ -12,9 +12,10 @@ import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserConte
 import {Handlers} from "./handlers"
 import {Variables} from "./variables"
 import {DefaultConfig} from "./models/config"
-import {NotionDatabase} from "./models/notionDatabase"
 import {CommandNotFoundByNameError, reportError} from "./errors"
 import {Command} from "./interfaces/command"
+import {WarnCommand} from "./commands/warnCommand"
+import {Prisma} from "./clients"
 
 const client = new Client({
     intents: [GatewayIntentBits.GuildMembers],
@@ -22,14 +23,14 @@ const client = new Client({
 })
 client.rest.setToken(Variables.discordToken)
 
-const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
-for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserContextMenuCommands]) {
-    commandsBody.push(command.toJSON())
-    console.log(`Constructed command '${command.builder.name}'`)
-}
-
 void (async () => {
-    await NotionDatabase.getDefault()
+    SlashCommands.push(new WarnCommand(await Prisma.penalty.findMany(), await Prisma.reason.findMany()))
+
+    const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
+    for (const command of [...SlashCommands, ...MessageContextMenuCommands, ...UserContextMenuCommands]) {
+        commandsBody.push(command.toJSON())
+        console.log(`Constructed command '${command.builder.name}'`)
+    }
 
     const applicationCommands = await client.rest.put(Routes.applicationGuildCommands(DefaultConfig.bot.applicationId,
         DefaultConfig.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult

@@ -35,20 +35,20 @@ model User {
   discordId String  @unique
   priority  Boolean
 
-  currentPenalty   Penalty? @relation(fields: [currentPenaltyId], references: [id])
-  currentPenaltyId Int?
-
   warnings Warning[]
+
+  penaltyOverride   Penalty? @relation(fields: [penaltyOverrideId], references: [id])
+  penaltyOverrideId Int?
 }
 
 model Warning {
   id Int @id @default(autoincrement())
 
   createdAt   DateTime
+  createdBy   String
   description String
   images      String[]
   silent      Boolean
-  warnedBy    String
 
   penalty   Penalty @relation(fields: [penaltyId], references: [id])
   penaltyId Int
@@ -78,7 +78,6 @@ model Penalty {
   kick    Boolean
   timeout Int?
 
-  users User[]
-
   warnings Warning[]
+  users    User[]
 }

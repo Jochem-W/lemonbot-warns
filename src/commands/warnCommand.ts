@@ -1,7 +1,5 @@
 import {
     ActionRowBuilder,
-    ApplicationCommandOptionChoiceData,
-    AutocompleteInteraction,
     bold,
     ButtonBuilder,
     ButtonStyle,
@@ -24,11 +22,9 @@ import {
     userMention,
     WebhookCreateMessageOptions,
 } from "discord.js"
-import {NotionDatabase, NotionDatabaseEntry} from "../models/notionDatabase"
-import {SelectPropertyRequest} from "../types/notion"
 import MIMEType from "whatwg-mimetype"
 import {DateTime, Duration} from "luxon"
-import {DefaultConfig, Penalty} from "../models/config"
+import {DefaultConfig} from "../models/config"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {CustomId, InteractionScope} from "../models/customId"
 import {customAlphabet} from "nanoid"
@@ -40,19 +36,17 @@ import {
     InvalidChannelTypeError,
     InvalidCustomIdError,
     InvalidPenaltyError,
-    NoAutocompleteHandlerError,
     NoContentTypeError,
     reportError,
 } from "../errors"
-import {addNotesButton, makeEmbed} from "../utilities/responseBuilder"
+import {makeEmbed} from "../utilities/responseBuilder"
 import {fetchGuild, fetchMember} from "../utilities/interactionUtilities"
 import {uploadAttachment} from "../utilities/firebaseUtilities"
-import {formatName, generateWarnNote} from "../utilities/notionUtilities"
 import {Prisma} from "../clients"
+import {Penalty, Reason} from "@prisma/client"
 
 export interface ResponseOptions {
-    entry: NotionDatabaseEntry
-    reasons: SelectPropertyRequest[]
+    reasons: string[]
     penalty: Penalty
     targetUser: User
     targetMember?: GuildMember
@@ -68,8 +62,15 @@ export interface ResponseOptions {
 }
 
 export class WarnCommand extends ChatInputCommand {
-    public constructor() {
+    private readonly penalties: Penalty[]
+
+    public constructor(penalties: Penalty[], reasons: Reason[]) {
         super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
+
+        this.penalties = penalties
+
+        const reasonChoices = reasons.map(reason => ({name: reason.name, value: reason.name}))
+
         this.builder
             .addUserOption(option => option
                 .setName("user")
@@ -79,7 +80,7 @@ export class WarnCommand extends ChatInputCommand {
                 .setName("reason")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
                 .setRequired(true)
-                .setAutocomplete(true))
+                .addChoices(...reasonChoices))
             .addStringOption(option => option
                 .setName("description")
                 .setDescription("Extended warning description that is added as a note and optionally sent to the user")
@@ -88,7 +89,7 @@ export class WarnCommand extends ChatInputCommand {
                 .setName("penalty")
                 .setDescription("Penalty level for the user, automatically applied if notify is True")
                 .setRequired(true)
-                .setChoices(...DefaultConfig.penalties.map(penalty => {
+                .setChoices(...penalties.map(penalty => {
                     return {name: penalty.name, value: penalty.name}
                 })))
             .addBooleanOption(option => option
@@ -117,11 +118,11 @@ export class WarnCommand extends ChatInputCommand {
             .addStringOption(option => option
                 .setName("reason2")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
-                .setAutocomplete(true))
+                .addChoices(...reasonChoices))
             .addStringOption(option => option
                 .setName("reason3")
                 .setDescription("Concise warning reason for administration purposes, preferably only a couple of words")
-                .setAutocomplete(true))
+                .addChoices(...reasonChoices))
             .addBooleanOption(option => option
                 .setName("delete-messages")
                 .setDescription(
@@ -139,24 +140,18 @@ export class WarnCommand extends ChatInputCommand {
         if (!data.notify) {
             title = "Silently warned"
             preposition = "in"
-        } else if (data.penalty.value instanceof Duration) {
+        } else if (data.penalty.timeout) {
             title = "Timed out"
             preposition = "in"
+        } else if (data.penalty.ban) {
+            title = "Banned"
+            preposition = "from"
+        } else if (data.penalty.kick) {
+            title = "Kicked"
+            preposition = "from"
         } else {
-            switch (data.penalty.value) {
-                case "kick":
-                    title = "Kicked"
-                    preposition = "from"
-                    break
-                case "ban":
-                    title = "Banned"
-                    preposition = "from"
-                    break
-                default:
-                    title = "Warned"
-                    preposition = "in"
-                    break
-            }
+            title = "Warned"
+            preposition = "in"
         }
 
         if (options?.lowercase) {
@@ -176,12 +171,12 @@ export class WarnCommand extends ChatInputCommand {
             return title
         }
 
-        title += `for ${data.reasons.map(reason => reason.name).join(", ")}`
+        title += `for ${data.reasons.join(", ")}`
         return title
     }
 
     public static buildResponse(options: ResponseOptions): MessageCreateOptions {
-        const reasonsText = options.reasons.map(reason => reason.name).join(", ")
+        const reasonsText = options.reasons.join(", ")
         let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
         if (options.notified === "DM") {
             administrationText += `\n• Notification: ${inlineCode("✅ (DM sent)")}`
@@ -197,10 +192,16 @@ export class WarnCommand extends ChatInputCommand {
 
         switch (options.penalised) {
             case "applied":
-                if (options.penalty.value instanceof Duration) {
+                if (options.penalty.timeout) {
+                    const duration = Duration.fromObject(Object.fromEntries(Object.entries(
+                        Duration.fromMillis(options.penalty.timeout)
+                            .shiftTo("weeks", "days", "hours", "minutes", "seconds", "milliseconds")
+                            .normalize()
+                            .toObject(),
+                    ).filter(([, value]) => value !== 0)))
                     administrationText +=
-                        `\n• Penalised: ${inlineCode(`✅ (timed out for ${options.penalty.value.toHuman()})`)}`
-                } else if (options.penalty.value === "ban") {
+                        `\n• Penalised: ${inlineCode(`✅ (timed out for ${duration.toHuman()})`)}`
+                } else if (options.penalty.ban) {
                     administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
                 } else {
                     administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
@@ -221,7 +222,7 @@ export class WarnCommand extends ChatInputCommand {
                 break
         }
 
-        if (options.deleteMessages && options.penalty.value === "ban") {
+        if (options.deleteMessages && options.penalty.ban) {
             administrationText += `\n• Delete messages: ${inlineCode("✅ (last 7 days)")}`
         }
 
@@ -251,7 +252,7 @@ export class WarnCommand extends ChatInputCommand {
                 embed.setImage(options.images[0])
             }
 
-            return addNotesButton({embeds: [embed]}, options.entry.url)
+            return {embeds: [embed]}
         }
 
         const embeds = [embed]
@@ -259,7 +260,7 @@ export class WarnCommand extends ChatInputCommand {
             embeds.push(new EmbedBuilder().setImage(image))
         }
 
-        return addNotesButton({embeds: embeds}, options.entry.url)
+        return {embeds: embeds}
     }
 
     public static buildDM(options: ResponseOptions): WebhookCreateMessageOptions {
@@ -289,22 +290,6 @@ export class WarnCommand extends ChatInputCommand {
         return {embeds: embeds}
     }
 
-    public async handleAutocomplete(interaction: AutocompleteInteraction): Promise<ApplicationCommandOptionChoiceData[]> {
-        switch (interaction.options.getFocused(true).name) {
-            case "reason":
-            case "reason2":
-            case "reason3": {
-                const database = await NotionDatabase.getDefault()
-                const reasons = await database.fetchFromCache("reasons")
-                return reasons.map(reason => {
-                    return {name: reason.name, value: reason.name}
-                })
-            }
-        }
-
-        throw new NoAutocompleteHandlerError(this)
-    }
-
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const guild = await fetchGuild(interaction)
         if (!guild) {
@@ -321,18 +306,18 @@ export class WarnCommand extends ChatInputCommand {
         }
 
         const penaltyName = interaction.options.getString("penalty", true)
-        const penalty = DefaultConfig.penalties.find(p => p.name === penaltyName)
+        const penalty = this.penalties.find(p => p.name === penaltyName)
         if (!penalty) {
             throw new InvalidPenaltyError(penaltyName)
         }
 
-        const reasons: SelectPropertyRequest[] = []
+        const reasons: string[] = []
         for (const name of ["reason", "reason2", "reason3"].map(option => interaction.options.getString(option))) {
-            if (!name || reasons.find(r => r.name === name)) {
+            if (!name || reasons.find(r => r === name)) {
                 continue
             }
 
-            reasons.push({name: name})
+            reasons.push(name)
         }
 
         const images: string[] = []
@@ -360,25 +345,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const member = await fetchMember(interaction, user)
 
-        const database = await NotionDatabase.getDefault()
-        let entry = await database.get({id: user.id})
-        if (!entry) {
-            entry = await database.create(user.id, {
-                currentPenaltyLevel: penalty.name,
-                watchlist: false,
-                name: formatName(member ?? user),
-                reasons: reasons,
-            })
-        } else {
-            entry = await database.update(entry, {
-                currentPenaltyLevel: penalty.name,
-                name: formatName(member ?? user),
-                reasons: (entry.reasons as SelectPropertyRequest[]).concat(reasons),
-            })
-        }
-
         const options: ResponseOptions = {
-            entry: entry,
             reasons: reasons,
             penalty: penalty,
             targetUser: user,
@@ -405,7 +372,7 @@ export class WarnCommand extends ChatInputCommand {
             }
         }
 
-        if (options.notified === false && options.targetMember && penalty.value !== "ban" && penalty.value !== "kick") {
+        if (options.notified === false && options.targetMember && !penalty.ban && !penalty.kick) {
             const nanoid = customAlphabet(nolookalikesSafe)
             const channelName = `${options.targetUser.username}-${options.targetUser.discriminator}-${nanoid(4)}`
 
@@ -447,7 +414,7 @@ export class WarnCommand extends ChatInputCommand {
         const reason = WarnCommand.formatTitle(options, {includeReasons: true})
         if (options.notify) {
             try {
-                if (penalty.value === "ban") {
+                if (penalty.ban) {
                     if (options.targetMember) {
                         await options.targetMember.ban({
                             reason: reason,
@@ -457,14 +424,14 @@ export class WarnCommand extends ChatInputCommand {
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.value instanceof Duration) {
+                } else if (penalty.timeout) {
                     if (options.targetMember) {
-                        await options.targetMember.timeout(penalty.value.toMillis(), reason)
+                        await options.targetMember.timeout(penalty.timeout, reason)
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"
                     }
-                } else if (penalty.value === "kick") {
+                } else if (penalty.kick) {
                     if (options.targetMember) {
                         await options.targetMember.kick(reason)
                         options.penalised = "applied"
@@ -486,7 +453,46 @@ export class WarnCommand extends ChatInputCommand {
             options.penalised = "not_notified"
         }
 
-        await database.appendBlocks(entry, generateWarnNote(options))
+        await Prisma.warning.create({
+            data: {
+                createdAt: interaction.createdAt,
+                createdBy: options.warnedBy.id,
+                description: options.description,
+                images: options.images,
+                silent: !options.notify,
+                penalty: {
+                    connect: {
+                        name: options.penalty.name,
+                    },
+                },
+                reasons: {
+                    connect: options.reasons.map(reason => ({name: reason})),
+                },
+                user: {
+                    connectOrCreate: {
+                        where: {
+                            discordId: options.targetUser.id,
+                        },
+                        create: {
+                            discordId: options.targetUser.id,
+                            priority: false,
+                        },
+                    },
+                },
+            },
+        })
+
+        await Prisma.user.update({
+            where: {
+                discordId: options.targetUser.id,
+            },
+            data: {
+                penaltyOverride: {
+                    disconnect: true,
+                },
+            },
+        })
+
         const response = WarnCommand.buildResponse(options)
         try {
             await interaction.editReply(response)
@@ -502,35 +508,6 @@ export class WarnCommand extends ChatInputCommand {
         if (interaction.channelId !== warnLogsChannel.id) {
             await warnLogsChannel.send(response)
         }
-
-        await Prisma.warning.create({
-            data: {
-                createdAt: interaction.createdAt,
-                description: options.description,
-                images: options.images,
-                silent: !options.notify,
-                warnedBy: options.warnedBy.id,
-                penalty: {
-                    connect: {
-                        name: options.penalty.name,
-                    },
-                },
-                reasons: {
-                    connect: options.reasons.map(reason => ({name: reason.name})),
-                },
-                user: {
-                    connectOrCreate: {
-                        where: {
-                            discordId: options.targetUser.id,
-                        },
-                        create: {
-                            discordId: options.targetUser.id,
-                            priority: false,
-                        },
-                    },
-                },
-            },
-        })
     }
 
     public async handleMessageComponent(interaction: MessageComponentInteraction, data: CustomId): Promise<void> {

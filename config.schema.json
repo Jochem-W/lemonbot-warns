@@ -116,69 +116,6 @@
         "warning"
       ]
     },
-    "penalties": {
-      "description": "Penalty configuration",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the penalty",
-            "type": "string"
-          }
-        },
-        "oneOf": [
-          {
-            "properties": {
-              "timeout": {
-                "description": "The duration of the timeout in milliseconds",
-                "type": "integer"
-              }
-            },
-            "required": [
-              "timeout"
-            ]
-          },
-          {
-            "properties": {
-              "ban": {
-                "description": "Whether to ban the user",
-                "const": true
-              }
-            },
-            "required": [
-              "ban"
-            ]
-          },
-          {
-            "properties": {
-              "kick": {
-                "description": "Whether to kick the user",
-                "const": true
-              }
-            },
-            "required": [
-              "kick"
-            ]
-          },
-          {
-            "properties": {
-              "noPenalty": {
-                "description": "Whether to do nothing",
-                "const": true
-              }
-            },
-            "required": [
-              "noPenalty"
-            ]
-          }
-        ],
-        "required": [
-          "name"
-        ]
-      },
-      "minItems": 1
-    },
     "repository": {
       "description": "GitHub repository configuration",
       "type": "object",
@@ -204,7 +141,6 @@
     "bot",
     "guild",
     "icons",
-    "penalties",
     "repository"
   ]
 }

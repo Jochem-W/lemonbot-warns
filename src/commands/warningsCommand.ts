@@ -1,21 +1,24 @@
 import {
     ChatInputCommandInteraction,
+    Client,
+    EmbedBuilder,
     GuildMember,
     inlineCode,
     PermissionFlagsBits,
+    time,
     User,
     WebhookEditMessageOptions,
 } from "discord.js"
-import {NotionDatabase} from "../models/notionDatabase"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {BotError} from "../errors"
-import {makeEmbed} from "../utilities/responseBuilder"
-import {formatName, parseBlockObjects} from "../utilities/notionUtilities"
+import {formatName, makeEmbed} from "../utilities/responseBuilder"
 import {fetchMember} from "../utilities/interactionUtilities"
+import {Prisma} from "../clients"
+import {chunks} from "../utilities/arrayUtilities"
 
 interface ResponseOptions {
-    user: User
-    member?: GuildMember
+    client: Client
+    subject: User | GuildMember
 }
 
 export class WarningsCommand extends ChatInputCommand {
@@ -29,58 +32,92 @@ export class WarningsCommand extends ChatInputCommand {
     }
 
     public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions[]> {
-        const embed = makeEmbed(`Warnings for ${formatName(options.member ?? options.user)}`,
-            new URL(options.user.displayAvatarURL({size: 4096})))
-        const messages = [{embeds: [embed]}]
+        const embeds = [
+            makeEmbed(`Warnings for ${formatName(options.subject)}`, new URL(options.subject.displayAvatarURL()))
+                .setTimestamp(null),
+        ]
 
-        const database = await NotionDatabase.getDefault()
-        const entry = await database.get({id: options.user.id})
+        const entry = await Prisma.user.findFirst({
+            where: {
+                discordId: options.subject.id,
+            },
+            include: {
+                warnings: {
+                    include: {
+                        reasons: true,
+                        penalty: true,
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                },
+            },
+        })
+
         if (!entry) {
-            embed.setTitle("This user isn't in the database")
-            return messages
+            embeds[0]?.setTitle("This user isn't in the database")
+            return [{embeds}]
         }
 
-        const parseResult = await parseBlockObjects(database.getBlocks(entry))
-        if (parseResult.unsupportedBlocks) {
-            const noun = parseResult.unsupportedBlocks === 1 ? "block is" : "blocks are"
-            embed.setDescription(
-                `• ${parseResult.unsupportedBlocks} ${noun} not supported and can only be viewed on Notion`)
-        }
-
-        embed.addFields([{
-            name: "Current penalty level",
-            value: entry.currentPenaltyLevel,
-        }, {
-            name: "Reasons",
-            value: entry.reasons.length ? entry.reasons.map(reason => ` - ${reason.name}`).join("\n") : "N/A",
-        }, {
-            name: "Watchlist",
-            value: inlineCode(`${entry.watchlist ? "✅" : "❌"}`),
-        }])
-
-        embed.setFooter(null)
-            .setTimestamp(null)
-
-        for (const warnEmbed of parseResult.embeds) {
-            const lastMessage = messages.at(-1)
-            if (lastMessage?.embeds.length === 10) {
-                messages.push({embeds: [warnEmbed]})
+        const lastWarning = entry.warnings.at(-1)
+        const reasons: string[] = []
+        for (const reason of entry.warnings.flatMap(warning => warning.reasons)) {
+            if (reasons.includes(reason.name)) {
                 continue
             }
 
-            lastMessage?.embeds.push(warnEmbed)
+            reasons.push(reason.name)
         }
 
-        messages.at(-1)?.embeds.at(-1)?.setFooter({text: "Last edited"}).setTimestamp(entry.lastEditedTime.toMillis())
-        return messages
+        embeds[0]?.setFields({
+            name: "Current penalty level",
+            value: lastWarning?.penalty?.name ?? "N/A",
+        }, {
+            name: "Reasons",
+            value: reasons.length ? reasons.join("\n") : "N/A",
+        }, {
+            name: "Priority",
+            value: inlineCode(`${entry.priority ? "✅" : "❌"}`),
+        })
+
+        for (const warning of entry.warnings) {
+            const warningEmbeds = warning.images.map(image => new EmbedBuilder().setImage(image))
+            if (!warningEmbeds.length) {
+                warningEmbeds.push(new EmbedBuilder())
+            }
+
+            let title: string
+            if (warning.silent) {
+                title = "Silently warned"
+            } else if (warning.penalty.ban) {
+                title = "Banned"
+            } else if (warning.penalty.kick) {
+                title = "Kicked"
+            } else if (warning.penalty.timeout) {
+                title = "Timed out"
+            } else {
+                title = "Warned"
+            }
+
+            const warnedBy = await options.client.users.fetch(warning.createdBy)
+            warningEmbeds[0]?.setFields({
+                name: `${title} by ${formatName(warnedBy)} for ${warning.reasons.map(reason => reason.name)
+                    .join(", ")} ${time(warning.createdAt, "R")}`,
+                value: warning.description,
+            })
+
+            embeds.push(...warningEmbeds)
+        }
+
+        return [...chunks(embeds, 10)].map(embeds => ({embeds}))
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const user = interaction.options.getUser("user", true)
 
         const messages = await WarningsCommand.buildResponse({
-            user,
-            member: await fetchMember(interaction, user) ?? undefined,
+            client: interaction.client,
+            subject: await fetchMember(interaction, user) ?? user,
         })
 
         if (!messages[0]) {

@@ -2,11 +2,6 @@ import {Duration} from "luxon"
 import {Snowflake} from "discord.js"
 import {readFileSync} from "fs"
 
-export interface Penalty {
-    name: string
-    value: null | Duration | "ban" | "kick"
-}
-
 interface RawConfig {
     bot: {
         applicationId: string
@@ -28,7 +23,6 @@ interface RawConfig {
         success: string
         warning: string
     }
-    penalties: ({ name: string } & ({ timeout: number } | { ban: true } | { kick: true } | { noPenalty: true }))[]
     repository: {
         name: string
         owner: string
@@ -99,44 +93,12 @@ class Config {
     private readonly _bot: BotConfig
     private readonly _guild: GuildConfig
     private readonly _icons: IconsConfig
-    private readonly _penalties: Penalty[]
     private readonly _repository: RepositoryConfig
 
     private constructor(data: RawConfig) {
         this._bot = new BotConfig(data.bot)
         this._guild = new GuildConfig(data.guild)
         this._icons = new IconsConfig(data.icons)
-        this._penalties = data.penalties.map(penalty => {
-            if ("timeout" in penalty) {
-                return {
-                    name: penalty.name,
-                    value: Duration.fromObject(Object.fromEntries(Object.entries(Duration.fromMillis(penalty.timeout)
-                        .shiftTo("weeks", "days", "hours", "minutes", "seconds", "milliseconds")
-                        .normalize()
-                        .toObject())
-                        .filter(([, value]) => value !== 0))),
-                }
-            }
-
-            if ("ban" in penalty) {
-                return {
-                    name: penalty.name,
-                    value: "ban",
-                }
-            }
-
-            if ("kick" in penalty) {
-                return {
-                    name: penalty.name,
-                    value: "kick",
-                }
-            }
-
-            return {
-                name: penalty.name,
-                value: null,
-            }
-        })
         this._repository = new RepositoryConfig(data.repository)
     }
 
@@ -150,10 +112,6 @@ class Config {
 
     public get icons(): IconsConfig {
         return this._icons
-    }
-
-    public get penalties(): Penalty[] {
-        return this._penalties
     }
 
     public get repository(): RepositoryConfig {

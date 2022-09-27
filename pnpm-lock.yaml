@@ -1,7 +1,6 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@notionhq/client': ^2.2.0
   '@octokit/rest': ^19.0.4
   '@prisma/client': ^4.3.1
   '@tsconfig/node18': ^1.0.1
@@ -27,7 +26,6 @@ specifiers:
   zlib-sync: ^0.1.7
 
 dependencies:
-  '@notionhq/client': 2.2.0
   '@octokit/rest': 19.0.4
   '@prisma/client': 4.3.1_prisma@4.3.1
   discord.js: 14.4.0_22kvxa7zeyivx4jp72v2w3pkvy
@@ -322,16 +320,6 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@notionhq/client/2.2.0:
-    resolution: { integrity: sha512-wJwGajJjdy3GDI5HpomulhYuxo5j8t1Conm9HkpHqkHnj4qrc+6N//qRXrogsUU2sn60kSHpRcPB4P6L0799tg== }
-    engines: { node: '>=12' }
-    dependencies:
-      '@types/node-fetch': 2.6.2
-      node-fetch: 2.6.7
-    transitivePeerDependencies:
-      - encoding
-    dev: false
-
   /@octokit/auth-token/3.0.1:
     resolution: { integrity: sha512-/USkK4cioY209wXRpund6HZzHo9GmjakpV9ycOkpMcMxMk7QVcVFVyCMtzvXYiHsB2crgDgrtNYSELYFBXhhaA== }
     engines: { node: '>= 14' }
@@ -617,13 +605,6 @@ packages:
     resolution: { integrity: sha512-DyQddKC2AYsInXBMqKSwhom4gpouV8SF1smsCPSzR8hp20vZJ5o5Yxg7qXThCHwr/H6VMq01UArEGbF0q2FXig== }
     dev: true
 
-  /@types/node-fetch/2.6.2:
-    resolution: { integrity: sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A== }
-    dependencies:
-      '@types/node': 18.7.18
-      form-data: 3.0.1
-    dev: false
-
   /@types/node/18.7.18:
     resolution: { integrity: sha512-m+6nTEOadJZuTPkKR/SYK3A2d7FZrgElol9UP1Kae90VVU4a6mxnPuLiIW1m4Cq4gZ/nWb9GrdVXJCoCazDAbg== }
 
@@ -851,10 +832,6 @@ packages:
     dev: false
     optional: true
 
-  /asynckit/0.4.0:
-    resolution: { integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q== }
-    dev: false
-
   /balanced-match/1.0.2:
     resolution: { integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw== }
     dev: true
@@ -937,13 +914,6 @@ packages:
   /color-name/1.1.4:
     resolution: { integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA== }
 
-  /combined-stream/1.0.8:
-    resolution: { integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg== }
-    engines: { node: '>= 0.8' }
-    dependencies:
-      delayed-stream: 1.0.0
-    dev: false
-
   /compressible/2.0.18:
     resolution: { integrity: sha512-AF3r7P5dWxL8MxyITRMlORQNaOA2IkAFaTr4k7BUumjPtRpGDTZpl0Pb1XCO6JeDCBdp126Cgs9sMxqSjgYyRg== }
     engines: { node: '>= 0.6' }
@@ -979,11 +949,6 @@ packages:
   /deep-is/0.1.4:
     resolution: { integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ== }
     dev: true
-
-  /delayed-stream/1.0.0:
-    resolution: { integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ== }
-    engines: { node: '>=0.4.0' }
-    dev: false
 
   /deprecation/2.3.1:
     resolution: { integrity: sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ== }
@@ -1321,15 +1286,6 @@ packages:
   /flatted/3.2.7:
     resolution: { integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ== }
     dev: true
-
-  /form-data/3.0.1:
-    resolution: { integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg== }
-    engines: { node: '>= 6' }
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      mime-types: 2.1.35
-    dev: false
 
   /fs.realpath/1.0.0:
     resolution: { integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw== }
@@ -1880,6 +1836,7 @@ packages:
     resolution: { integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg== }
     engines: { node: '>= 0.6' }
     dev: false
+    optional: true
 
   /mime-types/2.1.35:
     resolution: { integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw== }
@@ -1887,6 +1844,7 @@ packages:
     dependencies:
       mime-db: 1.52.0
     dev: false
+    optional: true
 
   /mime/3.0.0:
     resolution: { integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A== }

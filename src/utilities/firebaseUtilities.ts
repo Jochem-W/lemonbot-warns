@@ -14,6 +14,7 @@ export async function uploadAttachment(attachment: Attachment): Promise<UploadAt
     const mimeType = new MIMEType(attachment.contentType ?? "application/octet-stream")
     const file = StorageBucket.file(`${attachment.id}.${attachment.name?.split(".").pop() ?? "bin"}`)
 
+    // @ts-ignore
     const response = await fetch(attachment.url)
     if (!response.body) {
         throw new Error("No response body")
