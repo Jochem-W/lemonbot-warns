@@ -4,8 +4,8 @@ ENV NODE_ENV=development
 
 WORKDIR /app
 
-# Copy package.json, lockfile and .npmrc
-COPY ["pnpm-lock.yaml", "package.json", ".npmrc", "./"]
+# Copy package.json, lockfile, .npmrc and prisma
+COPY ["pnpm-lock.yaml", "package.json", ".npmrc", "prisma", "./"]
 
 # Install dependencies
 RUN apt-get update && \
