@@ -8,7 +8,7 @@ export class DumpJsonCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-        const warnings = await Prisma.user.findMany({
+        const users = await Prisma.user.findMany({
             include: {
                 warnings: {
                     include: {
@@ -20,6 +20,10 @@ export class DumpJsonCommand extends ChatInputCommand {
             },
         })
 
-        await interaction.editReply({files: [new AttachmentBuilder(JSON.stringify(warnings, null, 4))]})
+        await interaction.editReply({
+            files: [new AttachmentBuilder(JSON.stringify(users, null, 4), {
+                name: "users.json",
+            })],
+        })
     }
 }
