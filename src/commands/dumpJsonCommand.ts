@@ -21,9 +21,11 @@ export class DumpJsonCommand extends ChatInputCommand {
         })
 
         await interaction.editReply({
-            files: [new AttachmentBuilder(JSON.stringify(users, null, 4), {
-                name: "users.json",
-            })],
+            files: [
+                new AttachmentBuilder(Buffer.from(JSON.stringify(users, null, 4)), {
+                    name: "users.json",
+                }),
+            ],
         })
     }
 }
