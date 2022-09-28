@@ -7,12 +7,14 @@ import {CheckBansCommand} from "./commands/checkBansCommand"
 import {ChatInputCommand} from "./models/chatInputCommand"
 import {StatusCommand} from "./commands/statusCommand"
 import {ReRegisterCommand} from "./commands/reRegisterCommand"
+import {DumpJsonCommand} from "./commands/dumpJsonCommand"
 
 export const SlashCommands: ChatInputCommand[] = [
     new CheckBansCommand(),
     new StatusCommand(),
     new WarningsCommand(),
     new ReRegisterCommand(),
+    new DumpJsonCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
