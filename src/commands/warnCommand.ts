@@ -418,7 +418,7 @@ export class WarnCommand extends ChatInputCommand {
                     if (options.targetMember) {
                         await options.targetMember.ban({
                             reason: reason,
-                            deleteMessageDays: options.deleteMessages ? 7 : undefined,
+                            deleteMessageSeconds: options.deleteMessages ? 604800 : undefined,
                         })
                         options.penalised = "applied"
                     } else {
