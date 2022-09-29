@@ -203,6 +203,9 @@ export class WarnCommand extends ChatInputCommand {
                         `\n• Penalised: ${inlineCode(`✅ (timed out for ${duration.toHuman()})`)}`
                 } else if (options.penalty.ban) {
                     administrationText += `\n• Penalised: ${inlineCode("✅ (banned)")}`
+                    administrationText += `\n• Deleted messages: ${inlineCode(
+                        options.deleteMessages ? "✅ (last 7 days)" : "❌ (delete-messages was False)",
+                    )}`
                 } else {
                     administrationText += `\n• Penalised: ${inlineCode("❌ (penalty level has no penalty)")}`
                 }
@@ -220,10 +223,6 @@ export class WarnCommand extends ChatInputCommand {
             default:
                 administrationText += `\n• Penalised: ${inlineCode("❓ (unknown)")}`
                 break
-        }
-
-        if (options.deleteMessages && options.penalty.ban) {
-            administrationText += `\n• Delete messages: ${inlineCode("✅ (last 7 days)")}`
         }
 
         const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
