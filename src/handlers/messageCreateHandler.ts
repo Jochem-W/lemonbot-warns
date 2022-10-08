@@ -9,13 +9,16 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
     public readonly once = false
 
     public async handle(message: Message): Promise<void> {
+        if (message.author.bot) {
+            return
+        }
+
         await S3.send(new PutObjectCommand({
             Bucket: Variables.s3BucketName,
             Key: `messages/${message.id}/${message.createdTimestamp}.json`,
             Body: JSON.stringify(message.toJSON()),
             ContentType: "application/json",
         }))
-
 
         for (const [, attachment] of message.attachments) {
             // @ts-ignore

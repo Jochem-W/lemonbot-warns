@@ -1,7 +1,7 @@
 import {Handler} from "../interfaces/handler"
 import {Message, PartialMessage} from "discord.js"
 import {S3} from "../clients"
-import {PutObjectCommand} from "@aws-sdk/client-s3"
+import {HeadObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
 
 export class MessageDeleteHandler implements Handler<"messageDelete"> {
@@ -9,6 +9,15 @@ export class MessageDeleteHandler implements Handler<"messageDelete"> {
     public readonly once = false
 
     public async handle(message: Message | PartialMessage): Promise<void> {
+        const response = await S3.send(new HeadObjectCommand({
+            Bucket: Variables.s3BucketName,
+            Key: `messages/${message.id}`,
+        }))
+
+        if (response.$metadata.httpStatusCode !== 200) {
+            return
+        }
+
         await S3.send(new PutObjectCommand({
             Bucket: Variables.s3BucketName,
             Key: `messages/${message.id}/deleted.json`,
