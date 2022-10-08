@@ -1,12 +1,27 @@
 import {Handler} from "../interfaces/handler"
-import {Message} from "discord.js"
+import {Message, Snowflake} from "discord.js"
 import {S3} from "../clients"
-import {PutObjectCommand} from "@aws-sdk/client-s3"
+import {HeadObjectCommand, NotFound, PutObjectCommand} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
 
 export class MessageCreateHandler implements Handler<"messageCreate"> {
     public readonly event = "messageCreate"
     public readonly once = false
+
+    public static async messageIsLogged(id: Snowflake): Promise<boolean> {
+        try {
+            await S3.send(new HeadObjectCommand({
+                Bucket: Variables.s3BucketName,
+                Key: `messages/${id}/message.json`,
+            }))
+        } catch (e) {
+            if (e instanceof NotFound) {
+                return false
+            }
+        }
+
+        return true
+    }
 
     public async handle(message: Message): Promise<void> {
         if (message.author.bot) {
@@ -15,7 +30,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
 
         await S3.send(new PutObjectCommand({
             Bucket: Variables.s3BucketName,
-            Key: `messages/${message.id}/${message.createdTimestamp}.json`,
+            Key: `messages/${message.id}/message.json`,
             Body: JSON.stringify(message.toJSON()),
             ContentType: "application/json",
         }))
