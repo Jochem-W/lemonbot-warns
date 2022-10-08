@@ -9,6 +9,7 @@ import {StatusCommand} from "./commands/statusCommand"
 import {ReRegisterCommand} from "./commands/reRegisterCommand"
 import {DumpJsonCommand} from "./commands/dumpJsonCommand"
 import {ListObjectsCommand} from "./commands/listObjectsCommand"
+import {DiscordGetObjectCommand} from "./commands/getObjectCommand"
 
 export const SlashCommands: ChatInputCommand[] = [
     new CheckBansCommand(),
@@ -17,6 +18,7 @@ export const SlashCommands: ChatInputCommand[] = [
     new ReRegisterCommand(),
     new DumpJsonCommand(),
     new ListObjectsCommand(),
+    new DiscordGetObjectCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
