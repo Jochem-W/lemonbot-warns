@@ -1,5 +1,5 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
-import {ChatInputCommandInteraction, codeBlock, PermissionFlagsBits} from "discord.js"
+import {AttachmentBuilder, ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import {S3} from "../clients"
 import {ListObjectsV2Command} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
@@ -22,6 +22,12 @@ export class ListObjectsCommand extends ChatInputCommand {
             Prefix: id ? `messages/${id}/` : `messages/`,
         }))
 
-        await interaction.editReply(codeBlock("json", JSON.stringify(response)))
+        await interaction.editReply({
+            files: [
+                new AttachmentBuilder(Buffer.from(JSON.stringify(response, null, 4)), {
+                    name: "response.json",
+                }),
+            ],
+        })
     }
 }
