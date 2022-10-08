@@ -5,8 +5,11 @@ import {reportError} from "./errors"
 import {ReRegisterCommand} from "./commands/reRegisterCommand"
 
 const client = new Client({
-    intents: [GatewayIntentBits.GuildMembers],
-    partials: [Partials.User, Partials.GuildMember],
+    intents: [GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.MessageContent],
+    partials: [Partials.User, Partials.GuildMember, Partials.Message],
 })
 client.rest.setToken(Variables.discordToken)
 
