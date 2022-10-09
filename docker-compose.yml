@@ -4,8 +4,6 @@ services:
   bot:
     build: .
     env_file: .env
-    environment:
-      GOOGLE_APPLICATION_CREDENTIALS: firebase.json
     volumes:
       - ./persisted:/app/persisted
     restart: unless-stopped
