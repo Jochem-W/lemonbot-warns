@@ -19,7 +19,7 @@ export class MessageDeleteBulkHandler implements Handler<"messageDeleteBulk"> {
             await S3.send(new PutObjectCommand({
                 Bucket: Variables.s3BucketName,
                 Key: `messages/${id}/deleted.json`,
-                Body: JSON.stringify(true),
+                Body: JSON.stringify(true, null, 4),
                 ContentType: "application/json",
             }))
         }

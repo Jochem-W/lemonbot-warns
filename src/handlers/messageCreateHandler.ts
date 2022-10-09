@@ -31,7 +31,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
         await S3.send(new PutObjectCommand({
             Bucket: Variables.s3BucketName,
             Key: `messages/${message.id}/message.json`,
-            Body: JSON.stringify(message.toJSON()),
+            Body: JSON.stringify(message.toJSON(), null, 4),
             ContentType: "application/json",
         }))
 
