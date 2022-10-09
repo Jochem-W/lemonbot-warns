@@ -11,7 +11,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
     public static async messageIsLogged(id: Snowflake): Promise<boolean> {
         try {
             await S3.send(new HeadObjectCommand({
-                Bucket: Variables.s3BucketName,
+                Bucket: Variables.s3ArchiveBucketName,
                 Key: `messages/${id}/message.json`,
             }))
         } catch (e) {
@@ -29,7 +29,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
         }
 
         await S3.send(new PutObjectCommand({
-            Bucket: Variables.s3BucketName,
+            Bucket: Variables.s3ArchiveBucketName,
             Key: `messages/${message.id}/message.json`,
             Body: JSON.stringify(message.toJSON(), null, 4),
             ContentType: "application/json",
@@ -39,7 +39,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
             // @ts-ignore
             const response = await fetch(attachment.url)
             await S3.send(new PutObjectCommand({
-                Bucket: Variables.s3BucketName,
+                Bucket: Variables.s3ArchiveBucketName,
                 Key: `messages/${message.id}/attachments/${attachment.id}/${attachment.name}`,
                 Body: await response.arrayBuffer(),
                 ContentType: attachment.contentType ?? undefined,

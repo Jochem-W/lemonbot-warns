@@ -17,7 +17,7 @@ export class ListObjectsCommand extends ChatInputCommand {
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const response = await S3.send(new ListObjectsV2Command({
-            Bucket: Variables.s3BucketName,
+            Bucket: Variables.s3ArchiveBucketName,
             Prefix: interaction.options.getString("prefix") ?? undefined,
         }))
 

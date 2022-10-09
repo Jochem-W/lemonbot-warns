@@ -17,7 +17,7 @@ export class MessageUpdateHandler implements Handler<"messageUpdate"> {
         }
 
         await S3.send(new PutObjectCommand({
-            Bucket: Variables.s3BucketName,
+            Bucket: Variables.s3ArchiveBucketName,
             Key: `messages/${newMessage.id}/edits/${newMessage.editedTimestamp ?? Date.now()}.json`,
             Body: JSON.stringify(newMessage.toJSON(), null, 4),
             ContentType: "application/json",

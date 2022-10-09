@@ -17,7 +17,7 @@ export class DiscordGetObjectCommand extends ChatInputCommand {
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const key = interaction.options.getString("key", true)
         const response = await S3.send(new GetObjectCommand({
-            Bucket: Variables.s3BucketName,
+            Bucket: Variables.s3ArchiveBucketName,
             Key: key,
         }))
 

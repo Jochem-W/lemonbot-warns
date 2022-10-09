@@ -41,7 +41,7 @@ import {
 } from "../errors"
 import {makeEmbed} from "../utilities/responseBuilder"
 import {fetchGuild, fetchMember} from "../utilities/interactionUtilities"
-import {uploadAttachment} from "../utilities/firebaseUtilities"
+import {uploadAttachment} from "../utilities/s3Utilities"
 import {Prisma} from "../clients"
 import {Penalty, Reason} from "@prisma/client"
 
@@ -335,8 +335,7 @@ export class WarnCommand extends ChatInputCommand {
                 throw new ImageOnlyError(image)
             }
 
-            const result = await uploadAttachment(image)
-            images.push(result.url)
+            images.push(await uploadAttachment(image))
         }
 
         const user = interaction.options.getUser("user", true)
