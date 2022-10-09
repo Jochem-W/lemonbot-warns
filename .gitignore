@@ -244,6 +244,5 @@ $RECYCLE.BIN/
 ### Custom
 .env.db
 config.json
-firebase.json
 persisted
 status

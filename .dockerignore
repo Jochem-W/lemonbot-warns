@@ -252,7 +252,6 @@ $RECYCLE.BIN/
 config.example.json
 config.schema.json
 docker-compose.yml
-firebase.example.json
 persisted
 status
 tsconfig.debug.json
