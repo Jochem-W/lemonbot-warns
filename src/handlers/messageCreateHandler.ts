@@ -1,8 +1,9 @@
 import {Handler} from "../interfaces/handler"
 import {Message, Snowflake} from "discord.js"
 import {S3} from "../clients"
-import {HeadObjectCommand, NotFound, PutObjectCommand} from "@aws-sdk/client-s3"
+import {HeadObjectCommand, NotFound} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
+import {Upload} from "@aws-sdk/lib-storage"
 
 export class MessageCreateHandler implements Handler<"messageCreate"> {
     public readonly event = "messageCreate"
@@ -28,22 +29,30 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
             return
         }
 
-        await S3.send(new PutObjectCommand({
-            Bucket: Variables.s3ArchiveBucketName,
-            Key: `messages/${message.id}/message.json`,
-            Body: JSON.stringify(message.toJSON(), null, 4),
-            ContentType: "application/json",
-        }))
+        await new Upload({
+            client: S3,
+            params: {
+                Bucket: Variables.s3ArchiveBucketName,
+                Body: JSON.stringify(message.toJSON(), null, 4),
+                ContentType: "application/json",
+                Key: `messages/${message.id}/message.json`,
+            },
+            queueSize: 3, // for Cloudflare R2
+        }).done()
 
         for (const [, attachment] of message.attachments) {
             // @ts-ignore
             const response = await fetch(attachment.url)
-            await S3.send(new PutObjectCommand({
-                Bucket: Variables.s3ArchiveBucketName,
-                Key: `messages/${message.id}/attachments/${attachment.id}/${attachment.name}`,
-                Body: await response.arrayBuffer(),
-                ContentType: attachment.contentType ?? undefined,
-            }))
+            await new Upload({
+                client: S3,
+                params: {
+                    Bucket: Variables.s3ArchiveBucketName,
+                    Key: `messages/${message.id}/attachments/${attachment.id}/${attachment.name}`,
+                    Body: response.body as NodeJS.ReadableStream,
+                    ContentType: attachment.contentType ?? undefined,
+                },
+                queueSize: 3, // for Cloudflare R2
+            }).done()
         }
     }
 }

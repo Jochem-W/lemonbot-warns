@@ -1,9 +1,9 @@
 import {Handler} from "../interfaces/handler"
 import {Message, PartialMessage} from "discord.js"
 import {S3} from "../clients"
-import {PutObjectCommand} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
 import {MessageCreateHandler} from "./messageCreateHandler"
+import {Upload} from "@aws-sdk/lib-storage"
 
 export class MessageUpdateHandler implements Handler<"messageUpdate"> {
     public readonly event = "messageUpdate"
@@ -16,11 +16,15 @@ export class MessageUpdateHandler implements Handler<"messageUpdate"> {
             return
         }
 
-        await S3.send(new PutObjectCommand({
-            Bucket: Variables.s3ArchiveBucketName,
-            Key: `messages/${newMessage.id}/edits/${newMessage.editedTimestamp ?? Date.now()}.json`,
-            Body: JSON.stringify(newMessage.toJSON(), null, 4),
-            ContentType: "application/json",
-        }))
+        await new Upload({
+            client: S3,
+            params: {
+                Bucket: Variables.s3ArchiveBucketName,
+                Key: `messages/${newMessage.id}/edits/${newMessage.editedTimestamp ?? Date.now()}.json`,
+                Body: JSON.stringify(newMessage.toJSON(), null, 4),
+                ContentType: "application/json",
+            },
+            queueSize: 3, // for Cloudflare R2
+        }).done()
     }
 }
