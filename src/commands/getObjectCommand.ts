@@ -1,9 +1,10 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {AttachmentBuilder, ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import {S3} from "../clients"
-import {GetObjectCommand} from "@aws-sdk/client-s3"
+import {GetObjectCommand, NoSuchKey} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
 import {Readable} from "stream"
+import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class DiscordGetObjectCommand extends ChatInputCommand {
     public constructor() {
@@ -16,17 +17,26 @@ export class DiscordGetObjectCommand extends ChatInputCommand {
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
         const key = interaction.options.getString("key", true)
-        const response = await S3.send(new GetObjectCommand({
-            Bucket: Variables.s3ArchiveBucketName,
-            Key: key,
-        }))
+        try {
+            const response = await S3.send(new GetObjectCommand({
+                Bucket: Variables.s3ArchiveBucketName,
+                Key: key,
+            }))
 
-        await interaction.editReply({
-            files: [
-                new AttachmentBuilder(response.Body as Readable, {
-                    name: key.split("/").pop() ?? "object",
-                }),
-            ],
-        })
+            await interaction.editReply({
+                files: [
+                    new AttachmentBuilder(response.Body as Readable, {
+                        name: key.split("/").pop() ?? "object",
+                    }),
+                ],
+            })
+        } catch (e) {
+            if (e instanceof NoSuchKey) {
+                await interaction.editReply({embeds: [makeErrorEmbed(e)]})
+                return
+            }
+
+            throw e
+        }
     }
 }
