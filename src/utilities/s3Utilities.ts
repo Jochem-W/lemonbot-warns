@@ -4,6 +4,8 @@ import {Variables} from "../variables"
 import {Upload} from "@aws-sdk/lib-storage"
 import {
     _Object,
+    GetObjectCommand,
+    GetObjectCommandInput,
     HeadObjectCommand,
     HeadObjectCommandInput,
     ListObjectsV2Command,
@@ -17,7 +19,7 @@ export async function uploadAttachment(attachment: Attachment): Promise<string> 
     const key = `${attachment.id}/${attachment.name}`
 
     const response = await fetch(attachment.url)
-    await upload(Variables.s3WarningsBucketName, key, response.body, attachment.contentType ?? undefined)
+    await upload(Variables.s3WarningsBucketName, key, response.body ?? undefined, attachment.contentType ?? undefined)
     return new URL(`${Variables.s3WarningsBucketUrl}/${key}`).toString()
 }
 
