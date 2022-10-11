@@ -12,9 +12,6 @@ export class MessageDeleteHandler implements Handler<"messageDelete"> {
             return
         }
 
-        await upload(Variables.s3ArchiveBucketName,
-            `messages/${message.id}/deleted.json`,
-            JSON.stringify(true, null, 4),
-            "application/json")
+        await upload(Variables.s3ArchiveBucketName, `messages/${message.id}/deleted.json`, "", "text/plain")
     }
 }

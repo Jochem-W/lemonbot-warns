@@ -14,10 +14,7 @@ export class MessageDeleteBulkHandler implements Handler<"messageDeleteBulk"> {
                 continue
             }
 
-            await upload(Variables.s3ArchiveBucketName,
-                `messages/${id}/deleted.json`,
-                JSON.stringify(true, null, 4),
-                "application/json")
+            await upload(Variables.s3ArchiveBucketName, `messages/${id}/deleted.json`, "", "text/plain")
         }
     }
 }
