@@ -23,6 +23,15 @@ export async function uploadAttachment(attachment: Attachment): Promise<string> 
     return new URL(`${Variables.s3WarningsBucketUrl}/${key}`).toString()
 }
 
+export async function download(bucket: GetObjectCommandInput["Bucket"], key: GetObjectCommandInput["Key"]) {
+    const response = await S3.send(new GetObjectCommand({
+        Bucket: bucket,
+        Key: key,
+    }))
+
+    return response.Body
+}
+
 export async function* search(bucket: ListObjectsV2CommandInput["Bucket"],
                               prefix?: ListObjectsV2CommandInput["Prefix"]): AsyncGenerator<_Object> {
     let response: ListObjectsV2CommandOutput | undefined = undefined
