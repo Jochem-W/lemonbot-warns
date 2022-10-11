@@ -3,6 +3,8 @@ import {AttachmentBuilder, ChatInputCommandInteraction, PermissionFlagsBits} fro
 import {S3} from "../clients"
 import {ListObjectsV2Command} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
+import {isFromOwner} from "../utilities/interactionUtilities"
+import {OwnerOnlyError} from "../errors"
 
 export class ListObjectsCommand extends ChatInputCommand {
     public constructor() {
@@ -16,6 +18,10 @@ export class ListObjectsCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+        if (!await isFromOwner(interaction)) {
+            throw new OwnerOnlyError()
+        }
+
         const response = await S3.send(new ListObjectsV2Command({
             Bucket: Variables.s3ArchiveBucketName,
             Prefix: interaction.options.getString("prefix") ?? undefined,

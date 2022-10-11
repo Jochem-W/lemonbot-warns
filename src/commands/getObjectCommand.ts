@@ -5,6 +5,8 @@ import {GetObjectCommand, NoSuchKey} from "@aws-sdk/client-s3"
 import {Variables} from "../variables"
 import {Readable} from "stream"
 import {makeErrorEmbed} from "../utilities/responseBuilder"
+import {isFromOwner} from "../utilities/interactionUtilities"
+import {OwnerOnlyError} from "../errors"
 
 export class DiscordGetObjectCommand extends ChatInputCommand {
     public constructor() {
@@ -16,6 +18,10 @@ export class DiscordGetObjectCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+        if (!await isFromOwner(interaction)) {
+            throw new OwnerOnlyError()
+        }
+
         const key = interaction.options.getString("key", true)
         try {
             const response = await S3.send(new GetObjectCommand({
