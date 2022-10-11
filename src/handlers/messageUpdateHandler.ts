@@ -1,9 +1,7 @@
 import {Handler} from "../interfaces/handler"
 import {Message, PartialMessage} from "discord.js"
-import {S3} from "../clients"
 import {Variables} from "../variables"
-import {MessageCreateHandler} from "./messageCreateHandler"
-import {Upload} from "@aws-sdk/lib-storage"
+import {exists, upload} from "../utilities/s3Utilities"
 
 export class MessageUpdateHandler implements Handler<"messageUpdate"> {
     public readonly event = "messageUpdate"
@@ -12,19 +10,13 @@ export class MessageUpdateHandler implements Handler<"messageUpdate"> {
     public async handle(_oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
         newMessage = await newMessage.fetch(true)
 
-        if (!await MessageCreateHandler.messageIsLogged(newMessage.id)) {
+        if (!await exists(Variables.s3ArchiveBucketName, `messages/${newMessage.id}/message.json`)) {
             return
         }
 
-        await new Upload({
-            client: S3,
-            params: {
-                Bucket: Variables.s3ArchiveBucketName,
-                Key: `messages/${newMessage.id}/edits/${newMessage.editedTimestamp ?? Date.now()}.json`,
-                Body: JSON.stringify(newMessage.toJSON(), null, 4),
-                ContentType: "application/json",
-            },
-            queueSize: 3, // for Cloudflare R2
-        }).done()
+        await upload(Variables.s3ArchiveBucketName,
+            `messages/${newMessage.id}/edits/${newMessage.editedTimestamp ?? Date.now()}.json`,
+            JSON.stringify(newMessage, null, 4),
+            "application/json")
     }
 }

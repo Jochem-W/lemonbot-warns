@@ -1,9 +1,7 @@
 import {Handler} from "../interfaces/handler"
 import {Collection, GuildTextBasedChannel, Message, PartialMessage, Snowflake} from "discord.js"
-import {S3} from "../clients"
 import {Variables} from "../variables"
-import {MessageCreateHandler} from "./messageCreateHandler"
-import {Upload} from "@aws-sdk/lib-storage"
+import {exists, upload} from "../utilities/s3Utilities"
 
 export class MessageDeleteBulkHandler implements Handler<"messageDeleteBulk"> {
     public readonly event = "messageDeleteBulk"
@@ -12,20 +10,14 @@ export class MessageDeleteBulkHandler implements Handler<"messageDeleteBulk"> {
     public async handle(messages: Collection<Snowflake, Message | PartialMessage>,
                         _channel: GuildTextBasedChannel): Promise<void> {
         for (const [id] of messages) {
-            if (!await MessageCreateHandler.messageIsLogged(id)) {
+            if (!await exists(Variables.s3ArchiveBucketName, `messages/${id}/message.json`)) {
                 continue
             }
 
-            await new Upload({
-                client: S3,
-                params: {
-                    Bucket: Variables.s3ArchiveBucketName,
-                    Key: `messages/${id}/deleted.json`,
-                    Body: JSON.stringify(true, null, 4),
-                    ContentType: "application/json",
-                },
-                queueSize: 3, // for Cloudflare R2
-            }).done()
+            await upload(Variables.s3ArchiveBucketName,
+                `messages/${id}/deleted.json`,
+                JSON.stringify(true, null, 4),
+                "application/json")
         }
     }
 }
