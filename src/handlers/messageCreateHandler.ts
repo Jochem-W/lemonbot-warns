@@ -17,6 +17,11 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
             JSON.stringify(message.toJSON(), null, 4),
             "application/json")
 
+        await upload(Variables.s3ArchiveBucketName,
+            `users/${message.author.id}/messages/${message.id}`,
+            "",
+            "text/plain")
+
         for (const [, attachment] of message.attachments) {
             const response = await fetch(attachment.url)
             await upload(Variables.s3ArchiveBucketName,
