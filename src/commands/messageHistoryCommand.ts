@@ -23,48 +23,36 @@ export class MessageHistoryCommand extends ChatInputCommand {
             throw new OwnerOnlyError()
         }
 
-        const userMessageKeys: string[] = []
+        await interaction.editReply(inlineCode("Searching"))
+
         const user = interaction.options.getUser("user", true)
-
-        let max = 0
-        let completed = false
-        const searchUserMessages = (async () => {
-            for await (const userMessageObject of search(Variables.s3ArchiveBucketName, `users/${user.id}/`)) {
-                if (!userMessageObject.Key) {
-                    continue
-                }
-
-                userMessageKeys.push(userMessageObject.Key)
-                max++
+        const userMessageKeys: string[] = []
+        for await (const userMessageObject of search(Variables.s3ArchiveBucketName, `users/${user.id}/`)) {
+            if (!userMessageObject.Key) {
+                continue
             }
 
-            completed = true
-        })()
+            userMessageKeys.push(userMessageObject.Key)
+        }
 
         const archive = archiver("tar", {gzip: true})
         let current = 0
         let lastEdited = 0
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        while (!completed || userMessageKeys.length > 0) {
-            if (Date.now() - lastEdited > 2500) {
-                lastEdited = await this.reportProgress(current, max, interaction)
-            }
-
-            if (userMessageKeys.length > 0) {
-                current++
+        for (const key of userMessageKeys) {
+            if (Date.now() - lastEdited > 1000) {
+                lastEdited = await this.reportProgress(current, userMessageKeys.length, interaction)
             }
 
             for await (const messageObject of
-                search(Variables.s3ArchiveBucketName, `messages/${userMessageKeys.shift()?.split("/").pop()}/`)) {
+                search(Variables.s3ArchiveBucketName, `messages/${key.split("/").pop()}/`)) {
                 if (messageObject.Key) {
-                    // TODO: download in parallel?
                     const stream = await download(Variables.s3ArchiveBucketName, messageObject.Key)
                     archive.append(stream as Readable, {name: messageObject.Key})
                 }
             }
-        }
 
-        await searchUserMessages
+            current++
+        }
 
         await archive.finalize()
         await interaction.editReply({
