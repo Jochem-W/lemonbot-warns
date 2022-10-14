@@ -10,6 +10,7 @@
     "@octokit/rest": "^19.0.4",
     "@prisma/client": "^4.4.0",
     "archiver": "^5.3.1",
+    "async-await-queue": "^1.2.1",
     "discord.js": "^14.6.0",
     "lru-cache": "^7.14.0",
     "luxon": "^3.0.4",
