@@ -2,7 +2,7 @@ import {AttachmentBuilder, ChatInputCommandInteraction, inlineCode, PermissionFl
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {Variables} from "../variables"
 import {isFromOwner} from "../utilities/interactionUtilities"
-import {OwnerOnlyError} from "../errors"
+import {InvalidArgumentsError, OwnerOnlyError} from "../errors"
 import Queue from "async-await-queue"
 import archiver, {Archiver} from "archiver"
 import {download, search} from "../utilities/s3Utilities"
@@ -68,13 +68,23 @@ export class S3Command extends ChatInputCommand {
                         .setName("key")
                         .setDescription("The key name of the object to delete")
                         .setRequired(true))))
-            .addSubcommand(subcommand => subcommand
+            .addSubcommandGroup(group => group
                 .setName("history")
-                .setDescription("Get the logged messages of a user")
-                .addUserOption(option => option
+                .setDescription("Commands related to message history")
+                .addSubcommand(subcommand => subcommand
                     .setName("user")
-                    .setDescription("The user to get the message history of")
-                    .setRequired(true)))
+                    .setDescription("Get the logged messages of a user")
+                    .addUserOption(option => option
+                        .setName("target")
+                        .setDescription("The user to get the message history of")
+                        .setRequired(true)))
+                .addSubcommand(subcommand => subcommand
+                    .setName("channel")
+                    .setDescription("Get the logged messages of a channel")
+                    .addChannelOption(option => option
+                        .setName("target")
+                        .setDescription("The channel to get the message history of")
+                        .setRequired(true))))
             .addSubcommand(subcommand => subcommand
                 .setName("delete")
                 .setDescription("Delete objects from a bucket")
@@ -100,6 +110,9 @@ export class S3Command extends ChatInputCommand {
         switch (interaction.options.getSubcommandGroup()) {
             case "api":
                 await this.handleApiGroup(interaction)
+                break
+            case "history":
+                await this.handleHistoryGroup(interaction)
                 break
             case null:
                 await this.handleUngrouped(interaction)
@@ -166,18 +179,16 @@ export class S3Command extends ChatInputCommand {
         await interaction.editReply("Deleted object")
     }
 
-    private async handleUngrouped(interaction: ChatInputCommandInteraction) {
+    private async handleHistoryGroup(interaction: ChatInputCommandInteraction) {
         switch (interaction.options.getSubcommand(true)) {
-            case "history":
-                await this.ungroupedHistory(interaction)
-                break
-            case "delete":
-                await this.ungroupedDelete(interaction)
+            case "channel":
+            case "user":
+                await this.history(interaction)
                 break
         }
     }
 
-    private async ungroupedHistory(interaction: ChatInputCommandInteraction) {
+    private async history(interaction: ChatInputCommandInteraction) {
         await interaction.editReply(inlineCode("Searching"))
 
         const queue = new Queue(3, 100)
@@ -192,10 +203,22 @@ export class S3Command extends ChatInputCommand {
         }
         report()
 
-        const user = interaction.options.getUser("user", true)
+        const target = interaction.options.get("target", true)
+        let prefix
+        let id
+        if (target.user) {
+            prefix = "users"
+            id = target.user.id
+        } else if (target.channel) {
+            prefix = "channels"
+            id = target.channel.id
+        } else {
+            throw new InvalidArgumentsError("Invalid target")
+        }
+
         const archive = archiver("tar", {gzip: true})
-        for await (const userMessageObject of search(Variables.s3ArchiveBucketName, `users/${user.id}/`)) {
-            if (!userMessageObject.Key) {
+        for await (const messageObject of search(Variables.s3ArchiveBucketName, `${prefix}/${id}/`)) {
+            if (!messageObject.Key) {
                 continue
             }
 
@@ -207,7 +230,7 @@ export class S3Command extends ChatInputCommand {
                 } finally {
                     queue.end(me)
                 }
-            })(userMessageObject.Key))
+            })(messageObject.Key))
         }
 
         await Promise.allSettled(downloads)
@@ -217,9 +240,17 @@ export class S3Command extends ChatInputCommand {
             content: null,
             files: [{
                 attachment: archive,
-                name: `${user.id}.tar.gz`,
+                name: `${id}.tar.gz`,
             }],
         })
+    }
+
+    private async handleUngrouped(interaction: ChatInputCommandInteraction) {
+        switch (interaction.options.getSubcommand(true)) {
+            case "delete":
+                await this.ungroupedDelete(interaction)
+                break
+        }
     }
 
     private async downloadMessage(archive: Archiver, key: string) {

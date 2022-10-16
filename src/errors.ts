@@ -17,6 +17,12 @@ export class BotError extends CustomError {
     }
 }
 
+export class InvalidArgumentsError extends BotError {
+    public constructor(message: string) {
+        super(message)
+    }
+}
+
 export class CommandNotFoundError extends BotError {
     public constructor(message: string) {
         super(message)
