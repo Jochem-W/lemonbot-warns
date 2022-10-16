@@ -22,6 +22,11 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
             "",
             "text/plain")
 
+        await upload(Variables.s3ArchiveBucketName,
+            `channels/${message.channel.id}/messages/${message.id}`,
+            "",
+            "text/plain")
+
         for (const [, attachment] of message.attachments) {
             const response = await fetch(attachment.url)
             await upload(Variables.s3ArchiveBucketName,
