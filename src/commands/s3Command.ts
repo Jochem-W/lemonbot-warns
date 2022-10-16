@@ -191,7 +191,7 @@ export class S3Command extends ChatInputCommand {
     private async history(interaction: ChatInputCommandInteraction) {
         await interaction.editReply(inlineCode("Searching"))
 
-        const queue = new Queue(3, 100)
+        const queue = new Queue(100)
         const downloads: Promise<void>[] = []
         let editOnProgress: NodeJS.Timeout | undefined
         const report = () => {

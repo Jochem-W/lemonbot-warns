@@ -13,7 +13,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
             return
         }
 
-        const queue = new Queue(3, 100)
+        const queue = new Queue(100)
         const uploads: Promise<void>[] = [
             (async () => {
                 const me = Symbol()
