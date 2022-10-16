@@ -229,7 +229,7 @@ export class S3Command extends ChatInputCommand {
             }
 
             const stream = await download(Variables.s3ArchiveBucketName, messageObject.Key)
-            archive.append(stream as Readable, {name: key})
+            archive.append(stream as Readable, {name: messageObject.Key})
         }
     }
 
