@@ -193,7 +193,7 @@ export class S3Command extends ChatInputCommand {
         report()
 
         const user = interaction.options.getUser("user", true)
-        const archive = archiver("zip", {zlib: {level: 9}})
+        const archive = archiver("tar", {gzip: true})
         for await (const userMessageObject of search(Variables.s3ArchiveBucketName, `users/${user.id}/`)) {
             if (!userMessageObject.Key) {
                 continue
