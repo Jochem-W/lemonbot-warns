@@ -33,10 +33,6 @@ export async function fetchMember(interaction: Interaction,
 }
 
 export async function isFromOwner(interaction: Interaction): Promise<boolean> {
-    if (!interaction.client.application) {
-        throw new Error()
-    }
-
     let application = interaction.client.application
     if (!application.owner) {
         application = await application.fetch()

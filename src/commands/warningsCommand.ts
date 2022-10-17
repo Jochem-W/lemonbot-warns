@@ -71,7 +71,7 @@ export class WarningsCommand extends ChatInputCommand {
 
         embeds[0]?.setFields({
             name: "Current penalty level",
-            value: lastWarning?.penalty?.name ?? "N/A",
+            value: lastWarning?.penalty.name ?? "N/A",
         }, {
             name: "Reasons",
             value: reasons.length ? reasons.join("\n") : "N/A",
