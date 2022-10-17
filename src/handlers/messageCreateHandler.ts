@@ -60,7 +60,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
                 try {
                     const response = await fetch(attachment.url)
                     await upload(Variables.s3ArchiveBucketName,
-                        `messages/${message.id}/attachments/${attachment.id}/${attachment.name}`,
+                        `messages/${message.id}/attachments/${attachment.id}/${attachment.name ?? attachment.id}`,
                         response.body ?? undefined,
                         attachment.contentType ?? undefined)
                 } finally {

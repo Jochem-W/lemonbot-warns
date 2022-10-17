@@ -90,6 +90,7 @@ export class HistoryCommand extends ChatInputCommand {
     }
 
     private async downloadMessage(archive: Archiver, key: string) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         for await (const messageObject of search(Variables.s3ArchiveBucketName, `messages/${key.split("/").pop()}/`)) {
             if (!messageObject.Key) {
                 continue

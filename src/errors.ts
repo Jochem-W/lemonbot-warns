@@ -73,19 +73,19 @@ export class InvalidPenaltyError extends BotError {
 
 export class NoContentTypeError extends BotError {
     public constructor(attachment: Attachment) {
-        super(`The file "${attachment.name}" has an invalid filetype.`)
+        super(`The file "${attachment.name ?? attachment.id}" has an invalid filetype.`)
     }
 }
 
 export class ImageOnlyError extends BotError {
     public constructor(attachment: Attachment) {
-        super(`The file "${attachment.name}" is not an image.`)
+        super(`The file "${attachment.name ?? attachment.id}" is not an image.`)
     }
 }
 
 export class InvalidCustomIdError extends BotError {
     public constructor(customId: string | CustomId) {
-        super(`Invalid custom ID "${customId}".`)
+        super(`Invalid custom ID "${customId.toString()}".`)
     }
 }
 
@@ -97,7 +97,7 @@ export class ChannelNotFoundError extends BotError {
 
 export class InvalidChannelTypeError extends BotError {
     public constructor(channel: Channel, expected: ChannelType) {
-        if ("name" in channel) {
+        if ("name" in channel && channel.name) {
             super(`Channel "${channel.name}" (ID: "${channel.id}") is not of type "${expected}".`)
             return
         }

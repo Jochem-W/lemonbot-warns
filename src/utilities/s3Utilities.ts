@@ -16,7 +16,7 @@ import {
 } from "@aws-sdk/client-s3"
 
 export async function uploadAttachment(attachment: Attachment): Promise<string> {
-    const key = `${attachment.id}/${attachment.name}`
+    const key = `${attachment.id}/${attachment.name ?? attachment.id}`
 
     const response = await fetch(attachment.url)
     await upload(Variables.s3WarningsBucketName, key, response.body ?? undefined, attachment.contentType ?? undefined)

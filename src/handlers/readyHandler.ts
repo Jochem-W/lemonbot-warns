@@ -88,6 +88,7 @@ async function getChangelog(): Promise<string | null> {
     let description = `${previousVersion.slice(0, 7)}..${Variables.commitHash.slice(0, 7)}\n\ncommit log:`
     response.data.commits.reverse()
     for (const commit of response.data.commits) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         description += `\n  ${commit.sha.slice(0, 7)} ${commit.commit.message.split("\n")[0]}`
     }
 
