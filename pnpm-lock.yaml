@@ -16,6 +16,7 @@ specifiers:
   archiver: ^5.3.1
   async-await-queue: ^1.2.1
   bufferutil: ^4.0.6
+  csv: ^6.2.1
   discord.js: ^14.6.0
   erlpack: ^0.1.4
   eslint: ^8.25.0
@@ -36,6 +37,7 @@ dependencies:
   '@prisma/client': 4.4.0_prisma@4.4.0
   archiver: 5.3.1
   async-await-queue: 1.2.1
+  csv: 6.2.1
   discord.js: 14.6.0_22kvxa7zeyivx4jp72v2w3pkvy
   lru-cache: 7.14.0
   luxon: 3.0.4
@@ -1625,6 +1627,28 @@ packages:
       which: 2.0.2
     dev: true
 
+  /csv-generate/4.2.0:
+    resolution: { integrity: sha512-zlIESlGQaYqIhNYwBN2pj5KXNMYbAXZYMOgNoVSoYV8MQyGZwcNWX+kx5LHxocp+zQDqzSgeKh+e+AZs+nCq4Q== }
+    dev: false
+
+  /csv-parse/5.3.1:
+    resolution: { integrity: sha512-R4Hv6eGJNzgcKdThZ6XORbSQ873HVcNke74QIq+LbwpT90LaZ8Xzl7KKiuIP16xq/P7ofzRt0h7S0xm+fVScsw== }
+    dev: false
+
+  /csv-stringify/6.2.0:
+    resolution: { integrity: sha512-dcUbQLRTTDcgQxgEU8V9IctkaCwHZjZfzUZ5ZB3RY8Y+pXtdtl5iVQHfGzANytFFkRKanYzBXrkfpNdGR7eviA== }
+    dev: false
+
+  /csv/6.2.1:
+    resolution: { integrity: sha512-qTEPklcIZkJGaB/j6/2qNXZbKgWSXPVMyRnZvRcb1F7MGyvLqJexlZlbJ3NQkgmUoAeScZhsRHjlZEgImBfCYQ== }
+    engines: { node: '>= 0.1.90' }
+    dependencies:
+      csv-generate: 4.2.0
+      csv-parse: 5.3.1
+      csv-stringify: 6.2.0
+      stream-transform: 3.2.0
+    dev: false
+
   /debug/4.3.4:
     resolution: { integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ== }
     engines: { node: '>=6.0' }
@@ -2390,6 +2414,10 @@ packages:
     dependencies:
       inherits: 2.0.4
       readable-stream: 3.6.0
+    dev: false
+
+  /stream-transform/3.2.0:
+    resolution: { integrity: sha512-M22v88wNknyJiIyHYoiIYI5RPl/R7tkf92j1YNkmrbe5XRGHW0jW8n458j1njOrR4Edcj8bwbpSV0iLIWon1hg== }
     dev: false
 
   /streamsearch/1.1.0:
