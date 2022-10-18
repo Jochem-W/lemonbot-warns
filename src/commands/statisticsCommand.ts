@@ -91,7 +91,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
         for (const user in series) {
             archive.append(stringify(series[user] ?? [], {columns: ["date", "count"], header: true}),
-                {name: `warnings/${user}.csv`})
+                {name: `messages/${user}.csv`})
         }
     }
 
