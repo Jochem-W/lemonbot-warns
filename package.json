@@ -5,10 +5,10 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.188.0",
-    "@aws-sdk/lib-storage": "^3.188.0",
+    "@aws-sdk/client-s3": "^3.190.0",
+    "@aws-sdk/lib-storage": "^3.190.0",
     "@octokit/rest": "^19.0.5",
-    "@prisma/client": "^4.4.0",
+    "@prisma/client": "^4.5.0",
     "archiver": "^5.3.1",
     "async-await-queue": "^1.2.1",
     "csv": "^6.2.1",
@@ -22,20 +22,20 @@
   "devDependencies": {
     "@tsconfig/node18": "^1.0.1",
     "@types/archiver": "^5.3.1",
-    "@types/luxon": "^3.0.1",
+    "@types/luxon": "^3.0.2",
     "@types/nanoid-dictionary": "^4.2.0",
-    "@types/node": "^18.11.0",
+    "@types/node": "^18.11.1",
     "@types/whatwg-mimetype": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "eslint": "^8.25.0",
-    "prisma": "^4.4.0",
+    "prisma": "^4.5.0",
     "typescript": "^4.8.4"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.6",
+    "bufferutil": "^4.0.7",
     "erlpack": "^0.1.4",
-    "utf-8-validate": "^5.0.9",
+    "utf-8-validate": "^5.0.10",
     "zlib-sync": "^0.1.7"
   }
 }
