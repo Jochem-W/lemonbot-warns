@@ -69,24 +69,52 @@ export class StatisticsCommand extends ChatInputCommand {
 
         const guild = interaction.guild ?? await interaction.client.guilds.fetch(interaction.guildId)
         const series: Record<string, { date: string, count: number }[]> = {}
+
+
+        const data: Record<Snowflake, DateTime[]> = {}
         for (const [, member] of await guild.members.fetch()) {
-            if (!member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            if (!member.permissions.has(PermissionFlagsBits.ModerateMembers) || member.user.bot) {
                 continue
             }
 
-            const data: Record<string, number> = {}
+            data[member.id] = []
             for await (const {Key} of search(Variables.s3ArchiveBucketName, `users/${member.id}`)) {
                 const messageId = Key?.split("/").pop()
                 if (!messageId) {
                     continue
                 }
 
-                const isoDate = snowflakeToDateTime(messageId).startOf("day").toISODate()
-                data[isoDate] = (data[isoDate] ?? 0) + 1
+                data[member.id]?.push(snowflakeToDateTime(messageId).startOf("day"))
             }
+        }
 
-            series[member.user.tag] =
-                Object.entries(data).sort(([a], [b]) => a.localeCompare(b)).map(([date, count]) => ({date, count}))
+        for (const user in data) {
+            data[user]?.sort((a, b) => a.diff(b).milliseconds)
+        }
+
+        const sortedDates = Object.values(data).flat().sort((a, b) => a.diff(b).milliseconds)
+        const firstDate = sortedDates[0]
+        const lastDate = sortedDates.at(-1)
+
+        if (!firstDate || !lastDate) {
+            return
+        }
+
+        for (const [user, messageDates] of Object.entries(data)) {
+            const member = await guild.members.fetch(user)
+
+            let cursor = firstDate
+            while (cursor.diffNow("days").days < 0) {
+                let count = 0
+                while (messageDates[0]?.hasSame(cursor, "day")) {
+                    count++
+                    messageDates.shift()
+                }
+
+                series[member.user.tag] ??= []
+                series[member.user.tag]?.push({date: cursor.toISODate(), count})
+                cursor = cursor.plus({days: 1})
+            }
         }
 
         for (const user in series) {
