@@ -8,6 +8,7 @@ interface RawConfig {
         cacheTtl: number
     }
     guild: {
+        loggedBots: string[]
         errorChannel: string
         id: string
         privateChannels: string[]
@@ -40,6 +41,7 @@ class BotConfig {
 }
 
 class GuildConfig {
+    public readonly loggedBots: Snowflake[]
     public readonly errorChannel: Snowflake
     public readonly id: Snowflake
     public readonly privateChannels: Snowflake[]
@@ -48,6 +50,7 @@ class GuildConfig {
     public readonly warnLogsChannel: Snowflake
 
     public constructor(data: RawConfig["guild"]) {
+        this.loggedBots = [...data.loggedBots]
         this.errorChannel = data.errorChannel
         this.id = data.id
         this.privateChannels = [...data.privateChannels]

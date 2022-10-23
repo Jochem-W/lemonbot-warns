@@ -3,13 +3,14 @@ import {Message} from "discord.js"
 import {Variables} from "../variables"
 import {upload} from "../utilities/s3Utilities"
 import Queue from "async-await-queue"
+import {DefaultConfig} from "../models/config"
 
 export class MessageCreateHandler implements Handler<"messageCreate"> {
     public readonly event = "messageCreate"
     public readonly once = false
 
     public async handle(message: Message): Promise<void> {
-        if (message.author.bot) {
+        if (message.author.bot && !DefaultConfig.guild.loggedBots.includes(message.author.id)) {
             return
         }
 

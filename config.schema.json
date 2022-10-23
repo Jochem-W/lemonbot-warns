@@ -27,6 +27,14 @@
       "description": "Guild configuration",
       "type": "object",
       "properties": {
+        "loggedBots": {
+          "description": "The IDs of bots to log",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d+$"
+          }
+        },
         "errorChannel": {
           "description": "The channel to log errors in",
           "type": "string",
@@ -79,6 +87,7 @@
         }
       },
       "required": [
+        "loggedBots",
         "errorChannel",
         "id",
         "privateChannels",
