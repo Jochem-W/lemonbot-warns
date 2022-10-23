@@ -26,6 +26,13 @@ export class HistoryCommand extends ChatInputCommand {
                     .setName("target")
                     .setDescription("The channel to get the message history of")
                     .setRequired(true)))
+            .addSubcommand(subcommand => subcommand
+                .setName("prefix")
+                .setDescription("Get the logged messages for a prefix")
+                .addChannelOption(option => option
+                    .setName("prefix")
+                    .setDescription("The prefix to get the messages for")
+                    .setRequired(true)))
     }
 
     public async handle(interaction: ChatInputCommandInteraction) {
@@ -48,20 +55,22 @@ export class HistoryCommand extends ChatInputCommand {
         report()
 
         const target = interaction.options.get("target", true)
-        let prefix
+        let prefix = interaction.options.getString("prefix")
         let id
         if (target.user) {
-            prefix = "users"
             id = target.user.id
+            prefix = `users/${id}/`
         } else if (target.channel) {
-            prefix = "channels"
             id = target.channel.id
+            prefix = `channels/${id}/`
+        } else if (prefix) {
+            id = prefix.replace("/", "_")
         } else {
             throw new InvalidArgumentsError("Invalid target")
         }
 
         const archive = archiver("tar", {gzip: true})
-        for await (const messageObject of search(Variables.s3ArchiveBucketName, `${prefix}/${id}/`)) {
+        for await (const messageObject of search(Variables.s3ArchiveBucketName, prefix)) {
             if (!messageObject.Key) {
                 continue
             }
