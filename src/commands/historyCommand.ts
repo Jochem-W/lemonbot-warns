@@ -29,7 +29,7 @@ export class HistoryCommand extends ChatInputCommand {
             .addSubcommand(subcommand => subcommand
                 .setName("prefix")
                 .setDescription("Get the logged messages for a prefix")
-                .addChannelOption(option => option
+                .addStringOption(option => option
                     .setName("prefix")
                     .setDescription("The prefix to get the messages for")
                     .setRequired(true)))
