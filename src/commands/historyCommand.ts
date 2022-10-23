@@ -65,7 +65,7 @@ export class HistoryCommand extends ChatInputCommand {
             prefix = `channels/${id}/`
         } else if (target.value && typeof target.value === "string") {
             prefix = target.value
-            id = target.value.replace("/", "_")
+            id = target.value.replace(/^\/+|\/+$/, "").replace("/", "_")
         } else {
             throw new InvalidArgumentsError("Invalid target")
         }
