@@ -30,7 +30,7 @@ export class HistoryCommand extends ChatInputCommand {
                 .setName("prefix")
                 .setDescription("Get the logged messages for a prefix")
                 .addStringOption(option => option
-                    .setName("prefix")
+                    .setName("target")
                     .setDescription("The prefix to get the messages for")
                     .setRequired(true)))
     }
@@ -55,7 +55,7 @@ export class HistoryCommand extends ChatInputCommand {
         report()
 
         const target = interaction.options.get("target", true)
-        let prefix = interaction.options.getString("prefix")
+        let prefix
         let id
         if (target.user) {
             id = target.user.id
@@ -63,8 +63,9 @@ export class HistoryCommand extends ChatInputCommand {
         } else if (target.channel) {
             id = target.channel.id
             prefix = `channels/${id}/`
-        } else if (prefix) {
-            id = prefix.replace("/", "_")
+        } else if (target.value && typeof target.value === "string") {
+            prefix = target.value
+            id = target.value.replace("/", "_")
         } else {
             throw new InvalidArgumentsError("Invalid target")
         }
