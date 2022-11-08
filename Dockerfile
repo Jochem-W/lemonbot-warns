@@ -1,5 +1,5 @@
 # Set-up build image
-FROM node:18-slim AS builder
+FROM node:19-slim AS builder
 ENV NODE_ENV=development
 
 WORKDIR /app
