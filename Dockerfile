@@ -23,7 +23,7 @@ RUN pnpm tsc && \
     pnpm prune --prod
 
 # Set-up running image
-FROM node:18-slim
+FROM node:19-slim
 ARG commit_hash
 ENV NODE_ENV=production \
     COMMIT_HASH=$commit_hash
