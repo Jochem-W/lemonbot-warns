@@ -1,5 +1,5 @@
-import {Handler} from "../interfaces/handler"
-import {Message} from "discord.js"
+import type {Handler} from "../interfaces/handler"
+import type {Message} from "discord.js"
 import {Variables} from "../variables"
 import {upload} from "../utilities/s3Utilities"
 import Queue from "async-await-queue"

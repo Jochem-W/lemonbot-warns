@@ -6,7 +6,7 @@ specifiers:
   '@aws-sdk/node-http-handler': ^3.201.0
   '@octokit/rest': ^19.0.5
   '@prisma/client': ^4.6.0
-  '@tsconfig/node18': ^1.0.1
+  '@tsconfig/node18-strictest': ^1.0.0
   '@types/archiver': ^5.3.1
   '@types/luxon': ^3.1.0
   '@types/nanoid-dictionary': ^4.2.0
@@ -54,7 +54,7 @@ optionalDependencies:
   zlib-sync: 0.1.7
 
 devDependencies:
-  '@tsconfig/node18': 1.0.1
+  '@tsconfig/node18-strictest': 1.0.0
   '@types/archiver': 5.3.1
   '@types/luxon': 3.1.0
   '@types/nanoid-dictionary': 4.2.0
@@ -1254,8 +1254,8 @@ packages:
     resolution: { integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A== }
     dev: false
 
-  /@tsconfig/node18/1.0.1:
-    resolution: { integrity: sha512-sNFeK6X2ATlhlvzyH4kKYQlfHXE2f2/wxtB9ClvYXevWpmwkUT7VaSrjIN9E76Qebz8qP5JOJJ9jD3QoD/Z9TA== }
+  /@tsconfig/node18-strictest/1.0.0:
+    resolution: { integrity: sha512-bOuNKwO4Fzbt+Su5wqI9zNHwx5C25gLnutwVQA1sBZk0cW8UjVPVcwzIUhJIIJDUx7zDEbAwdCD2HfvIsV8dYg== }
     dev: true
 
   /@types/archiver/5.3.1:

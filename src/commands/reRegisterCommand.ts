@@ -13,7 +13,7 @@ import {MessageContextMenuCommands, RegisteredCommands, SlashCommands, UserConte
 import {WarnCommand} from "./warnCommand"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
-import {Command} from "../interfaces/command"
+import type {Command} from "../interfaces/command"
 import {CommandNotFoundByNameError, OwnerOnlyError} from "../errors"
 import {makeEmbed} from "../utilities/responseBuilder"
 import {isFromOwner} from "../utilities/interactionUtilities"

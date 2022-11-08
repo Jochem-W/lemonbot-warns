@@ -1,5 +1,5 @@
 import {ChatInputCommandInteraction, RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder} from "discord.js"
-import {Command} from "../interfaces/command"
+import type {Command} from "../interfaces/command"
 
 export abstract class ChatInputCommand implements Command<ChatInputCommandInteraction> {
     public builder = new SlashCommandBuilder()

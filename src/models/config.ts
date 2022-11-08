@@ -1,5 +1,5 @@
 import {Duration} from "luxon"
-import {Snowflake} from "discord.js"
+import type {Snowflake} from "discord.js"
 import {readFileSync} from "fs"
 
 interface RawConfig {

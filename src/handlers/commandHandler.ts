@@ -1,7 +1,7 @@
 import {AutocompleteInteraction, CommandInteraction, Interaction} from "discord.js"
 import {RegisteredCommands} from "../commands"
 import {DefaultConfig} from "../models/config"
-import {Handler} from "../interfaces/handler"
+import type {Handler} from "../interfaces/handler"
 import {CommandNotFoundByIdError, NoAutocompleteHandlerError, NoPermissionError, reportError} from "../errors"
 import {makeErrorEmbed} from "../utilities/responseBuilder"
 

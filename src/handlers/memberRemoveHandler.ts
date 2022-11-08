@@ -1,4 +1,4 @@
-import {Handler} from "../interfaces/handler"
+import type {Handler} from "../interfaces/handler"
 import {ChannelType, GuildMember, PartialGuildMember} from "discord.js"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 import {DefaultConfig} from "../models/config"

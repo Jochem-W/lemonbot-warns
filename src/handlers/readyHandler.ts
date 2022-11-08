@@ -1,7 +1,7 @@
 import {ChannelType, Client, codeBlock, userMention} from "discord.js"
 import {mkdir, readFile, writeFile} from "fs/promises"
 import {DefaultConfig} from "../models/config"
-import {Handler} from "../interfaces/handler"
+import type {Handler} from "../interfaces/handler"
 import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 import {writeFileSync} from "fs"
 import {Variables} from "../variables"

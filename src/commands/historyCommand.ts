@@ -5,7 +5,7 @@ import {InvalidArgumentsError, OwnerOnlyError} from "../errors"
 import archiver, {Archiver} from "archiver"
 import {download, search} from "../utilities/s3Utilities"
 import {Variables} from "../variables"
-import {Readable} from "stream"
+import type {Readable} from "stream"
 import {isFromOwner} from "../utilities/interactionUtilities"
 
 export class HistoryCommand extends ChatInputCommand {

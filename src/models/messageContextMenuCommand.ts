@@ -3,7 +3,7 @@ import {
     MessageContextMenuCommandInteraction,
     RESTPostAPIApplicationCommandsJSONBody,
 } from "discord.js"
-import {Command} from "../interfaces/command"
+import type {Command} from "../interfaces/command"
 
 export abstract class MessageContextMenuCommand implements Command<MessageContextMenuCommandInteraction> {
     public builder = new ContextMenuCommandBuilder()

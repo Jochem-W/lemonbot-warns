@@ -1,7 +1,7 @@
 import {Interaction, MessageComponentInteraction, ModalSubmitInteraction} from "discord.js"
 import {CustomId, InteractionScope} from "../models/customId"
 import {RegisteredCommands} from "../commands"
-import {Handler} from "../interfaces/handler"
+import type {Handler} from "../interfaces/handler"
 import {
     CommandNotFoundByIdError,
     CommandNotFoundByNameError,

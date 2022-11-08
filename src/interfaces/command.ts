@@ -1,4 +1,4 @@
-import {
+import type {
     ApplicationCommandOptionChoiceData,
     AutocompleteInteraction,
     ContextMenuCommandBuilder,
@@ -8,7 +8,7 @@ import {
     RESTPostAPIApplicationCommandsJSONBody,
     SlashCommandBuilder,
 } from "discord.js"
-import {CustomId} from "../models/customId"
+import type {CustomId} from "../models/customId"
 
 export interface Command<T> extends JSONEncodable<RESTPostAPIApplicationCommandsJSONBody> {
     builder: SlashCommandBuilder | ContextMenuCommandBuilder

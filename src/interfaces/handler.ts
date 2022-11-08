@@ -1,4 +1,4 @@
-import {ClientEvents} from "discord.js"
+import type {ClientEvents} from "discord.js"
 
 export interface Handler<T extends keyof ClientEvents> {
     readonly event: T

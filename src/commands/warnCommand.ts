@@ -43,7 +43,7 @@ import {makeEmbed} from "../utilities/responseBuilder"
 import {fetchGuild, fetchMember} from "../utilities/interactionUtilities"
 import {uploadAttachment} from "../utilities/s3Utilities"
 import {Prisma} from "../clients"
-import {Penalty, Reason} from "@prisma/client"
+import type {Penalty, Reason} from "@prisma/client"
 
 export interface ResponseOptions {
     reasons: string[]

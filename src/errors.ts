@@ -1,6 +1,6 @@
-import {Command} from "./interfaces/command"
+import type {Command} from "./interfaces/command"
 import {Attachment, Channel, ChannelType, Client, CommandInteraction} from "discord.js"
-import {CustomId} from "./models/customId"
+import type {CustomId} from "./models/customId"
 import {DefaultConfig} from "./models/config"
 import {makeErrorEmbed} from "./utilities/responseBuilder"
 

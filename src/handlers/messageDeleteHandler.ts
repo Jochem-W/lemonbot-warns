@@ -1,5 +1,5 @@
-import {Handler} from "../interfaces/handler"
-import {Message, PartialMessage} from "discord.js"
+import type {Handler} from "../interfaces/handler"
+import type {Message, PartialMessage} from "discord.js"
 import {Variables} from "../variables"
 import {exists, upload} from "../utilities/s3Utilities"
 

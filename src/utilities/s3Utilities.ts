@@ -1,4 +1,4 @@
-import {Attachment} from "discord.js"
+import type {Attachment} from "discord.js"
 import {S3} from "../clients"
 import {Variables} from "../variables"
 import {Upload} from "@aws-sdk/lib-storage"
