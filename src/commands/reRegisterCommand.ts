@@ -17,6 +17,7 @@ import type {Command} from "../interfaces/command"
 import {CommandNotFoundByNameError, OwnerOnlyError} from "../errors"
 import {makeEmbed} from "../utilities/responseBuilder"
 import {isFromOwner} from "../utilities/interactionUtilities"
+import {Variables} from "../variables"
 
 export class ReRegisterCommand extends ChatInputCommand {
     public constructor() {
@@ -41,10 +42,13 @@ export class ReRegisterCommand extends ChatInputCommand {
             console.log(`Constructed command '${command.builder.name}'`)
         }
 
-        const applicationCommands = await rest.put(Routes.applicationGuildCommands(DefaultConfig.bot.applicationId,
-            DefaultConfig.guild.id), {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
-        console.log("Commands updated")
+        const route = Variables.nodeEnvironment === "production" ?
+            Routes.applicationCommands(DefaultConfig.bot.applicationId) :
+            Routes.applicationGuildCommands(DefaultConfig.bot.applicationId, DefaultConfig.guild.id)
 
+        const applicationCommands = await rest.put(route,
+            {body: commandsBody}) as RESTPutAPIApplicationGuildCommandsResult
+        console.log("Commands updated")
         for (const applicationCommand of applicationCommands) {
             let command: Command<CommandInteraction> | undefined
             switch (applicationCommand.type) {
