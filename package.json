@@ -5,11 +5,11 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.204.0",
-    "@aws-sdk/lib-storage": "^3.204.0",
-    "@aws-sdk/node-http-handler": "^3.201.0",
+    "@aws-sdk/client-s3": "^3.209.0",
+    "@aws-sdk/lib-storage": "^3.209.0",
+    "@aws-sdk/node-http-handler": "^3.208.0",
     "@octokit/rest": "^19.0.5",
-    "@prisma/client": "^4.6.0",
+    "@prisma/client": "^4.6.1",
     "archiver": "^5.3.1",
     "async-await-queue": "^1.2.1",
     "csv": "^6.2.2",
@@ -30,7 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "eslint": "^8.27.0",
-    "prisma": "^4.6.0",
+    "prisma": "^4.6.1",
     "typescript": "^4.8.4"
   },
   "optionalDependencies": {
