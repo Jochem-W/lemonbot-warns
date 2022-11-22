@@ -8,6 +8,7 @@ import {search} from "../utilities/s3Utilities"
 import {Variables} from "../variables"
 import {snowflakeToDateTime} from "../utilities/discordUtilities"
 import {isFromOwner} from "../utilities/interactionUtilities"
+import {OwnerOnlyError} from "../errors"
 
 export class StatisticsCommand extends ChatInputCommand {
     public constructor() {
@@ -63,7 +64,7 @@ export class StatisticsCommand extends ChatInputCommand {
     }
 
     private static async addMessageStatistics(archive: Archiver, interaction: ChatInputCommandInteraction) {
-        if (!interaction.inGuild() || !await isFromOwner(interaction)) {
+        if (!interaction.inGuild()) {
             return
         }
 
@@ -124,6 +125,10 @@ export class StatisticsCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction) {
+        if (!await isFromOwner(interaction)) {
+            throw new OwnerOnlyError()
+        }
+
         const archive = archiver("tar", {gzip: true})
 
         await StatisticsCommand.addWarningStatistics(archive, interaction)

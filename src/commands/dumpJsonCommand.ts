@@ -1,6 +1,8 @@
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {AttachmentBuilder, ChatInputCommandInteraction, PermissionFlagsBits} from "discord.js"
 import {Prisma} from "../clients"
+import {isFromOwner} from "../utilities/interactionUtilities"
+import {OwnerOnlyError} from "../errors"
 
 export class DumpJsonCommand extends ChatInputCommand {
     public constructor() {
@@ -8,6 +10,10 @@ export class DumpJsonCommand extends ChatInputCommand {
     }
 
     public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+        if (!await isFromOwner(interaction)) {
+            throw new OwnerOnlyError()
+        }
+
         const users = await Prisma.user.findMany({
             include: {
                 warnings: {
