@@ -103,7 +103,7 @@ export class WarningsCommand extends ChatInputCommand {
             warningEmbeds[0]?.setFields({
                 name: `${title} by ${formatName(warnedBy)} for ${warning.reasons.map(reason => reason.name)
                     .join(", ")} ${time(warning.createdAt, "R")}`,
-                value: warning.description,
+                value: warning.description ?? "N/A",
             })
 
             embeds.push(...warningEmbeds)
