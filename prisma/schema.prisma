@@ -46,7 +46,7 @@ model Warning {
 
   createdAt   DateTime
   createdBy   String
-  description String
+  description String?
   images      String[]
   silent      Boolean
 

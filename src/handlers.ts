@@ -4,6 +4,7 @@ import {InteractionHandler} from "./handlers/interactionHandler"
 import type {Handler} from "./interfaces/handler"
 import {CommandHandler} from "./handlers/commandHandler"
 import {MemberRemoveHandler} from "./handlers/memberRemoveHandler"
+import {LemonbotLogHandler} from "./handlers/lemonbotLogHandler"
 // import {MessageCreateHandler} from "./handlers/messageCreateHandler"
 // import {MessageDeleteBulkHandler} from "./handlers/messageDeleteBulkHandler"
 // import {MessageDeleteHandler} from "./handlers/messageDeleteHandler"
@@ -14,6 +15,7 @@ export const Handlers: Handler<keyof ClientEvents>[] = [
     new InteractionHandler(),
     new ReadyHandler(),
     new MemberRemoveHandler(),
+    new LemonbotLogHandler(),
     // new MessageCreateHandler(),
     // new MessageDeleteBulkHandler(),
     // new MessageDeleteHandler(),
