@@ -113,7 +113,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         }
 
         await loggingChannel.send({
-            content: userMention("869602709920174110"),
             embeds: [
                 makeEmbed(`Added ban for ${ban.user.tag}`, new URL(auditLogEntry.executor.displayAvatarURL()))
                     .setDescription(description),
