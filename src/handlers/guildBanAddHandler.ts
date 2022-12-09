@@ -25,6 +25,10 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     }
 
     public async handle(ban: GuildBan) {
+        if (ban.reason === "Account was less than 30 days") {
+            return
+        }
+
         const loggingChannel = await ban.client.channels.fetch(DefaultConfig.guild.warnLogsChannel)
         if (!loggingChannel) {
             throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
