@@ -125,8 +125,16 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
         await loggingChannel.send({
             embeds: [
-                makeEmbed(`Banned ${ban.user.tag}`, new URL(auditLogEntry.executor.displayAvatarURL()))
-                    .setDescription(description),
+                makeEmbed(`Banned ${ban.user.tag}`, new URL(ban.user.displayAvatarURL()))
+                    .setDescription(description || null)
+                    .setFields({
+                        name: "Reason",
+                        value: auditLogEntry.reason ?? "N/A",
+                    })
+                    .setFooter({
+                        text: `Banned by ${auditLogEntry.executor.tag}`,
+                        iconURL: auditLogEntry.executor.displayAvatarURL(),
+                    }),
             ],
         })
     }
