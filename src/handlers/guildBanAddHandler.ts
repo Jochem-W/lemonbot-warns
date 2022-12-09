@@ -49,7 +49,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             return
         }
 
-        if (auditLogEntry.reason === "Account was less than 30 days ") {
+        const reason = auditLogEntry.reason?.trim()
+        if (reason === "Account was less than 30 days old") {
             return
         }
 
@@ -87,7 +88,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             data: {
                 createdAt: auditLogEntry.createdAt,
                 createdBy: auditLogEntry.executor.id,
-                description: auditLogEntry.reason,
+                description: reason,
                 silent: true,
                 penalty: {
                     connect: {
@@ -115,7 +116,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     commandId)} from ${userMention(ban.client.user.id)} instead...`
         }
 
-        if (!auditLogEntry.reason) {
+        if (!reason) {
             if (description) {
                 description += "Oh, and setting a ban reason would be useful too :)"
             } else {
@@ -129,7 +130,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     .setDescription(description || null)
                     .setFields({
                         name: "Reason",
-                        value: auditLogEntry.reason ?? "N/A",
+                        value: reason ?? "N/A",
                     })
                     .setFooter({
                         text: `Banned by ${auditLogEntry.executor.tag}`,
