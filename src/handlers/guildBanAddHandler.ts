@@ -35,10 +35,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             throw new CommandNotFoundError("Couldn't find an instance of WarnCommand")
         }
 
-        if (ban.reason === "Account was less than 30 days") {
-            return
-        }
-
         const loggingChannel = await ban.client.channels.fetch(DefaultConfig.guild.warnLogsChannel)
         if (!loggingChannel) {
             throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
@@ -46,6 +42,15 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
         if (!loggingChannel.isTextBased()) {
             throw new InvalidChannelTypeError(loggingChannel, ChannelType.GuildText)
+        }
+
+        const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
+        if (!auditLogEntry?.executor || auditLogEntry.executor === ban.client.user) {
+            return
+        }
+
+        if (auditLogEntry.reason === "Account was less than 30 days ") {
+            return
         }
 
         const penalty = await Prisma.penalty.findFirst({
@@ -78,16 +83,11 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             return
         }
 
-        const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
-        if (!auditLogEntry?.executor || auditLogEntry.executor === ban.client.user) {
-            return
-        }
-
         await Prisma.warning.create({
             data: {
                 createdAt: auditLogEntry.createdAt,
                 createdBy: auditLogEntry.executor.id,
-                description: ban.reason,
+                description: auditLogEntry.reason,
                 silent: true,
                 penalty: {
                     connect: {
@@ -115,7 +115,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     commandId)} from ${userMention(ban.client.user.id)} instead...`
         }
 
-        if (!ban.reason) {
+        if (!auditLogEntry.reason) {
             if (description) {
                 description += "Oh, and setting a ban reason would be useful too :)"
             } else {
