@@ -50,7 +50,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         }
 
         const reason = auditLogEntry.reason?.trim()
-        if (reason === "Account was less than 30 days old") {
+        if (reason?.includes("Account was less than 30 days old")) {
             return
         }
 
