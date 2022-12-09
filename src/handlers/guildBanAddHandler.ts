@@ -1,9 +1,11 @@
 import type {Handler} from "../interfaces/handler"
-import {AuditLogEvent, ChannelType, GuildBan, userMention} from "discord.js"
+import {AuditLogEvent, ChannelType, chatInputApplicationCommandMention, GuildBan, userMention} from "discord.js"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
 import {makeEmbed} from "../utilities/responseBuilder"
-import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
+import {ChannelNotFoundError, CommandNotFoundError, InvalidChannelTypeError} from "../errors"
+import {RegisteredCommands, SlashCommands} from "../commands"
+import {WarnCommand} from "../commands/warnCommand"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     public readonly event = "guildBanAdd"
@@ -25,6 +27,14 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     }
 
     public async handle(ban: GuildBan) {
+        const warnCommand = SlashCommands.find(c => c instanceof WarnCommand)
+        const commandId = warnCommand ?
+            RegisteredCommands.findKey(c => c.builder.name === warnCommand.builder.name) :
+            null
+        if (!warnCommand || !commandId) {
+            throw new CommandNotFoundError("Couldn't find an instance of WarnCommand")
+        }
+
         if (ban.reason === "Account was less than 30 days") {
             return
         }
@@ -101,7 +111,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         let description = ""
         if (auditLogEntry.executor.bot) {
             description +=
-                `If you're going to use a command, please use /warn from ${userMention(ban.client.user.id)} instead...`
+                `If you're going to use a command, please use ${chatInputApplicationCommandMention(warnCommand.builder.name,
+                    commandId)} from ${userMention(ban.client.user.id)} instead...`
         }
 
         if (!ban.reason) {
@@ -114,7 +125,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
         await loggingChannel.send({
             embeds: [
-                makeEmbed(`Added ban for ${ban.user.tag}`, new URL(auditLogEntry.executor.displayAvatarURL()))
+                makeEmbed(`Banned ${ban.user.tag}`, new URL(auditLogEntry.executor.displayAvatarURL()))
                     .setDescription(description),
             ],
         })
