@@ -14,8 +14,12 @@ const client = new Client({
     ],
     partials: [
         Partials.User,
+        Partials.Channel,
         Partials.GuildMember,
         Partials.Message,
+        Partials.Reaction,
+        Partials.GuildScheduledEvent,
+        Partials.ThreadMember,
     ],
 })
 client.rest.setToken(Variables.discordToken)
