@@ -118,9 +118,9 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
         if (!reason) {
             if (description) {
-                description += "Oh, and setting a ban reason would be useful too :)"
+                description += "Oh, and setting a ban reason would be nice too :3"
             } else {
-                description += "Please set a reason if you're going to ban manually."
+                description += "If you can, please set a ban reason next time :3"
             }
         }
 
