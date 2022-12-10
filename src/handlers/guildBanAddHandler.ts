@@ -1,8 +1,9 @@
 import type {Handler} from "../interfaces/handler"
-import {AuditLogEvent, ChannelType, chatInputApplicationCommandMention, GuildBan, userMention} from "discord.js"
+// import {AuditLogEvent, ChannelType, chatInputApplicationCommandMention, GuildBan, userMention} from "discord.js"
+import {AuditLogEvent, ChannelType, GuildBan} from "discord.js"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
-import {makeEmbed} from "../utilities/responseBuilder"
+// import {makeEmbed} from "../utilities/responseBuilder"
 import {ChannelNotFoundError, CommandNotFoundError, InvalidChannelTypeError} from "../errors"
 import {RegisteredCommands, SlashCommands} from "../commands"
 import {WarnCommand} from "../commands/warnCommand"
@@ -84,51 +85,53 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             return
         }
 
-        await Prisma.warning.create({
-            data: {
-                createdAt: auditLogEntry.createdAt,
-                createdBy: auditLogEntry.executor.id,
-                description: reason,
-                silent: true,
-                penalty: {
-                    connect: {
-                        id: penalty.id,
-                    },
-                },
-                user: {
-                    connectOrCreate: {
-                        where: {
-                            discordId: ban.user.id,
-                        },
-                        create: {
-                            discordId: ban.user.id,
-                            priority: false,
-                        },
-                    },
-                },
-            },
-        })
+        console.log(ban, auditLogEntry, reason)
 
-        let description = ""
-        if (auditLogEntry.executor.bot) {
-            description +=
-                `If you're going to use a command, please use ${chatInputApplicationCommandMention(warnCommand.builder.name,
-                    commandId)} from ${userMention(ban.client.user.id)} instead...`
-        }
-
-        await loggingChannel.send({
-            embeds: [
-                makeEmbed(`Banned ${ban.user.tag}`, new URL(ban.user.displayAvatarURL()))
-                    .setDescription(description || null)
-                    .setFields({
-                        name: "Reason",
-                        value: reason ?? "N/A :(",
-                    })
-                    .setFooter({
-                        text: `Banned by ${auditLogEntry.executor.tag}`,
-                        iconURL: auditLogEntry.executor.displayAvatarURL(),
-                    }),
-            ],
-        })
+        // await Prisma.warning.create({
+        //     data: {
+        //         createdAt: auditLogEntry.createdAt,
+        //         createdBy: auditLogEntry.executor.id,
+        //         description: reason,
+        //         silent: true,
+        //         penalty: {
+        //             connect: {
+        //                 id: penalty.id,
+        //             },
+        //         },
+        //         user: {
+        //             connectOrCreate: {
+        //                 where: {
+        //                     discordId: ban.user.id,
+        //                 },
+        //                 create: {
+        //                     discordId: ban.user.id,
+        //                     priority: false,
+        //                 },
+        //             },
+        //         },
+        //     },
+        // })
+        //
+        // let description = ""
+        // if (auditLogEntry.executor.bot) {
+        //     description +=
+        //         `If you're going to use a command, please use ${chatInputApplicationCommandMention(warnCommand.builder.name,
+        //             commandId)} from ${userMention(ban.client.user.id)} instead...`
+        // }
+        //
+        // await loggingChannel.send({
+        //     embeds: [
+        //         makeEmbed(`Banned ${ban.user.tag}`, new URL(ban.user.displayAvatarURL()))
+        //             .setDescription(description || null)
+        //             .setFields({
+        //                 name: "Reason",
+        //                 value: reason ?? "N/A :(",
+        //             })
+        //             .setFooter({
+        //                 text: `Banned by ${auditLogEntry.executor.tag}`,
+        //                 iconURL: auditLogEntry.executor.displayAvatarURL(),
+        //             }),
+        //     ],
+        // })
     }
 }
