@@ -116,21 +116,13 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     commandId)} from ${userMention(ban.client.user.id)} instead...`
         }
 
-        if (!reason) {
-            if (description) {
-                description += "Oh, and setting a ban reason would be nice too :3"
-            } else {
-                description += "If you can, please set a ban reason next time :3"
-            }
-        }
-
         await loggingChannel.send({
             embeds: [
                 makeEmbed(`Banned ${ban.user.tag}`, new URL(ban.user.displayAvatarURL()))
                     .setDescription(description || null)
                     .setFields({
                         name: "Reason",
-                        value: reason ?? "N/A",
+                        value: reason ?? "N/A :(",
                     })
                     .setFooter({
                         text: `Banned by ${auditLogEntry.executor.tag}`,
