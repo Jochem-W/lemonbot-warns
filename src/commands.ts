@@ -9,7 +9,6 @@ import {StatusCommand} from "./commands/statusCommand"
 import {ReRegisterCommand} from "./commands/reRegisterCommand"
 import {DumpJsonCommand} from "./commands/dumpJsonCommand"
 import {S3Command} from "./commands/s3Command"
-import {HistoryCommand} from "./commands/historyCommand"
 import {StatisticsCommand} from "./commands/statisticsCommand"
 
 export const SlashCommands: ChatInputCommand[] = [
@@ -19,7 +18,6 @@ export const SlashCommands: ChatInputCommand[] = [
     new ReRegisterCommand(),
     new DumpJsonCommand(),
     new S3Command(),
-    new HistoryCommand(),
     new StatisticsCommand(),
 ]
 

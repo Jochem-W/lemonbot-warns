@@ -5,10 +5,6 @@ import type {Handler} from "./interfaces/handler"
 import {CommandHandler} from "./handlers/commandHandler"
 import {MemberRemoveHandler} from "./handlers/memberRemoveHandler"
 import {GuildBanAddHandler} from "./handlers/guildBanAddHandler"
-// import {MessageCreateHandler} from "./handlers/messageCreateHandler"
-// import {MessageDeleteBulkHandler} from "./handlers/messageDeleteBulkHandler"
-// import {MessageDeleteHandler} from "./handlers/messageDeleteHandler"
-// import {MessageUpdateHandler} from "./handlers/messageUpdateHandler"
 
 export const Handlers: Handler<keyof ClientEvents>[] = [
     new CommandHandler(),
@@ -16,8 +12,4 @@ export const Handlers: Handler<keyof ClientEvents>[] = [
     new ReadyHandler(),
     new MemberRemoveHandler(),
     new GuildBanAddHandler(),
-    // new MessageCreateHandler(),
-    // new MessageDeleteBulkHandler(),
-    // new MessageDeleteHandler(),
-    // new MessageUpdateHandler(),
 ]

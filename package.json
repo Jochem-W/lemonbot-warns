@@ -11,7 +11,6 @@
     "@octokit/rest": "^19.0.5",
     "@prisma/client": "^4.7.1",
     "archiver": "^5.3.1",
-    "async-await-queue": "^1.2.1",
     "csv": "^6.2.5",
     "discord.js": "^14.7.1",
     "lru-cache": "^7.14.1",

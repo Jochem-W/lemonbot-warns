@@ -15,7 +15,6 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.46.0
   '@typescript-eslint/parser': ^5.46.0
   archiver: ^5.3.1
-  async-await-queue: ^1.2.1
   bufferutil: ^4.0.7
   csv: ^6.2.5
   discord.js: ^14.7.1
@@ -38,7 +37,6 @@ dependencies:
   '@octokit/rest': 19.0.5
   '@prisma/client': 4.7.1_prisma@4.7.1
   archiver: 5.3.1
-  async-await-queue: 1.2.1
   csv: 6.2.5
   discord.js: 14.7.1_3cxu5zja4e2r5wmvge7mdcljwq
   lru-cache: 7.14.1
@@ -1541,10 +1539,6 @@ packages:
     resolution: { integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw== }
     engines: { node: '>=8' }
     dev: true
-
-  /async-await-queue/1.2.1:
-    resolution: { integrity: sha512-v2j+/EMzAnuJZ8I4570KJMFhi6G9g3WZyFh6cPnmQSJh3nLao77XpRt01kyFegQazPSKvue1yaIYDp/NfV/b0g== }
-    dev: false
 
   /async/3.2.4:
     resolution: { integrity: sha512-iAB+JbDEGXhyIUavoDl9WP/Jj106Kz9DEn1DPgYw5ruDn0e3Wgi3sKFm55sASdGBNOQB8F59d9qQ7deqrHA8wQ== }
