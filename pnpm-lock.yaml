@@ -10,7 +10,7 @@ specifiers:
   '@types/archiver': ^5.3.1
   '@types/luxon': ^3.1.0
   '@types/nanoid-dictionary': ^4.2.0
-  '@types/node': ^18.11.12
+  '@types/node': ^18.11.13
   '@types/whatwg-mimetype': ^3.0.0
   '@typescript-eslint/eslint-plugin': ^5.46.0
   '@typescript-eslint/parser': ^5.46.0
@@ -56,7 +56,7 @@ devDependencies:
   '@types/archiver': 5.3.1
   '@types/luxon': 3.1.0
   '@types/nanoid-dictionary': 4.2.0
-  '@types/node': 18.11.12
+  '@types/node': 18.11.13
   '@types/whatwg-mimetype': 3.0.0
   '@typescript-eslint/eslint-plugin': 5.46.0_5mle7isnkfgjmrghnnczirv6iy
   '@typescript-eslint/parser': 5.46.0_ha6vam6werchizxrnqvarmz2zu
@@ -1302,7 +1302,7 @@ packages:
     resolution: { integrity: sha512-l6NQsDDyQUVeoTynNpC9uRvCUint/gSUXQA2euwmTuWGvPY5LSDUu6tkCtJB2SvGQlJQzLaKqcGZP4//7EDveA== }
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.11.12
+      '@types/node': 18.11.13
     dev: true
 
   /@types/json-schema/7.0.11:
@@ -1321,8 +1321,8 @@ packages:
     resolution: { integrity: sha512-DyQddKC2AYsInXBMqKSwhom4gpouV8SF1smsCPSzR8hp20vZJ5o5Yxg7qXThCHwr/H6VMq01UArEGbF0q2FXig== }
     dev: true
 
-  /@types/node/18.11.12:
-    resolution: { integrity: sha512-FgD3NtTAKvyMmD44T07zz2fEf+OKwutgBCEVM8GcvMGVGaDktiLNTDvPwC/LUe3PinMW+X6CuLOF2Ui1mAlSXg== }
+  /@types/node/18.11.13:
+    resolution: { integrity: sha512-IASpMGVcWpUsx5xBOrxMj7Bl8lqfuTY7FKAnPmu5cHkfQVWF8GulWS1jbRqA934qZL35xh5xN/+Xe/i26Bod4w== }
 
   /@types/semver/7.3.13:
     resolution: { integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw== }
@@ -1335,7 +1335,7 @@ packages:
   /@types/ws/8.5.3:
     resolution: { integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w== }
     dependencies:
-      '@types/node': 18.11.12
+      '@types/node': 18.11.13
     dev: false
 
   /@typescript-eslint/eslint-plugin/5.46.0_5mle7isnkfgjmrghnnczirv6iy:
