@@ -11,30 +11,16 @@
           "description": "The Discord application ID",
           "type": "string",
           "pattern": "^\\d+$"
-        },
-        "cacheTtl": {
-          "description": "The duration of cached items in milliseconds",
-          "type": "integer",
-          "minimum": 60000
         }
       },
       "required": [
-        "applicationId",
-        "cacheTtl"
+        "applicationId"
       ]
     },
     "guild": {
       "description": "Guild configuration",
       "type": "object",
       "properties": {
-        "loggedBots": {
-          "description": "The IDs of bots to log",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^\\d+$"
-          }
-        },
         "errorChannel": {
           "description": "The channel to log errors in",
           "type": "string",
@@ -87,7 +73,6 @@
         }
       },
       "required": [
-        "loggedBots",
         "errorChannel",
         "id",
         "privateChannels",

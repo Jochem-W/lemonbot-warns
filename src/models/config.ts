@@ -1,14 +1,11 @@
-import {Duration} from "luxon"
 import type {Snowflake} from "discord.js"
 import {readFileSync} from "fs"
 
 interface RawConfig {
     bot: {
         applicationId: string
-        cacheTtl: number
     }
     guild: {
-        loggedBots: string[]
         errorChannel: string
         id: string
         privateChannels: string[]
@@ -32,16 +29,13 @@ interface RawConfig {
 
 class BotConfig {
     public readonly applicationId: Snowflake
-    public readonly cacheTtl: Duration
 
     public constructor(data: RawConfig["bot"]) {
         this.applicationId = data.applicationId
-        this.cacheTtl = Duration.fromMillis(data.cacheTtl)
     }
 }
 
 class GuildConfig {
-    public readonly loggedBots: Snowflake[]
     public readonly errorChannel: Snowflake
     public readonly id: Snowflake
     public readonly privateChannels: Snowflake[]
@@ -50,7 +44,6 @@ class GuildConfig {
     public readonly warnLogsChannel: Snowflake
 
     public constructor(data: RawConfig["guild"]) {
-        this.loggedBots = [...data.loggedBots]
         this.errorChannel = data.errorChannel
         this.id = data.id
         this.privateChannels = [...data.privateChannels]

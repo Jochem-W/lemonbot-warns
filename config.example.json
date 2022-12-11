@@ -1,10 +1,10 @@
 {
   "$schema": "config.schema.json",
   "bot": {
-    "applicationId": "",
-    "cacheTtl": 0
+    "applicationId": ""
   },
   "guild": {
+    "errorChannel": "",
     "id": "",
     "privateChannels": [],
     "restart": {
