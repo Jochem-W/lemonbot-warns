@@ -1,11 +1,9 @@
 import type {Handler} from "../interfaces/handler"
-import {AuditLogEvent, ChannelType, chatInputApplicationCommandMention, GuildBan, userMention} from "discord.js"
+import {AuditLogEvent, ChannelType, GuildBan} from "discord.js"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
 import {makeEmbed} from "../utilities/responseBuilder"
-import {ChannelNotFoundError, CommandNotFoundError, InvalidChannelTypeError} from "../errors"
-import {RegisteredCommands, SlashCommands} from "../commands"
-import {WarnCommand} from "../commands/warnCommand"
+import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     public readonly event = "guildBanAdd"
@@ -28,14 +26,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
     public async handle(ban: GuildBan) {
         console.log("guildBanAdd event dispatched", ban)
-
-        const warnCommand = SlashCommands.find(c => c instanceof WarnCommand)
-        const commandId = warnCommand ?
-            RegisteredCommands.findKey(c => c.builder.name === warnCommand.builder.name) :
-            null
-        if (!warnCommand || !commandId) {
-            throw new CommandNotFoundError("Couldn't find an instance of WarnCommand")
-        }
 
         const loggingChannel = await ban.client.channels.fetch(DefaultConfig.guild.warnLogsChannel)
         if (!loggingChannel) {
@@ -111,17 +101,9 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             },
         })
 
-        let description = ""
-        if (auditLogEntry.executor.bot) {
-            description +=
-                `If you're going to use a bot, please use ${chatInputApplicationCommandMention(warnCommand.builder.name,
-                    commandId)} from ${userMention(ban.client.user.id)} instead...`
-        }
-
         await loggingChannel.send({
             embeds: [
                 makeEmbed(`Banned ${ban.user.tag} without warning`, new URL(ban.user.displayAvatarURL()))
-                    .setDescription(description || null)
                     .setFields({
                         name: "Reason",
                         value: reason ?? "N/A :(",
