@@ -45,7 +45,7 @@ export async function isFromOwner(interaction: Interaction): Promise<boolean> {
         return application.owner.members.has(interaction.user.id)
     }
 
-    return application.owner === interaction.user
+    return application.owner.id === interaction.user.id
 }
 
 export function isInPrivateChannel(interaction: Interaction) {

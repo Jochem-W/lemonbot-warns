@@ -37,7 +37,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         }
 
         const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
-        if (!auditLogEntry?.executor || auditLogEntry.executor === ban.client.user) {
+        if (!auditLogEntry?.executor || auditLogEntry.executor.id === ban.client.user.id) {
             return
         }
 

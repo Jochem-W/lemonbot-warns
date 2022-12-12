@@ -25,7 +25,7 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
             }
 
             const messages = await channel.messages.fetch({limit: 1})
-            if (messages.some(message => message.author === member.client.user && message.mentions.has(user))) {
+            if (messages.some(message => message.author.id === member.client.user.id && message.mentions.has(user))) {
                 await channel.delete()
                 break
             }

@@ -25,7 +25,7 @@ export class CustomId {
 
     public static fromString(data: string): CustomId {
         const [scope, primary, secondary, ...tertiary] = data.split(":")
-        if (scope == undefined || primary == undefined || secondary == undefined) {
+        if (scope === undefined || primary === undefined || secondary === undefined) {
             throw new InvalidCustomIdError(data)
         }
 
