@@ -11,7 +11,7 @@ interface RawConfig {
         privateChannels: string[]
         restart: {
             channel: string
-            user: string
+            user?: string
         }
         warnCategory: string
         warnLogsChannel: string
@@ -55,7 +55,7 @@ class GuildConfig {
 
 class GuildRestartConfig {
     public readonly channel: Snowflake
-    public readonly user: Snowflake
+    public readonly user?: Snowflake
 
     public constructor(data: RawConfig["guild"]["restart"]) {
         this.channel = data.channel

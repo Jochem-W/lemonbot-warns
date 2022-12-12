@@ -40,7 +40,7 @@ export class ReadyHandler implements Handler<"ready"> {
         }
 
         await channel.send({
-            content: userMention(DefaultConfig.guild.restart.user),
+            content: DefaultConfig.guild.restart.user ? userMention(DefaultConfig.guild.restart.user) : undefined,
             embeds: [makeEmbed(title).setDescription(await getChangelog())],
         })
 

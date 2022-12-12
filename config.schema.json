@@ -57,8 +57,7 @@
             }
           },
           "required": [
-            "channel",
-            "user"
+            "channel"
           ]
         },
         "warnCategory": {
