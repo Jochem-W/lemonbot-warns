@@ -27,6 +27,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     }
 
     public async handle(ban: GuildBan) {
+        console.log("guildBanAdd event dispatched", ban)
+
         const warnCommand = SlashCommands.find(c => c instanceof WarnCommand)
         const commandId = warnCommand ?
             RegisteredCommands.findKey(c => c.builder.name === warnCommand.builder.name) :
