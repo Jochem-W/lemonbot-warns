@@ -23,7 +23,10 @@ export class HistoryCommand extends ChatInputCommand {
                     .setDescription("The channel to retrieve messages for"))
                 .addBooleanOption(builder => builder
                     .setName("attachments")
-                    .setDescription("Whether to retrieve attachments")))
+                    .setDescription("Whether to retrieve attachments"))
+                .addBooleanOption(builder => builder
+                    .setName("deleted_only")
+                    .setDescription("Whether to only retrieve deleted messages")))
             .addSubcommand(subcommandGroup => subcommandGroup
                 .setName("channel_id")
                 .setDescription("Retrieve message history for a channel")
@@ -33,7 +36,10 @@ export class HistoryCommand extends ChatInputCommand {
                     .setDescription("The channel to retrieve messages for"))
                 .addBooleanOption(builder => builder
                     .setName("attachments")
-                    .setDescription("Whether to retrieve attachments")))
+                    .setDescription("Whether to retrieve attachments"))
+                .addBooleanOption(builder => builder
+                    .setName("deleted_only")
+                    .setDescription("Whether to only retrieve deleted messages")))
             .addSubcommand(subcommandGroup => subcommandGroup
                 .setName("user")
                 .setDescription("Retrieve message history for a user")
@@ -43,7 +49,10 @@ export class HistoryCommand extends ChatInputCommand {
                     .setDescription("The user to retrieve messages for"))
                 .addBooleanOption(builder => builder
                     .setName("attachments")
-                    .setDescription("Whether to retrieve attachments")))
+                    .setDescription("Whether to retrieve attachments"))
+                .addBooleanOption(builder => builder
+                    .setName("deleted_only")
+                    .setDescription("Whether to only retrieve deleted messages")))
             .addSubcommand(subcommandGroup => subcommandGroup
                 .setName("message")
                 .setDescription("Retrieve a specific message")
@@ -53,13 +62,17 @@ export class HistoryCommand extends ChatInputCommand {
                     .setDescription("The ID of the message to retrieve"))
                 .addBooleanOption(builder => builder
                     .setName("attachments")
-                    .setDescription("Whether to retrieve attachments")))
+                    .setDescription("Whether to retrieve attachments"))
+                .addBooleanOption(builder => builder
+                    .setName("deleted_only")
+                    .setDescription("Whether to only retrieve deleted messages")))
     }
 
-    private static async handleChannel(channelId: Snowflake, attachments: boolean) {
+    private static async handleChannel(channelId: Snowflake, attachments: boolean, deleted: boolean) {
         return await Prisma.message.findMany({
             where: {
                 channelId: channelId,
+                deleted: deleted ? true : undefined,
             },
             include: {
                 attachments: attachments,
@@ -68,10 +81,11 @@ export class HistoryCommand extends ChatInputCommand {
         })
     }
 
-    private static async handleUser(userId: Snowflake, attachments: boolean) {
+    private static async handleUser(userId: Snowflake, attachments: boolean, deleted: boolean) {
         return await Prisma.message.findMany({
             where: {
                 userId: userId,
+                deleted: deleted ? true : undefined,
             },
             include: {
                 attachments: attachments,
@@ -80,10 +94,11 @@ export class HistoryCommand extends ChatInputCommand {
         })
     }
 
-    private static async handleMessage(messageId: Snowflake, attachments: boolean) {
+    private static async handleMessage(messageId: Snowflake, attachments: boolean, deleted: boolean) {
         const message = await Prisma.message.findFirst({
             where: {
                 id: messageId,
+                deleted: deleted ? true : undefined,
             },
             include: {
                 attachments: attachments,
@@ -100,21 +115,27 @@ export class HistoryCommand extends ChatInputCommand {
         }
 
         const attachments = interaction.options.getBoolean("attachments") ?? false
+        const deleted = interaction.options.getBoolean("deleted_only") ?? false
 
         let messages
         switch (interaction.options.getSubcommand()) {
             case "channel":
                 messages =
-                    await HistoryCommand.handleChannel(interaction.options.getChannel("channel", true).id, attachments)
+                    await HistoryCommand.handleChannel(interaction.options.getChannel("channel", true).id,
+                        attachments,
+                        deleted)
                 break
             case "channel_id":
-                messages = await HistoryCommand.handleChannel(interaction.options.getString("id", true), attachments)
+                messages =
+                    await HistoryCommand.handleChannel(interaction.options.getString("id", true), attachments, deleted)
                 break
             case "user":
-                messages = await HistoryCommand.handleUser(interaction.options.getUser("user", true).id, attachments)
+                messages =
+                    await HistoryCommand.handleUser(interaction.options.getUser("user", true).id, attachments, deleted)
                 break
             case "message":
-                messages = await HistoryCommand.handleMessage(interaction.options.getString("id", true), attachments)
+                messages =
+                    await HistoryCommand.handleMessage(interaction.options.getString("id", true), attachments, deleted)
                 break
             default:
                 throw new InvalidArgumentsError("Invalid subcommand")
