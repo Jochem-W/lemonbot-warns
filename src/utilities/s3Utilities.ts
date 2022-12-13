@@ -23,7 +23,8 @@ export async function uploadAttachment(attachment: Attachment): Promise<string> 
     return new URL(`${Variables.s3WarningsBucketUrl}/${key}`).toString()
 }
 
-export async function download(bucket: GetObjectCommandInput["Bucket"], key: GetObjectCommandInput["Key"]) {
+export async function download(bucket: Required<GetObjectCommandInput["Bucket"]>,
+                               key: Required<GetObjectCommandInput["Key"]>) {
     const response = await S3.send(new GetObjectCommand({
         Bucket: bucket,
         Key: key,
@@ -32,7 +33,7 @@ export async function download(bucket: GetObjectCommandInput["Bucket"], key: Get
     return response.Body
 }
 
-export async function* search(bucket: ListObjectsV2CommandInput["Bucket"],
+export async function* search(bucket: Required<ListObjectsV2CommandInput["Bucket"]>,
                               prefix?: ListObjectsV2CommandInput["Prefix"]): AsyncGenerator<_Object> {
     let response: ListObjectsV2CommandOutput | undefined = undefined
     do {
@@ -50,8 +51,8 @@ export async function* search(bucket: ListObjectsV2CommandInput["Bucket"],
     } while (response.IsTruncated)
 }
 
-export async function upload(bucket: PutObjectCommandInput["Bucket"],
-                             key: PutObjectCommandInput["Key"],
+export async function upload(bucket: Required<PutObjectCommandInput["Bucket"]>,
+                             key: Required<PutObjectCommandInput["Key"]>,
                              body: PutObjectCommandInput["Body"],
                              contentType?: PutObjectCommandInput["ContentType"]): Promise<void> {
     await new Upload({
@@ -66,8 +67,8 @@ export async function upload(bucket: PutObjectCommandInput["Bucket"],
     }).done()
 }
 
-export async function exists(bucket: HeadObjectCommandInput["Bucket"],
-                             key: HeadObjectCommandInput["Key"]): Promise<boolean> {
+export async function exists(bucket: Required<HeadObjectCommandInput["Bucket"]>,
+                             key: Required<HeadObjectCommandInput["Key"]>): Promise<boolean> {
     try {
         await S3.send(new HeadObjectCommand({
             Bucket: bucket,
