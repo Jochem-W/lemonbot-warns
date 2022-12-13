@@ -15,6 +15,12 @@ export class HistoryCommand extends ChatInputCommand {
         super("history", "Retrieve message history", PermissionFlagsBits.Administrator)
         this.builder
             .addSubcommand(subcommandGroup => subcommandGroup
+                .setName("deleted")
+                .setDescription("Retrieve all deleted messages")
+                .addBooleanOption(builder => builder
+                    .setName("attachments")
+                    .setDescription("Whether to retrieve attachments")))
+            .addSubcommand(subcommandGroup => subcommandGroup
                 .setName("channel")
                 .setDescription("Retrieve message history for a channel")
                 .addChannelOption(builder => builder
@@ -68,6 +74,18 @@ export class HistoryCommand extends ChatInputCommand {
                     .setDescription("Whether to only retrieve deleted messages")))
     }
 
+    private static async handleDeleted(attachments: boolean) {
+        return await Prisma.message.findMany({
+            where: {
+                deleted: true,
+            },
+            include: {
+                attachments: attachments,
+                revisions: true,
+            },
+        })
+    }
+
     private static async handleChannel(channelId: Snowflake, attachments: boolean, deleted: boolean) {
         return await Prisma.message.findMany({
             where: {
@@ -119,6 +137,9 @@ export class HistoryCommand extends ChatInputCommand {
 
         let messages
         switch (interaction.options.getSubcommand()) {
+            case "deleted":
+                messages = await HistoryCommand.handleDeleted(attachments)
+                break
             case "channel":
                 messages =
                     await HistoryCommand.handleChannel(interaction.options.getChannel("channel", true).id,
