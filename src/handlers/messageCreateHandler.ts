@@ -42,7 +42,6 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
                 key,
                 response.body ?? undefined,
                 attachment.contentType ?? undefined)
-            const url = `${Variables.s3ArchiveBucketUrl}/${key}`
             await Prisma.messageAttachment.create({
                 data: {
                     message: {
@@ -51,7 +50,7 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
                         },
                     },
                     id: attachment.id,
-                    url: url,
+                    key: key,
                     mimeType: attachment.contentType,
                 },
             })

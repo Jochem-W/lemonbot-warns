@@ -109,6 +109,6 @@ model MessageAttachment {
   message   Message @relation(fields: [messageId], references: [id])
   messageId String
 
-  url      String
+  key      String
   mimeType String?
 }
