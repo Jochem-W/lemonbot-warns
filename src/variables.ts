@@ -7,6 +7,7 @@ export const Variables = {
     s3Region: process.env["S3_REGION"] as string,
     s3SecretAccessKey: process.env["S3_SECRET_ACCESS_KEY"] as string,
     s3ArchiveBucketName: process.env["S3_ARCHIVE_BUCKET_NAME"] as string,
+    s3ArchiveBucketUrl: process.env["S3_ARCHIVE_BUCKET_URL"] as string,
     s3WarningsBucketName: process.env["S3_WARNINGS_BUCKET_NAME"] as string,
     s3WarningsBucketUrl: process.env["S3_WARNINGS_BUCKET_URL"] as string,
     nodeEnvironment: process.env["NODE_ENV"] as string,
