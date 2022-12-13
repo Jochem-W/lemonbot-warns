@@ -10,6 +10,7 @@ import {ReRegisterCommand} from "./commands/reRegisterCommand"
 import {DumpJsonCommand} from "./commands/dumpJsonCommand"
 import {S3Command} from "./commands/s3Command"
 import {StatisticsCommand} from "./commands/statisticsCommand"
+import {HistoryCommand} from "./commands/historyCommand"
 
 export const SlashCommands: ChatInputCommand[] = [
     new CheckBansCommand(),
@@ -19,6 +20,7 @@ export const SlashCommands: ChatInputCommand[] = [
     new DumpJsonCommand(),
     new S3Command(),
     new StatisticsCommand(),
+    new HistoryCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
