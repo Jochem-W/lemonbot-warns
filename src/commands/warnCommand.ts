@@ -225,7 +225,7 @@ export class WarnCommand extends ChatInputCommand {
                 break
         }
 
-        const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL({size: 4096})
+        const avatar = (options.targetMember ?? options.targetUser).displayAvatarURL()
         const tag = options.targetUser.tag
 
         const embed = makeEmbed(`${WarnCommand.formatTitle(options, {verbOnly: true})} ${tag}`,
@@ -242,7 +242,7 @@ export class WarnCommand extends ChatInputCommand {
             ])
             .setFooter({
                 text: WarnCommand.formatTitle(options),
-                iconURL: options.warnedBy.displayAvatarURL({size: 4096}),
+                iconURL: options.warnedBy.displayAvatarURL(),
             })
             .setTimestamp(options.timestamp.toMillis())
 
