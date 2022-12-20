@@ -3,7 +3,7 @@ import {AuditLogEvent, ChannelType, GuildBan} from "discord.js"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
 import {makeEmbed} from "../utilities/responseBuilder"
-import {ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
+import {AuditLogNotFoundError, ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     public readonly event = "guildBanAdd"
@@ -21,7 +21,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             }
         }
 
-        return null
+        throw new AuditLogNotFoundError(`Couldn't find an audit log entry for ban target ${ban.user.id}`)
     }
 
     public async handle(ban: GuildBan) {
@@ -39,7 +39,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
-        if (!auditLogEntry?.executor || auditLogEntry.executor.id === ban.client.user.id) {
+        if (!auditLogEntry.executor || auditLogEntry.executor.id === ban.client.user.id) {
             return
         }
 

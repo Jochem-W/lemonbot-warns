@@ -112,6 +112,12 @@ export class OwnerOnlyError extends BotError {
     }
 }
 
+export class AuditLogNotFoundError extends BotError {
+    public constructor(message: string) {
+        super(message)
+    }
+}
+
 export class InvalidEmbedError extends CustomError {
     public constructor(message: string) {
         super(message)
