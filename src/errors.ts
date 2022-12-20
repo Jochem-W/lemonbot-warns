@@ -118,7 +118,19 @@ export class AuditLogNotFoundError extends BotError {
     }
 }
 
+export class InvalidAuditLogEntryError extends BotError {
+    public constructor(message: string) {
+        super(message)
+    }
+}
+
 export class InvalidEmbedError extends CustomError {
+    public constructor(message: string) {
+        super(message)
+    }
+}
+
+export class PenaltyNotFoundError extends CustomError {
     public constructor(message: string) {
         super(message)
     }

@@ -3,7 +3,13 @@ import {AuditLogEvent, ChannelType, GuildBan} from "discord.js"
 import {Prisma} from "../clients"
 import {DefaultConfig} from "../models/config"
 import {makeEmbed} from "../utilities/responseBuilder"
-import {AuditLogNotFoundError, ChannelNotFoundError, InvalidChannelTypeError} from "../errors"
+import {
+    AuditLogNotFoundError,
+    ChannelNotFoundError,
+    InvalidAuditLogEntryError,
+    InvalidChannelTypeError,
+    PenaltyNotFoundError,
+} from "../errors"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     public readonly event = "guildBanAdd"
@@ -39,12 +45,18 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         await new Promise(resolve => setTimeout(resolve, 2000))
 
         const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
-        if (!auditLogEntry.executor || auditLogEntry.executor.id === ban.client.user.id) {
+        if (!auditLogEntry.executor) {
+            throw new InvalidAuditLogEntryError("Audit log entry has no executor")
+        }
+
+        if (auditLogEntry.executor.id === ban.client.user.id) {
+            console.log("Banned by self, ignoring")
             return
         }
 
         const reason = auditLogEntry.reason?.trim()
         if (reason?.includes("Account was less than 30 days old")) {
+            console.log("Banned because of account age, ignoring")
             return
         }
 
@@ -55,7 +67,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         })
 
         if (!penalty) {
-            return
+            throw new PenaltyNotFoundError("Couldn't find a ban penalty")
         }
 
         const warning = await Prisma.warning.findFirst({
@@ -75,6 +87,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         })
 
         if (warning?.penalty.ban) {
+            console.log("User's latest warning is a ban, ignoring")
+            // TODO: check time
             return
         }
 
