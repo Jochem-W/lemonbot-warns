@@ -18,9 +18,9 @@ RUN pnpm install
 COPY . .
 
 # Compile Typescript and remove dev packages
-RUN pnpm tsc
-
 RUN pnpm prisma generate
+
+RUN pnpm tsc
 
 RUN pnpm prune --prod
 
