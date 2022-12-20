@@ -36,6 +36,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             throw new InvalidChannelTypeError(loggingChannel, ChannelType.GuildText)
         }
 
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
         const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
         if (!auditLogEntry?.executor || auditLogEntry.executor.id === ban.client.user.id) {
             return
