@@ -150,7 +150,7 @@ async function setVersion(): Promise<void> {
         }
     }
 
-    await writeFile("persisted/version", Variables.commitHash, {encoding: "utf8"})
+    await writeFile("persisted/bot/version", Variables.commitHash, {encoding: "utf8"})
 }
 
 async function setState(status: State): Promise<void> {
