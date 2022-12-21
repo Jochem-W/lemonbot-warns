@@ -7,10 +7,10 @@ WORKDIR /app
 # Copy package.json, lockfile, .npmrc and prisma
 COPY ["pnpm-lock.yaml", "package.json", ".npmrc", "prisma", "./"]
 
-# Install dependencies
+# Install build tools
 RUN apt-get update && \
-    apt-get -y install build-essential python3 && \
-    rm -rf /var/cache/apt/archives /var/lib/apt/lists/* && \
+    apt-get -y install build-essential openssl python3 && \
+    rm -rf /var/lib/apt/lists/* && \
     npm install -g pnpm && \
     pnpm install
 
@@ -18,8 +18,8 @@ RUN apt-get update && \
 COPY . .
 
 # Compile Typescript and remove dev packages
-RUN pnpm tsc && \
-    pnpm prisma generate && \
+RUN pnpm prisma generate && \
+    pnpm tsc && \
     pnpm prune --prod
 
 # Set-up running image
@@ -32,8 +32,7 @@ WORKDIR /app
 # Install openssl
 RUN apt-get update && \
     apt-get -y install openssl && \
-    rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
-
+    rm -rf /var/lib/apt/lists/*
 
 # Copy all files (including source :/)
 COPY --from=builder /app .
