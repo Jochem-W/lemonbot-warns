@@ -5,7 +5,7 @@ services:
     build: .
     env_file: .env
     volumes:
-      - ./persisted:/app/persisted
+      - ./persisted/bot:/app/persisted/bot
     restart: unless-stopped
     depends_on:
       - db
@@ -15,5 +15,5 @@ services:
     environment:
       POSTGRES_USER: lemonbot-warns
     volumes:
-      - ./persisted/db:/var/lib/postgresql/data
+      - ./persisted/db/data:/var/lib/postgresql/data
     restart: unless-stopped
