@@ -34,9 +34,9 @@ export class CheckBansCommand extends ChatInputCommand {
 
         return {
             embeds: [
-                makeEmbed("Wrongfully auto-banned users")
+                makeEmbed("Auto-banned users")
                     .setTitle(
-                        `The following ${options.bans.length.toString()} users were automatically banned for having an account less than 30 days old and are still banned despite now having an account older than 30 days.`)
+                        `The following ${options.bans.length.toString()} auto-banned users have an account older than 30 days:`)
                     .setDescription(options.bans.slice(offset, offset + options.pageLimit).join("\n") || null),
             ],
             components: [
