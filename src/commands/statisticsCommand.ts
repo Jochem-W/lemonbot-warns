@@ -12,9 +12,14 @@ import {unlink} from "fs/promises"
 export class StatisticsCommand extends ChatInputCommand {
     public constructor() {
         super("statistics", "Get statistics about the usage of the bot", PermissionFlagsBits.Administrator)
+        this.builder.addBooleanOption(option => option
+            .setName("cumulative")
+            .setDescription("Plot the cumulative sum instead of individual warnings"))
     }
 
     private static async addWarningStatistics(archive: Archiver, interaction: ChatInputCommandInteraction) {
+        const cumulative = interaction.options.getBoolean("cumulative") ?? false
+
         const data = (await Prisma.warning.findMany({
             select: {
                 createdAt: true,
@@ -48,8 +53,16 @@ export class StatisticsCommand extends ChatInputCommand {
             const warnings = data.filter(warning => warning.createdAt.hasSame(cursor as DateTime, "day"))
 
             for (const user of Object.values(users)) {
-                const count = warnings.filter(warning => warning.createdBy === user.id).length
+                let count = warnings.filter(warning => warning.createdBy === user.id).length
                 series[user.tag] ??= []
+
+                if (cumulative) {
+                    const last = series[user.tag]?.at(-1)
+                    if (last) {
+                        count += last.count
+                    }
+                }
+
                 series[user.tag]?.push({date: cursor.toISODate(), count})
             }
 
