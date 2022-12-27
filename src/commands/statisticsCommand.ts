@@ -5,7 +5,9 @@ import {stringify} from "csv"
 import archiver, {Archiver} from "archiver"
 import {DateTime} from "luxon"
 import {isFromOwner} from "../utilities/interactionUtilities"
-import {OwnerOnlyError} from "../errors"
+import {OwnerOnlyError, reportError} from "../errors"
+import {createWriteStream} from "fs"
+import {unlink} from "fs/promises"
 
 export class StatisticsCommand extends ChatInputCommand {
     public constructor() {
@@ -66,16 +68,44 @@ export class StatisticsCommand extends ChatInputCommand {
             throw new OwnerOnlyError()
         }
 
-        const archive = archiver("tar", {gzip: true})
+        const fileName = `${interaction.id}.zip`
+        const output = createWriteStream(fileName)
+        const archive = archiver("zip", {zlib: {level: 9}})
+
+        output.on("close", () => {
+            interaction.editReply({
+                files: [{
+                    attachment: fileName,
+                    name: "statistics.zip",
+                }],
+            }).catch(e => {
+                if (e instanceof Error) {
+                    void reportError(interaction.client, e)
+                } else {
+                    console.log(e)
+                }
+            }).finally(() => {
+                unlink(fileName).catch(e => {
+                    if (e instanceof Error) {
+                        void reportError(interaction.client, e)
+                    } else {
+                        console.log(e)
+                    }
+                })
+            })
+        })
+
+        archive.on("warning", err => {
+            void reportError(interaction.client, err)
+        })
+        archive.on("error", err => {
+            void reportError(interaction.client, err)
+        })
+
+        archive.pipe(output)
 
         await StatisticsCommand.addWarningStatistics(archive, interaction)
 
         await archive.finalize()
-        await interaction.editReply({
-            files: [{
-                attachment: archive,
-                name: "statistics.tar.gz",
-            }],
-        })
     }
 }
