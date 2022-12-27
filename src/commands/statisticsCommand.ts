@@ -95,12 +95,8 @@ export class StatisticsCommand extends ChatInputCommand {
             })
         })
 
-        archive.on("warning", err => {
-            void reportError(interaction.client, err)
-        })
-        archive.on("error", err => {
-            void reportError(interaction.client, err)
-        })
+        archive.on("warning", err => void reportError(interaction.client, err))
+        archive.on("error", err => void reportError(interaction.client, err))
 
         archive.pipe(output)
 
