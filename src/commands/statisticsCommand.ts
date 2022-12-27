@@ -1,4 +1,4 @@
-import {ChatInputCommandInteraction, PermissionFlagsBits, Snowflake, User} from "discord.js"
+import {ChatInputCommandInteraction, GuildMember, PermissionFlagsBits, Snowflake, User} from "discord.js"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {Prisma} from "../clients"
 import {stringify} from "csv"
@@ -44,7 +44,6 @@ export class StatisticsCommand extends ChatInputCommand {
 
         let cursor = data[0]?.createdAt.startOf("day")
         if (!cursor) {
-            await interaction.editReply("No data")
             return
         }
 
@@ -75,6 +74,89 @@ export class StatisticsCommand extends ChatInputCommand {
         }
     }
 
+    private static async addMessageStatistics(archive: Archiver, interaction: ChatInputCommandInteraction) {
+        const cumulative = interaction.options.getBoolean("cumulative") ?? false
+
+        if (!interaction.inGuild()) {
+            return
+        }
+
+        const guild = interaction.guild ?? await interaction.client.guilds.fetch(interaction.guildId)
+
+        const roleIds: Snowflake[] = []
+        for (const [, role] of await guild.roles.fetch()) {
+            if (role.permissions.has(PermissionFlagsBits.ModerateMembers, true)) {
+                roleIds.push(role.id)
+            }
+        }
+
+        const data: { userId: string, timestamp: DateTime }[] = []
+        const members: Record<Snowflake, GuildMember> = {}
+        for (const [, member] of await guild.members.fetch()) {
+            if (member.user.bot || !member.roles.cache.hasAny(...roleIds)) {
+                continue
+            }
+
+            members[member.id] = member
+
+            data.push(...(await Prisma.message.findMany({
+                where: {
+                    userId: member.id,
+                },
+                select: {
+                    userId: true,
+                    revisions: {
+                        take: 1,
+                    },
+                },
+            })).map(message => {
+                const revision = message.revisions[0]
+                if (!revision) {
+                    return undefined
+                }
+
+                return {
+                    userId: message.userId,
+                    timestamp: DateTime.fromJSDate(revision.timestamp),
+                }
+            }).filter(message => message !== undefined) as { userId: string, timestamp: DateTime }[])
+        }
+
+        data.sort((a, b) => {
+            return a.timestamp.toMillis() - b.timestamp.toMillis()
+        })
+
+        let cursor = data[0]?.timestamp.startOf("day")
+        if (!cursor) {
+            return
+        }
+
+        const series: Record<Snowflake, { date: string, count: number }[]> = {}
+        while (cursor.diffNow("days").days < 0) {
+            const warnings = data.filter(message => message.timestamp.hasSame(cursor as DateTime, "day"))
+
+            for (const member of Object.values(members)) {
+                let count = warnings.filter(message => message.userId === member.id).length
+                series[member.user.tag] ??= []
+
+                if (cumulative) {
+                    const last = series[member.user.tag]?.at(-1)
+                    if (last) {
+                        count += last.count
+                    }
+                }
+
+                series[member.user.tag]?.push({date: cursor.toISODate(), count})
+            }
+
+            cursor = cursor.plus({days: 1})
+        }
+
+        for (const user in series) {
+            archive.append(stringify(series[user] ?? [], {columns: ["date", "count"], header: true}),
+                {name: `messages/${user}.csv`})
+        }
+    }
 
     public async handle(interaction: ChatInputCommandInteraction) {
         if (!await isFromOwner(interaction)) {
@@ -114,6 +196,7 @@ export class StatisticsCommand extends ChatInputCommand {
         archive.pipe(output)
 
         await StatisticsCommand.addWarningStatistics(archive, interaction)
+        await StatisticsCommand.addMessageStatistics(archive, interaction)
 
         await archive.finalize()
     }
