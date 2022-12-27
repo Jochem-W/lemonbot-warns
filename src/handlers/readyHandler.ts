@@ -63,7 +63,7 @@ async function getChangelog(): Promise<string | null> {
 
     let previousVersion
     try {
-        previousVersion = await readFile("persisted/version", {encoding: "utf8"})
+        previousVersion = await readFile("persisted/bot/version", {encoding: "utf8"})
     } catch (e) {
         if (!isErrnoException(e) || e.code !== "ENOENT") {
             throw e
