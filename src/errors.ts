@@ -1,5 +1,5 @@
 import type {Command} from "./interfaces/command"
-import {Attachment, Channel, ChannelType, Client, CommandInteraction} from "discord.js"
+import {Attachment, Channel, ChannelType, Client, CommandInteraction, Snowflake} from "discord.js"
 import type {CustomId} from "./models/customId"
 import {DefaultConfig} from "./models/config"
 import {makeErrorEmbed} from "./utilities/responseBuilder"
@@ -133,6 +133,12 @@ export class InvalidEmbedError extends CustomError {
 export class PenaltyNotFoundError extends CustomError {
     public constructor(message: string) {
         super(message)
+    }
+}
+
+export class NoMessageRevisionsError extends CustomError {
+    public constructor(id: Snowflake) {
+        super(`Message with ID "${id}" has no revisions`)
     }
 }
 

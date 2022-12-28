@@ -81,7 +81,7 @@ export class StatisticsCommand extends ChatInputCommand {
             }
         }
 
-        const data: { userId: string, timestamp: DateTime }[] = []
+        let data = []
         const members: Record<Snowflake, GuildMember> = {}
         for (const [, member] of await guild.members.fetch()) {
             if (member.user.bot || !member.roles.cache.hasAny(...roleIds)) {
@@ -103,14 +103,14 @@ export class StatisticsCommand extends ChatInputCommand {
             })).map(message => {
                 const revision = message.revisions[0]
                 if (!revision) {
-                    return undefined
+                    throw new NoMessageRevisionsError(message.id)
                 }
 
                 return {
                     userId: message.userId,
                     timestamp: DateTime.fromJSDate(revision.timestamp, {zone: "utc"}),
                 }
-            }).filter(message => message !== undefined) as { userId: string, timestamp: DateTime }[])
+            }))
         }
 
         data.sort((a, b) => {
