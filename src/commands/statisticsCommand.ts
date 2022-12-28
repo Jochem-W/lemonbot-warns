@@ -108,7 +108,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
                 return {
                     userId: message.userId,
-                    timestamp: DateTime.fromJSDate(revision.timestamp),
+                    timestamp: DateTime.fromJSDate(revision.timestamp, {zone: "utc"}),
                 }
             }).filter(message => message !== undefined) as { userId: string, timestamp: DateTime }[])
         }
