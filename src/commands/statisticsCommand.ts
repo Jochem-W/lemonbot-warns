@@ -5,13 +5,16 @@ import {stringify} from "csv"
 import archiver, {Archiver} from "archiver"
 import {DateTime} from "luxon"
 import {isFromOwner} from "../utilities/interactionUtilities"
-import {OwnerOnlyError, reportError} from "../errors"
+import {NoMessageRevisionsError, OwnerOnlyError, reportError} from "../errors"
 import {createWriteStream} from "fs"
 import {unlink} from "fs/promises"
 
 export class StatisticsCommand extends ChatInputCommand {
     public constructor() {
         super("statistics", "Get statistics about the usage of the bot", PermissionFlagsBits.Administrator)
+        this.builder.addBooleanOption(option => option
+            .setName("public-only")
+            .setDescription("Limit message history to public channels only"))
     }
 
     private static async addWarningStatistics(archive: Archiver, interaction: ChatInputCommandInteraction) {
@@ -75,27 +78,34 @@ export class StatisticsCommand extends ChatInputCommand {
         const guild = interaction.guild ?? await interaction.client.guilds.fetch(interaction.guildId)
 
         const roleIds: Snowflake[] = []
-        for (const [, role] of await guild.roles.fetch()) {
+        for (const [id, role] of await guild.roles.fetch()) {
             if (role.permissions.has(PermissionFlagsBits.ModerateMembers, true)) {
-                roleIds.push(role.id)
+                roleIds.push(id)
+            }
+        }
+
+        const channelIds: Snowflake[] = []
+        for (const [id, channel] of await guild.channels.fetch()) {
+            const permissions = channel?.permissionsFor(guild.roles.everyone, true)
+            if (permissions?.has(PermissionFlagsBits.ViewChannel)) {
+                channelIds.push(id)
             }
         }
 
         let data = []
         const members: Record<Snowflake, GuildMember> = {}
-        for (const [, member] of await guild.members.fetch()) {
+        for (const [id, member] of await guild.members.fetch()) {
             if (member.user.bot || !member.roles.cache.hasAny(...roleIds)) {
                 continue
             }
 
-            members[member.id] = member
+            members[id] = member
 
             data.push(...(await Prisma.message.findMany({
                 where: {
-                    userId: member.id,
+                    userId: id,
                 },
-                select: {
-                    userId: true,
+                include: {
                     revisions: {
                         take: 1,
                     },
@@ -108,9 +118,14 @@ export class StatisticsCommand extends ChatInputCommand {
 
                 return {
                     userId: message.userId,
+                    channelId: message.channelId,
                     timestamp: DateTime.fromJSDate(revision.timestamp, {zone: "utc"}),
                 }
             }))
+        }
+
+        if (interaction.options.getBoolean("public-only")) {
+            data = data.filter(message => channelIds.includes(message.channelId))
         }
 
         data.sort((a, b) => {
