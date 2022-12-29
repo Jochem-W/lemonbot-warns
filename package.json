@@ -13,7 +13,7 @@
     "csv": "^6.2.5",
     "discord.js": "^14.7.1",
     "lru-cache": "^7.14.1",
-    "luxon": "^3.1.1",
+    "luxon": "^3.2.0",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
     "whatwg-mimetype": "^3.0.0"
