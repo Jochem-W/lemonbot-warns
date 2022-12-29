@@ -123,6 +123,9 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     .setFields({
                         name: "Reason",
                         value: reason ?? "N/A :(",
+                    }, {
+                        name: "User ID",
+                        value: ban.user.id,
                     })
                     .setFooter({
                         text: `Banned by ${auditLogEntry.executor.tag}`,

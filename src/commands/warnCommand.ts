@@ -239,6 +239,10 @@ export class WarnCommand extends ChatInputCommand {
                     name: "Administration",
                     value: administrationText,
                 },
+                {
+                    name: "User ID",
+                    value: options.targetUser.id,
+                },
             ])
             .setFooter({
                 text: WarnCommand.formatTitle(options),

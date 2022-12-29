@@ -78,6 +78,9 @@ export class WarningsCommand extends ChatInputCommand {
         }, {
             name: "Priority",
             value: inlineCode(`${entry.priority ? "✅" : "❌"}`),
+        }, {
+            name: "User ID",
+            value: options.subject.id,
         })
 
         for (const warning of entry.warnings) {
