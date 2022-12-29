@@ -230,7 +230,7 @@ export class WarnCommand extends ChatInputCommand {
 
         const embed = makeEmbed(`${WarnCommand.formatTitle(options, {verbOnly: true})} ${tag}`,
             new URL(avatar))
-            .addFields([
+            .setFields([
                 {
                     name: "Description",
                     value: options.description,

@@ -23,7 +23,7 @@ export class StatusCommand extends ChatInputCommand {
 
         return {
             embeds: [makeEmbed("Status")
-                .addFields({
+                .setFields({
                     name: "Ping",
                     value: inlineCode(`${options.ping}ms`),
                 }, {
