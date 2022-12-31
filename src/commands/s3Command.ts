@@ -113,9 +113,12 @@ export class S3Command extends ChatInputCommand {
     }
 
     private async apiListObjects(interaction: ChatInputCommandInteraction) {
-        const response = await S3.send(new ListObjectsV2Command({
+        const prefix = interaction.options.getString("prefix")
+        const response = await S3.send(new ListObjectsV2Command(prefix ? {
             Bucket: interaction.options.getString("bucket", true),
-            Prefix: interaction.options.getString("prefix") ?? undefined,
+            Prefix: prefix,
+        } : {
+            Bucket: interaction.options.getString("bucket", true),
         }))
 
         await interaction.editReply({

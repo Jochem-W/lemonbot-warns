@@ -92,11 +92,10 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             return
         }
 
-        await Prisma.warning.create({
+        const args: Parameters<typeof Prisma.warning.create>[0] = {
             data: {
                 createdAt: auditLogEntry.createdAt,
                 createdBy: auditLogEntry.executor.id,
-                description: reason,
                 silent: true,
                 penalty: {
                     connect: {
@@ -115,7 +114,13 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
                     },
                 },
             },
-        })
+        }
+
+        if (reason) {
+            args.data.description = reason
+        }
+
+        await Prisma.warning.create(args)
 
         await loggingChannel.send({
             embeds: [

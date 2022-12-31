@@ -2,7 +2,6 @@
   "extends": "@tsconfig/node18-strictest/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "exactOptionalPropertyTypes": false,
     "lib": [
       "DOM"
     ]

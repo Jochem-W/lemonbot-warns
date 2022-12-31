@@ -1,4 +1,4 @@
-import {ChannelType, Client, codeBlock, userMention} from "discord.js"
+import {ChannelType, Client, codeBlock, MessageCreateOptions, userMention} from "discord.js"
 import {mkdir, readFile, writeFile} from "fs/promises"
 import {DefaultConfig} from "../models/config"
 import type {Handler} from "../interfaces/handler"
@@ -39,10 +39,13 @@ export class ReadyHandler implements Handler<"ready"> {
             throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
         }
 
-        await channel.send({
-            content: DefaultConfig.guild.restart.user ? userMention(DefaultConfig.guild.restart.user) : undefined,
-            embeds: [makeEmbed(title).setDescription(await getChangelog())],
-        })
+        const options: MessageCreateOptions = {embeds: [makeEmbed(title).setDescription(await getChangelog())]}
+
+        if (DefaultConfig.guild.restart.user) {
+            options.content = userMention(DefaultConfig.guild.restart.user)
+        }
+
+        await channel.send(options)
 
         await setState("UP")
         await setVersion()

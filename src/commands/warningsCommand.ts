@@ -4,10 +4,10 @@ import {
     EmbedBuilder,
     GuildMember,
     inlineCode,
+    InteractionReplyOptions,
     PermissionFlagsBits,
     time,
     User,
-    WebhookEditMessageOptions,
 } from "discord.js"
 import {ChatInputCommand} from "../models/chatInputCommand"
 import {BotError} from "../errors"
@@ -31,7 +31,7 @@ export class WarningsCommand extends ChatInputCommand {
                 .setRequired(true))
     }
 
-    public static async buildResponse(options: ResponseOptions): Promise<WebhookEditMessageOptions[]> {
+    public static async buildResponse(options: ResponseOptions) {
         const embeds = [
             makeEmbed(`Warnings for ${formatName(options.subject)}`, new URL(options.subject.displayAvatarURL()))
                 .setTimestamp(null),
@@ -129,11 +129,15 @@ export class WarningsCommand extends ChatInputCommand {
 
         await interaction.editReply(messages[0])
         for (const message of messages.slice(1)) {
-            await interaction.followUp({
+            const options: InteractionReplyOptions = {
                 ...message,
-                content: message.content ?? undefined,
-                ephemeral: interaction.ephemeral ?? undefined,
-            })
+            }
+
+            if (interaction.ephemeral) {
+                options.ephemeral = true
+            }
+
+            await interaction.followUp(options)
         }
     }
 }

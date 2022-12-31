@@ -3,6 +3,7 @@ import {
     CollectedInteraction,
     CommandInteraction,
     InteractionCollector,
+    InteractionCollectorOptions,
     InteractionReplyOptions,
     MessageActionRowComponentBuilder,
     WebhookEditMessageOptions,
@@ -32,13 +33,18 @@ export class InteractionCollectorHelper {
     }
 
     public static async create(interaction: CommandInteraction): Promise<InteractionCollectorHelper> {
-        const collector = new InteractionCollector(interaction.client, {
+        const options: InteractionCollectorOptions<CollectedInteraction> = {
             channel: interaction.channel ?? interaction.channelId,
-            guild: interaction.guild ?? interaction.guildId ?? undefined,
             message: await interaction.fetchReply(),
             idle: Duration.fromDurationLike({minutes: 15}).toMillis(),
             dispose: true,
-        })
+        }
+
+        if (interaction.guildId) {
+            options.guild = interaction.guild ?? interaction.guildId
+        }
+
+        const collector = new InteractionCollector(interaction.client, options)
 
         return new InteractionCollectorHelper(interaction, collector)
     }
@@ -54,9 +60,10 @@ export class InteractionCollectorHelper {
 
                 await reportError(this.interaction.client, e)
 
-                const message: InteractionReplyOptions = {
-                    embeds: [makeErrorEmbed(e)],
-                    ephemeral: this.interaction.ephemeral ?? undefined,
+                const message: InteractionReplyOptions = {embeds: [makeErrorEmbed(e)]}
+
+                if (this.interaction.ephemeral) {
+                    message.ephemeral = true
                 }
 
                 if (collected.replied) {

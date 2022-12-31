@@ -59,7 +59,9 @@ class GuildRestartConfig {
 
     public constructor(data: RawConfig["guild"]["restart"]) {
         this.channel = data.channel
-        this.user = data.user
+        if (data.user) {
+            this.user = data.user
+        }
     }
 }
 

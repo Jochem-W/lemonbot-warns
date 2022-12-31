@@ -1,7 +1,7 @@
 import type {Attachment} from "discord.js"
 import {S3} from "../clients"
 import {Variables} from "../variables"
-import {Upload} from "@aws-sdk/lib-storage"
+import {Options, Upload} from "@aws-sdk/lib-storage"
 import {
     _Object,
     GetObjectCommand,
@@ -35,13 +35,21 @@ export async function download(bucket: Required<GetObjectCommandInput["Bucket"]>
 
 export async function* search(bucket: Required<ListObjectsV2CommandInput["Bucket"]>,
                               prefix?: ListObjectsV2CommandInput["Prefix"]): AsyncGenerator<_Object> {
+    const input: ListObjectsV2CommandInput = {
+        Bucket: bucket,
+    }
+
+    if (prefix) {
+        input.Prefix = prefix
+    }
+
     let response: ListObjectsV2CommandOutput | undefined = undefined
     do {
-        response = await S3.send(new ListObjectsV2Command({
-            Bucket: bucket,
-            Prefix: prefix,
-            ContinuationToken: response ? response.NextContinuationToken : undefined,
-        }))
+        if (response?.NextContinuationToken) {
+            input.ContinuationToken = response.NextContinuationToken
+        }
+
+        response = await S3.send(new ListObjectsV2Command(input))
 
         if (response.Contents) {
             for (const object of response.Contents) {
@@ -55,16 +63,24 @@ export async function upload(bucket: Required<PutObjectCommandInput["Bucket"]>,
                              key: Required<PutObjectCommandInput["Key"]>,
                              body: PutObjectCommandInput["Body"],
                              contentType?: PutObjectCommandInput["ContentType"]): Promise<void> {
-    await new Upload({
+    const options: Options = {
         client: S3,
         params: {
             Bucket: bucket,
-            Body: body,
-            ContentType: contentType,
             Key: key,
         },
         queueSize: 3, // for Cloudflare R2
-    }).done()
+    }
+
+    if (body) {
+        options.params.Body = body
+    }
+
+    if (contentType) {
+        options.params.ContentType = contentType
+    }
+
+    await new Upload(options).done()
 }
 
 export async function exists(bucket: Required<HeadObjectCommandInput["Bucket"]>,

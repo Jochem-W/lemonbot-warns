@@ -1,5 +1,6 @@
 import {
     ActionRowBuilder,
+    BanOptions,
     bold,
     ButtonBuilder,
     ButtonStyle,
@@ -351,7 +352,6 @@ export class WarnCommand extends ChatInputCommand {
             reasons: reasons,
             penalty: penalty,
             targetUser: user,
-            targetMember: member ?? undefined,
             images: images,
             description: description,
             warnedBy: interaction.user,
@@ -361,6 +361,9 @@ export class WarnCommand extends ChatInputCommand {
             deleteMessages: interaction.options.getBoolean("delete-messages") ?? true,
         }
 
+        if (member) {
+            options.targetMember = member
+        }
 
         if (options.notify) {
             options.notified = false
@@ -418,10 +421,12 @@ export class WarnCommand extends ChatInputCommand {
             try {
                 if (penalty.ban) {
                     if (options.targetMember) {
-                        await options.targetMember.ban({
-                            reason: reason,
-                            deleteMessageSeconds: options.deleteMessages ? 604800 : undefined,
-                        })
+                        const banOptions: BanOptions = {reason: reason}
+                        if (options.deleteMessages) {
+                            banOptions.deleteMessageSeconds = 604800
+                        }
+
+                        await options.targetMember.ban(banOptions)
                         options.penalised = "applied"
                     } else {
                         options.penalised = "not_in_server"

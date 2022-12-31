@@ -21,7 +21,7 @@ export async function fetchMember(interaction: Interaction,
     try {
         return await guild?.members.fetch({
             user: user,
-            force: force,
+            force: force ?? false,
         }) ?? null
     } catch (e) {
         if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownMember) {
