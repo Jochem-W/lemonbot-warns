@@ -89,7 +89,7 @@ export class HistoryCommand extends ChatInputCommand {
     private static async handleChannel(channelId: Snowflake, attachments: boolean, deleted: boolean) {
         return await Prisma.message.findMany({
             where: deleted ? {
-                deleted: deleted,
+                deleted: true,
                 channelId: channelId,
             } : {
                 channelId: channelId,
@@ -119,8 +119,8 @@ export class HistoryCommand extends ChatInputCommand {
     private static async handleMessage(messageId: Snowflake, attachments: boolean, deleted: boolean) {
         const message = await Prisma.message.findFirst({
             where: deleted ? {
-                id: messageId,
                 deleted: true,
+                id: messageId,
             } : {
                 id: messageId,
             },

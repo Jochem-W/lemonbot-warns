@@ -6,7 +6,13 @@ import {OwnerOnlyError} from "../errors"
 import {download, search} from "../utilities/s3Utilities"
 import type {Readable} from "stream"
 import {S3} from "../clients"
-import {_Object, DeleteObjectCommand, ListObjectsV2Command, NoSuchKey} from "@aws-sdk/client-s3"
+import {
+    _Object,
+    DeleteObjectCommand,
+    ListObjectsV2Command,
+    ListObjectsV2CommandInput,
+    NoSuchKey,
+} from "@aws-sdk/client-s3"
 import {makeErrorEmbed} from "../utilities/responseBuilder"
 
 export class S3Command extends ChatInputCommand {
@@ -113,13 +119,16 @@ export class S3Command extends ChatInputCommand {
     }
 
     private async apiListObjects(interaction: ChatInputCommandInteraction) {
+        const input: ListObjectsV2CommandInput = {
+            Bucket: interaction.options.getString("bucket", true),
+        }
+
         const prefix = interaction.options.getString("prefix")
-        const response = await S3.send(new ListObjectsV2Command(prefix ? {
-            Bucket: interaction.options.getString("bucket", true),
-            Prefix: prefix,
-        } : {
-            Bucket: interaction.options.getString("bucket", true),
-        }))
+        if (prefix) {
+            input.Prefix = prefix
+        }
+
+        const response = await S3.send(new ListObjectsV2Command(input))
 
         await interaction.editReply({
             files: [
