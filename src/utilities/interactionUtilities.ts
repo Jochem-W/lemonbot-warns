@@ -1,4 +1,13 @@
-import {DiscordAPIError, Guild, GuildMember, Interaction, RESTJSONErrorCodes, Team, UserResolvable} from "discord.js"
+import {
+    DiscordAPIError,
+    FetchMemberOptions,
+    Guild,
+    GuildMember,
+    Interaction,
+    RESTJSONErrorCodes,
+    Team,
+    UserResolvable,
+} from "discord.js"
 import {DefaultConfig} from "../models/config"
 
 export async function fetchGuild(interaction: Interaction): Promise<Guild | null> {
@@ -19,10 +28,15 @@ export async function fetchMember(interaction: Interaction,
                                   force?: boolean): Promise<GuildMember | null> {
     const guild = await fetchGuild(interaction)
     try {
-        return await guild?.members.fetch({
+        const options: FetchMemberOptions = {
             user: user,
-            force: force ?? false,
-        }) ?? null
+        }
+
+        if (force !== undefined) {
+            options.force = force
+        }
+
+        return await guild?.members.fetch(options) ?? null
     } catch (e) {
         if (e instanceof DiscordAPIError && e.code === RESTJSONErrorCodes.UnknownMember) {
             return null
