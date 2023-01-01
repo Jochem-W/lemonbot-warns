@@ -40,7 +40,7 @@ export class InteractionCollectorHelper {
             dispose: true,
         }
 
-        if (interaction.guildId) {
+        if (interaction.inGuild()) {
             options.guild = interaction.guild ?? interaction.guildId
         }
 
