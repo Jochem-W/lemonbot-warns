@@ -57,7 +57,7 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
                 makeEmbed(`Unbanned ${ban.user.tag}`, new URL(ban.user.displayAvatarURL()))
                     .setFields({
                         name: "Reason",
-                        value: auditLogEntry.reason?.trim() ?? "N/A :(",
+                        value: auditLogEntry.reason?.trim() ?? "N/A",
                     }, {
                         name: "User ID",
                         value: ban.user.id,
