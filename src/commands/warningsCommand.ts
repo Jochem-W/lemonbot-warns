@@ -122,7 +122,7 @@ export class WarningsCommand extends ChatInputCommand {
       if (reasonsString) {
         name += `for ${reasonsString} `
       }
-      name += time(warning.createdAt, "R")
+      name += `${time(warning.createdAt, "R")} [${warning.id}]`
 
       warningEmbeds[0]?.setFields({
         name: name,
