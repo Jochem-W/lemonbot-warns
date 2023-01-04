@@ -201,7 +201,7 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     if (!data.notify) {
-      title += " (silent, no penalty)"
+      title += "*"
     }
 
     if (options?.lowercase) {
