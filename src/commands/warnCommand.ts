@@ -186,10 +186,7 @@ export class WarnCommand extends ChatInputCommand {
   ) {
     let title: string
     let preposition: string
-    if (!data.notify) {
-      title = "Silently warned"
-      preposition = "in"
-    } else if (data.penalty.timeout) {
+    if (data.penalty.timeout) {
       title = "Timed out"
       preposition = "in"
     } else if (data.penalty.ban) {
@@ -201,6 +198,10 @@ export class WarnCommand extends ChatInputCommand {
     } else {
       title = "Warned"
       preposition = "in"
+    }
+
+    if (!data.notify) {
+      title += " (silent, no penalty)"
     }
 
     if (options?.lowercase) {

@@ -101,9 +101,7 @@ export class WarningsCommand extends ChatInputCommand {
       }
 
       let title: string
-      if (warning.silent) {
-        title = "Silently warned"
-      } else if (warning.penalty.ban) {
+      if (warning.penalty.ban) {
         title = "Banned"
       } else if (warning.penalty.kick) {
         title = "Kicked"
@@ -111,6 +109,10 @@ export class WarningsCommand extends ChatInputCommand {
         title = "Timed out"
       } else {
         title = "Warned"
+      }
+
+      if (warning.silent) {
+        title += " (silent)"
       }
 
       const warnedBy = await options.client.users.fetch(warning.createdBy)
