@@ -48,6 +48,22 @@ export class CommandNotFoundByNameError extends CommandNotFoundError {
   }
 }
 
+export class SubcommandGroupNotFoundError extends BotError {
+  public constructor(interaction: CommandInteraction, subcommandGroup: string) {
+    super(
+      `Couldn't find subcommand group ${subcommandGroup} for command ${interaction.commandName} (${interaction.commandId})`
+    )
+  }
+}
+
+export class SubcommandNotFoundError extends BotError {
+  public constructor(interaction: CommandInteraction, subcommand: string) {
+    super(
+      `Couldn't find subcommand ${subcommand} for command ${interaction.commandName} (${interaction.commandId})`
+    )
+  }
+}
+
 export class NoAutocompleteHandlerError extends BotError {
   public constructor(command: Command<CommandInteraction>) {
     super(`Command "${command.builder.name}" has no autocomplete handler.`)
