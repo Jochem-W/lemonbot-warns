@@ -1,8 +1,8 @@
-import type {ClientEvents} from "discord.js"
+import type { ClientEvents } from "discord.js"
 
 export interface Handler<T extends keyof ClientEvents> {
-    readonly event: T
-    readonly once: boolean
+  readonly event: T
+  readonly once: boolean
 
-    handle(...args: ClientEvents[T]): Promise<void>
+  handle(...args: ClientEvents[T]): Promise<void>
 }

@@ -28,6 +28,8 @@
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
     "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "prettier": "^2.8.1",
     "prisma": "^4.8.0",
     "typescript": "^4.9.4"
   },
@@ -36,5 +38,8 @@
     "erlpack": "^0.1.4",
     "utf-8-validate": "^5.0.10",
     "zlib-sync": "^0.1.7"
+  },
+  "prettier": {
+    "semi": false
   }
 }

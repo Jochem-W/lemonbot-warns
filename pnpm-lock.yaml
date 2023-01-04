@@ -19,10 +19,12 @@ specifiers:
   discord.js: ^14.7.1
   erlpack: ^0.1.4
   eslint: ^8.31.0
+  eslint-config-prettier: ^8.6.0
   lru-cache: ^7.14.1
   luxon: ^3.2.0
   nanoid: ^3.3.4
   nanoid-dictionary: ^4.3.0
+  prettier: ^2.8.1
   prisma: ^4.8.0
   typescript: ^4.9.4
   utf-8-validate: ^5.0.10
@@ -59,6 +61,8 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.48.0_k73wpmdolxikpyqun3p36akaaq
   '@typescript-eslint/parser': 5.48.0_iukboom6ndih5an6iafl45j2fe
   eslint: 8.31.0
+  eslint-config-prettier: 8.6.0_eslint@8.31.0
+  prettier: 2.8.1
   prisma: 4.8.0
   typescript: 4.9.4
 
@@ -1802,6 +1806,15 @@ packages:
     engines: { node: '>=10' }
     dev: true
 
+  /eslint-config-prettier/8.6.0_eslint@8.31.0:
+    resolution: { integrity: sha512-bAF0eLpLVqP5oEVUFKpMA+NnRFICwn9X8B5jrR9FcqnYBuPbqWEjTEspPWMj5ye6czoSLDweCzSo3Ko7gGrZaA== }
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
+    dependencies:
+      eslint: 8.31.0
+    dev: true
+
   /eslint-scope/5.1.1:
     resolution: { integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw== }
     engines: { node: '>=8.0.0' }
@@ -2375,6 +2388,12 @@ packages:
   /prelude-ls/1.2.1:
     resolution: { integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g== }
     engines: { node: '>= 0.8.0' }
+    dev: true
+
+  /prettier/2.8.1:
+    resolution: { integrity: sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg== }
+    engines: { node: '>=10.13.0' }
+    hasBin: true
     dev: true
 
   /prisma/4.8.0:
