@@ -44,7 +44,7 @@ import { makeEmbed } from "../utilities/responseBuilder"
 import { fetchGuild, fetchMember } from "../utilities/interactionUtilities"
 import { uploadAttachment } from "../utilities/s3Utilities"
 import { Prisma } from "../clients"
-import type { Penalty, Reason } from "@prisma/client"
+import type { Penalty, Reason, Warning } from "@prisma/client"
 
 export interface ResponseOptions {
   reasons: string[]
@@ -225,7 +225,10 @@ export class WarnCommand extends ChatInputCommand {
     return title
   }
 
-  public static buildResponse(options: ResponseOptions): MessageCreateOptions {
+  public static buildResponse(
+    options: ResponseOptions,
+    warning: Warning
+  ): MessageCreateOptions {
     const reasonsText = options.reasons.join(", ")
     let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
     if (options.notified === "DM") {
@@ -307,7 +310,9 @@ export class WarnCommand extends ChatInputCommand {
     const tag = options.targetUser.tag
 
     const embed = makeEmbed(
-      `${WarnCommand.formatTitle(options, { verbOnly: true })} ${tag}`,
+      `${WarnCommand.formatTitle(options, { verbOnly: true })} ${tag} [${
+        warning.id
+      }]`,
       new URL(avatar)
     )
       .setFields([
@@ -566,7 +571,7 @@ export class WarnCommand extends ChatInputCommand {
       options.penalised = "not_notified"
     }
 
-    await Prisma.warning.create({
+    const prismaWarning = await Prisma.warning.create({
       data: {
         createdAt: interaction.createdAt,
         createdBy: options.warnedBy.id,
@@ -606,7 +611,7 @@ export class WarnCommand extends ChatInputCommand {
       },
     })
 
-    const response = WarnCommand.buildResponse(options)
+    const response = WarnCommand.buildResponse(options, prismaWarning)
     try {
       await interaction.editReply(response)
     } catch (e) {
