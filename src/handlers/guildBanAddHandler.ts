@@ -124,12 +124,11 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
       args.data.description = reason
     }
 
-    await Prisma.warning.create(args)
-
+    const prismaBan = await Prisma.warning.create(args)
     await loggingChannel.send({
       embeds: [
         makeEmbed(
-          `Banned ${ban.user.tag}`,
+          `Banned ${ban.user.tag} [${prismaBan.id}]`,
           new URL(ban.user.displayAvatarURL())
         )
           .setFields(
