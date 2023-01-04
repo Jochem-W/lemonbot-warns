@@ -114,10 +114,18 @@ export class WarningsCommand extends ChatInputCommand {
       }
 
       const warnedBy = await options.client.users.fetch(warning.createdBy)
+      let name = `${title} by ${formatName(warnedBy)} `
+
+      const reasonsString = warning.reasons
+        .map((reason) => reason.name)
+        .join(", ")
+      if (reasonsString) {
+        name += `for ${reasonsString} `
+      }
+      name += time(warning.createdAt, "R")
+
       warningEmbeds[0]?.setFields({
-        name: `${title} by ${formatName(warnedBy)} for ${warning.reasons
-          .map((reason) => reason.name)
-          .join(", ")} ${time(warning.createdAt, "R")}`,
+        name: name,
         value: warning.description ?? "N/A",
       })
 
