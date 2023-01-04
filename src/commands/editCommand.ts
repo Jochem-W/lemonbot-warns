@@ -4,12 +4,14 @@ import { Prisma } from "../clients"
 import {
   ImageOnlyError,
   NoContentTypeError,
+  OwnerOnlyError,
   SubcommandGroupNotFoundError,
   SubcommandNotFoundError,
 } from "../errors"
 import MIMEType from "whatwg-mimetype"
 import { uploadAttachment } from "../utilities/s3Utilities"
 import { makeEmbed } from "../utilities/responseBuilder"
+import { isFromOwner } from "../utilities/interactionUtilities"
 
 export class EditCommand extends ChatInputCommand {
   public constructor() {
@@ -118,6 +120,10 @@ export class EditCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    if (!(await isFromOwner(interaction))) {
+      throw new OwnerOnlyError()
+    }
+
     const subcommandGroup = interaction.options.getSubcommandGroup(true)
     switch (subcommandGroup) {
       case "image":
