@@ -5,7 +5,7 @@ specifiers:
   '@aws-sdk/lib-storage': ^3.241.0
   '@octokit/rest': ^19.0.5
   '@prisma/client': ^4.8.0
-  '@tsconfig/node18-strictest': ^1.0.0
+  '@tsconfig/node18-strictest-esm': ^1.0.1
   '@types/archiver': ^5.3.1
   '@types/luxon': ^3.2.0
   '@types/nanoid-dictionary': ^4.2.0
@@ -22,7 +22,7 @@ specifiers:
   eslint-config-prettier: ^8.6.0
   lru-cache: ^7.14.1
   luxon: ^3.2.0
-  nanoid: ^3.3.4
+  nanoid: ^4.0.0
   nanoid-dictionary: ^4.3.0
   prettier: ^2.8.1
   prisma: ^4.8.0
@@ -41,7 +41,7 @@ dependencies:
   discord.js: 14.7.1_3cxu5zja4e2r5wmvge7mdcljwq
   lru-cache: 7.14.1
   luxon: 3.2.0
-  nanoid: 3.3.4
+  nanoid: 4.0.0
   nanoid-dictionary: 4.3.0
   whatwg-mimetype: 3.0.0
 
@@ -52,7 +52,7 @@ optionalDependencies:
   zlib-sync: 0.1.7
 
 devDependencies:
-  '@tsconfig/node18-strictest': 1.0.0
+  '@tsconfig/node18-strictest-esm': 1.0.1
   '@types/archiver': 5.3.1
   '@types/luxon': 3.2.0
   '@types/nanoid-dictionary': 4.2.0
@@ -1303,8 +1303,8 @@ packages:
     resolution: { integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A== }
     dev: false
 
-  /@tsconfig/node18-strictest/1.0.0:
-    resolution: { integrity: sha512-bOuNKwO4Fzbt+Su5wqI9zNHwx5C25gLnutwVQA1sBZk0cW8UjVPVcwzIUhJIIJDUx7zDEbAwdCD2HfvIsV8dYg== }
+  /@tsconfig/node18-strictest-esm/1.0.1:
+    resolution: { integrity: sha512-cHzmAqw7CMbyqROWeBgVhard3F2V6zxOSJnQ4E6SJWruXD5ypuP9/QKekwBdfXQ4oUTaizIICKIwb+v3v33t0w== }
     dev: true
 
   /@types/archiver/5.3.1:
@@ -2282,9 +2282,9 @@ packages:
     resolution: { integrity: sha512-Xw1+/QnRGWO1KJ0rLfU1xR85qXmAHyLbE3TUkklu9gOIDburP6CsUnLmTaNECGpBh5SHb2uPFmx0VT8UPyoeyw== }
     dev: false
 
-  /nanoid/3.3.4:
-    resolution: { integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw== }
-    engines: { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
+  /nanoid/4.0.0:
+    resolution: { integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg== }
+    engines: { node: ^14 || ^16 || >=18 }
     hasBin: true
     dev: false
 
