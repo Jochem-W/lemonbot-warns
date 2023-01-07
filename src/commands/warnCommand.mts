@@ -115,7 +115,9 @@ export class WarnCommand extends ChatInputCommand {
       .addBooleanOption((option) =>
         option
           .setName("notify")
-          .setDescription("Whether to try to send a DM to the user or not")
+          .setDescription(
+            "Whether to try to send a DM to the user or not (required for penalisation)"
+          )
           .setRequired(true)
       )
       .addAttachmentOption((option) =>
@@ -129,28 +131,28 @@ export class WarnCommand extends ChatInputCommand {
         option
           .setName("image2")
           .setDescription(
-            "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"
+            "Optional image attachment that will also be sent to the user (using lots of images is discouraged)"
           )
       )
       .addAttachmentOption((option) =>
         option
           .setName("image3")
           .setDescription(
-            "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"
+            "Optional image attachment that will also be sent to the user (using lots of images is discouraged)"
           )
       )
       .addAttachmentOption((option) =>
         option
           .setName("image4")
           .setDescription(
-            "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"
+            "Optional image attachment that will also be sent to the user (using lots of images is discouraged)"
           )
       )
       .addAttachmentOption((option) =>
         option
           .setName("image5")
           .setDescription(
-            "Optional image attachment that will also be sent to the user (using multiple images is discouraged)"
+            "Optional image attachment that will also be sent to the user (using lots of images is discouraged)"
           )
       )
       .addStringOption((option) =>
