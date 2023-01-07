@@ -5,15 +5,15 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.241.0",
-    "@aws-sdk/lib-storage": "^3.241.0",
+    "@aws-sdk/client-s3": "^3.245.0",
+    "@aws-sdk/lib-storage": "^3.245.0",
     "@octokit/rest": "^19.0.5",
-    "@prisma/client": "^4.8.0",
+    "@prisma/client": "^4.8.1",
     "archiver": "^5.3.1",
     "csv": "^6.2.5",
     "discord.js": "^14.7.1",
     "lru-cache": "^7.14.1",
-    "luxon": "^3.2.0",
+    "luxon": "^3.2.1",
     "nanoid": "^4.0.0",
     "nanoid-dictionary": "^4.3.0",
     "whatwg-mimetype": "^3.0.0"
@@ -29,14 +29,14 @@
     "@typescript-eslint/parser": "^5.48.0",
     "eslint": "^8.31.0",
     "eslint-config-prettier": "^8.6.0",
-    "prettier": "^2.8.1",
-    "prisma": "^4.8.0",
+    "prettier": "^2.8.2",
+    "prisma": "^4.8.1",
     "typescript": "^4.9.4"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.7",
     "erlpack": "^0.1.4",
-    "utf-8-validate": "^5.0.10",
+    "utf-8-validate": "^6.0.0",
     "zlib-sync": "^0.1.7"
   },
   "prettier": {
