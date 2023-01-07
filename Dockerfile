@@ -38,4 +38,4 @@ RUN apt-get update && \
 COPY --from=builder /app .
 
 # Run
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/index.mjs"]
