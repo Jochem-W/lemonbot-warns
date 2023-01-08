@@ -21,7 +21,7 @@ import { DefaultConfig } from "../models/config.mjs"
 import type { Command } from "../interfaces/command.mjs"
 import { CommandNotFoundByNameError, OwnerOnlyError } from "../errors.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { isFromOwner } from "../utilities/interactionUtilities.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import { Variables } from "../variables.mjs"
 
 export class ReRegisterCommand extends ChatInputCommand {

@@ -12,7 +12,7 @@ import {
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { BotError } from "../errors.mjs"
 import { formatName, makeEmbed } from "../utilities/responseBuilder.mjs"
-import { fetchMember } from "../utilities/interactionUtilities.mjs"
+import { fetchMember } from "../utilities/discordUtilities.mjs"
 import { Prisma } from "../clients.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
 

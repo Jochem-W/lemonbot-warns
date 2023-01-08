@@ -11,7 +11,7 @@ import {
 import MIMEType from "whatwg-mimetype"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { isFromOwner } from "../utilities/interactionUtilities.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 
 export class EditCommand extends ChatInputCommand {
   public constructor() {

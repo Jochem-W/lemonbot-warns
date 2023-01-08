@@ -10,7 +10,7 @@ import { Prisma } from "../clients.mjs"
 import { stringify } from "csv"
 import archiver, { Archiver } from "archiver"
 import { DateTime } from "luxon"
-import { isFromOwner } from "../utilities/interactionUtilities.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import {
   NoMessageRevisionsError,
   OwnerOnlyError,

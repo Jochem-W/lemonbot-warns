@@ -15,7 +15,7 @@ import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { fetchGuild } from "../utilities/interactionUtilities.mjs"
+import { fetchGuild } from "../utilities/discordUtilities.mjs"
 
 interface ResponseOptions {
   bans: string[]

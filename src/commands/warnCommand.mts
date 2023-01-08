@@ -40,7 +40,7 @@ import {
   reportError,
 } from "../errors.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { fetchGuild, fetchMember } from "../utilities/interactionUtilities.mjs"
+import { fetchGuild, fetchMember } from "../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { Prisma } from "../clients.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"

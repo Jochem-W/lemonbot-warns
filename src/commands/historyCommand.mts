@@ -4,7 +4,7 @@ import {
   PermissionFlagsBits,
   Snowflake,
 } from "discord.js"
-import { isFromOwner } from "../utilities/interactionUtilities.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import {
   InvalidArgumentsError,
   OwnerOnlyError,

@@ -5,7 +5,7 @@ import {
 } from "discord.js"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { Variables } from "../variables.mjs"
-import { isFromOwner } from "../utilities/interactionUtilities.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import { OwnerOnlyError } from "../errors.mjs"
 import { download, search } from "../utilities/s3Utilities.mjs"
 import type { Readable } from "stream"
