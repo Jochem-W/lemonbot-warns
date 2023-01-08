@@ -17,6 +17,17 @@ export class EditCommand extends ChatInputCommand {
   public constructor() {
     super("edit", "Edit an existing warning", PermissionFlagsBits.Administrator)
     this.builder
+      .addSubcommand((subcommandGroup) =>
+        subcommandGroup
+          .setName("delete")
+          .setDescription("Delete a warning")
+          .addIntegerOption((builder) =>
+            builder
+              .setName("id")
+              .setDescription("The warning ID")
+              .setRequired(true)
+          )
+      )
       .addSubcommandGroup((subcommandGroup) =>
         subcommandGroup
           .setName("image")
@@ -119,18 +130,33 @@ export class EditCommand extends ChatInputCommand {
     }
   }
 
+  private static async handleDelete(interaction: ChatInputCommandInteraction) {
+    const warningId = interaction.options.getInteger("id", true)
+    await Prisma.warning.delete({ where: { id: warningId } })
+  }
+
   public async handle(interaction: ChatInputCommandInteraction) {
     if (!(await isFromOwner(interaction))) {
       throw new OwnerOnlyError()
     }
 
-    const subcommandGroup = interaction.options.getSubcommandGroup(true)
+    const subcommandGroup = interaction.options.getSubcommandGroup()
     switch (subcommandGroup) {
       case "image":
         await EditCommand.handleImage(interaction)
         break
       case "description":
         await EditCommand.handleDescription(interaction)
+        break
+      case null:
+        const subcommand = interaction.options.getSubcommand(true)
+        switch (subcommand) {
+          case "delete":
+            await EditCommand.handleDelete(interaction)
+            break
+          default:
+            throw new SubcommandNotFoundError(interaction, subcommand)
+        }
         break
       default:
         throw new SubcommandGroupNotFoundError(interaction, subcommandGroup)
