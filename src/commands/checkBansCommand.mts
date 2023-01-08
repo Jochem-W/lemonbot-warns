@@ -12,7 +12,6 @@ import {
 import { DateTime } from "luxon"
 import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { GuildOnlyError } from "../errors.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { fetchGuild } from "../utilities/discordUtilities.mjs"
@@ -82,9 +81,6 @@ export class CheckBansCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = await fetchGuild(interaction)
-    if (!guild) {
-      throw new GuildOnlyError()
-    }
 
     const bans: string[] = []
     for (const [, ban] of await guild.bans.fetch()) {

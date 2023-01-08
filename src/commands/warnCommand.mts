@@ -31,7 +31,6 @@ import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { customAlphabet } from "nanoid"
 import {
   ChannelNotFoundError,
-  GuildOnlyError,
   ImageOnlyError,
   InvalidCustomIdError,
   InvalidPenaltyError,
@@ -394,10 +393,6 @@ export class WarnCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guild = await fetchGuild(interaction)
-    if (!guild) {
-      throw new GuildOnlyError()
-    }
-
     const warnLogsChannel = await fetchChannel(
       guild,
       DefaultConfig.guild.warnLogsChannel,

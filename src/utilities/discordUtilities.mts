@@ -17,7 +17,11 @@ import {
 } from "discord.js"
 import { DateTime } from "luxon"
 import { DefaultConfig } from "../models/config.mjs"
-import { ChannelNotFoundError, InvalidChannelTypeError } from "../errors.mjs"
+import {
+  ChannelNotFoundError,
+  GuildOnlyError,
+  InvalidChannelTypeError,
+} from "../errors.mjs"
 
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(
@@ -31,7 +35,13 @@ export async function fetchMember(
   user: UserResolvable,
   force?: boolean
 ): Promise<GuildMember | null> {
-  const guild = await fetchGuild(interaction)
+  if (!interaction.inGuild()) {
+    return null
+  }
+
+  const guild =
+    interaction.guild ??
+    (await interaction.client.guilds.fetch(interaction.guildId))
   try {
     const options: FetchMemberOptions = {
       user: user,
@@ -84,11 +94,9 @@ export async function fetchChannel<T extends ChannelType>(
   return channel as Extract<GuildBasedChannel, { type: T }>
 }
 
-export async function fetchGuild(
-  interaction: Interaction
-): Promise<Guild | null> {
+export async function fetchGuild(interaction: Interaction) {
   if (!interaction.inGuild()) {
-    return null
+    throw new GuildOnlyError()
   }
 
   return (
