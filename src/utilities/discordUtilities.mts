@@ -54,14 +54,10 @@ export async function fetchGuild(
     return null
   }
 
-  const guild = await interaction.client.guilds.fetch({
-    guild: interaction.guild ?? interaction.guildId,
-  })
-  if (!guild.name) {
-    await guild.fetch()
-  }
-
-  return guild
+  return (
+    interaction.guild ??
+    (await interaction.client.guilds.fetch(interaction.guildId))
+  )
 }
 
 export async function isFromOwner(interaction: Interaction): Promise<boolean> {
