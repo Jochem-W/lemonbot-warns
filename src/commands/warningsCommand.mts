@@ -43,7 +43,7 @@ export class WarningsCommand extends ChatInputCommand {
 
     const entry = await Prisma.user.findFirst({
       where: {
-        discordId: options.subject.id,
+        id: options.subject.id,
       },
       include: {
         warnings: {

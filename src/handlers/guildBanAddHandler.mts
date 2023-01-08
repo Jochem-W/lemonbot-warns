@@ -71,7 +71,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     const warning = await Prisma.warning.findFirst({
       where: {
         user: {
-          discordId: ban.user.id,
+          id: ban.user.id,
         },
       },
       orderBy: [
@@ -103,10 +103,10 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
         user: {
           connectOrCreate: {
             where: {
-              discordId: ban.user.id,
+              id: ban.user.id,
             },
             create: {
-              discordId: ban.user.id,
+              id: ban.user.id,
               priority: false,
             },
           },

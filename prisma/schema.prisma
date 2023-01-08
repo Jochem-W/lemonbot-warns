@@ -30,10 +30,8 @@ enum Colour {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-
-  discordId String  @unique
-  priority  Boolean
+  id       String  @id
+  priority Boolean
 
   warnings Warning[]
 
@@ -55,8 +53,8 @@ model Warning {
 
   reasons Reason[]
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Reason {

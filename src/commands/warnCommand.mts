@@ -590,10 +590,10 @@ export class WarnCommand extends ChatInputCommand {
         user: {
           connectOrCreate: {
             where: {
-              discordId: options.targetUser.id,
+              id: options.targetUser.id,
             },
             create: {
-              discordId: options.targetUser.id,
+              id: options.targetUser.id,
               priority: false,
             },
           },
@@ -603,7 +603,7 @@ export class WarnCommand extends ChatInputCommand {
 
     await Prisma.user.update({
       where: {
-        discordId: options.targetUser.id,
+        id: options.targetUser.id,
       },
       data: {
         penaltyOverride: {
