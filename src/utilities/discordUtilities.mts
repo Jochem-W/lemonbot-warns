@@ -32,26 +32,11 @@ export function snowflakeToDateTime(snowflake: Snowflake) {
 
 export async function fetchMember(
   interaction: Interaction,
-  user: UserResolvable,
-  force?: boolean
+  options: FetchMemberOptions | UserResolvable
 ): Promise<GuildMember | null> {
-  if (!interaction.inGuild()) {
-    return null
-  }
-
-  const guild =
-    interaction.guild ??
-    (await interaction.client.guilds.fetch(interaction.guildId))
+  const guild = await fetchGuild(interaction) // Possibly a bad idea because it can throw?
   try {
-    const options: FetchMemberOptions = {
-      user: user,
-    }
-
-    if (force !== undefined) {
-      options.force = force
-    }
-
-    return (await guild?.members.fetch(options)) ?? null
+    return await guild.members.fetch(options)
   } catch (e) {
     if (
       e instanceof DiscordAPIError &&
