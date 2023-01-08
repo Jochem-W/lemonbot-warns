@@ -12,7 +12,6 @@
     "archiver": "^5.3.1",
     "csv": "^6.2.5",
     "discord.js": "^14.7.1",
-    "lru-cache": "^7.14.1",
     "luxon": "^3.2.1",
     "nanoid": "^4.0.0",
     "nanoid-dictionary": "^4.3.0",

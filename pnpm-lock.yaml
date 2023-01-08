@@ -20,7 +20,6 @@ specifiers:
   erlpack: ^0.1.4
   eslint: ^8.31.0
   eslint-config-prettier: ^8.6.0
-  lru-cache: ^7.14.1
   luxon: ^3.2.1
   nanoid: ^4.0.0
   nanoid-dictionary: ^4.3.0
@@ -39,7 +38,6 @@ dependencies:
   archiver: 5.3.1
   csv: 6.2.5
   discord.js: 14.7.1_b534fhs3xgzvdbz5qzlfkrhjjm
-  lru-cache: 7.14.1
   luxon: 3.2.1
   nanoid: 4.0.0
   nanoid-dictionary: 4.3.0
@@ -2233,11 +2231,6 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
-
-  /lru-cache/7.14.1:
-    resolution: { integrity: sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA== }
-    engines: { node: '>=12' }
-    dev: false
 
   /luxon/3.2.1:
     resolution: { integrity: sha512-QrwPArQCNLAKGO/C+ZIilgIuDnEnKx5QYODdDtbFaxzsbZcc/a7WFq7MhsVYgRlwawLtvOUESTlfJ+hc/USqPg== }
