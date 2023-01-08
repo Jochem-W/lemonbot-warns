@@ -1,5 +1,11 @@
-import type { Snowflake } from "discord.js"
+import type {
+  FetchChannelOptions,
+  GuildBasedChannel,
+  Snowflake,
+} from "discord.js"
 import {
+  ChannelType,
+  Client,
   DiscordAPIError,
   FetchMemberOptions,
   Guild,
@@ -11,6 +17,7 @@ import {
 } from "discord.js"
 import { DateTime } from "luxon"
 import { DefaultConfig } from "../models/config.mjs"
+import { ChannelNotFoundError, InvalidChannelTypeError } from "../errors.mjs"
 
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(
@@ -45,6 +52,36 @@ export async function fetchMember(
 
     throw e
   }
+}
+
+export async function fetchChannel<T extends ChannelType>(
+  guild: Guild,
+  id: Snowflake,
+  type: T,
+  options?: FetchChannelOptions
+): Promise<Extract<GuildBasedChannel, { type: T }>>
+export async function fetchChannel<T extends ChannelType>(
+  client: Client,
+  id: Snowflake,
+  type: T,
+  options?: FetchChannelOptions
+): Promise<Extract<GuildBasedChannel, { type: T }>>
+export async function fetchChannel<T extends ChannelType>(
+  clientOrGuild: Client | Guild,
+  id: Snowflake,
+  type: T,
+  options?: FetchChannelOptions
+): Promise<Extract<GuildBasedChannel, { type: T }>> {
+  const channel = await clientOrGuild.channels.fetch(id, options)
+  if (!channel) {
+    throw new ChannelNotFoundError(id)
+  }
+
+  if (channel.type !== type) {
+    throw new InvalidChannelTypeError(channel, type)
+  }
+
+  return channel as Extract<GuildBasedChannel, { type: T }>
 }
 
 export async function fetchGuild(

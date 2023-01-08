@@ -33,14 +33,17 @@ import {
   ChannelNotFoundError,
   GuildOnlyError,
   ImageOnlyError,
-  InvalidChannelTypeError,
   InvalidCustomIdError,
   InvalidPenaltyError,
   NoContentTypeError,
   reportError,
 } from "../errors.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { fetchGuild, fetchMember } from "../utilities/discordUtilities.mjs"
+import {
+  fetchChannel,
+  fetchGuild,
+  fetchMember,
+} from "../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { Prisma } from "../clients.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
@@ -395,16 +398,11 @@ export class WarnCommand extends ChatInputCommand {
       throw new GuildOnlyError()
     }
 
-    const warnLogsChannel = await guild.channels.fetch(
-      DefaultConfig.guild.warnLogsChannel
+    const warnLogsChannel = await fetchChannel(
+      guild,
+      DefaultConfig.guild.warnLogsChannel,
+      ChannelType.GuildText
     )
-    if (!warnLogsChannel) {
-      throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
-    }
-
-    if (warnLogsChannel.type !== ChannelType.GuildText) {
-      throw new InvalidChannelTypeError(warnLogsChannel, ChannelType.GuildText)
-    }
 
     const penaltyName = interaction.options.getString("penalty", true)
     const penalty = this.penalties.find((p) => p.name === penaltyName)

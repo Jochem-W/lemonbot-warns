@@ -8,11 +8,11 @@ import {
 import { mkdir, readFile, writeFile } from "fs/promises"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../interfaces/handler.mjs"
-import { ChannelNotFoundError, InvalidChannelTypeError } from "../errors.mjs"
 import { writeFileSync } from "fs"
 import { Variables } from "../variables.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { Octokit } from "@octokit/rest"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -36,16 +36,11 @@ export class ReadyHandler implements Handler<"ready"> {
         break
     }
 
-    const channel = await client.channels.fetch(
-      DefaultConfig.guild.restart.channel
+    const channel = await fetchChannel(
+      client,
+      DefaultConfig.guild.restart.channel,
+      ChannelType.GuildText
     )
-    if (!channel) {
-      throw new ChannelNotFoundError(DefaultConfig.guild.restart.channel)
-    }
-
-    if (channel.type !== ChannelType.GuildText) {
-      throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
-    }
 
     const options: MessageCreateOptions = {
       embeds: [makeEmbed(title).setDescription(await getChangelog())],

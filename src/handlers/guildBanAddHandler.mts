@@ -5,11 +5,10 @@ import { DefaultConfig } from "../models/config.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import {
   AuditLogNotFoundError,
-  ChannelNotFoundError,
   InvalidAuditLogEntryError,
-  InvalidChannelTypeError,
   PenaltyNotFoundError,
 } from "../errors.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"
@@ -35,16 +34,11 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public async handle(ban: GuildBan) {
     console.log("guildBanAdd event dispatched", ban)
 
-    const loggingChannel = await ban.client.channels.fetch(
-      DefaultConfig.guild.warnLogsChannel
+    const loggingChannel = await fetchChannel(
+      ban.guild,
+      DefaultConfig.guild.warnLogsChannel,
+      ChannelType.GuildText
     )
-    if (!loggingChannel) {
-      throw new ChannelNotFoundError(DefaultConfig.guild.warnLogsChannel)
-    }
-
-    if (!loggingChannel.isTextBased()) {
-      throw new InvalidChannelTypeError(loggingChannel, ChannelType.GuildText)
-    }
 
     await new Promise((resolve) => setTimeout(resolve, 2000))
 

@@ -10,6 +10,7 @@ import {
 import type { CustomId } from "./models/customId.mjs"
 import { DefaultConfig } from "./models/config.mjs"
 import { makeErrorEmbed } from "./utilities/responseBuilder.mjs"
+import { fetchChannel } from "./utilities/discordUtilities.mjs"
 
 class CustomError extends Error {
   public constructor(message: string) {
@@ -173,14 +174,10 @@ export class NoMessageRevisionsError extends CustomError {
 
 export async function reportError(client: Client, error: Error): Promise<void> {
   console.error(error)
-  const channel = await client.channels.fetch(DefaultConfig.guild.errorChannel)
-  if (!channel) {
-    throw new ChannelNotFoundError(DefaultConfig.guild.errorChannel)
-  }
-
-  if (channel.type !== ChannelType.GuildText) {
-    throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
-  }
-
+  const channel = await fetchChannel(
+    client,
+    DefaultConfig.guild.errorChannel,
+    ChannelType.GuildText
+  )
   await channel.send({ embeds: [makeErrorEmbed(error)] })
 }

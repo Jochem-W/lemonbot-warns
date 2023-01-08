@@ -1,7 +1,7 @@
 import type { Handler } from "../interfaces/handler.mjs"
 import { ChannelType, GuildMember, PartialGuildMember } from "discord.js"
-import { ChannelNotFoundError, InvalidChannelTypeError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
 
 export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
   public readonly event = "guildMemberRemove"
@@ -10,17 +10,12 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
   public async handle(member: GuildMember | PartialGuildMember): Promise<void> {
     const user = await member.client.users.fetch(member.id)
 
-    const warnCategory = await member.client.channels.fetch(
+    const warnCategory = await fetchChannel(
+      member.guild,
       DefaultConfig.guild.warnCategory,
+      ChannelType.GuildCategory,
       { force: true }
     )
-    if (!warnCategory) {
-      throw new ChannelNotFoundError(DefaultConfig.guild.warnCategory)
-    }
-
-    if (warnCategory.type !== ChannelType.GuildCategory) {
-      throw new InvalidChannelTypeError(warnCategory, ChannelType.GuildCategory)
-    }
 
     for (const [, channel] of await warnCategory.guild.channels.fetch()) {
       if (
