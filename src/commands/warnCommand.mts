@@ -368,7 +368,10 @@ export class WarnCommand extends ChatInputCommand {
       .setColor("#ff0000")
       .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
       .setTimestamp(options.timestamp.toMillis())
-      .setFooter({ text: "If you have any questions, please DM ModMail" })
+
+    if (!(options.penalty.ban || options.penalty.kick)) {
+      embed.setFooter({ text: "If you have any questions, please DM ModMail" })
+    }
 
     if (options.images.length <= 1) {
       if (options.images[0]) {
