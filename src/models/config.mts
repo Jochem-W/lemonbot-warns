@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js"
-import { readFileSync } from "fs"
+import { readFile } from "fs/promises"
 
 interface RawConfig {
   bot: {
@@ -116,11 +116,11 @@ class Config {
     return this._repository
   }
 
-  public static loadSync() {
+  public static async load() {
     return new Config(
-      JSON.parse(readFileSync("config.json", "utf-8")) as RawConfig
+      JSON.parse(await readFile("config.json", "utf-8")) as RawConfig
     )
   }
 }
 
-export const DefaultConfig = Config.loadSync()
+export const DefaultConfig = await Config.load()
