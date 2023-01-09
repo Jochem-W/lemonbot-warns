@@ -1,6 +1,6 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
-import { Prisma } from "../clients.mjs"
+import { Prisma, S3 } from "../clients.mjs"
 import {
   ImageOnlyError,
   NoContentTypeError,
@@ -12,6 +12,8 @@ import MIMEType from "whatwg-mimetype"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { Variables } from "../variables.mjs"
 
 export class EditCommand extends ChatInputCommand {
   public constructor() {
@@ -132,7 +134,15 @@ export class EditCommand extends ChatInputCommand {
 
   private static async handleDelete(interaction: ChatInputCommandInteraction) {
     const warningId = interaction.options.getInteger("id", true)
-    await Prisma.warning.delete({ where: { id: warningId } })
+    const warning = await Prisma.warning.delete({ where: { id: warningId } })
+    for (const image of warning.images) {
+      await S3.send(
+        new DeleteObjectCommand({
+          Bucket: Variables.s3WarningsBucketName,
+          Key: new URL(image).pathname.slice(1),
+        })
+      )
+    }
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
