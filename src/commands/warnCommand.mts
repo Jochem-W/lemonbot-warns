@@ -1,7 +1,6 @@
 import {
   ActionRowBuilder,
   BanOptions,
-  bold,
   ButtonBuilder,
   ButtonStyle,
   channelMention,
@@ -11,6 +10,7 @@ import {
   EmbedBuilder,
   Guild,
   GuildMember,
+  hyperlink,
   inlineCode,
   italic,
   MessageActionRowComponentBuilder,
@@ -368,11 +368,26 @@ export class WarnCommand extends ChatInputCommand {
       DefaultConfig.icons.warning
     )
       .setColor("#ff0000")
-      .setDescription(`${bold("Reason")}: ${italic(options.description)}`)
+      .setFields({
+        name: "Reason",
+        value: italic(options.description),
+      })
       .setTimestamp(options.timestamp.toMillis())
 
-    if (!(options.penalty.ban || options.penalty.kick)) {
-      embed.setFooter({ text: "If you have any questions, please DM ModMail" })
+    if (options.penalty.ban) {
+      embed.addFields({
+        name: "\u200B",
+        value: `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
+          "here",
+          DefaultConfig.guild.banAppealForm,
+          `${options.guild.name} ban appeal form`
+        )}.`,
+      })
+    } else if (!options.penalty.kick) {
+      embed.addFields({
+        name: "\u200B",
+        value: "If you have any questions, please DM ModMail.",
+      })
     }
 
     if (options.images.length <= 1) {

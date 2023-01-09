@@ -21,6 +21,12 @@
       "description": "Guild configuration",
       "type": "object",
       "properties": {
+        "banAppealForm": {
+          "description": "A link to the ban appeal form",
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://.+$"
+        },
         "errorChannel": {
           "description": "The channel to log errors in",
           "type": "string",
@@ -72,6 +78,7 @@
         }
       },
       "required": [
+        "banAppealForm",
         "errorChannel",
         "id",
         "privateChannels",

@@ -6,6 +6,7 @@ interface RawConfig {
     applicationId: string
   }
   guild: {
+    banAppealForm: string
     errorChannel: string
     id: string
     privateChannels: string[]
@@ -36,6 +37,7 @@ class BotConfig {
 }
 
 class GuildConfig {
+  public readonly banAppealForm: URL
   public readonly errorChannel: Snowflake
   public readonly id: Snowflake
   public readonly privateChannels: Snowflake[]
@@ -48,6 +50,7 @@ class GuildConfig {
     this.id = data.id
     this.privateChannels = [...data.privateChannels]
     this.restart = new GuildRestartConfig(data.restart)
+    this.banAppealForm = new URL(data.banAppealForm)
     this.warnCategory = data.warnCategory
     this.warnLogsChannel = data.warnLogsChannel
   }
