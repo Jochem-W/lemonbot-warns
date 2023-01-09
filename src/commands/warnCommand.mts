@@ -359,48 +359,51 @@ export class WarnCommand extends ChatInputCommand {
   }
 
   public static buildDM(options: ResponseOptions): WebhookCreateMessageOptions {
-    const embed = makeEmbed(
-      `You have been ${WarnCommand.formatTitle(options, {
-        includeGuild: true,
-        lowercase: true,
-        verbOnly: true,
-      })}`,
-      DefaultConfig.icons.warning
+    const embeds = options.images.map((image) =>
+      new EmbedBuilder().setImage(image).setColor(0xff0000)
     )
-      .setColor("#ff0000")
+    let firstEmbed = embeds[0]
+    if (!firstEmbed) {
+      firstEmbed = new EmbedBuilder().setColor(0xff0000)
+      embeds.push(firstEmbed)
+    }
+
+    firstEmbed
+      .setAuthor({
+        name: `You have been ${WarnCommand.formatTitle(options, {
+          includeGuild: true,
+          lowercase: true,
+          verbOnly: true,
+        })}`,
+        iconURL: DefaultConfig.icons.warning.toString(),
+      })
       .setFields({
         name: "Reason",
-        value: italic(options.description),
+        value: options.description,
       })
-      .setTimestamp(options.timestamp.toMillis())
+
+    let footerEmbed = embeds.at(-1)
+    if (!footerEmbed || (footerEmbed.data.image && options.penalty.ban)) {
+      footerEmbed = new EmbedBuilder().setColor(0xff0000)
+      embeds.push(footerEmbed)
+    }
+
+    footerEmbed.setTimestamp(options.timestamp.toMillis())
 
     if (options.penalty.ban) {
-      embed.addFields({
-        name: "\u200B",
-        value: `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
-          "here",
-          DefaultConfig.guild.banAppealForm,
-          `${options.guild.name} ban appeal form`
-        )}.`,
-      })
+      footerEmbed.setDescription(
+        italic(
+          `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
+            "here",
+            DefaultConfig.guild.banAppealForm,
+            `${options.guild.name} ban appeal form`
+          )}.`
+        )
+      )
     } else if (!options.penalty.kick) {
-      embed.addFields({
-        name: "\u200B",
-        value: "If you have any questions, please DM ModMail.",
+      footerEmbed.setFooter({
+        text: "If you have any questions, please DM ModMail.",
       })
-    }
-
-    if (options.images.length <= 1) {
-      if (options.images[0]) {
-        embed.setImage(options.images[0])
-      }
-
-      return { embeds: [embed] }
-    }
-
-    const embeds = [embed]
-    for (const image of options.images) {
-      embeds.push(new EmbedBuilder().setImage(image).setColor("#ff0000"))
     }
 
     return { embeds: embeds }
