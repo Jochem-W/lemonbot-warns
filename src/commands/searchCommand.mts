@@ -20,7 +20,7 @@ export class SearchCommand extends ChatInputCommand {
   public constructor() {
     super(
       "search",
-      "Search through all warning description (W.I.P.)",
+      "Search through all warning descriptions (W.I.P.)",
       PermissionFlagsBits.ModerateMembers
     )
     this.builder.addStringOption((option) =>
