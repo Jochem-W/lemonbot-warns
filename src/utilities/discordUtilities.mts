@@ -50,18 +50,6 @@ export async function fetchMember(
 }
 
 export async function fetchChannel<T extends ChannelType>(
-  guild: Guild,
-  id: Snowflake,
-  type: T,
-  options?: FetchChannelOptions
-): Promise<Extract<GuildBasedChannel, { type: T }>>
-export async function fetchChannel<T extends ChannelType>(
-  client: Client,
-  id: Snowflake,
-  type: T,
-  options?: FetchChannelOptions
-): Promise<Extract<GuildBasedChannel, { type: T }>>
-export async function fetchChannel<T extends ChannelType>(
   clientOrGuild: Client | Guild,
   id: Snowflake,
   type: T,

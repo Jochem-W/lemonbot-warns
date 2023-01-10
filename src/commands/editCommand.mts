@@ -150,6 +150,7 @@ export class EditCommand extends ChatInputCommand {
       throw new OwnerOnlyError()
     }
 
+    const subcommand = interaction.options.getSubcommand()
     const subcommandGroup = interaction.options.getSubcommandGroup()
     switch (subcommandGroup) {
       case "image":
@@ -159,7 +160,6 @@ export class EditCommand extends ChatInputCommand {
         await EditCommand.handleDescription(interaction)
         break
       case null:
-        const subcommand = interaction.options.getSubcommand(true)
         switch (subcommand) {
           case "delete":
             await EditCommand.handleDelete(interaction)

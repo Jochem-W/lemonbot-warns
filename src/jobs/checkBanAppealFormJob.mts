@@ -25,14 +25,12 @@ import { DateTime } from "luxon"
 export class CheckBanAppealFormJob {
   private static discussionChannel: TextChannel
   private static guild: Guild
-  private static job = new CronJob("* * * * *", async () => {
-    try {
-      await CheckBanAppealFormJob.onTick()
-    } catch (e) {
+  private static job = new CronJob("* * * * *", () => {
+    CheckBanAppealFormJob.onTick().catch((e) => {
       if (e instanceof Error) {
-        await reportError(CheckBanAppealFormJob.guild.client, e)
+        void reportError(CheckBanAppealFormJob.guild.client, e)
       }
-    }
+    })
   })
 
   public static async configure(client: Client) {
@@ -168,7 +166,7 @@ export class CheckBanAppealFormJob {
         const ban = await CheckBanAppealFormJob.guild.bans.fetch(user.id)
         embed.addFields({
           name: "Audit log ban reason",
-          value: ban.reason || "N/A",
+          value: ban.reason ?? "N/A",
         })
       } catch (e) {
         if (
