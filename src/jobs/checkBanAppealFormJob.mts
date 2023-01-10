@@ -17,10 +17,10 @@ import {
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { reportError } from "../errors.mjs"
-import type { FormResponsesList } from "../utilities/googleForms.mjs"
+import type { FormsResponsesList } from "../utilities/googleForms.mjs"
 import {
   getFirstTextAnswer,
-  getFormResponseUrl,
+  getFormEditUrl,
 } from "../utilities/googleForms.mjs"
 
 export class CheckBanAppealFormJob {
@@ -56,7 +56,7 @@ export class CheckBanAppealFormJob {
   }
 
   private static async onTick() {
-    const response = await Google.request({
+    const response = await Google.request<FormsResponsesList>({
       url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${DateTime.now()
         .startOf("minute")
         .minus(Duration.fromObject({ minutes: 1 }))
@@ -64,12 +64,11 @@ export class CheckBanAppealFormJob {
         .toISO()}`,
     })
 
-    const data = response.data as FormResponsesList
-    if (!data.responses) {
+    if (!response.data.responses) {
       return
     }
 
-    for (const formResponse of data.responses) {
+    for (const formResponse of response.data.responses) {
       const notes: string[] = []
 
       const userId = getFirstTextAnswer(
@@ -158,7 +157,7 @@ export class CheckBanAppealFormJob {
           value: notes.join("\n") ?? "N/A",
         })
         .setURL(
-          getFormResponseUrl(
+          getFormEditUrl(
             DefaultConfig.banAppealForm.id,
             formResponse.responseId
           ).toString()

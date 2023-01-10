@@ -1,6 +1,16 @@
 import { InvalidFormResponseError } from "../errors.mjs"
+import { Google } from "../clients.mjs"
 
-export interface FormResponsesList {
+export interface FormsGet {
+  formId: string
+  info: object
+  settings: object
+  revisionId: string
+  responderUri: string
+  items: object[]
+}
+
+export interface FormsResponsesList {
   responses?: FormResponse[]
 }
 
@@ -45,18 +55,20 @@ export function getFirstTextAnswer(
   return answer ?? null
 }
 
-export function getFormEditUrl(formId: string) {
-  return new URL(`https://docs.google.com/forms/d/${formId}/edit`)
+export function getFormEditUrl(formId: string): URL
+export function getFormEditUrl(formId: string, responseId: string): URL
+export function getFormEditUrl(formId: string, responseId?: string) {
+  const url = new URL(`https://docs.google.com/forms/d/${formId}/edit`)
+  if (responseId) {
+    url.hash = `#response=${responseId}`
+  }
+
+  return url
 }
 
-export function getFormResponseUrl(formId: string, responseId: string) {
-  return new URL(
-    `https://docs.google.com/forms/d/${formId}/edit#response=${responseId}`
-  )
-}
-
-export function getFormViewUrl(formId: string) {
-  return new URL(
-    `https://docs.google.com/forms/d/e/${formId}/viewform?usp=sf_link`
-  )
+export async function getFormResponderUri(formId: string) {
+  const response = await Google.request<FormsGet>({
+    url: `https://forms.googleapis.com/v1/forms/${formId}`,
+  })
+  return response.data.responderUri
 }

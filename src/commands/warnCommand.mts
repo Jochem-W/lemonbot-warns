@@ -49,10 +49,10 @@ import { Prisma } from "../clients.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 
 import nanoidDictionary from "nanoid-dictionary"
-import { getFormViewUrl } from "../utilities/googleForms.mjs"
+import { getFormResponderUri } from "../utilities/googleForms.mjs"
 
 const { nolookalikesSafe } = nanoidDictionary
-const formUrl = getFormViewUrl(DefaultConfig.banAppealForm.id)
+const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 
 export interface ResponseOptions {
   reasons: string[]

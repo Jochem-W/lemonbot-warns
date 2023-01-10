@@ -13,5 +13,8 @@ export const S3 = new S3Client({
   },
 })
 export const Google = await new GoogleAuth({
-  scopes: ["https://www.googleapis.com/auth/forms.responses.readonly"],
+  scopes: [
+    "https://www.googleapis.com/auth/forms.responses.readonly",
+    "https://www.googleapis.com/auth/forms.body.readonly",
+  ],
 }).getClient()
