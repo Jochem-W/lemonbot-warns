@@ -1,5 +1,3 @@
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
 import { Prisma, S3 } from "../clients.mjs"
 import {
   ImageOnlyError,
@@ -8,12 +6,14 @@ import {
   SubcommandGroupNotFoundError,
   SubcommandNotFoundError,
 } from "../errors.mjs"
-import MIMEType from "whatwg-mimetype"
-import { uploadAttachment } from "../utilities/s3Utilities.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import { DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
+import { DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import MIMEType from "whatwg-mimetype"
 
 export class EditCommand extends ChatInputCommand {
   public constructor() {

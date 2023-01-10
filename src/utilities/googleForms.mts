@@ -1,5 +1,5 @@
-import { InvalidFormResponseError } from "../errors.mjs"
 import { Google } from "../clients.mjs"
+import { InvalidFormResponseError } from "../errors.mjs"
 
 export interface FormsGet {
   formId: string
@@ -30,7 +30,10 @@ export interface FormResponse {
   >
 }
 
-export function getFirstTextAnswer(response: FormResponse, questionId: string): string
+export function getFirstTextAnswer(
+  response: FormResponse,
+  questionId: string
+): string
 export function getFirstTextAnswer(
   response: FormResponse,
   questionId: string,

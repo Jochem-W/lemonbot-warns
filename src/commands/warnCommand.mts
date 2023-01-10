@@ -1,3 +1,24 @@
+import { Prisma } from "../clients.mjs"
+import {
+  ChannelNotFoundError,
+  ImageOnlyError,
+  InvalidCustomIdError,
+  InvalidPenaltyError,
+  NoContentTypeError,
+  reportError,
+} from "../errors.mjs"
+import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
+import { CustomId, InteractionScope } from "../models/customId.mjs"
+import {
+  fetchChannel,
+  fetchGuild,
+  fetchMember,
+} from "../utilities/discordUtilities.mjs"
+import { getFormResponderUri } from "../utilities/googleForms.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { uploadAttachment } from "../utilities/s3Utilities.mjs"
+import type { Penalty, Reason, Warning } from "@prisma/client"
 import {
   ActionRowBuilder,
   BanOptions,
@@ -24,32 +45,10 @@ import {
   userMention,
   WebhookCreateMessageOptions,
 } from "discord.js"
-import MIMEType from "whatwg-mimetype"
 import { DateTime, Duration } from "luxon"
-import { DefaultConfig } from "../models/config.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { customAlphabet } from "nanoid"
-import {
-  ChannelNotFoundError,
-  ImageOnlyError,
-  InvalidCustomIdError,
-  InvalidPenaltyError,
-  NoContentTypeError,
-  reportError,
-} from "../errors.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import {
-  fetchChannel,
-  fetchGuild,
-  fetchMember,
-} from "../utilities/discordUtilities.mjs"
-import { uploadAttachment } from "../utilities/s3Utilities.mjs"
-import { Prisma } from "../clients.mjs"
-import type { Penalty, Reason, Warning } from "@prisma/client"
-
 import nanoidDictionary from "nanoid-dictionary"
-import { getFormResponderUri } from "../utilities/googleForms.mjs"
+import MIMEType from "whatwg-mimetype"
 
 const { nolookalikesSafe } = nanoidDictionary
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)

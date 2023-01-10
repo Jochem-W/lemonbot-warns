@@ -1,18 +1,18 @@
-import {
-  AutocompleteInteraction,
-  CommandInteraction,
-  Interaction,
-} from "discord.js"
 import { RegisteredCommands } from "../commands.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Handler } from "../interfaces/handler.mjs"
 import {
   CommandNotFoundByIdError,
   NoAutocompleteHandlerError,
   NoPermissionError,
   reportError,
 } from "../errors.mjs"
+import type { Handler } from "../interfaces/handler.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import {
+  AutocompleteInteraction,
+  CommandInteraction,
+  Interaction,
+} from "discord.js"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
   public readonly event = "interactionCreate"

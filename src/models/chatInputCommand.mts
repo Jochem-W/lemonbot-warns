@@ -1,9 +1,9 @@
+import type { Command } from "../interfaces/command.mjs"
 import {
   ChatInputCommandInteraction,
   RESTPostAPIApplicationCommandsJSONBody,
   SlashCommandBuilder,
 } from "discord.js"
-import type { Command } from "../interfaces/command.mjs"
 
 export abstract class ChatInputCommand
   implements Command<ChatInputCommandInteraction>

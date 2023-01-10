@@ -1,3 +1,10 @@
+import type { Handler } from "../interfaces/handler.mjs"
+import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
+import { DefaultConfig } from "../models/config.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { Variables } from "../variables.mjs"
+import { Octokit } from "@octokit/rest"
 import {
   ChannelType,
   Client,
@@ -5,15 +12,8 @@ import {
   MessageCreateOptions,
   userMention,
 } from "discord.js"
-import { mkdir, readFile, writeFile } from "fs/promises"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Handler } from "../interfaces/handler.mjs"
 import { writeFileSync } from "fs"
-import { Variables } from "../variables.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { Octokit } from "@octokit/rest"
-import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
+import { mkdir, readFile, writeFile } from "fs/promises"
 
 type State = "UP" | "DOWN" | "RECREATE"
 

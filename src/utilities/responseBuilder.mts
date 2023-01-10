@@ -1,3 +1,4 @@
+import { DefaultConfig } from "../models/config.mjs"
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -11,7 +12,6 @@ import {
   WebhookEditMessageOptions,
 } from "discord.js"
 import { DateTime } from "luxon"
-import { DefaultConfig } from "../models/config.mjs"
 
 export function makeEmbed(
   authorName: string,

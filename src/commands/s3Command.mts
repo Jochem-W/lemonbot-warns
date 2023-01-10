@@ -1,15 +1,10 @@
-import {
-  AttachmentBuilder,
-  ChatInputCommandInteraction,
-  PermissionFlagsBits,
-} from "discord.js"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { Variables } from "../variables.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import { OwnerOnlyError } from "../errors.mjs"
-import { download, search } from "../utilities/s3Utilities.mjs"
-import type { Readable } from "stream"
 import { S3 } from "../clients.mjs"
+import { OwnerOnlyError } from "../errors.mjs"
+import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import { download, search } from "../utilities/s3Utilities.mjs"
+import { Variables } from "../variables.mjs"
 import {
   _Object,
   DeleteObjectCommand,
@@ -17,7 +12,12 @@ import {
   ListObjectsV2CommandInput,
   NoSuchKey,
 } from "@aws-sdk/client-s3"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import {
+  AttachmentBuilder,
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+} from "discord.js"
+import type { Readable } from "stream"
 
 export class S3Command extends ChatInputCommand {
   public constructor() {

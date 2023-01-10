@@ -1,12 +1,12 @@
+import { Prisma } from "../clients.mjs"
+import { OwnerOnlyError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
 } from "discord.js"
-import { Prisma } from "../clients.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import { OwnerOnlyError } from "../errors.mjs"
 
 export class DumpJsonCommand extends ChatInputCommand {
   public constructor() {

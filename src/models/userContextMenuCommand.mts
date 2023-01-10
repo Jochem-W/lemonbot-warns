@@ -1,9 +1,9 @@
+import type { Command } from "../interfaces/command.mjs"
 import {
   ContextMenuCommandBuilder,
   RESTPostAPIApplicationCommandsJSONBody,
   UserContextMenuCommandInteraction,
 } from "discord.js"
-import type { Command } from "../interfaces/command.mjs"
 
 export abstract class UserContextMenuCommand
   implements Command<UserContextMenuCommandInteraction>

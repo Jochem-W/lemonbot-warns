@@ -1,3 +1,13 @@
+import { Prisma } from "../clients.mjs"
+import {
+  NoMessageRevisionsError,
+  OwnerOnlyError,
+  reportError,
+} from "../errors.mjs"
+import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import archiver, { Archiver } from "archiver"
+import { stringify } from "csv"
 import {
   ChatInputCommandInteraction,
   GuildMember,
@@ -5,19 +15,9 @@ import {
   Snowflake,
   User,
 } from "discord.js"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { Prisma } from "../clients.mjs"
-import { stringify } from "csv"
-import archiver, { Archiver } from "archiver"
-import { DateTime } from "luxon"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import {
-  NoMessageRevisionsError,
-  OwnerOnlyError,
-  reportError,
-} from "../errors.mjs"
 import { createWriteStream } from "fs"
 import { unlink } from "fs/promises"
+import { DateTime } from "luxon"
 
 export class StatisticsCommand extends ChatInputCommand {
   public constructor() {

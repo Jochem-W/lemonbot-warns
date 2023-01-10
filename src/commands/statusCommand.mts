@@ -1,4 +1,6 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { Variables } from "../variables.mjs"
 import {
   ChatInputCommandInteraction,
   inlineCode,
@@ -6,8 +8,6 @@ import {
   WebhookEditMessageOptions,
 } from "discord.js"
 import { Duration } from "luxon"
-import { Variables } from "../variables.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
 
 interface ResponseOptions {
   ping: number

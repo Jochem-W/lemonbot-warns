@@ -1,3 +1,9 @@
+import {
+  ChannelNotFoundError,
+  GuildOnlyError,
+  InvalidChannelTypeError,
+} from "../errors.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import type {
   FetchChannelOptions,
   GuildBasedChannel,
@@ -16,12 +22,6 @@ import {
   UserResolvable,
 } from "discord.js"
 import { DateTime } from "luxon"
-import { DefaultConfig } from "../models/config.mjs"
-import {
-  ChannelNotFoundError,
-  GuildOnlyError,
-  InvalidChannelTypeError,
-} from "../errors.mjs"
 
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(

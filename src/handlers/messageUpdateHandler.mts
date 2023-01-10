@@ -1,6 +1,6 @@
+import { Prisma } from "../clients.mjs"
 import type { Handler } from "../interfaces/handler.mjs"
 import type { Message, PartialMessage } from "discord.js"
-import { Prisma } from "../clients.mjs"
 
 export class MessageUpdateHandler implements Handler<"messageUpdate"> {
   public readonly event = "messageUpdate"

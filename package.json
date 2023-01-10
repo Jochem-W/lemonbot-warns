@@ -20,6 +20,7 @@
     "whatwg-mimetype": "^3.0.0"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/archiver": "^5.3.1",
     "@types/cron": "^2.0.0",
@@ -42,6 +43,9 @@
     "zlib-sync": "^0.1.7"
   },
   "prettier": {
-    "semi": false
+    "semi": false,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ]
   }
 }

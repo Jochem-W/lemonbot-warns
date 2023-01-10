@@ -1,18 +1,18 @@
-import {
-  Interaction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "discord.js"
-import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { RegisteredCommands } from "../commands.mjs"
-import type { Handler } from "../interfaces/handler.mjs"
 import {
   CommandNotFoundByIdError,
   CommandNotFoundByNameError,
   NoMessageComponentHandlerError,
   reportError,
 } from "../errors.mjs"
+import type { Handler } from "../interfaces/handler.mjs"
+import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import {
+  Interaction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "discord.js"
 
 export class InteractionHandler implements Handler<"interactionCreate"> {
   public readonly event = "interactionCreate"

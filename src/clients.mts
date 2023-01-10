@@ -1,6 +1,6 @@
 import { Variables } from "./variables.mjs"
-import { PrismaClient } from "@prisma/client"
 import { S3Client } from "@aws-sdk/client-s3"
+import { PrismaClient } from "@prisma/client"
 import { GoogleAuth } from "google-auth-library"
 
 export const Prisma = new PrismaClient()

@@ -1,7 +1,5 @@
-import type { Attachment } from "discord.js"
 import { S3 } from "../clients.mjs"
 import { Variables } from "../variables.mjs"
-import { Options, Upload } from "@aws-sdk/lib-storage"
 import {
   _Object,
   GetObjectCommand,
@@ -14,6 +12,8 @@ import {
   NotFound,
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3"
+import { Options, Upload } from "@aws-sdk/lib-storage"
+import type { Attachment } from "discord.js"
 
 export async function uploadAttachment(
   attachment: Attachment

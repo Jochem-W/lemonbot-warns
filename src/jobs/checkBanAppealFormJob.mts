@@ -1,6 +1,13 @@
-import { CronJob } from "cron"
-import { DateTime } from "luxon"
 import { Google } from "../clients.mjs"
+import { reportError } from "../errors.mjs"
+import { DefaultConfig } from "../models/config.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import type { FormsResponsesList } from "../utilities/googleForms.mjs"
+import {
+  getFirstTextAnswer,
+  getFormEditUrl,
+} from "../utilities/googleForms.mjs"
+import { CronJob } from "cron"
 import {
   ChannelType,
   Client,
@@ -13,14 +20,7 @@ import {
   time,
   TimestampStyles,
 } from "discord.js"
-import { DefaultConfig } from "../models/config.mjs"
-import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { reportError } from "../errors.mjs"
-import type { FormsResponsesList } from "../utilities/googleForms.mjs"
-import {
-  getFirstTextAnswer,
-  getFormEditUrl,
-} from "../utilities/googleForms.mjs"
+import { DateTime } from "luxon"
 
 export class CheckBanAppealFormJob {
   private static discussionChannel: TextChannel

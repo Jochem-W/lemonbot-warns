@@ -1,4 +1,18 @@
+import { Prisma } from "../clients.mjs"
+import {
+  MessageContextMenuCommands,
+  RegisteredCommands,
+  SlashCommands,
+  UserContextMenuCommands,
+} from "../commands.mjs"
+import { CommandNotFoundByNameError, OwnerOnlyError } from "../errors.mjs"
+import type { Command } from "../interfaces/command.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
+import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { Variables } from "../variables.mjs"
+import { WarnCommand } from "./warnCommand.mjs"
 import {
   ApplicationCommandType,
   ChatInputCommandInteraction,
@@ -9,20 +23,6 @@ import {
   RESTPutAPIApplicationGuildCommandsResult,
   Routes,
 } from "discord.js"
-import {
-  MessageContextMenuCommands,
-  RegisteredCommands,
-  SlashCommands,
-  UserContextMenuCommands,
-} from "../commands.mjs"
-import { WarnCommand } from "./warnCommand.mjs"
-import { Prisma } from "../clients.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Command } from "../interfaces/command.mjs"
-import { CommandNotFoundByNameError, OwnerOnlyError } from "../errors.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import { Variables } from "../variables.mjs"
 
 export class ReRegisterCommand extends ChatInputCommand {
   public constructor() {

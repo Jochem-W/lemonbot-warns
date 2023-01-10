@@ -1,7 +1,7 @@
 import type { Handler } from "../interfaces/handler.mjs"
-import { ChannelType, GuildMember, PartialGuildMember } from "discord.js"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { ChannelType, GuildMember, PartialGuildMember } from "discord.js"
 
 export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
   public readonly event = "guildMemberRemove"

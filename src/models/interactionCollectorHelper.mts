@@ -1,3 +1,5 @@
+import { reportError } from "../errors.mjs"
+import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
 import {
   ActionRowBuilder,
   CollectedInteraction,
@@ -9,8 +11,6 @@ import {
   WebhookEditMessageOptions,
 } from "discord.js"
 import { Duration } from "luxon"
-import { reportError } from "../errors.mjs"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
 
 export class InteractionCollectorHelper {
   private collector: InteractionCollector<CollectedInteraction>

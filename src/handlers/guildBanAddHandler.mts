@@ -1,14 +1,14 @@
-import type { Handler } from "../interfaces/handler.mjs"
-import { AuditLogEvent, bold, ChannelType, GuildBan } from "discord.js"
 import { Prisma } from "../clients.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import {
   AuditLogNotFoundError,
   InvalidAuditLogEntryError,
   PenaltyNotFoundError,
 } from "../errors.mjs"
+import type { Handler } from "../interfaces/handler.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { AuditLogEvent, bold, ChannelType, GuildBan } from "discord.js"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"

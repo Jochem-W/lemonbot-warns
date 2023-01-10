@@ -1,3 +1,4 @@
+import type { CustomId } from "../models/customId.mjs"
 import type {
   ApplicationCommandOptionChoiceData,
   AutocompleteInteraction,
@@ -8,7 +9,6 @@ import type {
   RESTPostAPIApplicationCommandsJSONBody,
   SlashCommandBuilder,
 } from "discord.js"
-import type { CustomId } from "../models/customId.mjs"
 
 export interface Command<T>
   extends JSONEncodable<RESTPostAPIApplicationCommandsJSONBody> {

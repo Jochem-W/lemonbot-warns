@@ -1,8 +1,8 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js"
+import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
+import { reportError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
 import { Variables } from "./variables.mjs"
-import { reportError } from "./errors.mjs"
-import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
+import { Client, GatewayIntentBits, Partials } from "discord.js"
 
 const client = new Client({
   intents: [

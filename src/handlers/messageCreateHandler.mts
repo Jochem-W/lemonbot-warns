@@ -1,9 +1,9 @@
-import type { Handler } from "../interfaces/handler.mjs"
-import type { Message } from "discord.js"
 import { Prisma } from "../clients.mjs"
+import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { upload } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
+import type { Message } from "discord.js"
 
 export class MessageCreateHandler implements Handler<"messageCreate"> {
   public readonly event = "messageCreate"
