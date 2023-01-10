@@ -1,9 +1,20 @@
 {
   "$schema": "config.schema.json",
+  "banAppealForm": {
+    "id": "",
+    "questions": {
+      "contactMethod": "",
+      "discordId": "",
+      "discordTag": "",
+      "emailAddress": "",
+      "twitterUsername": ""
+    }
+  },
   "bot": {
     "applicationId": ""
   },
   "guild": {
+    "discussionChannel": "",
     "errorChannel": "",
     "id": "",
     "privateChannels": [],

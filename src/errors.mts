@@ -11,6 +11,7 @@ import type { CustomId } from "./models/customId.mjs"
 import { DefaultConfig } from "./models/config.mjs"
 import { makeErrorEmbed } from "./utilities/responseBuilder.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
+import type { FormResponse } from "./utilities/googleForms.mjs"
 
 class CustomError extends Error {
   public constructor(message: string) {
@@ -169,6 +170,12 @@ export class PenaltyNotFoundError extends CustomError {
 export class NoMessageRevisionsError extends CustomError {
   public constructor(id: Snowflake) {
     super(`Message with ID "${id}" has no revisions`)
+  }
+}
+
+export class InvalidFormResponseError extends CustomError {
+  public constructor(response: FormResponse) {
+    super(JSON.stringify(response, undefined, 4))
   }
 }
 

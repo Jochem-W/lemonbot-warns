@@ -10,8 +10,10 @@
     "@octokit/rest": "^19.0.5",
     "@prisma/client": "^4.8.1",
     "archiver": "^5.3.1",
+    "cron": "^2.2.0",
     "csv": "^6.2.5",
     "discord.js": "^14.7.1",
+    "google-auth-library": "^8.7.0",
     "luxon": "^3.2.1",
     "nanoid": "^4.0.0",
     "nanoid-dictionary": "^4.3.0",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
     "@types/archiver": "^5.3.1",
+    "@types/cron": "^2.0.0",
     "@types/luxon": "^3.2.0",
     "@types/nanoid-dictionary": "^4.2.0",
     "@types/node": "^18.11.18",

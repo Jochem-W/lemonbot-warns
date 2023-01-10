@@ -48,8 +48,10 @@ import { Prisma } from "../clients.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 
 import nanoidDictionary from "nanoid-dictionary"
+import { getFormViewUrl } from "../utilities/googleForms.mjs"
 
 const { nolookalikesSafe } = nanoidDictionary
+const formUrl = getFormViewUrl(DefaultConfig.banAppealForm.id)
 
 export interface ResponseOptions {
   reasons: string[]
@@ -395,7 +397,7 @@ export class WarnCommand extends ChatInputCommand {
         italic(
           `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
             "here",
-            DefaultConfig.guild.banAppealForm,
+            formUrl,
             `${options.guild.name} ban appeal form`
           )}.`
         )

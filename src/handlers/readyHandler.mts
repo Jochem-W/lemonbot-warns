@@ -13,6 +13,7 @@ import { Variables } from "../variables.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { Octokit } from "@octokit/rest"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { checkBanAppealForm } from "../jobs.mjs"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
@@ -36,8 +37,10 @@ export class ReadyHandler implements Handler<"ready"> {
         break
     }
 
+    const guild = await client.guilds.fetch(DefaultConfig.guild.id)
+
     const channel = await fetchChannel(
-      client,
+      guild,
       DefaultConfig.guild.restart.channel,
       ChannelType.GuildText
     )
@@ -61,6 +64,9 @@ export class ReadyHandler implements Handler<"ready"> {
       client.destroy()
       setStateSync("DOWN")
     })
+
+    const job = await checkBanAppealForm(guild)
+    job.start()
   }
 }
 

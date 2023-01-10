@@ -3,6 +3,59 @@
   "title": "Config",
   "type": "object",
   "properties": {
+    "banAppealForm": {
+      "description": "Links to the ban appeal form",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The form ID",
+          "type": "string",
+          "minLength": 1
+        },
+        "questions": {
+          "description": "Question IDs for various form questions",
+          "type": "object",
+          "properties": {
+            "contactMethod": {
+              "description": "Contact method question ID",
+              "type": "string",
+              "minLength": 1
+            },
+            "discordId": {
+              "description": "Discord user ID question ID",
+              "type": "string",
+              "minLength": 1
+            },
+            "discordTag": {
+              "description": "Discord tag question ID",
+              "type": "string",
+              "minLength": 1
+            },
+            "emailAddress": {
+              "description": "Email address question ID",
+              "type": "string",
+              "minLength": 1
+            },
+            "twitterUsername": {
+              "description": "Twitter username question ID",
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "contactMethod",
+            "discordId",
+            "discordTag",
+            "emailAddress",
+            "twitterUsername"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "questions"
+      ]
+    },
     "bot": {
       "description": "Bot configuration",
       "type": "object",
@@ -21,11 +74,10 @@
       "description": "Guild configuration",
       "type": "object",
       "properties": {
-        "banAppealForm": {
-          "description": "A link to the ban appeal form",
+        "discussionChannel": {
+          "description": "The channel used for discussing moderation actions",
           "type": "string",
-          "format": "uri",
-          "pattern": "^https://.+$"
+          "pattern": "^\\d+$"
         },
         "errorChannel": {
           "description": "The channel to log errors in",
@@ -78,7 +130,7 @@
         }
       },
       "required": [
-        "banAppealForm",
+        "discussionChannel",
         "errorChannel",
         "id",
         "privateChannels",
@@ -138,6 +190,7 @@
     }
   },
   "required": [
+    "banAppealForm",
     "bot",
     "guild",
     "icons",

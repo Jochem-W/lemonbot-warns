@@ -2,11 +2,21 @@ import type { Snowflake } from "discord.js"
 import { readFile } from "fs/promises"
 
 interface RawConfig {
+  banAppealForm: {
+    id: string
+    questions: {
+      contactMethod: string
+      discordId: string
+      discordTag: string
+      emailAddress: string
+      twitterUsername: string
+    }
+  }
   bot: {
     applicationId: string
   }
   guild: {
-    banAppealForm: string
+    discussionChannel: string
     errorChannel: string
     id: string
     privateChannels: string[]
@@ -28,6 +38,32 @@ interface RawConfig {
   }
 }
 
+class BanAppealFormConfig {
+  public readonly id: string
+  public readonly questions: BanAppealFormQuestionsConfig
+
+  public constructor(data: RawConfig["banAppealForm"]) {
+    this.id = data.id
+    this.questions = new BanAppealFormQuestionsConfig(data.questions)
+  }
+}
+
+class BanAppealFormQuestionsConfig {
+  public readonly contactMethod: string
+  public readonly discordId: string
+  public readonly discordTag: string
+  public readonly emailAddress: string
+  public readonly twitterUsername: string
+
+  public constructor(data: RawConfig["banAppealForm"]["questions"]) {
+    this.contactMethod = data.contactMethod
+    this.discordId = data.discordId
+    this.discordTag = data.discordTag
+    this.emailAddress = data.emailAddress
+    this.twitterUsername = data.twitterUsername
+  }
+}
+
 class BotConfig {
   public readonly applicationId: Snowflake
 
@@ -37,7 +73,7 @@ class BotConfig {
 }
 
 class GuildConfig {
-  public readonly banAppealForm: URL
+  public readonly discussionChannel: Snowflake
   public readonly errorChannel: Snowflake
   public readonly id: Snowflake
   public readonly privateChannels: Snowflake[]
@@ -46,11 +82,11 @@ class GuildConfig {
   public readonly warnLogsChannel: Snowflake
 
   public constructor(data: RawConfig["guild"]) {
+    this.discussionChannel = data.discussionChannel
     this.errorChannel = data.errorChannel
     this.id = data.id
     this.privateChannels = [...data.privateChannels]
     this.restart = new GuildRestartConfig(data.restart)
-    this.banAppealForm = new URL(data.banAppealForm)
     this.warnCategory = data.warnCategory
     this.warnLogsChannel = data.warnLogsChannel
   }
@@ -91,32 +127,18 @@ class RepositoryConfig {
 }
 
 class Config {
-  private readonly _bot: BotConfig
-  private readonly _guild: GuildConfig
-  private readonly _icons: IconsConfig
-  private readonly _repository: RepositoryConfig
+  public readonly banAppealForm: BanAppealFormConfig
+  public readonly bot: BotConfig
+  public readonly guild: GuildConfig
+  public readonly icons: IconsConfig
+  public readonly repository: RepositoryConfig
 
   private constructor(data: RawConfig) {
-    this._bot = new BotConfig(data.bot)
-    this._guild = new GuildConfig(data.guild)
-    this._icons = new IconsConfig(data.icons)
-    this._repository = new RepositoryConfig(data.repository)
-  }
-
-  public get bot(): BotConfig {
-    return this._bot
-  }
-
-  public get guild(): GuildConfig {
-    return this._guild
-  }
-
-  public get icons(): IconsConfig {
-    return this._icons
-  }
-
-  public get repository(): RepositoryConfig {
-    return this._repository
+    this.banAppealForm = new BanAppealFormConfig(data.banAppealForm)
+    this.bot = new BotConfig(data.bot)
+    this.guild = new GuildConfig(data.guild)
+    this.icons = new IconsConfig(data.icons)
+    this.repository = new RepositoryConfig(data.repository)
   }
 
   public static async load() {
