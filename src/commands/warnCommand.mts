@@ -185,7 +185,10 @@ export class WarnCommand extends ChatInputCommand {
   }
 
   public static formatTitle(
-    data: ResponseOptions,
+    data: Pick<
+      ResponseOptions,
+      "penalty" | "notify" | "guild" | "warnedBy" | "reasons"
+    >,
     options?: {
       includeReasons?: boolean
       includeGuild?: boolean
