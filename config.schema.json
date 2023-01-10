@@ -21,6 +21,11 @@
               "type": "string",
               "minLength": 1
             },
+            "banReason": {
+              "description": "Claimed ban reason question ID",
+              "type": "string",
+              "minLength": 1
+            },
             "contactMethod": {
               "description": "Contact method question ID",
               "type": "string",
@@ -45,15 +50,22 @@
               "description": "Twitter username question ID",
               "type": "string",
               "minLength": 1
+            },
+            "unbanReason": {
+              "description": "Unban reason question ID",
+              "type": "string",
+              "minLength": 1
             }
           },
           "required": [
             "banDate",
+            "banReason",
             "contactMethod",
             "discordId",
             "discordTag",
             "emailAddress",
-            "twitterUsername"
+            "twitterUsername",
+            "unbanReason"
           ]
         }
       },

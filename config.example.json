@@ -4,11 +4,13 @@
     "id": "",
     "questions": {
       "banDate": "",
+      "banReason": "",
       "contactMethod": "",
       "discordId": "",
       "discordTag": "",
       "emailAddress": "",
-      "twitterUsername": ""
+      "twitterUsername": "",
+      "unbanReason": ""
     }
   },
   "bot": {

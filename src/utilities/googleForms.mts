@@ -33,12 +33,11 @@ export interface FormResponse {
 export function getFirstTextAnswer(
   response: FormResponse,
   questionId: string,
-  throwOnMissing?: true
 ): string
 export function getFirstTextAnswer(
   response: FormResponse,
   questionId: string,
-  throwOnMissing: false
+  throwOnMissing: boolean
 ): string | null
 
 export function getFirstTextAnswer(
@@ -46,7 +45,6 @@ export function getFirstTextAnswer(
   questionId: string,
   throwOnMissing?: boolean
 ) {
-  console.log(throwOnMissing)
   const answer = response.answers[questionId]?.textAnswers.answers.at(0)?.value
   if (!answer && throwOnMissing !== false) {
     throw new InvalidFormResponseError(response)
@@ -70,5 +68,6 @@ export async function getFormResponderUri(formId: string) {
   const response = await Google.request<FormsGet>({
     url: `https://forms.googleapis.com/v1/forms/${formId}`,
   })
+
   return response.data.responderUri
 }

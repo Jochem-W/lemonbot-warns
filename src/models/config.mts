@@ -6,11 +6,13 @@ interface RawConfig {
     id: string
     questions: {
       banDate: string
+      banReason: string
       contactMethod: string
       discordId: string
       discordTag: string
       emailAddress: string
       twitterUsername: string
+      unbanReason: string
     }
   }
   bot: {
@@ -51,19 +53,23 @@ class BanAppealFormConfig {
 
 class BanAppealFormQuestionsConfig {
   public readonly banDate: string
+  public readonly banReason: string
   public readonly contactMethod: string
   public readonly discordId: string
   public readonly discordTag: string
   public readonly emailAddress: string
   public readonly twitterUsername: string
+  public readonly unbanReason: string
 
   public constructor(data: RawConfig["banAppealForm"]["questions"]) {
     this.banDate = data.banDate
+    this.banReason = data.banReason
     this.contactMethod = data.contactMethod
     this.discordId = data.discordId
     this.discordTag = data.discordTag
     this.emailAddress = data.emailAddress
     this.twitterUsername = data.twitterUsername
+    this.unbanReason = data.unbanReason
   }
 }
 
