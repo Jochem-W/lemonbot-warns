@@ -3044,8 +3044,8 @@ packages:
     resolution: { integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag== }
     dev: false
 
-  /punycode/2.1.1:
-    resolution: { integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A== }
+  /punycode/2.2.0:
+    resolution: { integrity: sha512-LN6QV1IJ9ZhxWTNdktaPClrNfp8xdSAYS0Zk2ddX7XsXZAxckMHPCBcHRo0cTcEIgYPRiGEkmji3Idkh2yFtYw== }
     engines: { node: '>=6' }
     dev: true
 
@@ -3342,7 +3342,7 @@ packages:
   /uri-js/4.4.1:
     resolution: { integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg== }
     dependencies:
-      punycode: 2.1.1
+      punycode: 2.2.0
     dev: true
 
   /utf-8-validate/6.0.0:
