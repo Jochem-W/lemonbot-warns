@@ -4,10 +4,12 @@ import {
   ActionRowBuilder,
   CollectedInteraction,
   CommandInteraction,
+  DiscordAPIError,
   InteractionCollector,
   InteractionCollectorOptions,
   InteractionReplyOptions,
   MessageActionRowComponentBuilder,
+  RESTJSONErrorCodes,
   WebhookEditMessageOptions,
 } from "discord.js"
 import { Duration } from "luxon"
@@ -26,11 +28,17 @@ export class InteractionCollectorHelper {
       try {
         await interaction.editReply({ components: this.components })
       } catch (e) {
-        if (!(e instanceof Error)) {
-          throw e
+        if (
+          e instanceof DiscordAPIError &&
+          e.code === RESTJSONErrorCodes.UnknownMessage &&
+          interaction.ephemeral
+        ) {
+          return
         }
 
-        await reportError(interaction.client, e)
+        if (e instanceof Error) {
+          await reportError(interaction.client, e)
+        }
       }
     })
   }
