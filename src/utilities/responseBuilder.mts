@@ -1,16 +1,5 @@
 import { DefaultConfig } from "../models/config.mjs"
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  codeBlock,
-  EmbedBuilder,
-  GuildMember,
-  MessageActionRowComponentBuilder,
-  MessageCreateOptions,
-  User,
-  WebhookEditMessageOptions,
-} from "discord.js"
+import { codeBlock, EmbedBuilder, GuildMember, User } from "discord.js"
 import { DateTime } from "luxon"
 
 export function makeEmbed(
@@ -42,44 +31,6 @@ export function makeErrorEmbed(error: Error): EmbedBuilder {
   return makeEmbed(error.constructor.name, DefaultConfig.icons.fail)
     .setDescription(codeBlock(error.message))
     .setColor("#ff0000")
-}
-
-export function append(
-  embed: EmbedBuilder,
-  content: string,
-  separator = "\n\n"
-): EmbedBuilder {
-  const last = embed.data.fields?.at(embed.data.fields.length - 1)
-  if (!last) {
-    return embed.setDescription(
-      `${
-        embed.data.description ? `${embed.data.description}${separator}` : ""
-      }${content}`
-    )
-  }
-
-  last.value =
-    last.value === "..." ? content : `${last.value}${separator}${content}`
-  return embed
-}
-
-export function addNotesButton<
-  T extends WebhookEditMessageOptions | MessageCreateOptions
->(options: T, url: string): T {
-  if (!options.components) {
-    options.components = []
-  }
-
-  options.components.push(
-    new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents([
-      new ButtonBuilder()
-        .setStyle(ButtonStyle.Link)
-        .setURL(url)
-        .setLabel("📝 View notes (Notion)"),
-    ])
-  )
-
-  return options
 }
 
 export function formatName(user: GuildMember | User) {
