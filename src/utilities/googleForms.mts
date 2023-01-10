@@ -20,13 +20,29 @@ export interface FormResponse {
   >
 }
 
-export function getFirstTextAnswer(response: FormResponse, questionId: string) {
+export function getFirstTextAnswer(
+  response: FormResponse,
+  questionId: string,
+  throwOnMissing?: true
+): string
+export function getFirstTextAnswer(
+  response: FormResponse,
+  questionId: string,
+  throwOnMissing: false
+): string | null
+
+export function getFirstTextAnswer(
+  response: FormResponse,
+  questionId: string,
+  throwOnMissing?: boolean
+) {
+  console.log(throwOnMissing)
   const answer = response.answers[questionId]?.textAnswers.answers.at(0)?.value
-  if (!answer) {
+  if (!answer && throwOnMissing !== false) {
     throw new InvalidFormResponseError(response)
   }
 
-  return answer
+  return answer ?? null
 }
 
 export function getFormEditUrl(formId: string) {

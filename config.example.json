@@ -3,6 +3,7 @@
   "banAppealForm": {
     "id": "",
     "questions": {
+      "banDate": "",
       "contactMethod": "",
       "discordId": "",
       "discordTag": "",

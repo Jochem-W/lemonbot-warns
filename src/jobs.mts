@@ -9,6 +9,8 @@ import {
   hyperlink,
   inlineCode,
   RESTJSONErrorCodes,
+  time,
+  TimestampStyles,
 } from "discord.js"
 import { DefaultConfig } from "./models/config.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
@@ -110,6 +112,20 @@ export async function checkBanAppealForm(guild: Guild) {
         }
 
         notes.push(`• Contact via ${contactMethod} (${contactInfo})`)
+
+        const claimedBanDate = getFirstTextAnswer(
+          formResponse,
+          DefaultConfig.banAppealForm.questions.banDate,
+          false
+        )
+        if (claimedBanDate) {
+          notes.push(
+            `• Claims to have been banned on ${time(
+              DateTime.fromISO(claimedBanDate).toJSDate(),
+              TimestampStyles.ShortDate
+            )}`
+          )
+        }
 
         const embed = new EmbedBuilder()
           .setAuthor({

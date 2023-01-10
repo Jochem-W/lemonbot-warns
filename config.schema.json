@@ -16,6 +16,11 @@
           "description": "Question IDs for various form questions",
           "type": "object",
           "properties": {
+            "banDate": {
+              "description": "Claimed ban date question ID",
+              "type": "string",
+              "minLength": 1
+            },
             "contactMethod": {
               "description": "Contact method question ID",
               "type": "string",
@@ -43,6 +48,7 @@
             }
           },
           "required": [
+            "banDate",
             "contactMethod",
             "discordId",
             "discordTag",
