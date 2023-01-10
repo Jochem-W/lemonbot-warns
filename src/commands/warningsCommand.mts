@@ -6,7 +6,6 @@ import { fetchMember } from "../utilities/discordUtilities.mjs"
 import { formatName, makeEmbed } from "../utilities/responseBuilder.mjs"
 import {
   ChatInputCommandInteraction,
-  Client,
   EmbedBuilder,
   GuildMember,
   inlineCode,
@@ -15,11 +14,6 @@ import {
   time,
   User,
 } from "discord.js"
-
-interface ResponseOptions {
-  client: Client
-  subject: User | GuildMember
-}
 
 export class WarningsCommand extends ChatInputCommand {
   public constructor() {
@@ -33,17 +27,17 @@ export class WarningsCommand extends ChatInputCommand {
     )
   }
 
-  public static async buildResponse(options: ResponseOptions) {
+  public static async buildResponse(subject: User | GuildMember) {
     const embeds = [
       makeEmbed(
-        `Warnings for ${formatName(options.subject)}`,
-        new URL(options.subject.displayAvatarURL())
+        `Warnings for ${formatName(subject)}`,
+        new URL(subject.displayAvatarURL())
       ).setTimestamp(null),
     ]
 
     const entry = await Prisma.user.findFirst({
       where: {
-        id: options.subject.id,
+        id: subject.id,
       },
       include: {
         warnings: {
@@ -88,7 +82,7 @@ export class WarningsCommand extends ChatInputCommand {
       },
       {
         name: "User ID",
-        value: options.subject.id,
+        value: subject.id,
       }
     )
 
@@ -115,7 +109,7 @@ export class WarningsCommand extends ChatInputCommand {
         title += " (silent)"
       }
 
-      const warnedBy = await options.client.users.fetch(warning.createdBy)
+      const warnedBy = await subject.client.users.fetch(warning.createdBy)
       let name = `${title} by ${formatName(warnedBy)} `
 
       const reasonsString = warning.reasons
@@ -140,10 +134,9 @@ export class WarningsCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const user = interaction.options.getUser("user", true)
 
-    const messages = await WarningsCommand.buildResponse({
-      client: interaction.client,
-      subject: (await fetchMember(interaction, user)) ?? user,
-    })
+    const messages = await WarningsCommand.buildResponse(
+      (await fetchMember(interaction, user)) ?? user
+    )
 
     if (!messages[0]) {
       throw new BotError("Response has 0 messages")

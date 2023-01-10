@@ -1,4 +1,5 @@
 import { Google } from "../clients.mjs"
+import { WarningsCommand } from "../commands/warningsCommand.mjs"
 import { reportError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
@@ -196,7 +197,17 @@ export class CheckBanAppealFormJob {
 
       embed.setDescription(notes.join("\n") || null)
 
-      await CheckBanAppealFormJob.discussionChannel.send({ embeds: [embed] })
+      const message = await CheckBanAppealFormJob.discussionChannel.send({
+        embeds: [embed],
+      })
+      const thread = await message.startThread({
+        name: `${user.tag} ban appeal`,
+        reason: "Create thread for more coherent discussion",
+      })
+
+      for (const message of await WarningsCommand.buildResponse(user)) {
+        await thread.send(message)
+      }
     }
   }
 }
