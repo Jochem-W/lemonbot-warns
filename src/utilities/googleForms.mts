@@ -30,10 +30,7 @@ export interface FormResponse {
   >
 }
 
-export function getFirstTextAnswer(
-  response: FormResponse,
-  questionId: string,
-): string
+export function getFirstTextAnswer(response: FormResponse, questionId: string): string
 export function getFirstTextAnswer(
   response: FormResponse,
   questionId: string,

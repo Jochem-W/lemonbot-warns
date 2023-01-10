@@ -1,5 +1,5 @@
 import { CronJob } from "cron"
-import { DateTime, Duration } from "luxon"
+import { DateTime } from "luxon"
 import { Google } from "../clients.mjs"
 import {
   ChannelType,
@@ -55,12 +55,11 @@ export class CheckBanAppealFormJob {
   }
 
   private static async onTick() {
+    const end = DateTime.now().toUTC().startOf("minute")
+    const start = end.minus({ minutes: 1 })
+
     const response = await Google.request<FormsResponsesList>({
-      url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${DateTime.now()
-        .startOf("minute")
-        .minus(Duration.fromObject({ minutes: 1 }))
-        .toUTC()
-        .toISO()}`,
+      url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${start.toISO()}`,
     })
 
     if (!response.data.responses) {
@@ -68,6 +67,13 @@ export class CheckBanAppealFormJob {
     }
 
     for (const formResponse of response.data.responses) {
+      if (
+        DateTime.fromISO(formResponse.lastSubmittedTime).diff(end).toMillis() >=
+        0
+      ) {
+        return
+      }
+
       const notes: string[] = []
 
       const userId = getFirstTextAnswer(
