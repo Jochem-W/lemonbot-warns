@@ -1,3 +1,4 @@
+import { SlashCommands } from "./commands.mjs"
 import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
 import { reportError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
@@ -24,6 +25,7 @@ const client = new Client({
 })
 client.rest.setToken(Variables.discordToken)
 
+SlashCommands.push(new ReRegisterCommand())
 await ReRegisterCommand.register(client.rest)
 
 for (const handler of Handlers) {

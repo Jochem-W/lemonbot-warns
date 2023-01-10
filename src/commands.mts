@@ -2,7 +2,6 @@ import { CheckBansCommand } from "./commands/checkBansCommand.mjs"
 import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { HistoryCommand } from "./commands/historyCommand.mjs"
-import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
 import { S3Command } from "./commands/s3Command.mjs"
 import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
 import { StatusCommand } from "./commands/statusCommand.mjs"
@@ -17,7 +16,6 @@ export const SlashCommands: ChatInputCommand[] = [
   new CheckBansCommand(),
   new StatusCommand(),
   new WarningsCommand(),
-  new ReRegisterCommand(),
   new DumpJsonCommand(),
   new S3Command(),
   new StatisticsCommand(),
