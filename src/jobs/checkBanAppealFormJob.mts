@@ -24,36 +24,42 @@ import {
 import { DateTime } from "luxon"
 
 export class CheckBanAppealFormJob {
-  private static discussionChannel: TextChannel
-  private static guild: Guild
-  private static job = new CronJob("* * * * *", () => {
-    CheckBanAppealFormJob.onTick().catch((e) => {
-      if (e instanceof Error) {
-        void reportError(CheckBanAppealFormJob.guild.client, e)
-      }
-    })
-  })
+  private readonly discussionChannel: TextChannel
+  private readonly guild: Guild
+  private readonly cronJob: CronJob
 
-  public static async configure(client: Client) {
-    CheckBanAppealFormJob.guild = await client.guilds.fetch(
-      DefaultConfig.guild.id
-    )
-    CheckBanAppealFormJob.discussionChannel = await fetchChannel(
-      CheckBanAppealFormJob.guild,
+  private constructor(guild: Guild, discussionChannel: TextChannel) {
+    this.guild = guild
+    this.discussionChannel = discussionChannel
+    this.cronJob = new CronJob("* * * * *", () => {
+      CheckBanAppealFormJob.onTick(this).catch((e) => {
+        if (e instanceof Error) {
+          void reportError(guild.client, e)
+        }
+      })
+    })
+  }
+
+  public static async create(client: Client) {
+    const guild = await client.guilds.fetch(DefaultConfig.guild.id)
+    const discussionChannel = await fetchChannel(
+      guild,
       DefaultConfig.guild.discussionChannel,
       ChannelType.GuildText
     )
+
+    return new CheckBanAppealFormJob(guild, discussionChannel)
   }
 
-  public static start() {
-    CheckBanAppealFormJob.job.start()
+  public start() {
+    this.cronJob.start()
   }
 
-  public static stop() {
-    CheckBanAppealFormJob.job.stop()
+  public stop() {
+    this.cronJob.stop()
   }
 
-  private static async onTick() {
+  private static async onTick(job: CheckBanAppealFormJob) {
     const end = DateTime.now().toUTC().startOf("minute")
     const start = end.minus({ minutes: 1 })
 
@@ -79,7 +85,7 @@ export class CheckBanAppealFormJob {
         formResponse,
         DefaultConfig.banAppealForm.questions.discordId
       )
-      const user = await CheckBanAppealFormJob.guild.client.users.fetch(userId)
+      const user = await job.guild.client.users.fetch(userId)
 
       const userTag = getFirstTextAnswer(
         formResponse,
@@ -164,7 +170,7 @@ export class CheckBanAppealFormJob {
       })
 
       try {
-        const ban = await CheckBanAppealFormJob.guild.bans.fetch(user.id)
+        const ban = await job.guild.bans.fetch(user.id)
         embed.addFields({
           name: "Audit log ban reason",
           value: ban.reason ?? "N/A",
@@ -197,11 +203,11 @@ export class CheckBanAppealFormJob {
 
       embed.setDescription(notes.join("\n") || null)
 
-      const message = await CheckBanAppealFormJob.discussionChannel.send({
+      const message = await job.discussionChannel.send({
         embeds: [embed],
       })
       const thread = await message.startThread({
-        name: `${user.tag} ban appeal`,
+        name: `${user.tag}'s ban appeal`,
         reason: "Create thread for more coherent discussion",
       })
 

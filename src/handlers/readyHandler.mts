@@ -63,8 +63,8 @@ export class ReadyHandler implements Handler<"ready"> {
       setStateSync("DOWN")
     })
 
-    await CheckBanAppealFormJob.configure(client)
-    CheckBanAppealFormJob.start()
+    const job = await CheckBanAppealFormJob.create(client)
+    job.start()
   }
 }
 
