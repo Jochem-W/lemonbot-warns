@@ -58,7 +58,7 @@ export class CheckBanAppealFormJob {
     const response = await Google.request<FormsResponsesList>({
       url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${DateTime.now()
         .startOf("minute")
-        .minus(Duration.fromObject({ minutes: 10 }))
+        .minus(Duration.fromObject({ minutes: 1 }))
         .toUTC()
         .toISO()}`,
     })
