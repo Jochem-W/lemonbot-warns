@@ -8,6 +8,7 @@ import {
   ChatInputCommandInteraction,
   DiscordAPIError,
   EmbedBuilder,
+  escapeItalic,
   Guild,
   GuildMember,
   hyperlink,
@@ -385,7 +386,7 @@ export class WarnCommand extends ChatInputCommand {
       })
 
     let footerEmbed = embeds.at(-1)
-    if (!footerEmbed || (footerEmbed.data.image && options.penalty.ban)) {
+    if (!footerEmbed || options.penalty.ban) {
       footerEmbed = new EmbedBuilder().setColor(0xff0000)
       embeds.push(footerEmbed)
     }
@@ -395,11 +396,13 @@ export class WarnCommand extends ChatInputCommand {
     if (options.penalty.ban) {
       footerEmbed.setDescription(
         italic(
-          `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
-            "here",
-            formUrl,
-            `${options.guild.name} ban appeal form`
-          )}.`
+          escapeItalic(
+            `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
+              "here",
+              formUrl,
+              `${options.guild.name} ban appeal form`
+            )}.`
+          )
         )
       )
     } else if (!options.penalty.kick) {
