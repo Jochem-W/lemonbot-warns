@@ -1326,9 +1326,9 @@ packages:
       '@sapphire/async-queue': 1.5.0
       '@sapphire/snowflake': 3.4.0
       discord-api-types: 0.37.27
-      file-type: 18.0.0
+      file-type: 18.1.0
       tslib: 2.4.1
-      undici: 5.14.0
+      undici: 5.15.0
     dev: false
 
   /@discordjs/util/0.1.0:
@@ -2211,7 +2211,7 @@ packages:
       fast-deep-equal: 3.1.3
       lodash.snakecase: 4.1.1
       tslib: 2.4.1
-      undici: 5.14.0
+      undici: 5.15.0
       ws: 8.12.0_b534fhs3xgzvdbz5qzlfkrhjjm
     transitivePeerDependencies:
       - bufferutil
@@ -2455,8 +2455,8 @@ packages:
       flat-cache: 3.0.4
     dev: true
 
-  /file-type/18.0.0:
-    resolution: {integrity: sha512-jjMwFpnW8PKofLE/4ohlhqwDk5k0NC6iy0UHAJFKoY1fQeGMN0GDdLgHQrvCbSpMwbqzoCZhRI5dETCZna5qVA==}
+  /file-type/18.1.0:
+    resolution: {integrity: sha512-FqjmVvHjX5C/EnibCENAsCMIg7HgUYO0vDypt5V8RmtKDk7eUa+/6mEWSrY4PStFhUt0K3CoE8stjLJCcMsJFQ==}
     engines: {node: '>=14.16'}
     dependencies:
       readable-web-to-node-stream: 3.0.2
@@ -3317,8 +3317,8 @@ packages:
     hasBin: true
     dev: true
 
-  /undici/5.14.0:
-    resolution: {integrity: sha512-yJlHYw6yXPPsuOH0x2Ib1Km61vu4hLiRRQoafs+WUgX1vO64vgnxiCEN9dpIrhZyHFsai3F0AEj4P9zy19enEQ==}
+  /undici/5.15.0:
+    resolution: {integrity: sha512-wCAZJDyjw9Myv+Ay62LAoB+hZLPW9SmKbQkbHIhMw/acKSlpn7WohdMUc/Vd4j1iSMBO0hWwU8mjB7a5p5bl8g==}
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0
