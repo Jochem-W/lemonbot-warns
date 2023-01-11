@@ -1,4 +1,5 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { fetchGuild } from "../utilities/discordUtilities.mjs"
@@ -39,14 +40,13 @@ export class CheckBansCommand extends ChatInputCommand {
 
     return {
       embeds: [
-        makeEmbed("Auto-banned users")
-          .setTitle(
-            `The following ${options.bans.length.toString()} auto-banned users have an account older than 30 days:`
-          )
-          .setDescription(
-            options.bans.slice(offset, offset + options.pageLimit).join("\n") ||
-              null
-          ),
+        makeEmbed(
+          "Auto-banned users",
+          DefaultConfig.icons.success,
+          `The following ${options.bans.length.toString()} auto-banned users have an account older than 30 days:`,
+          options.bans.slice(offset, offset + options.pageLimit).join("\n") ||
+            undefined
+        ),
       ],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([

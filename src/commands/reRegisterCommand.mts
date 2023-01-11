@@ -107,7 +107,9 @@ export class ReRegisterCommand extends ChatInputCommand {
 
     await ReRegisterCommand.register(interaction.client.rest)
     await interaction.editReply({
-      embeds: [makeEmbed("Commands re-registered")],
+      embeds: [
+        makeEmbed("Commands re-registered", DefaultConfig.icons.success),
+      ],
     })
   }
 }

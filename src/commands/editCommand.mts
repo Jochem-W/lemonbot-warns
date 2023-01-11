@@ -7,6 +7,7 @@ import {
   SubcommandNotFoundError,
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { isFromOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
@@ -172,6 +173,8 @@ export class EditCommand extends ChatInputCommand {
         throw new SubcommandGroupNotFoundError(interaction, subcommandGroup)
     }
 
-    await interaction.editReply({ embeds: [makeEmbed("Warning edited")] })
+    await interaction.editReply({
+      embeds: [makeEmbed("Warning edited", DefaultConfig.icons.success)],
+    })
   }
 }

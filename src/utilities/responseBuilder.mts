@@ -4,7 +4,7 @@ import { DateTime } from "luxon"
 
 export function makeEmbed(
   authorName: string,
-  authorIcon = DefaultConfig.icons.success,
+  authorIcon: URL,
   title?: string,
   description?: string
 ): EmbedBuilder {

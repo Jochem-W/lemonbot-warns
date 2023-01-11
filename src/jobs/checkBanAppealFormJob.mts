@@ -8,12 +8,12 @@ import {
   getFirstTextAnswer,
   getFormEditUrl,
 } from "../utilities/googleForms.mjs"
+import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { CronJob } from "cron"
 import {
   ChannelType,
   Client,
   DiscordAPIError,
-  EmbedBuilder,
   Guild,
   hyperlink,
   RESTJSONErrorCodes,
@@ -97,12 +97,11 @@ export class CheckBanAppealFormJob {
         )
       }
 
-      const embed = new EmbedBuilder()
-        .setAuthor({
-          name: `${user.tag} responded to the ban appeal form`,
-          iconURL: user.displayAvatarURL(),
-        })
-        .setTitle("View full response")
+      const embed = makeEmbed(
+        `${user.tag} responded to the ban appeal form`,
+        new URL(user.displayAvatarURL()),
+        "View full response"
+      )
         .setURL(
           getFormEditUrl(
             DefaultConfig.banAppealForm.id,

@@ -44,7 +44,14 @@ export class ReadyHandler implements Handler<"ready"> {
     )
 
     const options: MessageCreateOptions = {
-      embeds: [makeEmbed(title).setDescription(await getChangelog())],
+      embeds: [
+        makeEmbed(
+          title,
+          DefaultConfig.icons.success,
+          undefined,
+          (await getChangelog()) ?? undefined
+        ),
+      ],
     }
 
     if (DefaultConfig.guild.restart.user) {

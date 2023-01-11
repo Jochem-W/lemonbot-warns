@@ -1,4 +1,5 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { Variables } from "../variables.mjs"
 import {
@@ -38,7 +39,7 @@ export class StatusCommand extends ChatInputCommand {
 
     return {
       embeds: [
-        makeEmbed("Status").setFields(
+        makeEmbed("Status", DefaultConfig.icons.success).setFields(
           {
             name: "Ping",
             value: inlineCode(`${options.ping}ms`),
