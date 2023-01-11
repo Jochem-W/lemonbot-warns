@@ -3,7 +3,7 @@ import { BotError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
 import { fetchMember } from "../utilities/discordUtilities.mjs"
-import { formatName, makeEmbed } from "../utilities/responseBuilder.mjs"
+import { formatName, makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,

@@ -2,7 +2,7 @@ import type { Handler } from "../interfaces/handler.mjs"
 import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import { Octokit } from "@octokit/rest"
 import {

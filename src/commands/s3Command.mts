@@ -2,7 +2,7 @@ import { S3 } from "../clients.mjs"
 import { OwnerOnlyError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { isFromOwner } from "../utilities/discordUtilities.mjs"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import { download, search } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
 import {

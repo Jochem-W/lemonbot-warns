@@ -1,6 +1,6 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import {
   ChatInputCommandInteraction,

@@ -7,7 +7,7 @@ import {
 } from "../errors.mjs"
 import type { Handler } from "../interfaces/handler.mjs"
 import { CustomId, InteractionScope } from "../models/customId.mjs"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   Interaction,
   MessageComponentInteraction,

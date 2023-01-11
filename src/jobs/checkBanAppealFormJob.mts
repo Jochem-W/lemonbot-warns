@@ -3,12 +3,12 @@ import { WarningsCommand } from "../commands/warningsCommand.mjs"
 import { reportError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import type { FormsResponsesList } from "../utilities/googleForms.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
 } from "../utilities/googleForms.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { CronJob } from "cron"
 import {
   ChannelType,

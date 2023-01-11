@@ -15,8 +15,8 @@ import {
   fetchGuild,
   fetchMember,
 } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import {

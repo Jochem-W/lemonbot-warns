@@ -2,7 +2,7 @@ import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
 import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {

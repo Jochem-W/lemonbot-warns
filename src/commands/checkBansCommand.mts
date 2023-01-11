@@ -3,7 +3,7 @@ import { DefaultConfig } from "../models/config.mjs"
 import { CustomId, InteractionScope } from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { fetchGuild } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ActionRowBuilder,
   ButtonBuilder,

@@ -1,5 +1,5 @@
 import { reportError } from "../errors.mjs"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ActionRowBuilder,
   CollectedInteraction,

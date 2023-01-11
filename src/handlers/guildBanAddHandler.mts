@@ -7,7 +7,7 @@ import {
 import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/responseBuilder.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { AuditLogEvent, bold, ChannelType, GuildBan } from "discord.js"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {

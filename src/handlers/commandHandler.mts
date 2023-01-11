@@ -7,7 +7,7 @@ import {
 } from "../errors.mjs"
 import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { makeErrorEmbed } from "../utilities/responseBuilder.mjs"
+import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AutocompleteInteraction,
   CommandInteraction,
