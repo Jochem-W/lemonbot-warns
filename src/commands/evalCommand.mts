@@ -7,6 +7,9 @@ import {
   PermissionFlagsBits,
 } from "discord.js"
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const AsyncFunction = async function () {}.constructor
+
 export class EvalCommand extends ChatInputCommand {
   public constructor() {
     super("eval", "Run arbitrary code", PermissionFlagsBits.Administrator)
@@ -24,7 +27,7 @@ export class EvalCommand extends ChatInputCommand {
     const code = `"use strict"; ${interaction.options.getString("code", true)}`
 
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
-    const ret = (Function(code).bind({ interaction }) as () => unknown)()
+    const ret = (AsyncFunction(code) as () => unknown).bind({ interaction })()
     await interaction.editReply({
       embeds: [
         new EmbedBuilder().setDescription(
