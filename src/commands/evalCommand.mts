@@ -49,7 +49,7 @@ export class EvalCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
-    let code = "use strict;"
+    let code = '"use strict";'
 
     const subcommand = interaction.options.getSubcommand(true)
     switch (subcommand) {
