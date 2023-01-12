@@ -27,7 +27,9 @@ export class EvalCommand extends ChatInputCommand {
     const code = `"use strict"; ${interaction.options.getString("code", true)}`
 
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
-    const ret = (AsyncFunction(code) as () => unknown).bind({ interaction })()
+    const ret = await (AsyncFunction(code) as () => Promise<unknown>).bind({
+      interaction,
+    })()
     await interaction.editReply({
       embeds: [
         new EmbedBuilder().setDescription(
