@@ -1,11 +1,7 @@
 import { Prisma } from "../clients.mjs"
-import {
-  NoMessageRevisionsError,
-  OwnerOnlyError,
-  reportError,
-} from "../errors.mjs"
+import { NoMessageRevisionsError, reportError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import archiver, { Archiver } from "archiver"
 import { stringify } from "csv"
 import {
@@ -213,9 +209,7 @@ export class StatisticsCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    if (!(await isFromOwner(interaction))) {
-      throw new OwnerOnlyError()
-    }
+    await ensureOwner(interaction)
 
     const fileName = `${interaction.id}.zip`
     const output = createWriteStream(fileName)

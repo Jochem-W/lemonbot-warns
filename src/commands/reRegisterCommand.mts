@@ -5,11 +5,11 @@ import {
   SlashCommands,
   UserContextMenuCommands,
 } from "../commands.mjs"
-import { CommandNotFoundByNameError, OwnerOnlyError } from "../errors.mjs"
+import { CommandNotFoundByNameError } from "../errors.mjs"
 import type { Command } from "../interfaces/command.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import { WarnCommand } from "./warnCommand.mjs"
@@ -101,9 +101,7 @@ export class ReRegisterCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    if (!(await isFromOwner(interaction))) {
-      throw new OwnerOnlyError()
-    }
+    await ensureOwner(interaction)
 
     await ReRegisterCommand.register(interaction.client.rest)
     await interaction.editReply({

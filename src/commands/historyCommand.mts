@@ -1,11 +1,7 @@
 import { Prisma } from "../clients.mjs"
-import {
-  InvalidArgumentsError,
-  OwnerOnlyError,
-  reportError,
-} from "../errors.mjs"
+import { InvalidArgumentsError, reportError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { download } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
 import archiver from "archiver"
@@ -200,9 +196,7 @@ export class HistoryCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    if (!(await isFromOwner(interaction))) {
-      throw new OwnerOnlyError()
-    }
+    await ensureOwner(interaction)
 
     const attachments = interaction.options.getBoolean("attachments") ?? false
     const deleted = interaction.options.getBoolean("deleted_only") ?? false

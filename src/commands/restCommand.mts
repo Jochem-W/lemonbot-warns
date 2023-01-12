@@ -1,5 +1,6 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ChatInputCommandInteraction,
@@ -60,6 +61,8 @@ export class RestCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    await ensureOwner(interaction)
+
     const path = interaction.options.getString("path", true) as `/${string}`
     const query = interaction.options.getString("query")
     const body = interaction.options.getString("body") ?? undefined

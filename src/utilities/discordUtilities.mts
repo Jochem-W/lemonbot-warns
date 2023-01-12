@@ -1,7 +1,7 @@
 import {
   ChannelNotFoundError,
   GuildOnlyError,
-  InvalidChannelTypeError,
+  InvalidChannelTypeError, OwnerOnlyError
 } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type {
@@ -78,20 +78,27 @@ export async function fetchGuild(interaction: Interaction) {
   )
 }
 
-export async function isFromOwner(interaction: Interaction): Promise<boolean> {
+export async function ensureOwner(interaction: Interaction) {
   let application = interaction.client.application
   if (!application.owner) {
     application = await application.fetch()
-    if (!application.owner) {
-      throw new Error()
-    }
+  }
+
+  if (!application.owner) {
+    throw new OwnerOnlyError()
   }
 
   if (application.owner instanceof Team) {
-    return application.owner.members.has(interaction.user.id)
+    if (!application.owner.members.has(interaction.user.id)) {
+      throw new OwnerOnlyError()
+    }
+
+    return
   }
 
-  return application.owner.id === interaction.user.id
+  if (application.owner.id !== interaction.user.id) {
+    throw new OwnerOnlyError()
+  }
 }
 
 export function isInPrivateChannel(interaction: Interaction) {

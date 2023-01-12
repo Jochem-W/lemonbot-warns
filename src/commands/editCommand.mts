@@ -2,13 +2,12 @@ import { Prisma, S3 } from "../clients.mjs"
 import {
   ImageOnlyError,
   NoContentTypeError,
-  OwnerOnlyError,
   SubcommandGroupNotFoundError,
   SubcommandNotFoundError,
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { isFromOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
@@ -147,9 +146,7 @@ export class EditCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    if (!(await isFromOwner(interaction))) {
-      throw new OwnerOnlyError()
-    }
+    await ensureOwner(interaction)
 
     const subcommand = interaction.options.getSubcommand()
     const subcommandGroup = interaction.options.getSubcommandGroup()
