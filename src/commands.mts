@@ -2,6 +2,7 @@ import { CheckBansCommand } from "./commands/checkBansCommand.mjs"
 import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { HistoryCommand } from "./commands/historyCommand.mjs"
+import { RestCommand } from "./commands/restCommand.mjs"
 import { S3Command } from "./commands/s3Command.mjs"
 import { SearchCommand } from "./commands/searchCommand.mjs"
 import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
@@ -23,6 +24,7 @@ export const SlashCommands: ChatInputCommand[] = [
   new HistoryCommand(),
   new EditCommand(),
   new SearchCommand(),
+  new RestCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
