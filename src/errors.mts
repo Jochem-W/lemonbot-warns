@@ -155,6 +155,12 @@ export class InvalidAuditLogEntryError extends BotError {
   }
 }
 
+export class NoValidCodeError extends BotError {
+  public constructor(message: string) {
+    super(message)
+  }
+}
+
 export class InvalidEmbedError extends CustomError {
   public constructor(message: string) {
     super(message)

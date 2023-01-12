@@ -1,4 +1,4 @@
-import { SubcommandNotFoundError } from "../errors.mjs"
+import { NoValidCodeError, SubcommandNotFoundError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner, fetchChannel } from "../utilities/discordUtilities.mjs"
 import {
@@ -6,7 +6,6 @@ import {
   ChatInputCommandInteraction,
   codeBlock,
   EmbedBuilder,
-  escapeCodeBlock,
   PermissionFlagsBits,
 } from "discord.js"
 
@@ -76,7 +75,15 @@ export class EvalCommand extends ChatInputCommand {
           const message = await channel.messages.fetch(
             interaction.options.getString("id", true)
           )
-          code += escapeCodeBlock(message.content)
+
+          const match = message.content.match(/^```ts\n(.*)\n```$/s)?.[1]
+          if (!match) {
+            throw new NoValidCodeError(
+              "The specified message doesn't contain valid code"
+            )
+          }
+
+          code += match
         }
         break
       default:
