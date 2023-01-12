@@ -30,12 +30,15 @@ export class EvalCommand extends ChatInputCommand {
     const ret = await (AsyncFunction(code) as () => Promise<unknown>).bind({
       interaction,
     })()
-    await interaction.editReply({
-      embeds: [
-        new EmbedBuilder().setDescription(
-          codeBlock("json", JSON.stringify(ret, undefined, 4))
-        ),
-      ],
-    })
+
+    if (ret) {
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder().setDescription(
+            codeBlock("json", JSON.stringify(ret, undefined, 4))
+          ),
+        ],
+      })
+    }
   }
 }
