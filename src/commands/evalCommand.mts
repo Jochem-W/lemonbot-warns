@@ -1,9 +1,12 @@
+import { SubcommandNotFoundError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { ensureOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner, fetchChannel } from "../utilities/discordUtilities.mjs"
 import {
+  ChannelType,
   ChatInputCommandInteraction,
   codeBlock,
   EmbedBuilder,
+  escapeCodeBlock,
   PermissionFlagsBits,
 } from "discord.js"
 
@@ -13,20 +16,73 @@ const AsyncFunction = async function () {}.constructor
 export class EvalCommand extends ChatInputCommand {
   public constructor() {
     super("eval", "Run arbitrary code", PermissionFlagsBits.Administrator)
-    this.builder.addStringOption((builder) =>
-      builder
-        .setName("code")
-        .setDescription("The code to run")
-        .setRequired(true)
-    )
+    this.builder
+      .addSubcommand((subcommandGroup) =>
+        subcommandGroup
+          .setName("string")
+          .setDescription("Run code from a string")
+          .addStringOption((builder) =>
+            builder
+              .setName("code")
+              .setDescription("The code to run")
+              .setRequired(true)
+          )
+      )
+      .addSubcommand((subcommandGroup) =>
+        subcommandGroup
+          .setName("message")
+          .setDescription("Run code from a message")
+          .addStringOption((builder) =>
+            builder
+              .setName("id")
+              .setDescription("The ID of the message containing code")
+              .setRequired(true)
+          )
+          .addChannelOption((builder) =>
+            builder
+              .setName("channel")
+              .setDescription("The ID of the message containing code")
+          )
+      )
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
-    const code = `"use strict"; ${interaction.options.getString("code", true)}`
+    let code = "use strict;"
 
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const subcommand = interaction.options.getSubcommand(true)
+    switch (subcommand) {
+      case "string":
+        code += interaction.options.getString("code", true)
+        break
+      case "message":
+        {
+          let channel = interaction.options.getChannel("channel")
+          if (channel !== null) {
+            channel = await fetchChannel(
+              interaction.client,
+              channel.id,
+              ChannelType.GuildText
+            )
+          } else {
+            channel = await fetchChannel(
+              interaction.client,
+              interaction.channelId,
+              ChannelType.GuildText
+            )
+          }
+
+          const message = await channel.messages.fetch(
+            interaction.options.getString("id", true)
+          )
+          code += escapeCodeBlock(message.content)
+        }
+        break
+      default:
+        throw new SubcommandNotFoundError(interaction, subcommand)
+    }
+
     const ret = await (AsyncFunction(code) as () => Promise<unknown>).bind({
       interaction,
     })()
