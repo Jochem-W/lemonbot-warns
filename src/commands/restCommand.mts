@@ -3,8 +3,8 @@ import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
+  AttachmentBuilder,
   ChatInputCommandInteraction,
-  codeBlock,
   InternalRequest,
   PermissionFlagsBits,
   RequestMethod,
@@ -82,22 +82,32 @@ export class RestCommand extends ChatInputCommand {
     }
 
     const response = await interaction.client.rest.raw(options)
-    console.log(response)
+    const json = JSON.stringify(
+      (await response.body.json()) as unknown,
+      undefined,
+      4
+    ).trim()
+
+    const files: AttachmentBuilder[] = []
+    const embed = makeEmbed(
+      `${STATUS_CODES[response.statusCode] ?? ""} ${
+        response.statusCode
+      }`.trim(),
+      DefaultConfig.icons.success
+    )
+    if (json.length <= 2036) {
+      embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)
+    } else {
+      files.push(
+        new AttachmentBuilder(Buffer.from(json), {
+          name: "response.json",
+        })
+      )
+    }
 
     await interaction.editReply({
-      embeds: [
-        makeEmbed(
-          `${STATUS_CODES[response.statusCode] ?? ""} ${
-            response.statusCode
-          }`.trim(),
-          DefaultConfig.icons.success,
-          undefined,
-          codeBlock(
-            "json",
-            JSON.stringify(await response.body.json(), undefined, 4)
-          )
-        ),
-      ],
+      embeds: [embed],
+      files,
     })
   }
 }
