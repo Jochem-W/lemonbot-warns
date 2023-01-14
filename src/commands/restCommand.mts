@@ -74,7 +74,7 @@ export class RestCommand extends ChatInputCommand {
     const options: InternalRequest = {
       fullRoute: path,
       method: method,
-      body: body,
+      body: body ? JSON.parse(body) : undefined,
     }
 
     if (query) {
