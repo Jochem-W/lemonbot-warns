@@ -30,9 +30,9 @@
     "@types/whatwg-mimetype": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
-    "eslint": "^8.31.0",
+    "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
-    "prettier": "^2.8.2",
+    "prettier": "^2.8.3",
     "prisma": "^4.8.1",
     "typescript": "^4.9.4"
   },

@@ -1,7 +1,8 @@
 import {
   ChannelNotFoundError,
   GuildOnlyError,
-  InvalidChannelTypeError, OwnerOnlyError
+  InvalidChannelTypeError,
+  OwnerOnlyError,
 } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type {
