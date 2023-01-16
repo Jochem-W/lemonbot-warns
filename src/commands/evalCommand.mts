@@ -1,11 +1,12 @@
 import { NoValidCodeError, SubcommandNotFoundError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner, fetchChannel } from "../utilities/discordUtilities.mjs"
+import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
+  AttachmentBuilder,
   ChannelType,
   ChatInputCommandInteraction,
-  codeBlock,
-  EmbedBuilder,
   PermissionFlagsBits,
 } from "discord.js"
 
@@ -95,13 +96,21 @@ export class EvalCommand extends ChatInputCommand {
     })()
 
     if (ret) {
-      await interaction.editReply({
-        embeds: [
-          new EmbedBuilder().setDescription(
-            codeBlock("json", JSON.stringify(ret, undefined, 4))
-          ),
-        ],
-      })
+      const json = JSON.stringify(ret, undefined, 4)
+
+      const files: AttachmentBuilder[] = []
+      const embed = makeEmbed("eval", DefaultConfig.icons.success)
+      if (json.length <= 2036) {
+        embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)
+      } else {
+        files.push(
+          new AttachmentBuilder(Buffer.from(json), {
+            name: "eval.json",
+          })
+        )
+      }
+
+      await interaction.editReply({ embeds: [embed], files })
     }
   }
 }
