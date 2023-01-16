@@ -8,7 +8,7 @@ import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
-import { AuditLogEvent, bold, ChannelType, GuildBan } from "discord.js"
+import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"
@@ -122,7 +122,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     await loggingChannel.send({
       embeds: [
         makeEmbed(
-          `Banned ${ban.user.tag} [${prismaBan.id}] (${bold("No DM")})`,
+          `Banned ${ban.user.tag} [${prismaBan.id}] (No DM)`,
           new URL(ban.user.displayAvatarURL())
         )
           .setFields(
