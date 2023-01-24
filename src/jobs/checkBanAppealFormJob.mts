@@ -112,14 +112,13 @@ export class CheckBanAppealFormJob {
           DateTime.fromISO(formResponse.lastSubmittedTime).toMillis()
         )
 
-      let contactMethod = getFirstTextAnswer(
+      const contactMethod = getFirstTextAnswer(
         formResponse,
         DefaultConfig.banAppealForm.questions.contactMethod
       )
       let contact
       switch (contactMethod) {
         case "Email":
-          contactMethod = contactMethod.toLowerCase()
           contact = "redacted"
           break
         case "Twitter":
