@@ -27,6 +27,27 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
   }
 
   public async handle(ban: GuildBan) {
+    const discussionChannel = await fetchChannel(
+      ban.guild,
+      DefaultConfig.guild.discussionChannel,
+      ChannelType.GuildText
+    )
+
+    const threadsManager = discussionChannel.threads
+    let fetchedThreads
+    do {
+      fetchedThreads = await threadsManager.fetchActive()
+      for (const [, thread] of fetchedThreads.threads) {
+        if (thread.name.includes(ban.user.id)) {
+          await thread.setArchived(true, "User was unbanned")
+          await thread.setLocked(
+            true,
+            "Ban appeal thread should remain archived"
+          )
+        }
+      }
+    } while (fetchedThreads.hasMore)
+
     const loggingChannel = await fetchChannel(
       ban.guild,
       DefaultConfig.guild.warnLogsChannel,
