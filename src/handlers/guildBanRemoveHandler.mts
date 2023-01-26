@@ -27,8 +27,6 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
   }
 
   public async handle(ban: GuildBan) {
-    console.log("guildBanRemove event dispatched", ban)
-
     const loggingChannel = await fetchChannel(
       ban.guild,
       DefaultConfig.guild.warnLogsChannel,
@@ -43,7 +41,6 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
     }
 
     if (auditLogEntry.executor.id === ban.client.user.id) {
-      console.log("Unbanned by self, ignoring")
       return
     }
 

@@ -32,8 +32,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   }
 
   public async handle(ban: GuildBan) {
-    console.log("guildBanAdd event dispatched", ban)
-
     const loggingChannel = await fetchChannel(
       ban.guild,
       DefaultConfig.guild.warnLogsChannel,
@@ -48,13 +46,11 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     }
 
     if (auditLogEntry.executor.id === ban.client.user.id) {
-      console.log("Banned by self, ignoring")
       return
     }
 
     const reason = auditLogEntry.reason?.trim()
     if (reason?.includes("Account was less than 30 days old")) {
-      console.log("Banned because of account age, ignoring")
       return
     }
 
@@ -85,7 +81,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     })
 
     if (warning?.penalty.ban) {
-      console.log("User's latest warning is a ban, ignoring")
       // TODO: check time
       return
     }
