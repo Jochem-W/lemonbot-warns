@@ -4,6 +4,7 @@ import { GuildBanRemoveHandler } from "./handlers/guildBanRemoveHandler.mjs"
 import { InteractionHandler } from "./handlers/interactionHandler.mjs"
 import { MemberRemoveHandler } from "./handlers/memberRemoveHandler.mjs"
 import { MessageCreateHandler } from "./handlers/messageCreateHandler.mjs"
+import { MessageDeleteBulkHandler } from "./handlers/messageDeleteBulkHandler.mjs"
 import { MessageDeleteHandler } from "./handlers/messageDeleteHandler.mjs"
 import { MessageUpdateHandler } from "./handlers/messageUpdateHandler.mjs"
 import { ReadyHandler } from "./handlers/readyHandler.mjs"
@@ -20,4 +21,5 @@ export const Handlers: Handler<keyof ClientEvents>[] = [
   new MessageUpdateHandler(),
   new MessageDeleteHandler(),
   new GuildBanRemoveHandler(),
+  new MessageDeleteBulkHandler(),
 ]
