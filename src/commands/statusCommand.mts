@@ -10,7 +10,7 @@ import {
 } from "discord.js"
 import { Duration } from "luxon"
 
-interface ResponseOptions {
+type ResponseOptions = {
   ping: number
 }
 

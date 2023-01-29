@@ -17,7 +17,7 @@ import {
 } from "discord.js"
 import { DateTime } from "luxon"
 
-interface ResponseOptions {
+type ResponseOptions = {
   bans: string[]
   page: number
   pageLimit: number

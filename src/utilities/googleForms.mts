@@ -1,7 +1,7 @@
 import { Google } from "../clients.mjs"
 import { InvalidFormResponseError } from "../errors.mjs"
 
-export interface FormsGet {
+export type FormsGet = {
   formId: string
   info: object
   settings: object
@@ -10,11 +10,11 @@ export interface FormsGet {
   items: object[]
 }
 
-export interface FormsResponsesList {
+export type FormsResponsesList = {
   responses?: FormResponse[]
 }
 
-export interface FormResponse {
+export type FormResponse = {
   responseId: string
   lastSubmittedTime: string
   answers: Record<

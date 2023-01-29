@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js"
 import { readFile } from "fs/promises"
 
-interface RawConfig {
+type RawConfig = {
   banAppealForm: {
     id: string
     questions: {

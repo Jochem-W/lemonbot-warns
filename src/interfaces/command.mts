@@ -10,6 +10,7 @@ import type {
   SlashCommandBuilder,
 } from "discord.js"
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface Command<T>
   extends JSONEncodable<RESTPostAPIApplicationCommandsJSONBody> {
   builder: SlashCommandBuilder | ContextMenuCommandBuilder

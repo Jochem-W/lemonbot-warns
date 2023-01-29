@@ -53,7 +53,7 @@ import MIMEType from "whatwg-mimetype"
 const { nolookalikesSafe } = nanoidDictionary
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 
-export interface ResponseOptions {
+export type ResponseOptions = {
   reasons: string[]
   penalty: Penalty
   targetUser: User
