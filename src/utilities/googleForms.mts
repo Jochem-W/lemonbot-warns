@@ -53,8 +53,6 @@ export function getFirstTextAnswer(
   return answer ?? null
 }
 
-export function getFormEditUrl(formId: string): URL
-export function getFormEditUrl(formId: string, responseId: string): URL
 export function getFormEditUrl(formId: string, responseId?: string) {
   const url = new URL(`https://docs.google.com/forms/d/${formId}/edit`)
   if (responseId) {
