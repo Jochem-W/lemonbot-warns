@@ -20,7 +20,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
 
   private static async handleAutocomplete(
     interaction: AutocompleteInteraction
-  ): Promise<void> {
+  ) {
     const command = RegisteredCommands.get(interaction.commandId)
     if (!command) {
       throw new CommandNotFoundByIdError(interaction.commandId)
@@ -33,9 +33,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
     await interaction.respond(await command.handleAutocomplete(interaction))
   }
 
-  private static async handleCommand(
-    interaction: CommandInteraction
-  ): Promise<void> {
+  private static async handleCommand(interaction: CommandInteraction) {
     const command = RegisteredCommands.get(interaction.commandId)
     if (!command) {
       throw new CommandNotFoundByIdError(interaction.commandId)
@@ -54,7 +52,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
     await command.handle(interaction)
   }
 
-  public async handle(interaction: Interaction): Promise<void> {
+  public async handle(interaction: Interaction) {
     if (interaction instanceof AutocompleteInteraction) {
       await CommandHandler.handleAutocomplete(interaction)
       return

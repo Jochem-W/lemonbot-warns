@@ -37,13 +37,11 @@ import {
   italic,
   MessageActionRowComponentBuilder,
   MessageComponentInteraction,
-  MessageCreateOptions,
   PermissionFlagsBits,
   RESTJSONErrorCodes,
   TextChannel,
   User,
   userMention,
-  WebhookCreateMessageOptions,
 } from "discord.js"
 import { DateTime, Duration } from "luxon"
 import { customAlphabet } from "nanoid"
@@ -237,10 +235,7 @@ export class WarnCommand extends ChatInputCommand {
     return title
   }
 
-  public static buildResponse(
-    options: ResponseOptions,
-    warning: Warning
-  ): MessageCreateOptions {
+  public static buildResponse(options: ResponseOptions, warning: Warning) {
     const reasonsText = options.reasons.join(", ")
     let administrationText = `• Reason: \`${reasonsText}\`\n• Penalty level: \`${options.penalty.name}\``
     if (options.notified === "DM") {
@@ -363,7 +358,7 @@ export class WarnCommand extends ChatInputCommand {
     return { embeds: embeds }
   }
 
-  public static buildDM(options: ResponseOptions): WebhookCreateMessageOptions {
+  public static buildDM(options: ResponseOptions) {
     const embeds = options.images.map((image) =>
       new EmbedBuilder().setImage(image).setColor(0xff0000)
     )
@@ -416,7 +411,7 @@ export class WarnCommand extends ChatInputCommand {
     return { embeds: embeds }
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     const guild = await fetchGuild(interaction)
     const warnLogsChannel = await fetchChannel(
       guild,
@@ -660,7 +655,7 @@ export class WarnCommand extends ChatInputCommand {
   public async handleMessageComponent(
     interaction: MessageComponentInteraction,
     data: CustomId
-  ): Promise<void> {
+  ) {
     if (data.secondary !== "dismiss") {
       return
     }

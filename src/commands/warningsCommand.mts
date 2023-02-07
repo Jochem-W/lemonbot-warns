@@ -131,7 +131,7 @@ export class WarningsCommand extends ChatInputCommand {
     return [...chunks(embeds, 10)].map((embeds) => ({ embeds }))
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     const user = interaction.options.getUser("user", true)
 
     const messages = await WarningsCommand.buildResponse(

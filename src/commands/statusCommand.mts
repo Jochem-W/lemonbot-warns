@@ -6,7 +6,6 @@ import {
   ChatInputCommandInteraction,
   inlineCode,
   PermissionFlagsBits,
-  WebhookEditMessageOptions,
 } from "discord.js"
 import { Duration } from "luxon"
 
@@ -23,9 +22,7 @@ export class StatusCommand extends ChatInputCommand {
     )
   }
 
-  public static buildResponse(
-    options: ResponseOptions
-  ): WebhookEditMessageOptions {
+  public static buildResponse(options: ResponseOptions) {
     const uptime = Duration.fromObject(
       Object.fromEntries(
         Object.entries(
@@ -57,7 +54,7 @@ export class StatusCommand extends ChatInputCommand {
     }
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     await interaction.editReply(
       StatusCommand.buildResponse({ ping: interaction.client.ws.ping })
     )

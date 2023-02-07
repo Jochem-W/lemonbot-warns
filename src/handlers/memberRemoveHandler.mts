@@ -7,7 +7,7 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
   public readonly event = "guildMemberRemove"
   public readonly once = false
 
-  public async handle(member: GuildMember | PartialGuildMember): Promise<void> {
+  public async handle(member: GuildMember | PartialGuildMember) {
     const user = await member.client.users.fetch(member.id)
 
     const warnCategory = await fetchChannel(

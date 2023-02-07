@@ -7,7 +7,7 @@ export function makeEmbed(
   authorIcon: URL,
   title?: string,
   description?: string
-): EmbedBuilder {
+) {
   return new EmbedBuilder()
     .setAuthor({
       name: authorName,
@@ -18,7 +18,7 @@ export function makeEmbed(
     .setTimestamp(DateTime.now().toMillis())
 }
 
-export function makeErrorEmbed(error: Error): EmbedBuilder {
+export function makeErrorEmbed(error: Error) {
   if (error.stack) {
     return makeEmbed(
       "An unexpected error has occurred",

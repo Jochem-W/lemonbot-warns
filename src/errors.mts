@@ -185,7 +185,7 @@ export class InvalidFormResponseError extends CustomError {
   }
 }
 
-export async function reportError(client: Client, error: Error): Promise<void> {
+export async function reportError(client: Client, error: Error) {
   console.error(error)
   const channel = await fetchChannel(
     client,

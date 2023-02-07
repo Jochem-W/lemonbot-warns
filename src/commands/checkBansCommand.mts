@@ -13,7 +13,6 @@ import {
   MessageActionRowComponentBuilder,
   PermissionFlagsBits,
   time,
-  WebhookEditMessageOptions,
 } from "discord.js"
 import { DateTime } from "luxon"
 
@@ -32,9 +31,7 @@ export class CheckBansCommand extends ChatInputCommand {
     )
   }
 
-  public static buildResponse(
-    options: ResponseOptions
-  ): WebhookEditMessageOptions {
+  public static buildResponse(options: ResponseOptions) {
     const offset = options.page * options.pageLimit
     const lastPage = Math.ceil(options.bans.length / options.pageLimit) - 1
 
@@ -79,7 +76,7 @@ export class CheckBansCommand extends ChatInputCommand {
     }
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     const guild = await fetchGuild(interaction)
 
     const bans: string[] = []

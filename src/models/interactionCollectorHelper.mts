@@ -43,9 +43,7 @@ export class InteractionCollectorHelper {
     })
   }
 
-  public static async create(
-    interaction: CommandInteraction
-  ): Promise<InteractionCollectorHelper> {
+  public static async create(interaction: CommandInteraction) {
     const options: InteractionCollectorOptions<CollectedInteraction> = {
       channel: interaction.channel ?? interaction.channelId,
       message: await interaction.fetchReply(),
@@ -64,7 +62,7 @@ export class InteractionCollectorHelper {
 
   public addListener(
     listener: (collected: CollectedInteraction) => Promise<void>
-  ): this {
+  ) {
     this.collector.on("collect", async (collected) => {
       try {
         await listener(collected)
@@ -95,9 +93,7 @@ export class InteractionCollectorHelper {
     return this
   }
 
-  public updateComponents(
-    components: WebhookEditMessageOptions["components"]
-  ): void {
+  public updateComponents(components: WebhookEditMessageOptions["components"]) {
     this.components =
       components?.map((row) => {
         let builder: ActionRowBuilder<MessageActionRowComponentBuilder>

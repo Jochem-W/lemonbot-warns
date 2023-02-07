@@ -1,7 +1,6 @@
 import { S3 } from "../clients.mjs"
 import { Variables } from "../variables.mjs"
 import {
-  _Object,
   GetObjectCommand,
   GetObjectCommandInput,
   HeadObjectCommand,
@@ -15,9 +14,7 @@ import {
 import { Options, Upload } from "@aws-sdk/lib-storage"
 import type { Attachment } from "discord.js"
 
-export async function uploadAttachment(
-  attachment: Attachment
-): Promise<string> {
+export async function uploadAttachment(attachment: Attachment) {
   const key = `${attachment.id}/${attachment.name ?? attachment.id}`
 
   const response = await fetch(attachment.url)
@@ -47,7 +44,7 @@ export async function download(
 export async function* search(
   bucket: Required<ListObjectsV2CommandInput["Bucket"]>,
   prefix?: ListObjectsV2CommandInput["Prefix"]
-): AsyncGenerator<_Object> {
+) {
   const input: ListObjectsV2CommandInput = {
     Bucket: bucket,
   }
@@ -77,7 +74,7 @@ export async function upload(
   key: Required<PutObjectCommandInput["Key"]>,
   body: PutObjectCommandInput["Body"],
   contentType?: PutObjectCommandInput["ContentType"]
-): Promise<void> {
+) {
   const options: Options = {
     client: S3,
     params: {
@@ -101,7 +98,7 @@ export async function upload(
 export async function exists(
   bucket: Required<HeadObjectCommandInput["Bucket"]>,
   key: Required<HeadObjectCommandInput["Key"]>
-): Promise<boolean> {
+) {
   try {
     await S3.send(
       new HeadObjectCommand({

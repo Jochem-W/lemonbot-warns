@@ -2,11 +2,11 @@ import { InvalidCustomIdError } from "../errors.mjs"
 
 type InteractionScope = "i" | "c"
 export const InteractionScope = {
-  get Instance(): InteractionScope {
-    return "i"
+  get Instance() {
+    return "i" as const
   },
-  get Collector(): InteractionScope {
-    return "c"
+  get Collector() {
+    return "c" as const
   },
 }
 
@@ -28,7 +28,7 @@ export class CustomId {
     this.tertiary = tertiary
   }
 
-  public static fromString(data: string): CustomId {
+  public static fromString(data: string) {
     const [scope, primary, secondary, ...tertiary] = data.split(":")
     if (
       scope === undefined ||
@@ -41,7 +41,7 @@ export class CustomId {
     return new CustomId(scope as InteractionScope, primary, secondary, tertiary)
   }
 
-  public toString(): string {
+  public toString() {
     return `${this.scope}:${this.primary}:${
       this.secondary
     }:${this.tertiary.join(":")}`

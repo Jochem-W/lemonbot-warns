@@ -140,7 +140,7 @@ export class SearchCommand extends ChatInputCommand {
     }
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
     }

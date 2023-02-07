@@ -20,7 +20,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
 
   private static async handleMessageComponent(
     interaction: MessageComponentInteraction
-  ): Promise<void> {
+  ) {
     const data = CustomId.fromString(interaction.customId)
     if (data.scope !== InteractionScope.Instance) {
       return
@@ -38,9 +38,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
     await command.handleMessageComponent(interaction, data)
   }
 
-  private static async handleModalSubmit(
-    interaction: ModalSubmitInteraction
-  ): Promise<void> {
+  private static async handleModalSubmit(interaction: ModalSubmitInteraction) {
     const data = CustomId.fromString(interaction.customId)
     if (data.scope !== InteractionScope.Instance) {
       return
@@ -58,7 +56,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
     await command.handleModalSubmit(interaction, data)
   }
 
-  public async handle(interaction: Interaction): Promise<void> {
+  public async handle(interaction: Interaction) {
     if (interaction instanceof MessageComponentInteraction) {
       try {
         await InteractionHandler.handleMessageComponent(interaction)

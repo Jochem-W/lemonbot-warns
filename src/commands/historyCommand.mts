@@ -195,7 +195,7 @@ export class HistoryCommand extends ChatInputCommand {
     return message ? [message] : []
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
     const attachments = interaction.options.getBoolean("attachments") ?? false

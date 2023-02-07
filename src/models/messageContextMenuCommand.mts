@@ -2,7 +2,6 @@ import type { Command } from "../interfaces/command.mjs"
 import {
   ContextMenuCommandBuilder,
   MessageContextMenuCommandInteraction,
-  RESTPostAPIApplicationCommandsJSONBody,
 } from "discord.js"
 
 export abstract class MessageContextMenuCommand
@@ -19,7 +18,7 @@ export abstract class MessageContextMenuCommand
     interaction: MessageContextMenuCommandInteraction
   ): Promise<void>
 
-  public toJSON(): RESTPostAPIApplicationCommandsJSONBody {
+  public toJSON() {
     return this.builder.toJSON()
   }
 }

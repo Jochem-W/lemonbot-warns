@@ -1,9 +1,5 @@
 import type { Command } from "../interfaces/command.mjs"
-import {
-  ChatInputCommandInteraction,
-  RESTPostAPIApplicationCommandsJSONBody,
-  SlashCommandBuilder,
-} from "discord.js"
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 
 export abstract class ChatInputCommand
   implements Command<ChatInputCommandInteraction>
@@ -26,7 +22,7 @@ export abstract class ChatInputCommand
     interaction: ChatInputCommandInteraction
   ): Promise<void>
 
-  public toJSON(): RESTPostAPIApplicationCommandsJSONBody {
+  public toJSON() {
     return this.builder.toJSON()
   }
 }

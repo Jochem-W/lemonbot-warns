@@ -16,7 +16,7 @@ export class DumpJsonCommand extends ChatInputCommand {
     )
   }
 
-  public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
+  public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
     const users = await Prisma.user.findMany({

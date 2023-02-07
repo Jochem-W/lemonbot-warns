@@ -16,7 +16,6 @@ import {
   DiscordAPIError,
   FetchMemberOptions,
   Guild,
-  GuildMember,
   Interaction,
   RESTJSONErrorCodes,
   Team,
@@ -34,7 +33,7 @@ export function snowflakeToDateTime(snowflake: Snowflake) {
 export async function fetchMember(
   interaction: Interaction,
   options: FetchMemberOptions | UserResolvable
-): Promise<GuildMember | null> {
+) {
   const guild = await fetchGuild(interaction) // Possibly a bad idea because it can throw?
   try {
     return await guild.members.fetch(options)
@@ -55,7 +54,7 @@ export async function fetchChannel<T extends ChannelType>(
   id: Snowflake,
   type: T,
   options?: FetchChannelOptions
-): Promise<Extract<GuildBasedChannel, { type: T }>> {
+) {
   const channel = await clientOrGuild.channels.fetch(id, options)
   if (!channel) {
     throw new ChannelNotFoundError(id)

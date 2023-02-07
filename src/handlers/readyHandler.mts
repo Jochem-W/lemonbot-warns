@@ -21,7 +21,7 @@ export class ReadyHandler implements Handler<"ready"> {
   public readonly event = "ready"
   public readonly once = true
 
-  public async handle(client: Client<true>): Promise<void> {
+  public async handle(client: Client<true>) {
     console.log(`Running as: ${client.user.tag}`)
 
     let title = "Bot "
@@ -75,7 +75,7 @@ export class ReadyHandler implements Handler<"ready"> {
   }
 }
 
-async function getChangelog(): Promise<string | null> {
+async function getChangelog() {
   if (!Variables.commitHash) {
     return null
   }
@@ -174,7 +174,7 @@ function isArbitraryObject(
   return typeof potentialObject === "object" && potentialObject !== null
 }
 
-async function setVersion(): Promise<void> {
+async function setVersion() {
   if (!Variables.commitHash) {
     return
   }
@@ -192,15 +192,15 @@ async function setVersion(): Promise<void> {
   })
 }
 
-async function setState(status: State): Promise<void> {
+async function setState(status: State) {
   await writeFile("status", status, { encoding: "utf8" })
 }
 
-function setStateSync(status: State): void {
+function setStateSync(status: State) {
   writeFileSync("status", status, { encoding: "utf8" })
 }
 
-async function getState(): Promise<State> {
+async function getState() {
   try {
     return (await readFile("status", "utf8")) as State
   } catch (e) {
