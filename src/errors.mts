@@ -1,6 +1,6 @@
-import type { Command } from "./interfaces/command.mjs"
 import { DefaultConfig } from "./models/config.mjs"
 import type { CustomId } from "./models/customId.mjs"
+import type { Command } from "./types/command.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { FormResponse } from "./utilities/googleForms.mjs"

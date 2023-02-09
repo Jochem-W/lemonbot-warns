@@ -9,10 +9,10 @@ import { SearchCommand } from "./commands/searchCommand.mjs"
 import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
 import { StatusCommand } from "./commands/statusCommand.mjs"
 import { WarningsCommand } from "./commands/warningsCommand.mjs"
-import type { Command } from "./interfaces/command.mjs"
 import type { ChatInputCommand } from "./models/chatInputCommand.mjs"
 import type { MessageContextMenuCommand } from "./models/messageContextMenuCommand.mjs"
 import type { UserContextMenuCommand } from "./models/userContextMenuCommand.mjs"
+import type { Command } from "./types/command.mjs"
 import { Collection, CommandInteraction, Snowflake } from "discord.js"
 
 export const SlashCommands: ChatInputCommand[] = [

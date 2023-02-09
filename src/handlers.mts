@@ -8,7 +8,7 @@ import { MessageDeleteBulkHandler } from "./handlers/messageDeleteBulkHandler.mj
 import { MessageDeleteHandler } from "./handlers/messageDeleteHandler.mjs"
 import { MessageUpdateHandler } from "./handlers/messageUpdateHandler.mjs"
 import { ReadyHandler } from "./handlers/readyHandler.mjs"
-import type { Handler } from "./interfaces/handler.mjs"
+import type { Handler } from "./types/handler.mjs"
 import type { ClientEvents } from "discord.js"
 
 export const Handlers: Handler<keyof ClientEvents>[] = [

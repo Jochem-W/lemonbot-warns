@@ -10,9 +10,7 @@ import type {
   SlashCommandBuilder,
 } from "discord.js"
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export interface Command<T>
-  extends JSONEncodable<RESTPostAPIApplicationCommandsJSONBody> {
+export type Command<T> = {
   builder: SlashCommandBuilder | ContextMenuCommandBuilder
 
   handle(interaction: T): Promise<void>
@@ -30,4 +28,4 @@ export interface Command<T>
   handleAutocomplete?(
     interaction: AutocompleteInteraction
   ): Promise<ApplicationCommandOptionChoiceData[]>
-}
+} & JSONEncodable<RESTPostAPIApplicationCommandsJSONBody>

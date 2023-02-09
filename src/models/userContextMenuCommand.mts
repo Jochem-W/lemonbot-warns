@@ -1,4 +1,4 @@
-import type { Command } from "../interfaces/command.mjs"
+import type { Command } from "../types/command.mjs"
 import {
   ContextMenuCommandBuilder,
   UserContextMenuCommandInteraction,

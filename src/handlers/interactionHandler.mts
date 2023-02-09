@@ -5,8 +5,8 @@ import {
   NoMessageComponentHandlerError,
   reportError,
 } from "../errors.mjs"
-import type { Handler } from "../interfaces/handler.mjs"
 import { CustomId, InteractionScope } from "../models/customId.mjs"
+import type { Handler } from "../types/handler.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   Interaction,

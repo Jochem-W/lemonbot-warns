@@ -1,6 +1,6 @@
-import type { Handler } from "../interfaces/handler.mjs"
 import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"

@@ -5,8 +5,8 @@ import {
   NoPermissionError,
   reportError,
 } from "../errors.mjs"
-import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import type { Handler } from "../types/handler.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AutocompleteInteraction,

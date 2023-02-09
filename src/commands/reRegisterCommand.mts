@@ -6,9 +6,9 @@ import {
   UserContextMenuCommands,
 } from "../commands.mjs"
 import { CommandNotFoundByNameError } from "../errors.mjs"
-import type { Command } from "../interfaces/command.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import type { Command } from "../types/command.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"

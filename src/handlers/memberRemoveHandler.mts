@@ -1,5 +1,5 @@
-import type { Handler } from "../interfaces/handler.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { ChannelType, GuildMember, PartialGuildMember } from "discord.js"
 
