@@ -65,6 +65,7 @@ export class CheckBanAppealFormJob {
 
     const response = await Google.request<FormsResponsesList>({
       url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${start.toISO()}`,
+      retry: true,
     })
 
     if (!response.data.responses) {
