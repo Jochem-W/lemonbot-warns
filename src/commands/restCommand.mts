@@ -8,6 +8,7 @@ import {
   InternalRequest,
   PermissionFlagsBits,
   RequestMethod,
+  REST,
 } from "discord.js"
 import { STATUS_CODES } from "http"
 
@@ -58,6 +59,11 @@ export class RestCommand extends ChatInputCommand {
       .addStringOption((builder) =>
         builder.setName("body").setDescription("The JSON request body")
       )
+      .addStringOption((builder) =>
+        builder
+          .setName("token")
+          .setDescription("The bot token to use for the request")
+      )
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
@@ -81,7 +87,15 @@ export class RestCommand extends ChatInputCommand {
       options.query = new URLSearchParams(query)
     }
 
-    const response = await interaction.client.rest.raw(options)
+    const token = interaction.options.getString("token")
+    let rest
+    if (token !== null) {
+      rest = new REST().setToken(token)
+    } else {
+      rest = interaction.client.rest
+    }
+
+    const response = await rest.raw(options)
     const json = JSON.stringify(
       (await response.body.json()) as unknown,
       undefined,
