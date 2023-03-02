@@ -8,6 +8,7 @@ const GoogleAuth = new auth.GoogleAuth({
   scopes: [
     "https://www.googleapis.com/auth/forms.responses.readonly",
     "https://www.googleapis.com/auth/forms.body.readonly",
+    "https://www.googleapis.com/auth/spreadsheets.readonly",
   ],
 })
 
