@@ -1,3 +1,4 @@
+import { Forms, Prisma, S3, Sheets } from "../clients.mjs"
 import { NoValidCodeError, SubcommandNotFoundError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
@@ -93,6 +94,10 @@ export class EvalCommand extends ChatInputCommand {
 
     const ret = await (AsyncFunction(code) as () => Promise<unknown>).bind({
       interaction,
+      Prisma,
+      S3,
+      Forms,
+      Sheets,
     })()
 
     if (ret) {
