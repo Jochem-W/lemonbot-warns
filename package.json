@@ -26,7 +26,7 @@
     "@types/cron": "^2.0.0",
     "@types/luxon": "^3.2.0",
     "@types/nanoid-dictionary": "^4.2.0",
-    "@types/node": "^18.14.2",
+    "@types/node": "^18.14.4",
     "@types/whatwg-mimetype": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
