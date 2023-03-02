@@ -1,51 +1,32 @@
-import { Google } from "../clients.mjs"
+import { Forms } from "../clients.mjs"
 import { InvalidFormResponseError } from "../errors.mjs"
-
-export type FormsGet = {
-  formId: string
-  info: object
-  settings: object
-  revisionId: string
-  responderUri: string
-  items: object[]
-}
-
-export type FormsResponsesList = {
-  responses?: FormResponse[]
-}
-
-export type FormResponse = {
-  responseId: string
-  lastSubmittedTime: string
-  answers: Record<
-    string,
-    {
-      questionId: string
-      textAnswers: {
-        answers: {
-          value: string
-        }[]
-      }
-    }
-  >
-}
+import type { forms_v1 } from "@googleapis/forms"
 
 export function getFirstTextAnswer(
-  response: FormResponse,
+  response: forms_v1.Schema$FormResponse,
   questionId: string
 ): string
 export function getFirstTextAnswer(
-  response: FormResponse,
+  response: forms_v1.Schema$FormResponse,
   questionId: string,
   throwOnMissing: boolean
 ): string | null
 
 export function getFirstTextAnswer(
-  response: FormResponse,
+  response: forms_v1.Schema$FormResponse,
   questionId: string,
   throwOnMissing?: boolean
 ) {
-  const answer = response.answers[questionId]?.textAnswers.answers.at(0)?.value
+  if (!response.answers) {
+    if (throwOnMissing) {
+      throw new InvalidFormResponseError(response)
+    }
+
+    return null
+  }
+
+  const answer =
+    response.answers[questionId]?.textAnswers?.answers?.at(0)?.value
   if (!answer && throwOnMissing !== false) {
     throw new InvalidFormResponseError(response)
   }
@@ -53,7 +34,10 @@ export function getFirstTextAnswer(
   return answer ?? null
 }
 
-export function getFormEditUrl(formId: string, responseId?: string) {
+export function getFormEditUrl(
+  formId: string,
+  responseId?: string | null | undefined
+) {
   const url = new URL(`https://docs.google.com/forms/d/${formId}/edit`)
   if (responseId) {
     url.hash = `#response=${responseId}`
@@ -63,9 +47,10 @@ export function getFormEditUrl(formId: string, responseId?: string) {
 }
 
 export async function getFormResponderUri(formId: string) {
-  const response = await Google.request<FormsGet>({
-    url: `https://forms.googleapis.com/v1/forms/${formId}`,
-  })
+  const response = await Forms.forms.get({ formId })
+  if (!response.data.responderUri) {
+    throw new InvalidFormResponseError(response.data)
+  }
 
   return response.data.responderUri
 }

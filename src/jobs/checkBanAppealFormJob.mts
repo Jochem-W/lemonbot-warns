@@ -1,10 +1,9 @@
-import { Google } from "../clients.mjs"
+import { Forms } from "../clients.mjs"
 import { WarningsCommand } from "../commands/warningsCommand.mjs"
 import { reportError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
-import type { FormsResponsesList } from "../utilities/googleForms.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
@@ -63,9 +62,9 @@ export class CheckBanAppealFormJob {
     const end = DateTime.now().toUTC().startOf("minute")
     const start = end.minus({ minutes: 1 })
 
-    const response = await Google.request<FormsResponsesList>({
-      url: `https://forms.googleapis.com/v1/forms/1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU/responses?filter=timestamp >= ${start.toISO()}`,
-      retry: true,
+    const response = await Forms.forms.responses.list({
+      formId: "1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU",
+      filter: `timestamp >= ${start.toISO()}`,
     })
 
     if (!response.data.responses) {
@@ -73,10 +72,14 @@ export class CheckBanAppealFormJob {
     }
 
     for (const formResponse of response.data.responses) {
-      if (
-        DateTime.fromISO(formResponse.lastSubmittedTime).diff(end).toMillis() >=
-        0
-      ) {
+      let submittedTime
+      if (formResponse.lastSubmittedTime) {
+        submittedTime = DateTime.fromISO(formResponse.lastSubmittedTime)
+      }
+
+      submittedTime ??= DateTime.now()
+
+      if (submittedTime.diff(end).toMillis() >= 0) {
         return
       }
 
@@ -109,9 +112,7 @@ export class CheckBanAppealFormJob {
             formResponse.responseId
           ).toString()
         )
-        .setTimestamp(
-          DateTime.fromISO(formResponse.lastSubmittedTime).toMillis()
-        )
+        .setTimestamp(submittedTime.toMillis())
 
       const contactMethod = getFirstTextAnswer(
         formResponse,

@@ -3,7 +3,7 @@ import type { CustomId } from "./models/customId.mjs"
 import type { Command } from "./types/command.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
-import type { FormResponse } from "./utilities/googleForms.mjs"
+import type { forms_v1 } from "@googleapis/forms"
 import {
   Attachment,
   Channel,
@@ -180,7 +180,9 @@ export class NoMessageRevisionsError extends CustomError {
 }
 
 export class InvalidFormResponseError extends CustomError {
-  public constructor(response: FormResponse) {
+  public constructor(
+    response: forms_v1.Schema$FormResponse | forms_v1.Schema$Form
+  ) {
     super(JSON.stringify(response, undefined, 4))
   }
 }
