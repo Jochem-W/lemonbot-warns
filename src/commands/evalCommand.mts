@@ -96,16 +96,26 @@ export class EvalCommand extends ChatInputCommand {
     })()
 
     if (ret) {
-      const json = JSON.stringify(ret, undefined, 4)
+      let retString
+      let json = false
+      if (typeof ret === "string") {
+        retString = ret
+      } else {
+        retString = JSON.stringify(ret)
+        json = true
+      }
 
-      const files: AttachmentBuilder[] = []
       const embed = makeEmbed("eval", DefaultConfig.icons.success)
-      if (json.length <= 2036) {
-        embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)
+      const files: AttachmentBuilder[] = []
+
+      if (retString.length <= 2036) {
+        embed.setDescription(
+          `\`\`\`${json ? "json" : ""}\n${retString}\n\`\`\``
+        )
       } else {
         files.push(
-          new AttachmentBuilder(Buffer.from(json), {
-            name: "eval.json",
+          new AttachmentBuilder(Buffer.from(retString), {
+            name: json ? "eval.json" : "eval.txt",
           })
         )
       }
