@@ -8,6 +8,7 @@ import {
   AttachmentBuilder,
   ChannelType,
   ChatInputCommandInteraction,
+  EmbedBuilder,
   PermissionFlagsBits,
 } from "discord.js"
 
@@ -110,13 +111,15 @@ export class EvalCommand extends ChatInputCommand {
         json = true
       }
 
-      const embed = makeEmbed("eval", DefaultConfig.icons.success)
+      const embeds: EmbedBuilder[] = []
       const files: AttachmentBuilder[] = []
 
       if (retString.length <= 2036) {
+        const embed = makeEmbed("eval", DefaultConfig.icons.success)
         embed.setDescription(
           `\`\`\`${json ? "json" : ""}\n${retString}\n\`\`\``
         )
+        embeds.push(embed)
       } else {
         files.push(
           new AttachmentBuilder(Buffer.from(retString), {
@@ -125,7 +128,7 @@ export class EvalCommand extends ChatInputCommand {
         )
       }
 
-      await interaction.editReply({ embeds: [embed], files })
+      await interaction.editReply({ embeds, files })
     }
   }
 }
