@@ -4,6 +4,7 @@ specifiers:
   '@aws-sdk/client-s3': ^3.282.0
   '@aws-sdk/lib-storage': ^3.282.0
   '@googleapis/forms': ^2.0.0
+  '@googleapis/sheets': ^4.0.1
   '@octokit/rest': ^19.0.7
   '@prisma/client': ^4.11.0
   '@trivago/prettier-plugin-sort-imports': ^4.1.1
@@ -38,6 +39,7 @@ dependencies:
   '@aws-sdk/client-s3': 3.282.0
   '@aws-sdk/lib-storage': 3.282.0_six2yogqsno52bn4by6roixts4
   '@googleapis/forms': 2.0.0
+  '@googleapis/sheets': 4.0.1
   '@octokit/rest': 19.0.7
   '@prisma/client': 4.11.0_prisma@4.11.0
   archiver: 5.3.1
@@ -1229,6 +1231,16 @@ packages:
 
   /@googleapis/forms/2.0.0:
     resolution: {integrity: sha512-dwG/jO1xQXGSvm1SM2Q9oVug98ZiksGoX5btBzwNzd70W58XZgfWnIQzRUv5ASTmDJU5K1wrVm1ahDnJb1gSPw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      googleapis-common: 6.0.4
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+    dev: false
+
+  /@googleapis/sheets/4.0.1:
+    resolution: {integrity: sha512-1BTBNiUAKqcq10vjt5rZIZBSWP9bHurgEy3CU2dd70rB2IrBlk2xQbYGHRezuFp6pKv2WUDLiuuQYq7l6mpGfw==}
     engines: {node: '>=12.0.0'}
     dependencies:
       googleapis-common: 6.0.4
