@@ -50,7 +50,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
     const users = new Map<Snowflake, User>()
     for (const warning of data) {
-      if (warning.createdBy in users) {
+      if (users.has(warning.createdBy)) {
         continue
       }
 
@@ -92,7 +92,7 @@ export class StatisticsCommand extends ChatInputCommand {
       cursor = cursor.plus({ days: 1 })
     }
 
-    for (const user in series) {
+    for (const user of series.keys()) {
       archive.append(
         stringify(series.get(user) ?? [], {
           columns: ["date", "count"],
@@ -206,7 +206,7 @@ export class StatisticsCommand extends ChatInputCommand {
       cursor = cursor.plus({ days: 1 })
     }
 
-    for (const user in series) {
+    for (const user of series.keys()) {
       archive.append(
         stringify(series.get(user) ?? [], {
           columns: ["date", "count"],
