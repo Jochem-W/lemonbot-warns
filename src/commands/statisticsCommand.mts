@@ -48,15 +48,14 @@ export class StatisticsCommand extends ChatInputCommand {
       createdAt: DateTime.fromJSDate(warning.createdAt, { zone: "utc" }),
     }))
 
-    const users = new Map<Snowflake, User>()
+    const users: Record<Snowflake, User> = {}
     for (const warning of data) {
       if (warning.createdBy in users) {
         continue
       }
 
-      users.set(
-        warning.createdBy,
-        await interaction.client.users.fetch(warning.createdBy)
+      users[warning.createdBy] = await interaction.client.users.fetch(
+        warning.createdBy
       )
     }
 
@@ -65,28 +64,24 @@ export class StatisticsCommand extends ChatInputCommand {
       return
     }
 
-    const series = new Map<Snowflake, { date: string; count: number }[]>()
+    const series: Record<Snowflake, { date: string; count: number }[]> = {}
     while (cursor.diffNow("days").days < 0) {
       const warnings = data.filter((warning) =>
         warning.createdAt.hasSame(cursor as DateTime, "day")
       )
 
-      for (const user of users.values()) {
+      for (const user of Object.values(users)) {
         let count = warnings.filter(
           (warning) => warning.createdBy === user.id
         ).length
-        let value = series.get(user.tag)
-        if (!value) {
-          value = []
-          series.set(user.tag, value)
-        }
+        series[user.tag] ??= []
 
-        const last = value.at(-1)
+        const last = series[user.tag]?.at(-1)
         if (last) {
           count += last.count
         }
 
-        value.push({ date: cursor.toISODate(), count })
+        series[user.tag]?.push({ date: cursor.toISODate(), count })
       }
 
       cursor = cursor.plus({ days: 1 })
@@ -94,7 +89,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
     for (const user in series) {
       archive.append(
-        stringify(series.get(user) ?? [], {
+        stringify(series[user] ?? [], {
           columns: ["date", "count"],
           header: true,
         }),
@@ -131,13 +126,13 @@ export class StatisticsCommand extends ChatInputCommand {
     }
 
     let data = []
-    const members = new Map<Snowflake, GuildMember>()
+    const members: Record<Snowflake, GuildMember> = {}
     for (const [id, member] of await guild.members.fetch()) {
       if (member.user.bot || !member.roles.cache.hasAny(...roleIds)) {
         continue
       }
 
-      members.set(id, member)
+      members[id] = member
 
       data.push(
         ...(
@@ -179,28 +174,24 @@ export class StatisticsCommand extends ChatInputCommand {
       return
     }
 
-    const series = new Map<Snowflake, { date: string; count: number }[]>()
+    const series: Record<Snowflake, { date: string; count: number }[]> = {}
     while (cursor.diffNow("days").days < 0) {
       const warnings = data.filter((message) =>
         message.timestamp.hasSame(cursor as DateTime, "day")
       )
 
-      for (const member of members.values()) {
+      for (const member of Object.values(members)) {
         let count = warnings.filter(
           (message) => message.userId === member.id
         ).length
-        let value = series.get(member.user.tag)
-        if (!value) {
-          value = []
-          series.set(member.user.tag, value)
-        }
+        series[member.user.tag] ??= []
 
-        const last = value.at(-1)
+        const last = series[member.user.tag]?.at(-1)
         if (last) {
           count += last.count
         }
 
-        value.push({ date: cursor.toISODate(), count })
+        series[member.user.tag]?.push({ date: cursor.toISODate(), count })
       }
 
       cursor = cursor.plus({ days: 1 })
@@ -208,7 +199,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
     for (const user in series) {
       archive.append(
-        stringify(series.get(user) ?? [], {
+        stringify(series[user] ?? [], {
           columns: ["date", "count"],
           header: true,
         }),
