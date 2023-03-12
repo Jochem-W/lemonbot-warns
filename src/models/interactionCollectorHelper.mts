@@ -10,7 +10,7 @@ import {
   InteractionReplyOptions,
   MessageActionRowComponentBuilder,
   RESTJSONErrorCodes,
-  WebhookEditMessageOptions,
+  WebhookMessageEditOptions,
 } from "discord.js"
 import { Duration } from "luxon"
 
@@ -93,7 +93,7 @@ export class InteractionCollectorHelper {
     return this
   }
 
-  public updateComponents(components: WebhookEditMessageOptions["components"]) {
+  public updateComponents(components: WebhookMessageEditOptions["components"]) {
     this.components =
       components?.map((row) => {
         let builder: ActionRowBuilder<MessageActionRowComponentBuilder>
