@@ -9,7 +9,11 @@ import {
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { CustomId, InteractionScope } from "../models/customId.mjs"
+import {
+  CustomId,
+  customIdToString,
+  InteractionScope,
+} from "../models/customId.mjs"
 import {
   fetchChannel,
   fetchGuild,
@@ -533,12 +537,12 @@ export class WarnCommand extends ChatInputCommand {
                 .setLabel("Dismiss")
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId(
-                  new CustomId(
-                    InteractionScope.Instance,
-                    interaction.commandId,
-                    "dismiss",
-                    [newChannel.id, options.targetMember.id]
-                  ).toString()
+                  customIdToString({
+                    scope: InteractionScope.Instance,
+                    primary: interaction.commandId,
+                    secondary: "dismiss",
+                    tertiary: [newChannel.id, options.targetMember.id],
+                  })
                 ),
             ]
           ),
@@ -656,6 +660,10 @@ export class WarnCommand extends ChatInputCommand {
     interaction: MessageComponentInteraction,
     data: CustomId
   ) {
+    if (!data.tertiary) {
+      throw new InvalidCustomIdError(data)
+    }
+
     if (data.secondary !== "dismiss") {
       return
     }

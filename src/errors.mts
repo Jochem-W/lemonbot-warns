@@ -1,5 +1,6 @@
 import { DefaultConfig } from "./models/config.mjs"
 import type { CustomId } from "./models/customId.mjs"
+import { customIdToString } from "./models/customId.mjs"
 import type { Command } from "./types/command.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
@@ -114,7 +115,11 @@ export class ImageOnlyError extends BotError {
 
 export class InvalidCustomIdError extends BotError {
   public constructor(customId: string | CustomId) {
-    super(`Invalid custom ID "${customId.toString()}".`)
+    if (typeof customId !== "string") {
+      customId = customIdToString(customId)
+    }
+
+    super(`Invalid custom ID "${customId}".`)
   }
 }
 
@@ -158,6 +163,18 @@ export class InvalidAuditLogEntryError extends BotError {
 export class NoValidCodeError extends BotError {
   public constructor(message: string) {
     super(message)
+  }
+}
+
+export class ButtonNotFoundError extends BotError {
+  public constructor(customId: CustomId) {
+    super(`Couldn't find a button for custom ID ${customIdToString(customId)}`)
+  }
+}
+
+export class ModalNotFoundError extends BotError {
+  public constructor(customId: CustomId) {
+    super(`Couldn't find a modal for custom ID ${customIdToString(customId)}`)
   }
 }
 

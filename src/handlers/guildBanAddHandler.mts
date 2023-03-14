@@ -5,10 +5,18 @@ import {
   PenaltyNotFoundError,
 } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import { customIdToString, InteractionScope } from "../models/customId.mjs"
 import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
-import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
+import {
+  ActionRowBuilder,
+  AuditLogEvent,
+  ButtonBuilder,
+  ButtonStyle,
+  ChannelType,
+  GuildBan,
+} from "discord.js"
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"
@@ -134,6 +142,20 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             text: `Banned by ${auditLogEntry.executor.tag}`,
             iconURL: auditLogEntry.executor.displayAvatarURL(),
           }),
+      ],
+      components: [
+        new ActionRowBuilder<ButtonBuilder>().addComponents([
+          new ButtonBuilder()
+            .setStyle(ButtonStyle.Secondary)
+            .setLabel("Edit description")
+            .setCustomId(
+              customIdToString({
+                scope: InteractionScope.Button,
+                primary: "edit-warn",
+                secondary: prismaBan.id.toString(),
+              })
+            ),
+        ]),
       ],
     })
   }

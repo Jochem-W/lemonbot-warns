@@ -1,7 +1,11 @@
 import { Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { CustomId, InteractionScope } from "../models/customId.mjs"
+import {
+  customIdToString,
+  InteractionScope,
+  stringToCustomId,
+} from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { WarnCommand } from "./warnCommand.mjs"
 import type { Warning, Penalty, Reason } from "@prisma/client"
@@ -114,24 +118,20 @@ export class SearchCommand extends ChatInputCommand {
           new ButtonBuilder()
             .setStyle(ButtonStyle.Primary)
             .setCustomId(
-              new CustomId(
-                InteractionScope.Collector,
-                "previous",
-                "",
-                []
-              ).toString()
+              customIdToString({
+                scope: InteractionScope.Collector,
+                primary: "previous",
+              })
             )
             .setDisabled(start === 0)
             .setEmoji("⬅️"),
           new ButtonBuilder()
             .setStyle(ButtonStyle.Primary)
             .setCustomId(
-              new CustomId(
-                InteractionScope.Collector,
-                "next",
-                "",
-                []
-              ).toString()
+              customIdToString({
+                scope: InteractionScope.Collector,
+                primary: "next",
+              })
             )
             .setDisabled(end >= total)
             .setEmoji("➡️"),
@@ -191,7 +191,7 @@ export class SearchCommand extends ChatInputCommand {
         return
       }
 
-      const customId = CustomId.fromString(collected.customId)
+      const customId = stringToCustomId(collected.customId)
       switch (customId.primary) {
         case "next":
           skip++

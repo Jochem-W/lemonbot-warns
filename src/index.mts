@@ -2,8 +2,22 @@ import { SlashCommands } from "./commands.mjs"
 import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
 import { reportError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
+import {
+  Buttons,
+  Modals,
+  RegisteredButtons,
+  RegisteredModals,
+} from "./interactable.mjs"
 import { Variables } from "./variables.mjs"
 import { Client, GatewayIntentBits, Partials } from "discord.js"
+
+for (const button of Buttons) {
+  RegisteredButtons.set(button.name, button)
+}
+
+for (const modal of Modals) {
+  RegisteredModals.set(modal.name, modal)
+}
 
 const client = new Client({
   intents: [

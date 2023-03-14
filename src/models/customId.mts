@@ -1,6 +1,13 @@
 import { InvalidCustomIdError } from "../errors.mjs"
 
-type InteractionScope = "i" | "c"
+export type CustomId = {
+  scope: InteractionScope
+  primary: string
+  secondary?: string
+  tertiary?: string[]
+}
+
+type InteractionScope = "i" | "c" | "b" | "m"
 export const InteractionScope = {
   get Instance() {
     return "i" as const
@@ -8,42 +15,30 @@ export const InteractionScope = {
   get Collector() {
     return "c" as const
   },
+  get Button() {
+    return "b" as const
+  },
+  get Modal() {
+    return "m" as const
+  },
 }
 
-export class CustomId {
-  public scope: InteractionScope
-  public primary: string
-  public secondary: string
-  public tertiary: string[]
-
-  public constructor(
-    scope: InteractionScope,
-    primary: string,
-    secondary: string,
-    tertiary: string[]
-  ) {
-    this.scope = scope
-    this.primary = primary
-    this.secondary = secondary
-    this.tertiary = tertiary
+export function stringToCustomId(data: string) {
+  const [scope, primary, secondary, ...tertiary] = data.split(":")
+  if (scope === undefined || primary === undefined || secondary === undefined) {
+    throw new InvalidCustomIdError(data)
   }
 
-  public static fromString(data: string) {
-    const [scope, primary, secondary, ...tertiary] = data.split(":")
-    if (
-      scope === undefined ||
-      primary === undefined ||
-      secondary === undefined
-    ) {
-      throw new InvalidCustomIdError(data)
-    }
+  return {
+    scope,
+    primary,
+    secondary,
+    tertiary,
+  } as CustomId
+}
 
-    return new CustomId(scope as InteractionScope, primary, secondary, tertiary)
-  }
-
-  public toString() {
-    return `${this.scope}:${this.primary}:${
-      this.secondary
-    }:${this.tertiary.join(":")}`
-  }
+export function customIdToString(data: CustomId) {
+  return `${data.scope}:${data.primary}:${data.secondary ?? ""}:${
+    data.tertiary?.join(":") ?? ""
+  }`
 }

@@ -5,8 +5,8 @@ import {
   NoPermissionError,
   reportError,
 } from "../errors.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
+import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AutocompleteInteraction,
@@ -60,9 +60,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
 
     if (interaction instanceof CommandInteraction) {
       await interaction.deferReply({
-        ephemeral: !DefaultConfig.guild.privateChannels.includes(
-          interaction.channelId
-        ),
+        ephemeral: !isInPrivateChannel(interaction),
       })
       try {
         await CommandHandler.handleCommand(interaction)

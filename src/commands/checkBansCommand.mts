@@ -1,6 +1,10 @@
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { CustomId, InteractionScope } from "../models/customId.mjs"
+import {
+  customIdToString,
+  InteractionScope,
+  stringToCustomId,
+} from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { fetchGuild } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
@@ -50,24 +54,20 @@ export class CheckBansCommand extends ChatInputCommand {
           new ButtonBuilder()
             .setStyle(ButtonStyle.Primary)
             .setCustomId(
-              new CustomId(
-                InteractionScope.Collector,
-                "previous",
-                "",
-                []
-              ).toString()
+              customIdToString({
+                scope: InteractionScope.Collector,
+                primary: "previous",
+              })
             )
             .setDisabled(options.page === 0)
             .setEmoji("⬅️"),
           new ButtonBuilder()
             .setStyle(ButtonStyle.Primary)
             .setCustomId(
-              new CustomId(
-                InteractionScope.Collector,
-                "next",
-                "",
-                []
-              ).toString()
+              customIdToString({
+                scope: InteractionScope.Collector,
+                primary: "next",
+              })
             )
             .setDisabled(options.page >= lastPage)
             .setEmoji("➡️"),
@@ -112,7 +112,7 @@ export class CheckBansCommand extends ChatInputCommand {
         return
       }
 
-      const customId = CustomId.fromString(collected.customId)
+      const customId = stringToCustomId(collected.customId)
       switch (customId.primary) {
         case "next":
           page++
