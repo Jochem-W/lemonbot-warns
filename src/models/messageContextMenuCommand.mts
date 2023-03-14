@@ -1,5 +1,6 @@
 import type { Command } from "../types/command.mjs"
 import {
+  ApplicationCommandType,
   ContextMenuCommandBuilder,
   MessageContextMenuCommandInteraction,
 } from "discord.js"
@@ -12,6 +13,7 @@ export abstract class MessageContextMenuCommand
 
   protected constructor(name: string, defaultMemberPermissions: bigint) {
     this.builder
+      .setType(ApplicationCommandType.Message)
       .setName(name)
       .setDefaultMemberPermissions(defaultMemberPermissions)
       .setDMPermission(false)
