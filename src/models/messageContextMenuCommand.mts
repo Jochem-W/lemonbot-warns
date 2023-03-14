@@ -10,8 +10,11 @@ export abstract class MessageContextMenuCommand
   public builder = new ContextMenuCommandBuilder()
   public handleAutocomplete = undefined
 
-  protected constructor(name: string) {
-    this.builder.setName(name)
+  protected constructor(name: string, defaultMemberPermissions: bigint) {
+    this.builder
+      .setName(name)
+      .setDefaultMemberPermissions(defaultMemberPermissions)
+      .setDMPermission(false)
   }
 
   public abstract handle(
