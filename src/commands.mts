@@ -2,6 +2,7 @@ import { CheckBansCommand } from "./commands/checkBansCommand.mjs"
 import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { EvalCommand } from "./commands/evalCommand.mjs"
+import { EvalMessageCommand } from "./commands/evalMessageCommand"
 import { HistoryCommand } from "./commands/historyCommand.mjs"
 import { RestCommand } from "./commands/restCommand.mjs"
 import { S3Command } from "./commands/s3Command.mjs"
@@ -29,7 +30,9 @@ export const SlashCommands: ChatInputCommand[] = [
   new EvalCommand(),
 ]
 
-export const MessageContextMenuCommands: MessageContextMenuCommand[] = []
+export const MessageContextMenuCommands: MessageContextMenuCommand[] = [
+  new EvalMessageCommand(),
+]
 
 export const UserContextMenuCommands: UserContextMenuCommand[] = []
 

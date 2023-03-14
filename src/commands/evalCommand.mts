@@ -1,13 +1,12 @@
 import { Forms, Prisma, S3, Sheets } from "../clients.mjs"
-import { NoValidCodeError, SubcommandNotFoundError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { ensureOwner, fetchChannel } from "../utilities/discordUtilities.mjs"
+import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AttachmentBuilder,
-  ChannelType,
   ChatInputCommandInteraction,
+  CommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
 } from "discord.js"
@@ -18,82 +17,19 @@ const AsyncFunction = async function () {}.constructor
 export class EvalCommand extends ChatInputCommand {
   public constructor() {
     super("eval", "Run arbitrary code", PermissionFlagsBits.Administrator)
-    this.builder
-      .addSubcommand((subcommandGroup) =>
-        subcommandGroup
-          .setName("string")
-          .setDescription("Run code from a string")
-          .addStringOption((builder) =>
-            builder
-              .setName("code")
-              .setDescription("The code to run")
-              .setRequired(true)
-          )
-      )
-      .addSubcommand((subcommandGroup) =>
-        subcommandGroup
-          .setName("message")
-          .setDescription("Run code from a message")
-          .addStringOption((builder) =>
-            builder
-              .setName("id")
-              .setDescription("The ID of the message containing code")
-              .setRequired(true)
-          )
-          .addChannelOption((builder) =>
-            builder
-              .setName("channel")
-              .setDescription("The ID of the message containing code")
-          )
-      )
+    this.builder.addStringOption((builder) =>
+      builder
+        .setName("code")
+        .setDescription("The code to run")
+        .setRequired(true)
+    )
   }
 
-  public async handle(interaction: ChatInputCommandInteraction) {
-    await ensureOwner(interaction)
-
-    let code = '"use strict";'
-
-    const subcommand = interaction.options.getSubcommand(true)
-    switch (subcommand) {
-      case "string":
-        code += interaction.options.getString("code", true)
-        break
-      case "message":
-        {
-          let channel = interaction.options.getChannel("channel")
-          if (channel !== null) {
-            channel = await fetchChannel(
-              interaction.client,
-              channel.id,
-              ChannelType.GuildText
-            )
-          } else {
-            channel = await fetchChannel(
-              interaction.client,
-              interaction.channelId,
-              ChannelType.GuildText
-            )
-          }
-
-          const message = await channel.messages.fetch(
-            interaction.options.getString("id", true)
-          )
-
-          const match = message.content.match(/^```ts\n(.*)\n```$/s)?.[1]
-          if (!match) {
-            throw new NoValidCodeError(
-              "The specified message doesn't contain valid code"
-            )
-          }
-
-          code += match
-        }
-        break
-      default:
-        throw new SubcommandNotFoundError(interaction, subcommand)
-    }
-
-    const ret = await (AsyncFunction(code) as () => Promise<unknown>).bind({
+  public static async eval(interaction: CommandInteraction, code: string) {
+    code = `"use strict";${code}`
+    const returnValue = await (
+      AsyncFunction(code) as () => Promise<unknown>
+    ).bind({
       interaction,
       Prisma,
       S3,
@@ -101,34 +37,44 @@ export class EvalCommand extends ChatInputCommand {
       Sheets,
     })()
 
-    if (ret) {
-      let retString
-      let json = false
-      if (typeof ret === "string") {
-        retString = ret
-      } else {
-        retString = JSON.stringify(ret)
-        json = true
-      }
-
-      const embeds: EmbedBuilder[] = []
-      const files: AttachmentBuilder[] = []
-
-      if (retString.length <= 2036) {
-        const embed = makeEmbed("eval", DefaultConfig.icons.success)
-        embed.setDescription(
-          `\`\`\`${json ? "json" : ""}\n${retString}\n\`\`\``
-        )
-        embeds.push(embed)
-      } else {
-        files.push(
-          new AttachmentBuilder(Buffer.from(retString), {
-            name: json ? "eval.json" : "eval.txt",
-          })
-        )
-      }
-
-      await interaction.editReply({ embeds, files })
+    if (!returnValue) {
+      return
     }
+
+    let returnString
+    let json = false
+    if (typeof returnValue === "string") {
+      returnString = returnValue
+    } else {
+      returnString = JSON.stringify(returnValue, undefined, 4)
+      json = true
+    }
+
+    const embeds: EmbedBuilder[] = []
+    const files: AttachmentBuilder[] = []
+
+    if (returnString.length <= 2036) {
+      const embed = makeEmbed("eval", DefaultConfig.icons.success)
+      embed.setDescription(
+        `\`\`\`${json ? "json" : ""}\n${returnString}\n\`\`\``
+      )
+      embeds.push(embed)
+    } else {
+      files.push(
+        new AttachmentBuilder(Buffer.from(returnString), {
+          name: json ? "eval.json" : "eval.txt",
+        })
+      )
+    }
+
+    await interaction.editReply({ embeds, files })
+  }
+
+  public async handle(interaction: ChatInputCommandInteraction) {
+    await ensureOwner(interaction)
+    await EvalCommand.eval(
+      interaction,
+      interaction.options.getString("code", true)
+    )
   }
 }
