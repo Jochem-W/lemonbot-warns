@@ -9,11 +9,8 @@ import {
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import {
-  CustomId,
-  customIdToString,
-  InteractionScope,
-} from "../models/customId.mjs"
+import { customIdToString, InteractionScope } from "../models/customId.mjs"
+import type { CustomId } from "../models/customId.mjs"
 import {
   fetchChannel,
   fetchGuild,
@@ -25,7 +22,6 @@ import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import {
   ActionRowBuilder,
-  BanOptions,
   ButtonBuilder,
   ButtonStyle,
   channelMention,
@@ -39,7 +35,6 @@ import {
   hyperlink,
   inlineCode,
   italic,
-  MessageActionRowComponentBuilder,
   MessageComponentInteraction,
   PermissionFlagsBits,
   RESTJSONErrorCodes,
@@ -47,6 +42,7 @@ import {
   User,
   userMention,
 } from "discord.js"
+import type { BanOptions, MessageActionRowComponentBuilder } from "discord.js"
 import { DateTime, Duration } from "luxon"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"

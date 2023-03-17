@@ -9,11 +9,11 @@ import {
   EmbedBuilder,
   GuildMember,
   inlineCode,
-  InteractionReplyOptions,
   PermissionFlagsBits,
   time,
   User,
 } from "discord.js"
+import type { InteractionReplyOptions } from "discord.js"
 
 export class WarningsCommand extends ChatInputCommand {
   public constructor() {

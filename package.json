@@ -5,14 +5,14 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.290.0",
-    "@aws-sdk/lib-storage": "^3.290.0",
+    "@aws-sdk/client-s3": "^3.293.0",
+    "@aws-sdk/lib-storage": "^3.293.0",
     "@googleapis/forms": "^2.0.0",
-    "@googleapis/sheets": "^4.0.1",
+    "@googleapis/sheets": "^4.0.2",
     "@octokit/rest": "^19.0.7",
     "@prisma/client": "^4.11.0",
     "archiver": "^5.3.1",
-    "cron": "^2.2.0",
+    "cron": "^2.3.0",
     "csv": "^6.2.8",
     "discord.js": "^14.8.0",
     "luxon": "^3.3.0",
@@ -22,7 +22,9 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
-    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@tsconfig/esm": "^1.0.2",
+    "@tsconfig/node18": "^1.0.1",
+    "@tsconfig/strictest": "^1.0.2",
     "@types/archiver": "^5.3.2",
     "@types/cron": "^2.0.0",
     "@types/luxon": "^3.2.0",
@@ -35,7 +37,7 @@
     "eslint-config-prettier": "^8.7.0",
     "prettier": "^2.8.4",
     "prisma": "^4.11.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.2"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.7",

@@ -16,9 +16,9 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   Guild,
-  MessageActionRowComponentBuilder,
   PermissionFlagsBits,
 } from "discord.js"
+import type { MessageActionRowComponentBuilder } from "discord.js"
 
 export class SearchCommand extends ChatInputCommand {
   public constructor() {

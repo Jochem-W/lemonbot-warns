@@ -1,10 +1,14 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "extends": ["@tsconfig/node18/tsconfig", "@tsconfig/esm/tsconfig", "@tsconfig/strictest/tsconfig"],
   "compilerOptions": {
     "outDir": "dist",
     "lib": [
       "DOM"
     ],
-    "sourceMap": true
+    "sourceMap": true,
+
+    // The below lines are needed until @tsconfig/strict gets updated
+    "importsNotUsedAsValues": null,
+    "verbatimModuleSyntax": true
   }
 }

@@ -2,16 +2,19 @@ import { S3 } from "../clients.mjs"
 import { Variables } from "../variables.mjs"
 import {
   GetObjectCommand,
-  GetObjectCommandInput,
   HeadObjectCommand,
-  HeadObjectCommandInput,
   ListObjectsV2Command,
+  NotFound,
+} from "@aws-sdk/client-s3"
+import type {
+  GetObjectCommandInput,
+  HeadObjectCommandInput,
   ListObjectsV2CommandInput,
   ListObjectsV2CommandOutput,
-  NotFound,
   PutObjectCommandInput,
 } from "@aws-sdk/client-s3"
-import { Options, Upload } from "@aws-sdk/lib-storage"
+import { Upload } from "@aws-sdk/lib-storage"
+import type { Options } from "@aws-sdk/lib-storage"
 import type { Attachment } from "discord.js"
 
 export async function uploadAttachment(attachment: Attachment) {

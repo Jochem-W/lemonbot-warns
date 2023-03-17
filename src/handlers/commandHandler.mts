@@ -8,11 +8,8 @@ import {
 import type { Handler } from "../types/handler.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
-import {
-  AutocompleteInteraction,
-  CommandInteraction,
-  Interaction,
-} from "discord.js"
+import { AutocompleteInteraction, CommandInteraction } from "discord.js"
+import type { Interaction } from "discord.js"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
   public readonly event = "interactionCreate"

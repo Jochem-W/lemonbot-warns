@@ -1,16 +1,10 @@
 import { Prisma } from "../clients.mjs"
 import { InvalidCustomIdError } from "../errors.mjs"
-import {
-  CustomId,
-  customIdToString,
-  InteractionScope,
-} from "../models/customId.mjs"
+import { customIdToString, InteractionScope } from "../models/customId.mjs"
+import type { CustomId } from "../models/customId.mjs"
 import type { Button } from "../types/button.mjs"
-import {
-  ButtonInteraction,
-  ModalActionRowComponentBuilder,
-  TextInputStyle,
-} from "discord.js"
+import { ButtonInteraction, TextInputStyle } from "discord.js"
+import type { ModalActionRowComponentBuilder } from "discord.js"
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "discord.js"
 
 export class EditWarnButton implements Button {

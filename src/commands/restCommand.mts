@@ -6,11 +6,11 @@ import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
-  InternalRequest,
   PermissionFlagsBits,
   RequestMethod,
   REST,
 } from "discord.js"
+import type { InternalRequest } from "discord.js"
 import { STATUS_CODES } from "http"
 
 export class RestCommand extends ChatInputCommand {

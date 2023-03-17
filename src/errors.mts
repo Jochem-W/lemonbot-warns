@@ -5,13 +5,8 @@ import type { Command } from "./types/command.mjs"
 import { fetchChannel } from "./utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
-import {
-  Attachment,
-  Channel,
-  ChannelType,
-  CommandInteraction,
-  Snowflake,
-} from "discord.js"
+import { Attachment, ChannelType, CommandInteraction } from "discord.js"
+import type { Snowflake, Channel } from "discord.js"
 
 class CustomError extends Error {
   public constructor(message: string) {

@@ -18,9 +18,11 @@ import {
   ChatInputCommandInteraction,
   CommandInteraction,
   PermissionFlagsBits,
+  Routes,
+} from "discord.js"
+import type {
   RESTPutAPIApplicationGuildCommandsJSONBody,
   RESTPutAPIApplicationGuildCommandsResult,
-  Routes,
 } from "discord.js"
 
 export class ReRegisterCommand extends ChatInputCommand {

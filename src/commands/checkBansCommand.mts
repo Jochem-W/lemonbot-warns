@@ -14,10 +14,10 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   inlineCode,
-  MessageActionRowComponentBuilder,
   PermissionFlagsBits,
   time,
 } from "discord.js"
+import type { MessageActionRowComponentBuilder } from "discord.js"
 import { DateTime } from "luxon"
 
 type ResponseOptions = {

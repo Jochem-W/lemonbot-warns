@@ -3,14 +3,16 @@ import { reportError } from "../errors.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ActionRowBuilder,
-  CollectedInteraction,
   CommandInteraction,
   DiscordAPIError,
   InteractionCollector,
+  RESTJSONErrorCodes,
+} from "discord.js"
+import type {
+  CollectedInteraction,
   InteractionCollectorOptions,
   InteractionReplyOptions,
   MessageActionRowComponentBuilder,
-  RESTJSONErrorCodes,
   WebhookMessageEditOptions,
 } from "discord.js"
 import { Duration } from "luxon"

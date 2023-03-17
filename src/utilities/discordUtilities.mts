@@ -14,10 +14,12 @@ import type {
 import {
   ChannelType,
   DiscordAPIError,
-  FetchMemberOptions,
-  Interaction,
   RESTJSONErrorCodes,
   Team,
+} from "discord.js"
+import type {
+  FetchMemberOptions,
+  Interaction,
   UserResolvable,
 } from "discord.js"
 import { DateTime } from "luxon"

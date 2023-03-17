@@ -5,11 +5,8 @@ import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { download } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
 import archiver from "archiver"
-import {
-  ChatInputCommandInteraction,
-  PermissionFlagsBits,
-  Snowflake,
-} from "discord.js"
+import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import type { Snowflake } from "discord.js"
 import { createWriteStream } from "fs"
 import { unlink } from "fs/promises"
 import type { Readable } from "stream"

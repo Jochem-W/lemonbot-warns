@@ -5,12 +5,11 @@ import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import { download, search } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
 import {
-  _Object,
   DeleteObjectCommand,
   ListObjectsV2Command,
-  ListObjectsV2CommandInput,
   NoSuchKey,
 } from "@aws-sdk/client-s3"
+import type { _Object, ListObjectsV2CommandInput } from "@aws-sdk/client-s3"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
