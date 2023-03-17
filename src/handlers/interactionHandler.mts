@@ -96,7 +96,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
           throw e
         }
 
-        await reportError(interaction.client, e)
+        await reportError(e)
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
       }
 
@@ -111,7 +111,7 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
           throw e
         }
 
-        await reportError(interaction.client, e)
+        await reportError(e)
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
       }
 

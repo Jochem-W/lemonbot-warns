@@ -41,7 +41,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
 
   public async handle(ban: GuildBan) {
     const loggingChannel = await fetchChannel(
-      ban.guild,
       DefaultConfig.guild.warnLogsChannel,
       ChannelType.GuildText
     )

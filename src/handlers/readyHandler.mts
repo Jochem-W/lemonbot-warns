@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
@@ -38,7 +39,6 @@ export class ReadyHandler implements Handler<"ready"> {
     }
 
     const channel = await fetchChannel(
-      client,
       DefaultConfig.guild.restart.channel,
       ChannelType.GuildText
     )
@@ -66,11 +66,11 @@ export class ReadyHandler implements Handler<"ready"> {
     process.on("SIGINT", () => process.exit())
     process.on("SIGTERM", () => process.exit())
     process.on("exit", () => {
-      client.destroy()
+      Discord.destroy()
       setStateSync("DOWN")
     })
 
-    const job = await CheckBanAppealFormJob.create(client)
+    const job = await CheckBanAppealFormJob.create()
     job.start()
   }
 }

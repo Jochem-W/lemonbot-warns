@@ -3,6 +3,7 @@ import { S3Client } from "@aws-sdk/client-s3"
 import { auth, forms } from "@googleapis/forms"
 import { sheets } from "@googleapis/sheets"
 import { PrismaClient } from "@prisma/client"
+import { Client, GatewayIntentBits, Partials } from "discord.js"
 
 const GoogleAuth = new auth.GoogleAuth({
   scopes: [
@@ -23,3 +24,22 @@ export const S3 = new S3Client({
 })
 export const Forms = forms({ version: "v1", auth: GoogleAuth })
 export const Sheets = sheets({ version: "v4", auth: GoogleAuth })
+export const Discord = new Client({
+  intents: [
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildBans,
+  ],
+  partials: [
+    Partials.User,
+    Partials.Channel,
+    Partials.GuildMember,
+    Partials.Message,
+    Partials.Reaction,
+    Partials.GuildScheduledEvent,
+    Partials.ThreadMember,
+  ],
+})
+Discord.rest.setToken(Variables.discordToken)

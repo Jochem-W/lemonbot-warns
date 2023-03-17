@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
@@ -8,10 +9,9 @@ export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
   public readonly once = false
 
   public async handle(member: GuildMember | PartialGuildMember) {
-    const user = await member.client.users.fetch(member.id)
+    const user = await Discord.users.fetch(member.id)
 
     const warnCategory = await fetchChannel(
-      member.guild,
       DefaultConfig.guild.warnCategory,
       ChannelType.GuildCategory,
       { force: true }

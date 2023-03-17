@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import { reportError } from "../errors.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
@@ -37,7 +38,7 @@ export class InteractionCollectorHelper {
         }
 
         if (e instanceof Error) {
-          await reportError(interaction.client, e)
+          await reportError(e)
         }
       }
     })
@@ -55,7 +56,7 @@ export class InteractionCollectorHelper {
       options.guild = interaction.guild ?? interaction.guildId
     }
 
-    const collector = new InteractionCollector(interaction.client, options)
+    const collector = new InteractionCollector(Discord, options)
 
     return new InteractionCollectorHelper(interaction, collector)
   }
@@ -71,7 +72,7 @@ export class InteractionCollectorHelper {
           throw e
         }
 
-        await reportError(this.interaction.client, e)
+        await reportError(e)
 
         const message: InteractionReplyOptions = {
           embeds: [makeErrorEmbed(e)],

@@ -69,7 +69,7 @@ export class CommandHandler implements Handler<"interactionCreate"> {
           throw e
         }
 
-        await reportError(interaction.client, e)
+        await reportError(e)
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
       }
 

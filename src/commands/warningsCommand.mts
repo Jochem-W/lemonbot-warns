@@ -1,4 +1,4 @@
-import { Prisma } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import { BotError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
@@ -109,7 +109,7 @@ export class WarningsCommand extends ChatInputCommand {
         title += " (silent)"
       }
 
-      const warnedBy = await subject.client.users.fetch(warning.createdBy)
+      const warnedBy = await Discord.users.fetch(warning.createdBy)
       let name = `${title} by ${formatName(warnedBy)} `
 
       const reasonsString = warning.reasons

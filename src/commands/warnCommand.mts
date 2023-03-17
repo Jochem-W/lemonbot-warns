@@ -1,4 +1,4 @@
-import { Prisma } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import {
   ChannelNotFoundError,
   ImageOnlyError,
@@ -418,7 +418,6 @@ export class WarnCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction) {
     const guild = await fetchGuild(interaction)
     const warnLogsChannel = await fetchChannel(
-      guild,
       DefaultConfig.guild.warnLogsChannel,
       ChannelType.GuildText
     )
@@ -589,7 +588,7 @@ export class WarnCommand extends ChatInputCommand {
           throw e
         }
 
-        await reportError(interaction.client, e)
+        await reportError(e)
         options.penalised = "error"
       }
     } else {
@@ -687,7 +686,7 @@ export class WarnCommand extends ChatInputCommand {
       return
     }
 
-    const channel = await interaction.client.channels.fetch(channelId)
+    const channel = await Discord.channels.fetch(channelId)
     if (!channel) {
       throw new ChannelNotFoundError(channelId)
     }

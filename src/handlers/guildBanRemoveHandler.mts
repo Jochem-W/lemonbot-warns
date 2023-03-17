@@ -28,7 +28,6 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
 
   public async handle(ban: GuildBan) {
     const discussionChannel = await fetchChannel(
-      ban.guild,
       DefaultConfig.guild.discussionChannel,
       ChannelType.GuildText
     )
@@ -49,7 +48,6 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
     } while (fetchedThreads.hasMore)
 
     const loggingChannel = await fetchChannel(
-      ban.guild,
       DefaultConfig.guild.warnLogsChannel,
       ChannelType.GuildText
     )

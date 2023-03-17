@@ -9,7 +9,6 @@ import {
   Attachment,
   Channel,
   ChannelType,
-  Client,
   CommandInteraction,
   Snowflake,
 } from "discord.js"
@@ -204,10 +203,9 @@ export class InvalidFormResponseError extends CustomError {
   }
 }
 
-export async function reportError(client: Client, error: Error) {
+export async function reportError(error: Error) {
   console.error(error)
   const channel = await fetchChannel(
-    client,
     DefaultConfig.guild.errorChannel,
     ChannelType.GuildText
   )

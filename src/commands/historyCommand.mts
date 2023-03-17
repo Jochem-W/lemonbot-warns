@@ -254,7 +254,7 @@ export class HistoryCommand extends ChatInputCommand {
         })
         .catch((e) => {
           if (e instanceof Error) {
-            void reportError(interaction.client, e)
+            void reportError(e)
           } else {
             console.log(e)
           }
@@ -262,7 +262,7 @@ export class HistoryCommand extends ChatInputCommand {
         .finally(() => {
           unlink(fileName).catch((e) => {
             if (e instanceof Error) {
-              void reportError(interaction.client, e)
+              void reportError(e)
             } else {
               console.log(e)
             }
@@ -270,8 +270,8 @@ export class HistoryCommand extends ChatInputCommand {
         })
     })
 
-    archive.on("warning", (err) => void reportError(interaction.client, err))
-    archive.on("error", (err) => void reportError(interaction.client, err))
+    archive.on("warning", (err) => void reportError(err))
+    archive.on("error", (err) => void reportError(err))
 
     archive.pipe(output)
 

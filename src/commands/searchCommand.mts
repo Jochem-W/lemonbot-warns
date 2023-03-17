@@ -1,4 +1,4 @@
-import { Prisma } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import {
@@ -78,8 +78,8 @@ export class SearchCommand extends ChatInputCommand {
         break
       }
 
-      const user = await guild.client.users.fetch(warning.warning.userId)
-      const warnedBy = await guild.client.users.fetch(warning.warning.createdBy)
+      const user = await Discord.users.fetch(warning.warning.userId)
+      const warnedBy = await Discord.users.fetch(warning.warning.createdBy)
       warning.embeds[0]?.setAuthor({
         name: `${WarnCommand.formatTitle(
           {
@@ -146,8 +146,7 @@ export class SearchCommand extends ChatInputCommand {
     }
 
     const guild =
-      interaction.guild ??
-      (await interaction.client.guilds.fetch(interaction.guildId))
+      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
 
     const warnings = await Prisma.warning.findMany({
       where: {

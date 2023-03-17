@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
@@ -56,7 +57,7 @@ export class StatusCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await interaction.editReply(
-      StatusCommand.buildResponse({ ping: interaction.client.ws.ping })
+      StatusCommand.buildResponse({ ping: Discord.ws.ping })
     )
   }
 }

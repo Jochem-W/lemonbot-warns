@@ -1,4 +1,4 @@
-import { Prisma } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import { NoMessageRevisionsError, reportError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
@@ -29,10 +29,7 @@ export class StatisticsCommand extends ChatInputCommand {
     )
   }
 
-  private static async addWarningStatistics(
-    archive: Archiver,
-    interaction: ChatInputCommandInteraction
-  ) {
+  private static async addWarningStatistics(archive: Archiver) {
     const data = (
       await Prisma.warning.findMany({
         select: {
@@ -54,10 +51,7 @@ export class StatisticsCommand extends ChatInputCommand {
         continue
       }
 
-      users.set(
-        warning.createdBy,
-        await interaction.client.users.fetch(warning.createdBy)
-      )
+      users.set(warning.createdBy, await Discord.users.fetch(warning.createdBy))
     }
 
     let cursor = data[0]?.createdAt.startOf("day")
@@ -112,8 +106,7 @@ export class StatisticsCommand extends ChatInputCommand {
     }
 
     const guild =
-      interaction.guild ??
-      (await interaction.client.guilds.fetch(interaction.guildId))
+      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
 
     const roleIds: Snowflake[] = []
     for (const [id, role] of await guild.roles.fetch()) {
@@ -236,7 +229,7 @@ export class StatisticsCommand extends ChatInputCommand {
         })
         .catch((e) => {
           if (e instanceof Error) {
-            void reportError(interaction.client, e)
+            void reportError(e)
           } else {
             console.log(e)
           }
@@ -244,7 +237,7 @@ export class StatisticsCommand extends ChatInputCommand {
         .finally(() => {
           unlink(fileName).catch((e) => {
             if (e instanceof Error) {
-              void reportError(interaction.client, e)
+              void reportError(e)
             } else {
               console.log(e)
             }
@@ -252,12 +245,12 @@ export class StatisticsCommand extends ChatInputCommand {
         })
     })
 
-    archive.on("warning", (err) => void reportError(interaction.client, err))
-    archive.on("error", (err) => void reportError(interaction.client, err))
+    archive.on("warning", (err) => void reportError(err))
+    archive.on("error", (err) => void reportError(err))
 
     archive.pipe(output)
 
-    await StatisticsCommand.addWarningStatistics(archive, interaction)
+    await StatisticsCommand.addWarningStatistics(archive)
     await StatisticsCommand.addMessageStatistics(archive, interaction)
 
     await archive.finalize()

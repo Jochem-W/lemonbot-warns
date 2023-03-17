@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
@@ -92,7 +93,7 @@ export class RestCommand extends ChatInputCommand {
     if (token !== null) {
       rest = new REST().setToken(token)
     } else {
-      rest = interaction.client.rest
+      rest = Discord.rest
     }
 
     const response = await rest.raw(options)

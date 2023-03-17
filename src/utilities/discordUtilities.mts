@@ -1,3 +1,4 @@
+import { Discord } from "../clients.mjs"
 import {
   ChannelNotFoundError,
   GuildOnlyError,
@@ -12,10 +13,8 @@ import type {
 } from "discord.js"
 import {
   ChannelType,
-  Client,
   DiscordAPIError,
   FetchMemberOptions,
-  Guild,
   Interaction,
   RESTJSONErrorCodes,
   Team,
@@ -50,12 +49,11 @@ export async function fetchMember(
 }
 
 export async function fetchChannel<T extends ChannelType>(
-  clientOrGuild: Client | Guild,
   id: Snowflake,
   type: T,
   options?: FetchChannelOptions
 ) {
-  const channel = await clientOrGuild.channels.fetch(id, options)
+  const channel = await Discord.channels.fetch(id, options)
   if (!channel) {
     throw new ChannelNotFoundError(id)
   }
@@ -72,10 +70,7 @@ export async function fetchGuild(interaction: Interaction) {
     throw new GuildOnlyError()
   }
 
-  return (
-    interaction.guild ??
-    (await interaction.client.guilds.fetch(interaction.guildId))
-  )
+  return interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
 }
 
 export async function ensureOwner(interaction: Interaction) {

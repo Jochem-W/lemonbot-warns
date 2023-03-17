@@ -1,4 +1,4 @@
-import { Prisma } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import {
   MessageContextMenuCommands,
   RegisteredCommands,
@@ -18,7 +18,6 @@ import {
   ChatInputCommandInteraction,
   CommandInteraction,
   PermissionFlagsBits,
-  REST,
   RESTPutAPIApplicationGuildCommandsJSONBody,
   RESTPutAPIApplicationGuildCommandsResult,
   Routes,
@@ -33,7 +32,7 @@ export class ReRegisterCommand extends ChatInputCommand {
     )
   }
 
-  public static async register(rest: REST) {
+  public static async register() {
     RegisteredCommands.clear()
 
     for (let i = 0; i < SlashCommands.length; i++) {
@@ -68,7 +67,7 @@ export class ReRegisterCommand extends ChatInputCommand {
             DefaultConfig.guild.id
           )
 
-    const applicationCommands = (await rest.put(route, {
+    const applicationCommands = (await Discord.rest.put(route, {
       body: commandsBody,
     })) as RESTPutAPIApplicationGuildCommandsResult
     console.log("Commands updated")
@@ -103,7 +102,7 @@ export class ReRegisterCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
-    await ReRegisterCommand.register(interaction.client.rest)
+    await ReRegisterCommand.register()
     await interaction.editReply({
       embeds: [
         makeEmbed("Commands re-registered", DefaultConfig.icons.success),

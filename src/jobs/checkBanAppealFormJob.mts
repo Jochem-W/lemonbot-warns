@@ -1,4 +1,4 @@
-import { Forms } from "../clients.mjs"
+import { Discord, Forms } from "../clients.mjs"
 import { WarningsCommand } from "../commands/warningsCommand.mjs"
 import { reportError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
@@ -11,7 +11,6 @@ import {
 import { CronJob } from "cron"
 import {
   ChannelType,
-  Client,
   DiscordAPIError,
   Guild,
   hyperlink,
@@ -33,16 +32,15 @@ export class CheckBanAppealFormJob {
     this.cronJob = new CronJob("* * * * *", () => {
       CheckBanAppealFormJob.onTick(this).catch((e) => {
         if (e instanceof Error) {
-          void reportError(guild.client, e)
+          void reportError(e)
         }
       })
     })
   }
 
-  public static async create(client: Client) {
-    const guild = await client.guilds.fetch(DefaultConfig.guild.id)
+  public static async create() {
+    const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
     const discussionChannel = await fetchChannel(
-      guild,
       DefaultConfig.guild.discussionChannel,
       ChannelType.GuildText
     )
@@ -89,7 +87,7 @@ export class CheckBanAppealFormJob {
         formResponse,
         DefaultConfig.banAppealForm.questions.discordId
       )
-      const user = await job.guild.client.users.fetch(userId)
+      const user = await Discord.users.fetch(userId)
 
       const userTag = getFirstTextAnswer(
         formResponse,
