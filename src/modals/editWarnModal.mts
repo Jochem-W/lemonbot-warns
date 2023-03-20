@@ -1,22 +1,19 @@
 import { Prisma } from "../clients.mjs"
 import { InvalidCustomIdError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import type { CustomId } from "../models/customId.mjs"
-import type { Modal } from "../types/modal.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
-import type { ModalSubmitInteraction } from "discord.js"
+import { registerModalHandler } from "../utilities/modal.mjs"
 
-export class EditWarnModal implements Modal {
-  public readonly name = "edit-warn"
-
-  public async handle(interaction: ModalSubmitInteraction, customId: CustomId) {
-    if (!customId.secondary) {
-      throw new InvalidCustomIdError(customId)
+export const EditWarnModal = registerModalHandler(
+  "edit-warn",
+  async (interaction, [warningId]) => {
+    if (!warningId) {
+      throw new InvalidCustomIdError(interaction.customId)
     }
 
     const oldWarning = await Prisma.warning.findFirstOrThrow({
-      where: { id: parseInt(customId.secondary) },
+      where: { id: parseInt(warningId) },
     })
     const warning = await Prisma.warning.update({
       where: {
@@ -37,4 +34,4 @@ export class EditWarnModal implements Modal {
       ephemeral: !isInPrivateChannel(interaction),
     })
   }
-}
+)

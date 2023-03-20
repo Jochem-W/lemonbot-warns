@@ -1,16 +1,14 @@
-import { Discord, Prisma } from "../clients.mjs"
+import { DismissWarnButton } from "../buttons/dismissWarnButton.mjs"
+import { Prisma } from "../clients.mjs"
 import {
-  ChannelNotFoundError,
   ImageOnlyError,
-  InvalidCustomIdError,
   InvalidPenaltyError,
   NoContentTypeError,
   reportError,
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { customIdToString, InteractionScope } from "../models/customId.mjs"
-import type { CustomId } from "../models/customId.mjs"
+import { button } from "../utilities/button.mjs"
 import {
   fetchChannel,
   fetchGuild,
@@ -35,7 +33,6 @@ import {
   hyperlink,
   inlineCode,
   italic,
-  MessageComponentInteraction,
   PermissionFlagsBits,
   RESTJSONErrorCodes,
   TextChannel,
@@ -532,12 +529,10 @@ export class WarnCommand extends ChatInputCommand {
                 .setLabel("Dismiss")
                 .setStyle(ButtonStyle.Danger)
                 .setCustomId(
-                  customIdToString({
-                    scope: InteractionScope.Instance,
-                    primary: interaction.commandId,
-                    secondary: "dismiss",
-                    tertiary: [newChannel.id, options.targetMember.id],
-                  })
+                  button(DismissWarnButton, [
+                    newChannel.id,
+                    options.targetMember.id,
+                  ])
                 ),
             ]
           ),
@@ -649,45 +644,5 @@ export class WarnCommand extends ChatInputCommand {
     if (interaction.channelId !== warnLogsChannel.id) {
       await warnLogsChannel.send(response)
     }
-  }
-
-  public async handleMessageComponent(
-    interaction: MessageComponentInteraction,
-    data: CustomId
-  ) {
-    if (!data.tertiary) {
-      throw new InvalidCustomIdError(data)
-    }
-
-    if (data.secondary !== "dismiss") {
-      return
-    }
-
-    const [channelId, userId] = data.tertiary
-    if (!channelId || !userId) {
-      throw new InvalidCustomIdError(data)
-    }
-
-    if (interaction.user.id !== userId) {
-      await interaction.reply({
-        embeds: [
-          makeEmbed(
-            "Something went wrong while handling this interaction",
-            DefaultConfig.icons.fail,
-            "You can't use this component!"
-          ),
-        ],
-        ephemeral: true,
-      })
-      return
-    }
-
-    const channel = await Discord.channels.fetch(channelId)
-    if (!channel) {
-      throw new ChannelNotFoundError(channelId)
-    }
-
-    await channel.delete()
-    await interaction.deferUpdate()
   }
 }

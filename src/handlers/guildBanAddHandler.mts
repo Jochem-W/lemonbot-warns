@@ -1,3 +1,4 @@
+import { EditWarnButton } from "../buttons/editWarnButton.mjs"
 import { Prisma } from "../clients.mjs"
 import {
   AuditLogNotFoundError,
@@ -5,8 +6,8 @@ import {
   PenaltyNotFoundError,
 } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { customIdToString, InteractionScope } from "../models/customId.mjs"
 import type { Handler } from "../types/handler.mjs"
+import { button } from "../utilities/button.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
@@ -147,13 +148,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
           new ButtonBuilder()
             .setStyle(ButtonStyle.Secondary)
             .setLabel("Edit description")
-            .setCustomId(
-              customIdToString({
-                scope: InteractionScope.Button,
-                primary: "edit-warn",
-                secondary: prismaBan.id.toString(),
-              })
-            ),
+            .setCustomId(button(EditWarnButton, [prismaBan.id.toString()])),
         ]),
       ],
     })

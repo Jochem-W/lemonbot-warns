@@ -1,11 +1,8 @@
-import { RegisteredCommands } from "../commands.mjs"
 import {
   ButtonNotFoundError,
-  CommandNotFoundByIdError,
   InvalidCustomIdError,
-  ModalNotFoundError,
-  NoMessageComponentHandlerError,
   reportError,
+  UnregisteredNameError,
 } from "../errors.mjs"
 import { RegisteredButtons, RegisteredModals } from "../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../models/customId.mjs"
@@ -22,66 +19,34 @@ export class InteractionHandler implements Handler<"interactionCreate"> {
     interaction: MessageComponentInteraction
   ) {
     const data = stringToCustomId(interaction.customId)
-    switch (data.scope) {
-      case InteractionScope.Button: {
-        if (!interaction.isButton()) {
-          throw new InvalidCustomIdError(data)
-        }
-
-        const button = RegisteredButtons.get(data.primary)
-        if (!button) {
-          throw new ButtonNotFoundError(data)
-        }
-
-        await button.handle(interaction, data)
-        break
-      }
-      case InteractionScope.Instance: {
-        const command = RegisteredCommands.get(data.primary)
-        if (!command) {
-          throw new CommandNotFoundByIdError(data.primary)
-        }
-
-        if (!command.handleMessageComponent) {
-          throw new NoMessageComponentHandlerError(command)
-        }
-
-        await command.handleMessageComponent(interaction, data)
-        break
-      }
-      default:
-        break
+    if (data.scope !== InteractionScope.Button) {
+      return
     }
+
+    if (!interaction.isButton()) {
+      throw new InvalidCustomIdError(data)
+    }
+
+    const button = RegisteredButtons.get(data.name)
+    if (!button) {
+      throw new ButtonNotFoundError(data)
+    }
+
+    await button(interaction, data.args)
   }
 
   private static async handleModalSubmit(interaction: ModalSubmitInteraction) {
     const data = stringToCustomId(interaction.customId)
-    switch (data.scope) {
-      case InteractionScope.Modal: {
-        const modal = RegisteredModals.get(data.primary)
-        if (!modal) {
-          throw new ModalNotFoundError(data)
-        }
-
-        await modal.handle(interaction, data)
-        break
-      }
-      case InteractionScope.Instance: {
-        const command = RegisteredCommands.get(data.primary)
-        if (!command) {
-          throw new CommandNotFoundByIdError(data.primary)
-        }
-
-        if (!command.handleModalSubmit) {
-          throw new NoMessageComponentHandlerError(command)
-        }
-
-        await command.handleModalSubmit(interaction, data)
-        break
-      }
-      default:
-        break
+    if (data.scope !== InteractionScope.Modal) {
+      return
     }
+
+    const modal = RegisteredModals.get(data.name)
+    if (!modal) {
+      throw new UnregisteredNameError("modal", data.name)
+    }
+
+    await modal(interaction, data.args)
   }
 
   public async handle(interaction: Interaction) {

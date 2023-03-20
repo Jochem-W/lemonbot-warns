@@ -2,21 +2,17 @@ import { InvalidCustomIdError } from "../errors.mjs"
 
 export type CustomId = {
   scope: InteractionScope
-  primary: string
-  secondary?: string
-  tertiary?: string[]
+  name: string
+  args: string[]
 }
 
-type InteractionScope = "i" | "c" | "b" | "m"
+type InteractionScope = "b" | "c" | "m"
 export const InteractionScope = {
-  get Instance() {
-    return "i" as const
+  get Button() {
+    return "b" as const
   },
   get Collector() {
     return "c" as const
-  },
-  get Button() {
-    return "b" as const
   },
   get Modal() {
     return "m" as const
@@ -24,21 +20,28 @@ export const InteractionScope = {
 }
 
 export function stringToCustomId(data: string) {
-  const [scope, primary, secondary, ...tertiary] = data.split(":")
-  if (scope === undefined || primary === undefined || secondary === undefined) {
+  const [scope, name, ...args] = data.split(":")
+  if (name === undefined) {
+    throw new InvalidCustomIdError(data)
+  }
+
+  if (
+    scope !== InteractionScope.Button &&
+    scope !== InteractionScope.Modal &&
+    scope !== InteractionScope.Collector
+  ) {
     throw new InvalidCustomIdError(data)
   }
 
   return {
     scope,
-    primary,
-    secondary,
-    tertiary,
-  } as CustomId
+    name,
+    args,
+  }
 }
 
-export function customIdToString(data: CustomId) {
-  return `${data.scope}:${data.primary}:${data.secondary ?? ""}:${
-    data.tertiary?.join(":") ?? ""
-  }`
+export function customIdToString(
+  data: Omit<CustomId, "args"> & { args?: string[] }
+) {
+  return `${data.scope}:${data.name}:${data.args?.join(":") ?? ""}`
 }

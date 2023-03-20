@@ -172,6 +172,18 @@ export class ModalNotFoundError extends BotError {
   }
 }
 
+export class DuplicateNameError extends BotError {
+  public constructor(type: "button" | "modal", name: string) {
+    super(`A ${type} with the name ${name} already exists`)
+  }
+}
+
+export class UnregisteredNameError extends BotError {
+  public constructor(type: "button" | "modal", name: string) {
+    super(`A ${type} with the name ${name} doesn't exist`)
+  }
+}
+
 export class InvalidEmbedError extends CustomError {
   public constructor(message: string) {
     super(message)

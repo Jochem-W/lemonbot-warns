@@ -1,23 +1,26 @@
 import { Prisma } from "../clients.mjs"
 import { InvalidCustomIdError } from "../errors.mjs"
-import { customIdToString, InteractionScope } from "../models/customId.mjs"
-import type { CustomId } from "../models/customId.mjs"
-import type { Button } from "../types/button.mjs"
-import { ButtonInteraction, TextInputStyle } from "discord.js"
+import { EditWarnModal } from "../modals/editWarnModal.mjs"
+import { registerButtonHandler } from "../utilities/button.mjs"
+import { modal } from "../utilities/modal.mjs"
+import {
+  ActionRowBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+} from "discord.js"
 import type { ModalActionRowComponentBuilder } from "discord.js"
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "discord.js"
 
-export class EditWarnButton implements Button {
-  public readonly name = "edit-warn"
-
-  public async handle(interaction: ButtonInteraction, customId: CustomId) {
-    if (!customId.secondary) {
-      throw new InvalidCustomIdError(customId)
+export const EditWarnButton = registerButtonHandler(
+  "edit-warn",
+  async (interaction, [warningId]) => {
+    if (!warningId) {
+      throw new InvalidCustomIdError(interaction.customId)
     }
 
     const warning = await Prisma.warning.findFirstOrThrow({
       where: {
-        id: parseInt(customId.secondary),
+        id: parseInt(warningId),
       },
     })
 
@@ -32,13 +35,7 @@ export class EditWarnButton implements Button {
 
     await interaction.showModal(
       new ModalBuilder()
-        .setCustomId(
-          customIdToString({
-            scope: InteractionScope.Modal,
-            primary: "edit-warn",
-            secondary: customId.secondary,
-          })
-        )
+        .setCustomId(modal(EditWarnModal, [warningId]))
         .setTitle("Edit warning description")
         .setComponents(
           new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
@@ -47,4 +44,4 @@ export class EditWarnButton implements Button {
         )
     )
   }
-}
+)

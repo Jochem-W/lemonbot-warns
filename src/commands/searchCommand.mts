@@ -120,7 +120,7 @@ export class SearchCommand extends ChatInputCommand {
             .setCustomId(
               customIdToString({
                 scope: InteractionScope.Collector,
-                primary: "previous",
+                name: "previous",
               })
             )
             .setDisabled(start === 0)
@@ -130,7 +130,7 @@ export class SearchCommand extends ChatInputCommand {
             .setCustomId(
               customIdToString({
                 scope: InteractionScope.Collector,
-                primary: "next",
+                name: "next",
               })
             )
             .setDisabled(end >= total)
@@ -191,7 +191,7 @@ export class SearchCommand extends ChatInputCommand {
       }
 
       const customId = stringToCustomId(collected.customId)
-      switch (customId.primary) {
+      switch (customId.name) {
         case "next":
           skip++
           break
