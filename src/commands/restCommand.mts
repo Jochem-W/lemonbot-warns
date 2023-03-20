@@ -1,4 +1,5 @@
 import { Discord } from "../clients.mjs"
+import { InvalidMethodError, InvalidPathError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
@@ -12,6 +13,20 @@ import {
 } from "discord.js"
 import type { InternalRequest } from "discord.js"
 import { STATUS_CODES } from "http"
+
+function isPath(value: string): value is `/${string}` {
+  return value.startsWith("/")
+}
+
+function isMethod(value: string): value is RequestMethod {
+  return (
+    value === "DELETE" ||
+    value === "GET" ||
+    value === "PATCH" ||
+    value === "POST" ||
+    value === "PUT"
+  )
+}
 
 export class RestCommand extends ChatInputCommand {
   public constructor() {
@@ -70,13 +85,18 @@ export class RestCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
 
-    const path = interaction.options.getString("path", true) as `/${string}`
+    const path = interaction.options.getString("path", true)
     const query = interaction.options.getString("query")
     const body = interaction.options.getString("body") ?? undefined
-    const method = interaction.options.getString(
-      "method",
-      true
-    ) as RequestMethod
+    const method = interaction.options.getString("method", true)
+
+    if (!isPath(path)) {
+      throw new InvalidPathError(path)
+    }
+
+    if (!isMethod(method)) {
+      throw new InvalidMethodError(method)
+    }
 
     const options: InternalRequest = {
       fullRoute: path,
@@ -97,11 +117,7 @@ export class RestCommand extends ChatInputCommand {
     }
 
     const response = await rest.raw(options)
-    const json = JSON.stringify(
-      (await response.body.json()) as unknown,
-      undefined,
-      4
-    ).trim()
+    const json = JSON.stringify(await response.body.json(), undefined, 4).trim()
 
     const files: AttachmentBuilder[] = []
     const embed = makeEmbed(

@@ -197,7 +197,12 @@ function setStateSync(status: State) {
 
 async function getState() {
   try {
-    return (await readFile("status", "utf8")) as State
+    const state = await readFile("status", "utf8")
+    if (state !== "UP" && state !== "DOWN" && state !== "RECREATE") {
+      return "RECREATE"
+    }
+
+    return state
   } catch (e) {
     if (!isErrnoException(e) || e.code !== "ENOENT") {
       throw e

@@ -55,15 +55,16 @@ export class StatisticsCommand extends ChatInputCommand {
       users.set(warning.createdBy, await Discord.users.fetch(warning.createdBy))
     }
 
-    let cursor = data[0]?.createdAt.startOf("day")
-    if (!cursor) {
+    if (!data[0]) {
       return
     }
+
+    let cursor = data[0].createdAt.startOf("day")
 
     const series = new Map<Snowflake, { date: string; count: number }[]>()
     while (cursor.diffNow("days").days < 0) {
       const warnings = data.filter((warning) =>
-        warning.createdAt.hasSame(cursor as DateTime, "day")
+        warning.createdAt.hasSame(cursor, "day")
       )
 
       for (const user of users.values()) {
@@ -168,15 +169,16 @@ export class StatisticsCommand extends ChatInputCommand {
       return a.timestamp.toMillis() - b.timestamp.toMillis()
     })
 
-    let cursor = data[0]?.timestamp.startOf("day")
-    if (!cursor) {
+    if (!data[0]) {
       return
     }
+
+    let cursor = data[0].timestamp.startOf("day")
 
     const series = new Map<Snowflake, { date: string; count: number }[]>()
     while (cursor.diffNow("days").days < 0) {
       const warnings = data.filter((message) =>
-        message.timestamp.hasSame(cursor as DateTime, "day")
+        message.timestamp.hasSame(cursor, "day")
       )
 
       for (const member of members.values()) {

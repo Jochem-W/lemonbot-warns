@@ -9,7 +9,7 @@ import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
 import type { Snowflake } from "discord.js"
 import { createWriteStream } from "fs"
 import { unlink } from "fs/promises"
-import type { Readable } from "stream"
+import { Readable } from "stream"
 
 export class HistoryCommand extends ChatInputCommand {
   public constructor() {
@@ -283,9 +283,11 @@ export class HistoryCommand extends ChatInputCommand {
       }
 
       const data = await download(Variables.s3ArchiveBucketName, attachment.key)
-      if (data) {
-        archive.append(data as Readable, { name: attachment.key })
+      if (!(data instanceof Readable)) {
+        continue
       }
+
+      archive.append(data, { name: attachment.key })
     }
 
     await archive.finalize()

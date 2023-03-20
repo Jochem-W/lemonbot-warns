@@ -184,6 +184,18 @@ export class UnregisteredNameError extends BotError {
   }
 }
 
+export class InvalidPathError extends BotError {
+  public constructor(value: string) {
+    super(`The supplied path ${value} is invalid`)
+  }
+}
+
+export class InvalidMethodError extends BotError {
+  public constructor(value: string) {
+    super(`The supplied method ${value} is invalid`)
+  }
+}
+
 export class InvalidEmbedError extends CustomError {
   public constructor(message: string) {
     super(message)
@@ -207,6 +219,12 @@ export class InvalidFormResponseError extends CustomError {
     response: forms_v1.Schema$FormResponse | forms_v1.Schema$Form
   ) {
     super(JSON.stringify(response, undefined, 4))
+  }
+}
+
+export class InvalidStreamError extends CustomError {
+  public constructor() {
+    super("The stream isn't an instance of Readable")
   }
 }
 

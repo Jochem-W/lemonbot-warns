@@ -1,4 +1,5 @@
 import { S3 } from "../clients.mjs"
+import { InvalidStreamError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
@@ -15,7 +16,7 @@ import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
 } from "discord.js"
-import type { Readable } from "stream"
+import { Readable } from "stream"
 
 export class S3Command extends ChatInputCommand {
   public constructor() {
@@ -186,18 +187,12 @@ export class S3Command extends ChatInputCommand {
 
   private async apiGetObject(interaction: ChatInputCommandInteraction) {
     const key = interaction.options.getString("key", true)
+    let stream
     try {
-      const stream = await download(
+      stream = await download(
         interaction.options.getString("bucket", true),
         key
       )
-      await interaction.editReply({
-        files: [
-          new AttachmentBuilder(stream as Readable, {
-            name: key.split("/").pop() ?? "object",
-          }),
-        ],
-      })
     } catch (e) {
       if (e instanceof NoSuchKey) {
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
@@ -206,6 +201,18 @@ export class S3Command extends ChatInputCommand {
 
       throw e
     }
+
+    if (!(stream instanceof Readable)) {
+      throw new InvalidStreamError()
+    }
+
+    await interaction.editReply({
+      files: [
+        new AttachmentBuilder(stream, {
+          name: key.split("/").pop() ?? "object",
+        }),
+      ],
+    })
   }
 
   private async apiDeleteObject(interaction: ChatInputCommandInteraction) {
