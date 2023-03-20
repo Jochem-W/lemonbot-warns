@@ -5,8 +5,8 @@
   "author": "Jochem-W",
   "license": "AGPL-3.0-only",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.293.0",
-    "@aws-sdk/lib-storage": "^3.293.0",
+    "@aws-sdk/client-s3": "^3.294.0",
+    "@aws-sdk/lib-storage": "^3.294.0",
     "@googleapis/forms": "^2.0.0",
     "@googleapis/sheets": "^4.0.2",
     "@octokit/rest": "^19.0.7",
@@ -35,7 +35,7 @@
     "@typescript-eslint/parser": "^5.55.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
-    "prettier": "^2.8.4",
+    "prettier": "^2.8.5",
     "prisma": "^4.11.0",
     "typescript": "^5.0.2"
   },
