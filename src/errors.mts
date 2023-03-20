@@ -95,15 +95,13 @@ export class InvalidPenaltyError extends BotError {
 
 export class NoContentTypeError extends BotError {
   public constructor(attachment: Attachment) {
-    super(
-      `The file "${attachment.name ?? attachment.id}" has an invalid filetype.`
-    )
+    super(`The file "${attachment.name}" has an invalid filetype.`)
   }
 }
 
 export class ImageOnlyError extends BotError {
   public constructor(attachment: Attachment) {
-    super(`The file "${attachment.name ?? attachment.id}" is not an image.`)
+    super(`The file "${attachment.name}" is not an image.`)
   }
 }
 

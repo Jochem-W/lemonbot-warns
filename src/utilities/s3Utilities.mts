@@ -18,7 +18,7 @@ import type { Options } from "@aws-sdk/lib-storage"
 import type { Attachment } from "discord.js"
 
 export async function uploadAttachment(attachment: Attachment) {
-  const key = `${attachment.id}/${attachment.name ?? attachment.id}`
+  const key = `${attachment.id}/${attachment.name}`
 
   const response = await fetch(attachment.url)
   await upload(
