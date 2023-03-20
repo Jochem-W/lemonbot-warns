@@ -1,4 +1,3 @@
-import { CheckBansCommand } from "./commands/checkBansCommand.mjs"
 import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { EvalCommand } from "./commands/evalCommand.mjs"
@@ -18,7 +17,6 @@ import { Collection, CommandInteraction } from "discord.js"
 import type { Snowflake } from "discord.js"
 
 export const SlashCommands: ChatInputCommand[] = [
-  new CheckBansCommand(),
   new StatusCommand(),
   new WarningsCommand(),
   new DumpJsonCommand(),
