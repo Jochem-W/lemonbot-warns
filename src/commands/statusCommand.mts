@@ -11,7 +11,7 @@ import {
 import { Duration } from "luxon"
 
 type ResponseOptions = {
-  ping: number
+  readonly ping: number
 }
 
 export class StatusCommand extends ChatInputCommand {

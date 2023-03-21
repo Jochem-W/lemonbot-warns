@@ -4,7 +4,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 export abstract class ChatInputCommand
   implements Command<ChatInputCommandInteraction>
 {
-  public builder = new SlashCommandBuilder()
+  public readonly builder = new SlashCommandBuilder()
 
   protected constructor(
     name: string,

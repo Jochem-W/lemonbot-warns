@@ -49,19 +49,19 @@ const { nolookalikesSafe } = nanoidDictionary
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 
 export type ResponseOptions = {
-  reasons: string[]
-  penalty: Penalty
-  targetUser: User
+  readonly reasons: string[]
+  readonly penalty: Penalty
+  readonly targetUser: User
   targetMember?: GuildMember
-  images: string[]
-  description: string
-  warnedBy: User
+  readonly images: string[]
+  readonly description: string
+  readonly warnedBy: User
   notified?: "DM" | TextChannel | false
   penalised?: "applied" | "error" | "not_in_server" | "not_notified"
-  timestamp: DateTime
-  guild: Guild
-  notify: boolean
-  deleteMessages?: boolean
+  readonly timestamp: DateTime
+  readonly guild: Guild
+  readonly notify: boolean
+  readonly deleteMessages?: boolean
 }
 
 export class WarnCommand extends ChatInputCommand {

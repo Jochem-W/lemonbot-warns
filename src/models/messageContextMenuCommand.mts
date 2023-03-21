@@ -8,8 +8,8 @@ import {
 export abstract class MessageContextMenuCommand
   implements Command<MessageContextMenuCommandInteraction>
 {
-  public builder = new ContextMenuCommandBuilder()
-  public handleAutocomplete = undefined
+  public readonly builder = new ContextMenuCommandBuilder()
+  public readonly handleAutocomplete = undefined
 
   protected constructor(name: string, defaultMemberPermissions: bigint | null) {
     this.builder

@@ -18,9 +18,9 @@ import type {
 import { Duration } from "luxon"
 
 export class InteractionCollectorHelper {
-  private collector: InteractionCollector<CollectedInteraction>
+  private readonly collector: InteractionCollector<CollectedInteraction>
   private components: ActionRowBuilder<MessageActionRowComponentBuilder>[] = []
-  private interaction: CommandInteraction
+  private readonly interaction: CommandInteraction
 
   private constructor(
     interaction: CommandInteraction,

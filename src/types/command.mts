@@ -11,7 +11,7 @@ import type {
 } from "discord.js"
 
 export type Command<T> = {
-  builder: SlashCommandBuilder | ContextMenuCommandBuilder
+  readonly builder: SlashCommandBuilder | ContextMenuCommandBuilder
 
   handle(interaction: T): Promise<void>
 
