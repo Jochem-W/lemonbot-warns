@@ -1,5 +1,5 @@
 import { Discord } from "../clients.mjs"
-import { CheckBanAppealFormJob } from "../jobs/checkBanAppealFormJob.mjs"
+import { Jobs } from "../jobs.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
@@ -65,8 +65,9 @@ export class ReadyHandler implements Handler<"ready"> {
       setStateSync("DOWN")
     })
 
-    const job = await CheckBanAppealFormJob.create()
-    job.start()
+    for (const job of Jobs) {
+      job.start()
+    }
   }
 }
 
