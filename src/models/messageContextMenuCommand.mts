@@ -11,7 +11,7 @@ export abstract class MessageContextMenuCommand
   public builder = new ContextMenuCommandBuilder()
   public handleAutocomplete = undefined
 
-  protected constructor(name: string, defaultMemberPermissions: bigint) {
+  protected constructor(name: string, defaultMemberPermissions: bigint | null) {
     this.builder
       .setType(ApplicationCommandType.Message)
       .setName(name)

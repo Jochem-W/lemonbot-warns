@@ -9,7 +9,7 @@ export abstract class ChatInputCommand
   protected constructor(
     name: string,
     description: string,
-    defaultMemberPermissions: bigint
+    defaultMemberPermissions: bigint | null
   ) {
     this.builder
       .setName(name)
