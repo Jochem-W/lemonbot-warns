@@ -63,6 +63,11 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
       return
     }
 
+    const reason = auditLogEntry.reason?.trim()
+    if (reason === "Account is now 30 days old") {
+      return
+    }
+
     await loggingChannel.send({
       embeds: [
         makeEmbed(
@@ -72,7 +77,7 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
           .setFields(
             {
               name: "Reason",
-              value: auditLogEntry.reason?.trim() ?? "N/A",
+              value: reason ?? "N/A",
             },
             {
               name: "User ID",
