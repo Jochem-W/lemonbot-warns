@@ -24,6 +24,8 @@ import type {
 } from "discord.js"
 import { DateTime } from "luxon"
 
+const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
+
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(
     Number((BigInt(snowflake) >> 22n) + 1420070400000n),
@@ -31,11 +33,9 @@ export function snowflakeToDateTime(snowflake: Snowflake) {
   )
 }
 
-export async function fetchMember(
-  interaction: Interaction,
+export async function tryFetchMember(
   options: FetchMemberOptions | UserResolvable
 ) {
-  const guild = await fetchGuild(interaction) // Possibly a bad idea because it can throw?
   try {
     return await guild.members.fetch(options)
   } catch (e) {
@@ -67,7 +67,7 @@ export async function fetchChannel<T extends ChannelType>(
   return channel as Extract<GuildBasedChannel, { type: T }>
 }
 
-export async function fetchGuild(interaction: Interaction) {
+export async function fetchInteractionGuild(interaction: Interaction) {
   if (!interaction.inGuild()) {
     throw new GuildOnlyError()
   }

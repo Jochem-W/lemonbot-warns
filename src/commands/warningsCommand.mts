@@ -2,7 +2,7 @@ import { Discord, Prisma } from "../clients.mjs"
 import { BotError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
-import { fetchMember } from "../utilities/discordUtilities.mjs"
+import { tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { formatName, makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ChatInputCommandInteraction,
@@ -135,7 +135,7 @@ export class WarningsCommand extends ChatInputCommand {
     const user = interaction.options.getUser("user", true)
 
     const messages = await WarningsCommand.buildResponse(
-      (await fetchMember(interaction, user)) ?? user
+      (await tryFetchMember(user)) ?? user
     )
 
     if (!messages[0]) {

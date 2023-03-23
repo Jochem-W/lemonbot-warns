@@ -11,8 +11,8 @@ import { DefaultConfig } from "../models/config.mjs"
 import { button } from "../utilities/button.mjs"
 import {
   fetchChannel,
-  fetchGuild,
-  fetchMember,
+  fetchInteractionGuild,
+  tryFetchMember,
 } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
@@ -409,7 +409,7 @@ export class WarnCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    const guild = await fetchGuild(interaction)
+    const guild = await fetchInteractionGuild(interaction)
     const warnLogsChannel = await fetchChannel(
       DefaultConfig.guild.warnLogsChannel,
       ChannelType.GuildText
@@ -455,7 +455,7 @@ export class WarnCommand extends ChatInputCommand {
     const user = interaction.options.getUser("user", true)
     const description = interaction.options.getString("description", true)
 
-    const member = await fetchMember(interaction, user)
+    const member = await tryFetchMember(user)
 
     const options: ResponseOptions = {
       reasons: reasons,
