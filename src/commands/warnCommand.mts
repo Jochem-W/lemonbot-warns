@@ -180,7 +180,9 @@ export class WarnCommand extends ChatInputCommand {
     warning: Warning & { penalty: Penalty; reasons: Reason[] }
   ) {
     const by = await Discord.users.fetch(warning.createdBy)
-    const reason = `By ${by.tag} for ${warning.reasons.join(", ")}`
+    const reason = `By ${by.tag} for ${warning.reasons
+      .map((r) => r.name)
+      .join(", ")}`
 
     if (warning.penalty.ban) {
       await guild.bans.create(target.id, {
