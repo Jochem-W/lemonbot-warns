@@ -262,7 +262,7 @@ export class WarnCommand extends ChatInputCommand {
 
     const logMessage = await warnLogMessage(warning)
     await interaction.editReply(logMessage)
-    if (interaction.channelId !== warnLogsChannel.id) {
+    if (interaction.channelId !== warnLogsChannel.id || interaction.ephemeral) {
       await warnLogsChannel.send(logMessage)
     }
   }
