@@ -67,7 +67,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
         `${verb} by ${createdBy.tag} for ${warning.reasons
           .sort(compareReason)
           .map((r) => r.name)
-          .join(", ")}`
+          .join(", ")} ${time(warning.createdAt, TimestampStyles.RelativeTime)}`
       )
       .setDescription(warning.description)
       .setFooter({ text: warning.id.toString() } as EmbedFooterOptions)
