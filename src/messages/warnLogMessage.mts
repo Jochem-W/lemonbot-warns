@@ -89,7 +89,9 @@ export async function warnLogMessage(
   return {
     embeds: [
       mainEmbed,
-      ...warning.images.map((i) => new EmbedBuilder().setImage(i)),
+      ...warning.images.map((i) =>
+        new EmbedBuilder().setImage(i).setURL("https://jochem.cc/")
+      ),
     ],
   }
 }

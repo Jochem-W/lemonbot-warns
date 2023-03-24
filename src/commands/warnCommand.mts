@@ -106,11 +106,6 @@ export class WarnCommand extends ChatInputCommand {
           .setName("image4")
           .setDescription("An image to add to the warning and send to the user")
       )
-      .addAttachmentOption((builder) =>
-        builder
-          .setName("image5")
-          .setDescription("An image to add to the warning and send to the user")
-      )
   }
 
   private async notify(
@@ -218,7 +213,6 @@ export class WarnCommand extends ChatInputCommand {
       interaction.options.getAttachment("image2"),
       interaction.options.getAttachment("image3"),
       interaction.options.getAttachment("image4"),
-      interaction.options.getAttachment("image5"),
     ].filter((r) => r !== null) as Attachment[]
 
     const warning = await Prisma.warning.create({

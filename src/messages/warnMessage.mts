@@ -34,7 +34,10 @@ export function warnMessage(warning: Warning & { penalty: Penalty }) {
   const embeds = [
     mainEmbed,
     ...warning.images.map((i) =>
-      new EmbedBuilder().setImage(i).setColor(0xff0000)
+      new EmbedBuilder()
+        .setImage(i)
+        .setURL("https://jochem.cc/")
+        .setColor(0xff0000)
     ),
   ]
 
