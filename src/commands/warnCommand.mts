@@ -154,32 +154,29 @@ export class WarnCommand extends ChatInputCommand {
 
   private async penalise(
     target: GuildMember | User,
-    warning: Warning & { penalty: Penalty }
+    warning: Warning & { penalty: Penalty; reasons: Reason[] }
   ) {
-    try {
-      if (warning.penalty.ban) {
-        await guild.bans.create(target.id, {
-          deleteMessageSeconds: 604800,
-          reason: "",
-        })
-        return "APPLIED"
-      }
+    const by = await Discord.users.fetch(warning.createdBy)
 
-      if (target instanceof User) {
-        return "NOT_IN_SERVER"
-      }
-
-      if (warning.penalty.kick) {
-        await target.kick("")
-      } else if (warning.penalty.timeout) {
-        await target.timeout(warning.penalty.timeout, "")
-      }
-
+    if (warning.penalty.ban) {
+      await guild.bans.create(target.id, {
+        deleteMessageSeconds: 604800,
+        reason: `By ${by.tag} for ${warning.reasons.join(",")}`,
+      })
       return "APPLIED"
-    } catch (e) {
-      await Prisma.warning.delete({ where: { id: warning.id } })
-      throw e
     }
+
+    if (target instanceof User) {
+      return "NOT_IN_SERVER"
+    }
+
+    if (warning.penalty.kick) {
+      await target.kick("")
+    } else if (warning.penalty.timeout) {
+      await target.timeout(warning.penalty.timeout, "")
+    }
+
+    return "APPLIED"
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
@@ -225,7 +222,7 @@ export class WarnCommand extends ChatInputCommand {
         },
         images: await Promise.all(attachments.map(uploadAttachment)),
       },
-      include: { penalty: true },
+      include: { penalty: true, reasons: true },
     })
 
     const notified = await this.notify(targetMember ?? targetUser, warning)
