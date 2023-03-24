@@ -17,8 +17,9 @@ import {
   User,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
-import { nolookalikesSafe } from "nanoid-dictionary"
+import nanoidDictionary from "nanoid-dictionary"
 
+const { nolookalikesSafe } = nanoidDictionary
 const nanoid = customAlphabet(nolookalikesSafe)
 const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
 const warnLogsChannel = await fetchChannel(
@@ -45,18 +46,6 @@ export class WarnCommand extends ChatInputCommand {
       )
       .addStringOption((builder) =>
         builder
-          .setName("reason2")
-          .setDescription("Concise warning reason for administration purposes")
-          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("reason3")
-          .setDescription("Concise warning reason for administration purposes")
-          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
-      )
-      .addStringOption((builder) =>
-        builder
           .setName("description")
           .setDescription("Extended description that will be sent to the user")
           .setRequired(true)
@@ -75,6 +64,18 @@ export class WarnCommand extends ChatInputCommand {
           .setName("notify")
           .setDescription("Whether to notify the user of the warning")
           .setRequired(true)
+      )
+      .addStringOption((builder) =>
+        builder
+          .setName("reason2")
+          .setDescription("Concise warning reason for administration purposes")
+          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
+      )
+      .addStringOption((builder) =>
+        builder
+          .setName("reason3")
+          .setDescription("Concise warning reason for administration purposes")
+          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
       )
       .addAttachmentOption((builder) =>
         builder
