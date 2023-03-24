@@ -27,7 +27,6 @@ export class DumpJsonCommand extends ChatInputCommand {
             reasons: true,
           },
         },
-        penaltyOverride: true,
       },
     })
 

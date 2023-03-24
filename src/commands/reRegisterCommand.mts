@@ -46,8 +46,8 @@ export class ReRegisterCommand extends ChatInputCommand {
 
     SlashCommands.push(
       new WarnCommand(
-        await Prisma.penalty.findMany(),
-        await Prisma.reason.findMany()
+        await Prisma.reason.findMany(),
+        await Prisma.penalty.findMany()
       )
     )
 

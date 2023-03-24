@@ -7,7 +7,6 @@ import {
   stringToCustomId,
 } from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
-import { WarnCommand } from "./warnCommand.mjs"
 import type { Warning, Penalty, Reason } from "@prisma/client"
 import {
   ActionRowBuilder,
@@ -15,7 +14,6 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
-  Guild,
   PermissionFlagsBits,
 } from "discord.js"
 import type { MessageActionRowComponentBuilder } from "discord.js"
@@ -59,7 +57,6 @@ export class SearchCommand extends ChatInputCommand {
   }
 
   private static async buildResponse(
-    guild: Guild,
     warnings: {
       embeds: EmbedBuilder[]
       warning: Warning & { penalty: Penalty; reasons: Reason[] }
@@ -78,32 +75,26 @@ export class SearchCommand extends ChatInputCommand {
         break
       }
 
+      let verb
+      if (warning.warning.penalty.ban) {
+        verb = "Banned"
+      } else if (warning.warning.penalty.kick) {
+        verb = "Kicked"
+      } else if (warning.warning.penalty.timeout) {
+        verb = "Timed out"
+      } else {
+        verb = "Warned"
+      }
+
       const user = await Discord.users.fetch(warning.warning.userId)
       const warnedBy = await Discord.users.fetch(warning.warning.createdBy)
       warning.embeds[0]?.setAuthor({
-        name: `${WarnCommand.formatTitle(
-          {
-            penalty: warning.warning.penalty,
-            notify: !warning.warning.silent,
-            guild: guild,
-            warnedBy: warnedBy,
-            reasons: warning.warning.reasons.map((reason) => reason.name),
-          },
-          {
-            verbOnly: true,
-          }
-        )} ${user.tag}`,
+        name: `${verb} ${user.tag}`,
         iconURL: user.displayAvatarURL(),
       })
 
       warning.embeds.at(-1)?.setFooter({
-        text: `${WarnCommand.formatTitle({
-          penalty: warning.warning.penalty,
-          notify: !warning.warning.silent,
-          guild: guild,
-          warnedBy: warnedBy,
-          reasons: warning.warning.reasons.map((reason) => reason.name),
-        })}`,
+        text: `${verb} by ${user.tag}`,
         iconURL: warnedBy.displayAvatarURL(),
       })
 
@@ -145,9 +136,6 @@ export class SearchCommand extends ChatInputCommand {
       throw new GuildOnlyError()
     }
 
-    const guild =
-      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
-
     const warnings = await Prisma.warning.findMany({
       where: {
         description: {
@@ -163,7 +151,7 @@ export class SearchCommand extends ChatInputCommand {
       },
     })
 
-    const warningMessages: Parameters<typeof SearchCommand.buildResponse>[1] =
+    const warningMessages: Parameters<typeof SearchCommand.buildResponse>[0] =
       []
     for (const warning of warnings) {
       const embeds = warning.images.map((image) =>
@@ -201,12 +189,12 @@ export class SearchCommand extends ChatInputCommand {
       }
 
       await collected.update(
-        await SearchCommand.buildResponse(guild, warningMessages, skip)
+        await SearchCommand.buildResponse(warningMessages, skip)
       )
     })
 
     await interaction.editReply(
-      await SearchCommand.buildResponse(guild, warningMessages, skip)
+      await SearchCommand.buildResponse(warningMessages, skip)
     )
   }
 }
