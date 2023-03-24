@@ -225,6 +225,8 @@ export class WarnCommand extends ChatInputCommand {
       include: { penalty: true, reasons: true },
     })
 
+    console.log("Created warning with ID", warning.id)
+
     const notified = await this.notify(targetMember ?? targetUser, warning)
     const penalised = await this.penalise(targetMember ?? targetUser, warning)
 
