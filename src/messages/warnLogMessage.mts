@@ -32,7 +32,7 @@ export async function warnLogMessage(
   let notificationText
   switch (warning.notified) {
     case "SILENT":
-      notificationText = `❌ (silent was ${inlineCode("True")})`
+      notificationText = `❌ (notify was ${inlineCode("False")})`
       break
     case "NOT_IN_SERVER":
       notificationText = "❌ (the user isn't in the server)"
