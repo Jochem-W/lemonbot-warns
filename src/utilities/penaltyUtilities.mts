@@ -5,8 +5,8 @@ export function comparePenalty(
   b: Penalty | null,
   reverse = false
 ) {
-  const aIsLarger = reverse ? 1 : -1
-  const bIsLarger = reverse ? -1 : 1
+  const aIsLarger = reverse ? -1 : 1
+  const bIsLarger = reverse ? 1 : -1
 
   if (a === null && b === null) {
     return 0
@@ -88,28 +88,28 @@ function makePenalty(type: "ban" | "kick" | number | null) {
 
 export function testComparePenalty() {
   assert(comparePenalty(null, null) === 0)
-  assert(comparePenalty(null, makePenalty(null)) === 1)
-  assert(comparePenalty(makePenalty(null), null) === -1)
+  assert(comparePenalty(null, makePenalty(null)) === -1)
+  assert(comparePenalty(makePenalty(null), null) === 1)
 
   assert(comparePenalty(makePenalty("ban"), makePenalty("ban")) === 0)
-  assert(comparePenalty(makePenalty(0), makePenalty("ban")) === 1)
-  assert(comparePenalty(makePenalty("kick"), makePenalty("ban")) === 1)
-  assert(comparePenalty(makePenalty(null), makePenalty("ban")) === 1)
-  assert(comparePenalty(makePenalty("ban"), makePenalty(0)) === -1)
-  assert(comparePenalty(makePenalty("ban"), makePenalty("kick")) === -1)
-  assert(comparePenalty(makePenalty("ban"), makePenalty(null)) === -1)
+  assert(comparePenalty(makePenalty(0), makePenalty("ban")) === -1)
+  assert(comparePenalty(makePenalty("kick"), makePenalty("ban")) === -1)
+  assert(comparePenalty(makePenalty(null), makePenalty("ban")) === -1)
+  assert(comparePenalty(makePenalty("ban"), makePenalty(0)) === 1)
+  assert(comparePenalty(makePenalty("ban"), makePenalty("kick")) === 1)
+  assert(comparePenalty(makePenalty("ban"), makePenalty(null)) === 1)
 
   assert(comparePenalty(makePenalty(0), makePenalty(0)) === 0)
-  assert(comparePenalty(makePenalty(0), makePenalty(1)) === 1)
-  assert(comparePenalty(makePenalty(1), makePenalty(0)) === -1)
-  assert(comparePenalty(makePenalty("kick"), makePenalty(0)) === 1)
-  assert(comparePenalty(makePenalty(null), makePenalty(0)) === 1)
-  assert(comparePenalty(makePenalty(0), makePenalty("kick")) === -1)
-  assert(comparePenalty(makePenalty(0), makePenalty(null)) === -1)
+  assert(comparePenalty(makePenalty(0), makePenalty(1)) === -1)
+  assert(comparePenalty(makePenalty(1), makePenalty(0)) === 1)
+  assert(comparePenalty(makePenalty("kick"), makePenalty(0)) === -1)
+  assert(comparePenalty(makePenalty(null), makePenalty(0)) === -1)
+  assert(comparePenalty(makePenalty(0), makePenalty("kick")) === 1)
+  assert(comparePenalty(makePenalty(0), makePenalty(null)) === 1)
 
   assert(comparePenalty(makePenalty("kick"), makePenalty("kick")) === 0)
-  assert(comparePenalty(makePenalty(null), makePenalty("kick")) === 1)
-  assert(comparePenalty(makePenalty("kick"), makePenalty(null)) === -1)
+  assert(comparePenalty(makePenalty(null), makePenalty("kick")) === -1)
+  assert(comparePenalty(makePenalty("kick"), makePenalty(null)) === 1)
 
   assert(comparePenalty(makePenalty(null), makePenalty(null)) === 0)
 }

@@ -39,7 +39,7 @@ const warnLogsChannel = await fetchChannel(
 
 export class WarnCommand extends ChatInputCommand {
   public constructor(reasons: Reason[], penalties: Penalty[]) {
-    penalties = penalties.sort((a, b) => comparePenalty(a, b, true))
+    penalties = penalties.sort(comparePenalty)
 
     super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
     this.builder
