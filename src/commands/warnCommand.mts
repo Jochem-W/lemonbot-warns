@@ -1,12 +1,18 @@
+import { DismissWarnButton } from "../buttons/dismissWarnButton.mjs"
 import { Discord, Prisma } from "../clients.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import { button } from "../utilities/button.mjs"
 import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
-import type { Attachment, ChatInputCommandInteraction } from "discord.js"
+import type {
+  Attachment,
+  ChatInputCommandInteraction,
+  MessageActionRowComponentBuilder,
+} from "discord.js"
 import {
   ChannelType,
   DiscordAPIError,
@@ -15,6 +21,9 @@ import {
   RESTJSONErrorCodes,
   userMention,
   User,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"
@@ -153,7 +162,18 @@ export class WarnCommand extends ChatInputCommand {
       },
       { reason: "Allow the member to-be-warned to view the channel" }
     )
-    await newChannel.send({ ...message, content: userMention(target.id) })
+    await newChannel.send({
+      ...message,
+      content: userMention(target.id),
+      components: [
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+          new ButtonBuilder()
+            .setLabel("Dismiss")
+            .setStyle(ButtonStyle.Danger)
+            .setCustomId(button(DismissWarnButton, [warning.id.toString()]))
+        ),
+      ],
+    })
 
     return "CHANNEL"
   }
