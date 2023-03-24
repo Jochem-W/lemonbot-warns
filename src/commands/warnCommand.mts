@@ -12,6 +12,7 @@ import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import type {
   Attachment,
+  BanOptions,
   ChatInputCommandInteraction,
   MessageActionRowComponentBuilder,
 } from "discord.js"
@@ -190,10 +191,12 @@ export class WarnCommand extends ChatInputCommand {
       .join(", ")}`
 
     if (warning.penalty.ban) {
-      await guild.bans.create(target.id, {
-        deleteMessageSeconds: 604800,
-        reason,
-      })
+      const banOptions: BanOptions = { reason }
+      if (warning.penalty.deleteMessages) {
+        banOptions.deleteMessageSeconds = 604800
+      }
+
+      await guild.bans.create(target.id, banOptions)
       return "APPLIED"
     }
 

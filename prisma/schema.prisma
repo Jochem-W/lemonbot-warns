@@ -86,9 +86,10 @@ model Penalty {
   colour Colour
   name   String @unique
 
-  ban     Boolean
-  kick    Boolean
-  timeout Int?
+  ban            Boolean
+  kick           Boolean
+  timeout        Int?
+  deleteMessages Boolean
 
   warnings Warning[]
 }

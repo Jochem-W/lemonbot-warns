@@ -23,6 +23,18 @@ export function comparePenalty(
   const nameComparison = a.name.localeCompare(b.name)
 
   if (a.ban && b.ban) {
+    if (a.deleteMessages && b.deleteMessages) {
+      return nameComparison
+    }
+
+    if (a.deleteMessages) {
+      return aIsLarger
+    }
+
+    if (b.deleteMessages) {
+      return bIsLarger
+    }
+
     return nameComparison
   }
 
@@ -83,6 +95,7 @@ function makePenalty(type: "ban" | "kick" | number | null) {
     ban: type === "ban",
     kick: type === "kick",
     timeout: typeof type === "number" ? type : null,
+    deleteMessages: false,
   }
 }
 
@@ -90,6 +103,25 @@ export function testComparePenalty() {
   assert(comparePenalty(null, null) === 0)
   assert(comparePenalty(null, makePenalty(null)) === -1)
   assert(comparePenalty(makePenalty(null), null) === 1)
+
+  assert(
+    comparePenalty(
+      { ...makePenalty("ban"), deleteMessages: true },
+      { ...makePenalty("ban"), deleteMessages: true }
+    ) === 0
+  )
+  assert(
+    comparePenalty(
+      { ...makePenalty("ban"), deleteMessages: false },
+      { ...makePenalty("ban"), deleteMessages: true }
+    ) === -1
+  )
+  assert(
+    comparePenalty(
+      { ...makePenalty("ban"), deleteMessages: true },
+      { ...makePenalty("ban"), deleteMessages: false }
+    ) === 1
+  )
 
   assert(comparePenalty(makePenalty("ban"), makePenalty("ban")) === 0)
   assert(comparePenalty(makePenalty(0), makePenalty("ban")) === -1)
