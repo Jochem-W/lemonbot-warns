@@ -178,11 +178,12 @@ export class WarnCommand extends ChatInputCommand {
     warning: Warning & { penalty: Penalty; reasons: Reason[] }
   ) {
     const by = await Discord.users.fetch(warning.createdBy)
+    const reason = `By ${by.tag} for ${warning.reasons.join(", ")}`
 
     if (warning.penalty.ban) {
       await guild.bans.create(target.id, {
         deleteMessageSeconds: 604800,
-        reason: `By ${by.tag} for ${warning.reasons.join(",")}`,
+        reason,
       })
       return "APPLIED"
     }
@@ -192,12 +193,12 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     if (warning.penalty.kick) {
-      await target.kick("")
+      await target.kick(reason)
       return "APPLIED"
     }
 
     if (warning.penalty.timeout) {
-      await target.timeout(warning.penalty.timeout, "")
+      await target.timeout(warning.penalty.timeout, reason)
       return "APPLIED"
     }
 
