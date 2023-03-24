@@ -2,6 +2,7 @@ import { Discord, Prisma } from "../clients.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
+import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type { EmbedFooterOptions, GuildMember } from "discord.js"
 import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
 
@@ -64,6 +65,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     const warningInfoEmbed = new EmbedBuilder()
       .setTitle(
         `${verb} by ${createdBy.tag} for ${warning.reasons
+          .sort(compareReason)
           .map((r) => r.name)
           .join(", ")}`
       )

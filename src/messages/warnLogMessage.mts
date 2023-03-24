@@ -1,6 +1,7 @@
 import { Discord } from "../clients.mjs"
 import { tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
+import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import { EmbedBuilder, inlineCode } from "discord.js"
 
@@ -77,7 +78,10 @@ export async function warnLogMessage(
       { name: "Description", value: warning.description ?? "-" },
       {
         name: warning.reasons.length === 1 ? "Reason" : "Reasons",
-        value: warning.reasons.map((r) => r.name).join(", "),
+        value: warning.reasons
+          .sort(compareReason)
+          .map((r) => r.name)
+          .join(", "),
       },
       { name: "Penalty", value: warning.penalty.name },
       { name: "Notification", value: notificationText },
