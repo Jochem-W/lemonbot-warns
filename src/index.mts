@@ -3,7 +3,11 @@ import { SlashCommands } from "./commands.mjs"
 import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
 import { reportError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
+import { testComparePenalty } from "./utilities/penaltyUtilities.mjs"
 import { Variables } from "./variables.mjs"
+
+// TODO: make this run at compile time?
+testComparePenalty()
 
 SlashCommands.push(new ReRegisterCommand())
 await ReRegisterCommand.register()
