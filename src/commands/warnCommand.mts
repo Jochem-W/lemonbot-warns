@@ -1,8 +1,9 @@
 import { Discord, Prisma } from "../clients.mjs"
+import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { tryFetchMember } from "../utilities/discordUtilities.mjs"
+import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import type { Attachment, ChatInputCommandInteraction } from "discord.js"
@@ -20,6 +21,10 @@ import { nolookalikesSafe } from "nanoid-dictionary"
 
 const nanoid = customAlphabet(nolookalikesSafe)
 const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
+const warnLogsChannel = await fetchChannel(
+  DefaultConfig.guild.warnLogsChannel,
+  ChannelType.GuildText
+)
 
 export class WarnCommand extends ChatInputCommand {
   public constructor(reasons: Reason[], penalties: Penalty[]) {
@@ -234,5 +239,11 @@ export class WarnCommand extends ChatInputCommand {
       where: { id: warning.id },
       data: { notified: notified, penalised },
     })
+
+    const logMessage = await warnLogMessage(warning)
+    await interaction.editReply(logMessage)
+    if (interaction.channelId !== warnLogsChannel.id) {
+      await warnLogsChannel.send(logMessage)
+    }
   }
 }

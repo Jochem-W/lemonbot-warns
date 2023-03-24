@@ -3,7 +3,7 @@ import { tryFetchMember } from "../utilities/discordUtilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import { EmbedBuilder, inlineCode } from "discord.js"
 
-export async function WarnLogMessage(
+export async function warnLogMessage(
   warning: Warning & { penalty: Penalty; reasons: Reason[] }
 ) {
   const member = await tryFetchMember(warning.userId)
@@ -89,7 +89,7 @@ export async function WarnLogMessage(
   return {
     embeds: [
       mainEmbed,
-      warning.images.map((i) => new EmbedBuilder().setImage(i)),
+      ...warning.images.map((i) => new EmbedBuilder().setImage(i)),
     ],
   }
 }
