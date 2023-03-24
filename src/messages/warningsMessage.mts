@@ -46,7 +46,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
   const embeds = [summaryEmbed]
   for (const warning of prismaUser.warnings) {
     if (
-      comparePenalty(warning.penalty, highestPenaltyWarning?.penalty ?? null) <=
+      comparePenalty(warning.penalty, highestPenaltyWarning?.penalty ?? null) >=
       0
     ) {
       highestPenaltyWarning = warning
