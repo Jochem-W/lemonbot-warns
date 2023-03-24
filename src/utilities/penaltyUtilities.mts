@@ -1,63 +1,72 @@
 import type { Penalty } from "@prisma/client"
 
-export function comparePenalty(a: Penalty | null, b: Penalty | null) {
+export function comparePenalty(
+  a: Penalty | null,
+  b: Penalty | null,
+  reverse = false
+) {
+  const aIsLarger = reverse ? 1 : -1
+  const bIsLarger = reverse ? -1 : 1
+
   if (a === null && b === null) {
     return 0
   }
 
   if (a === null) {
-    return 1
+    return bIsLarger
   }
 
   if (b === null) {
-    return -1
+    return aIsLarger
   }
 
+  const nameComparison = a.name.localeCompare(b.name)
+
   if (a.ban && b.ban) {
-    return 0
+    return nameComparison
   }
 
   if (a.ban) {
-    return -1
+    return aIsLarger
   }
 
   if (b.ban) {
-    return 1
+    return bIsLarger
   }
 
   if (a.timeout !== null && b.timeout !== null) {
     if (a.timeout > b.timeout) {
-      return -1
+      return aIsLarger
     }
 
     if (a.timeout === b.timeout) {
-      return 0
+      return nameComparison
     }
 
-    return 1
+    return bIsLarger
   }
 
   if (a.timeout !== null) {
-    return -1
+    return aIsLarger
   }
 
   if (b.timeout !== null) {
-    return 1
+    return bIsLarger
   }
 
   if (a.kick && b.kick) {
-    return 0
+    return nameComparison
   }
 
   if (a.kick) {
-    return -1
+    return aIsLarger
   }
 
   if (b.kick) {
-    return 1
+    return bIsLarger
   }
 
-  return 0
+  return nameComparison
 }
 
 function assert(value: unknown) {

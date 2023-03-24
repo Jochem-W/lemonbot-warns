@@ -6,6 +6,7 @@ import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { button } from "../utilities/button.mjs"
 import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
+import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import type {
@@ -38,6 +39,8 @@ const warnLogsChannel = await fetchChannel(
 
 export class WarnCommand extends ChatInputCommand {
   public constructor(reasons: Reason[], penalties: Penalty[]) {
+    penalties = penalties.sort((a, b) => comparePenalty(a, b, true))
+
     super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
     this.builder
       .addUserOption((builder) =>
