@@ -41,6 +41,7 @@ enum Notified {
 enum Penalised {
   NOT_IN_SERVER
   APPLIED
+  NO_PENALTY
 }
 
 model User {

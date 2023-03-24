@@ -46,7 +46,7 @@ export async function warnLogMessage(
     case "CHANNEL":
       notificationText = "✅ (via channel)"
       break
-    default:
+    case null:
       notificationText = "❓"
       break
   }
@@ -59,7 +59,10 @@ export async function warnLogMessage(
     case "APPLIED":
       penaltyText = "✅ (applied)"
       break
-    default:
+    case "NO_PENALTY":
+      penaltyText = "❌ (no penalty)"
+      break
+    case null:
       penaltyText = "❓"
       break
   }

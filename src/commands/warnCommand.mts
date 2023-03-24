@@ -193,11 +193,15 @@ export class WarnCommand extends ChatInputCommand {
 
     if (warning.penalty.kick) {
       await target.kick("")
-    } else if (warning.penalty.timeout) {
-      await target.timeout(warning.penalty.timeout, "")
+      return "APPLIED"
     }
 
-    return "APPLIED"
+    if (warning.penalty.timeout) {
+      await target.timeout(warning.penalty.timeout, "")
+      return "APPLIED"
+    }
+
+    return "NO_PENALTY"
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
