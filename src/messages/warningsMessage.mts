@@ -1,5 +1,6 @@
 import { Discord, Prisma } from "../clients.mjs"
 import { chunks } from "../utilities/arrayUtilities.mjs"
+import { formatName } from "../utilities/embedUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import type { EmbedFooterOptions, GuildMember } from "discord.js"
 import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
@@ -21,10 +22,8 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     return [{ embeds: [new EmbedBuilder()] }]
   }
 
-  const tag = "tag" in userOrMember ? userOrMember.tag : userOrMember.user.tag
-
   const summaryEmbed = new EmbedBuilder().setAuthor({
-    name: `Warnings for ${tag}`,
+    name: `Warnings for ${formatName(userOrMember)}`,
     iconURL: userOrMember.displayAvatarURL(),
   })
 

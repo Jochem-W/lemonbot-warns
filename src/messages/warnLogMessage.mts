@@ -1,5 +1,6 @@
 import { Discord } from "../clients.mjs"
 import { tryFetchMember } from "../utilities/discordUtilities.mjs"
+import { formatName } from "../utilities/embedUtilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import { EmbedBuilder, inlineCode } from "discord.js"
 
@@ -69,7 +70,7 @@ export async function warnLogMessage(
 
   const mainEmbed = new EmbedBuilder()
     .setAuthor({
-      name: `${verb} ${user.tag} [${warning.id}]`,
+      name: `${verb} ${formatName(member ?? user)} [${warning.id}]`,
       iconURL: (member ?? user).displayAvatarURL(),
     })
     .setFields(
