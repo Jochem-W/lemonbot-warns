@@ -1,6 +1,6 @@
 import { Discord, Forms } from "../clients.mjs"
-import { WarningsCommand } from "../commands/warningsCommand.mjs"
 import { reportError } from "../errors.mjs"
+import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
@@ -178,7 +178,7 @@ async function onTick() {
       reason: "Create thread for more coherent discussion",
     })
 
-    for (const message of await WarningsCommand.buildResponse(user)) {
+    for (const message of await warningsMessage(user)) {
       await thread.send(message)
     }
   }
