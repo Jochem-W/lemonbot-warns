@@ -165,7 +165,9 @@ export class WarnCommand extends ChatInputCommand {
           new ButtonBuilder()
             .setLabel("Dismiss")
             .setStyle(ButtonStyle.Danger)
-            .setCustomId(button(DismissWarnButton, [warning.id.toString()]))
+            .setCustomId(
+              button(DismissWarnButton, [newChannel.id, warning.userId])
+            )
         ),
       ],
     })
