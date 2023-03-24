@@ -219,7 +219,7 @@ export class WarnCommand extends ChatInputCommand {
       interaction.options.getAttachment("image4"),
     ].filter((r) => r !== null) as Attachment[]
 
-    const warning = await Prisma.warning.create({
+    let warning = await Prisma.warning.create({
       data: {
         user: {
           connectOrCreate: {
@@ -254,9 +254,10 @@ export class WarnCommand extends ChatInputCommand {
     const notified = await this.notify(targetMember ?? targetUser, warning)
     const penalised = await this.penalise(targetMember ?? targetUser, warning)
 
-    await Prisma.warning.update({
+    warning = await Prisma.warning.update({
       where: { id: warning.id },
       data: { notified: notified, penalised },
+      include: { penalty: true, reasons: true },
     })
 
     const logMessage = await warnLogMessage(warning)
