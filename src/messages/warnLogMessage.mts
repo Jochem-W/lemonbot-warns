@@ -69,7 +69,17 @@ export async function warnLogMessage(
       break
   }
 
-  const mainEmbed = new EmbedBuilder()
+  const embeds = warning.images.map((i) =>
+    new EmbedBuilder().setImage(i).setURL("https://jochem.cc/")
+  )
+
+  let mainEmbed: EmbedBuilder | undefined = embeds[0]
+  if (!mainEmbed) {
+    mainEmbed = new EmbedBuilder()
+    embeds.push(mainEmbed)
+  }
+
+  mainEmbed
     .setAuthor({
       name: `${verb} ${formatName(member ?? user)} [${warning.id}]`,
       iconURL: (member ?? user).displayAvatarURL(),
@@ -95,11 +105,6 @@ export async function warnLogMessage(
     .setTimestamp(warning.createdAt)
 
   return {
-    embeds: [
-      mainEmbed,
-      ...warning.images.map((i) =>
-        new EmbedBuilder().setImage(i).setURL("https://jochem.cc/")
-      ),
-    ],
+    embeds,
   }
 }

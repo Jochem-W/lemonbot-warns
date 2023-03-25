@@ -19,7 +19,20 @@ export function warnMessage(warning: Warning & { penalty: Penalty }) {
     verb = "warned in"
   }
 
-  const mainEmbed = new EmbedBuilder()
+  const embeds = warning.images.map((i) =>
+    new EmbedBuilder()
+      .setImage(i)
+      .setURL("https://jochem.cc/")
+      .setColor(0xff0000)
+  )
+
+  let mainEmbed: EmbedBuilder | undefined = embeds[0]
+  if (!mainEmbed) {
+    mainEmbed = new EmbedBuilder().setColor(0xff0000)
+    embeds.push(mainEmbed)
+  }
+
+  mainEmbed
     .setAuthor({
       name: `You have been ${verb} ${guild.name}`,
       iconURL: DefaultConfig.icons.warning.toString(),
@@ -30,16 +43,6 @@ export function warnMessage(warning: Warning & { penalty: Penalty }) {
   if (warning.description) {
     mainEmbed.setFields({ name: "Reason", value: warning.description })
   }
-
-  const embeds = [
-    mainEmbed,
-    ...warning.images.map((i) =>
-      new EmbedBuilder()
-        .setImage(i)
-        .setURL("https://jochem.cc/")
-        .setColor(0xff0000)
-    ),
-  ]
 
   if (!warning.penalty.ban) {
     mainEmbed.setFooter({
