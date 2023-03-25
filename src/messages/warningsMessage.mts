@@ -22,14 +22,19 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     },
   })
 
-  if (!prismaUser) {
-    return [{ embeds: [new EmbedBuilder()] }]
-  }
-
   const summaryEmbed = new EmbedBuilder().setAuthor({
     name: `Warnings for ${formatName(userOrMember)}`,
     iconURL: userOrMember.displayAvatarURL(),
   })
+
+  if (!prismaUser || prismaUser.warnings.length === 0) {
+    summaryEmbed.setTitle(
+      `This ${
+        userOrMember instanceof User ? "user" : "member"
+      } has no logged warnings`
+    )
+    return [{ embeds: [summaryEmbed] }]
+  }
 
   const lastWarning = prismaUser.warnings.at(-1)
   if (lastWarning) {
