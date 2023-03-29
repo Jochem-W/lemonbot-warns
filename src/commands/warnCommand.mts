@@ -9,7 +9,7 @@ import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
-import type { Penalty, Reason, Warning } from "@prisma/client"
+import type { Image, Penalty, Reason, Warning } from "@prisma/client"
 import type {
   Attachment,
   BanOptions,
@@ -116,7 +116,7 @@ export class WarnCommand extends ChatInputCommand {
 
   private async notify(
     target: GuildMember | User,
-    warning: Warning & { penalty: Penalty }
+    warning: Warning & { penalty: Penalty; images: Image[] }
   ) {
     if (warning.silent) {
       return "SILENT"
@@ -232,6 +232,8 @@ export class WarnCommand extends ChatInputCommand {
       interaction.options.getAttachment("image4"),
     ].filter((r) => r !== null) as Attachment[]
 
+    const attachmentUrls = await Promise.all(attachments.map(uploadAttachment))
+
     let warning = await Prisma.warning.create({
       data: {
         user: {
@@ -257,9 +259,13 @@ export class WarnCommand extends ChatInputCommand {
         reasons: {
           connect: reasons.map((r) => ({ name: r })),
         },
-        images: await Promise.all(attachments.map(uploadAttachment)),
+        images: {
+          createMany: {
+            data: attachmentUrls.map((url) => ({ url })),
+          },
+        },
       },
-      include: { penalty: true, reasons: true },
+      include: { penalty: true, reasons: true, images: true },
     })
 
     console.log("Created warning with ID", warning.id)
@@ -270,7 +276,7 @@ export class WarnCommand extends ChatInputCommand {
     warning = await Prisma.warning.update({
       where: { id: warning.id },
       data: { notified: notified, penalised },
-      include: { penalty: true, reasons: true },
+      include: { penalty: true, reasons: true, images: true },
     })
 
     const logMessage = await warnLogMessage(warning)

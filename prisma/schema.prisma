@@ -57,7 +57,6 @@ model Warning {
   createdAt   DateTime
   createdBy   String
   description String?
-  images      String[]
   silent      Boolean
   notified    Notified?
   penalised   Penalised?
@@ -69,6 +68,17 @@ model Warning {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
+
+  images Image[]
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+
+  url String
+
+  warning   Warning @relation(fields: [warningId], references: [id])
+  warningId Int
 }
 
 model Reason {

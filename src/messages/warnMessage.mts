@@ -1,13 +1,15 @@
 import { Discord } from "../clients.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
-import type { Penalty, Warning } from "@prisma/client"
+import type { Image, Penalty, Warning } from "@prisma/client"
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
 
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
 
-export function warnMessage(warning: Warning & { penalty: Penalty }) {
+export function warnMessage(
+  warning: Warning & { penalty: Penalty; images: Image[] }
+) {
   let verb
   if (warning.penalty.ban) {
     verb = "banned from"
@@ -21,7 +23,7 @@ export function warnMessage(warning: Warning & { penalty: Penalty }) {
 
   const embeds = warning.images.map((i) =>
     new EmbedBuilder()
-      .setImage(i)
+      .setImage(i.url)
       .setURL("https://jochem.cc/")
       .setColor(0xff0000)
   )

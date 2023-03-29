@@ -93,14 +93,10 @@ export class EditCommand extends ChatInputCommand {
     const subcommand = interaction.options.getSubcommand(true)
     switch (subcommand) {
       case "append":
-        await Prisma.warning.update({
-          where: {
-            id: warningId,
-          },
+        await Prisma.image.create({
           data: {
-            images: {
-              push: [url],
-            },
+            warningId,
+            url,
           },
         })
         break
@@ -134,12 +130,15 @@ export class EditCommand extends ChatInputCommand {
 
   private static async handleDelete(interaction: ChatInputCommandInteraction) {
     const warningId = interaction.options.getInteger("id", true)
-    const warning = await Prisma.warning.delete({ where: { id: warningId } })
+    const warning = await Prisma.warning.delete({
+      where: { id: warningId },
+      include: { images: true },
+    })
     for (const image of warning.images) {
       await S3.send(
         new DeleteObjectCommand({
           Bucket: Variables.s3WarningsBucketName,
-          Key: new URL(image).pathname.slice(1),
+          Key: new URL(image.url).pathname.slice(1),
         })
       )
     }

@@ -2,11 +2,11 @@ import { Discord } from "../clients.mjs"
 import { tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
-import type { Penalty, Reason, Warning } from "@prisma/client"
+import type { Image, Penalty, Reason, Warning } from "@prisma/client"
 import { EmbedBuilder, inlineCode } from "discord.js"
 
 export async function warnLogMessage(
-  warning: Warning & { penalty: Penalty; reasons: Reason[] }
+  warning: Warning & { penalty: Penalty; reasons: Reason[]; images: Image[] }
 ) {
   const member = await tryFetchMember(warning.userId)
   const user = member?.user ?? (await Discord.users.fetch(warning.userId))
@@ -70,7 +70,7 @@ export async function warnLogMessage(
   }
 
   const embeds = warning.images.map((i) =>
-    new EmbedBuilder().setImage(i).setURL("https://jochem.cc/")
+    new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/")
   )
 
   let mainEmbed: EmbedBuilder | undefined = embeds[0]

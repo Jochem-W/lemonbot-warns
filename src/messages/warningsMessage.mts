@@ -14,6 +14,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
         include: {
           penalty: true,
           reasons: true,
+          images: true,
         },
         orderBy: {
           createdAt: "asc",
@@ -84,7 +85,9 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     embeds.push(warningInfoEmbed)
     embeds.push(
       ...warning.images.map((i) =>
-        new EmbedBuilder().setImage(i).setURL(`https://jochem.cc/${warning.id}`)
+        new EmbedBuilder()
+          .setImage(i.url)
+          .setURL(`https://jochem.cc/${warning.id}`)
       )
     )
   }

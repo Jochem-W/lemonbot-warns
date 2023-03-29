@@ -145,6 +145,7 @@ export class SearchCommand extends ChatInputCommand {
       include: {
         penalty: true,
         reasons: true,
+        images: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -155,7 +156,7 @@ export class SearchCommand extends ChatInputCommand {
       []
     for (const warning of warnings) {
       const embeds = warning.images.map((image) =>
-        new EmbedBuilder().setImage(image)
+        new EmbedBuilder().setImage(image.url)
       )
 
       let firstEmbed = embeds.at(0)
