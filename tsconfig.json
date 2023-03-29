@@ -6,9 +6,5 @@
       "DOM"
     ],
     "sourceMap": true,
-
-    // The below lines are needed until @tsconfig/strict gets updated
-    "importsNotUsedAsValues": null,
-    "verbatimModuleSyntax": true
   }
 }
