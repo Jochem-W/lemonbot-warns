@@ -261,7 +261,7 @@ export class WarnCommand extends ChatInputCommand {
         },
         images: {
           createMany: {
-            data: attachmentUrls.map((url) => ({ url })),
+            data: attachmentUrls.map((url) => ({ url, extra: false })),
           },
         },
       },

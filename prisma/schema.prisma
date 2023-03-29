@@ -75,7 +75,8 @@ model Warning {
 model Image {
   id Int @id @default(autoincrement())
 
-  url String
+  url   String
+  extra Boolean
 
   warning   Warning @relation(fields: [warningId], references: [id])
   warningId Int

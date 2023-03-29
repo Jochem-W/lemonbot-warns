@@ -97,6 +97,7 @@ export class EditCommand extends ChatInputCommand {
           data: {
             warningId,
             url,
+            extra: true,
           },
         })
         break
