@@ -1,5 +1,4 @@
 import { Discord, Prisma } from "../clients.mjs"
-import { chunks } from "../utilities/arrayUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
@@ -49,7 +48,9 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
   }
 
   let highestPenaltyWarning = null
-  const embeds = [summaryEmbed]
+
+  let message = { embeds: [summaryEmbed] }
+  const messages = [message]
   for (const warning of prismaUser.warnings) {
     if (
       comparePenalty(warning.penalty, highestPenaltyWarning?.penalty ?? null) >=
@@ -71,25 +72,39 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
 
     const createdBy = await Discord.users.fetch(warning.createdBy)
 
-    const warningInfoEmbed = new EmbedBuilder()
-      .setTitle(
-        `${verb} by ${createdBy.tag} for ${warning.reasons
+    const warningEmbeds = warning.images.map((i) =>
+      new EmbedBuilder()
+        .setImage(i.url)
+        .setURL(`https://jochem.cc/${warning.id}`)
+    )
+
+    let warningInfoEmbed = warningEmbeds[0]
+    if (!warningInfoEmbed) {
+      warningInfoEmbed = new EmbedBuilder()
+      warningEmbeds.push(warningInfoEmbed)
+    }
+
+    warningInfoEmbed
+      .setAuthor({
+        name: `${verb} by ${createdBy.tag} for ${warning.reasons
           .sort(compareReason)
           .map((r) => r.name)
-          .join(", ")} ${time(warning.createdAt, TimestampStyles.RelativeTime)}`
-      )
+          .join(", ")} ${time(
+          warning.createdAt,
+          TimestampStyles.RelativeTime
+        )}`,
+      })
       .setDescription(warning.description)
       .setFooter({ text: warning.id.toString() } as EmbedFooterOptions)
       .setTimestamp(warning.createdAt)
 
-    embeds.push(warningInfoEmbed)
-    embeds.push(
-      ...warning.images.map((i) =>
-        new EmbedBuilder()
-          .setImage(i.url)
-          .setURL(`https://jochem.cc/${warning.id}`)
-      )
-    )
+    if (message.embeds.length + warningEmbeds.length > 10) {
+      message = { embeds: warningEmbeds }
+      messages.push(message)
+      continue
+    }
+
+    message.embeds.push(...warningEmbeds)
   }
 
   if (highestPenaltyWarning) {
@@ -102,5 +117,5 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     })
   }
 
-  return [...chunks(embeds, 10)].map((e) => ({ embeds: e }))
+  return messages
 }
