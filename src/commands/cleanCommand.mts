@@ -83,7 +83,10 @@ export class CleanCommand extends ChatInputCommand {
             },
             {
               name: "Images deleted from S3",
-              value: codeBlock("diff", keys.map((k) => `- ${k}`).join("\n")),
+              value:
+                keys.length === 0
+                  ? "None"
+                  : codeBlock("diff", keys.map((k) => `- ${k}`).join("\n")),
             }
           ),
       ],
