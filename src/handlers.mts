@@ -1,3 +1,4 @@
+import { AppendImageHandler } from "./handlers/appendImageHandler.mjs"
 import { CommandHandler } from "./handlers/commandHandler.mjs"
 import { GuildBanAddHandler } from "./handlers/guildBanAddHandler.mjs"
 import { GuildBanRemoveHandler } from "./handlers/guildBanRemoveHandler.mjs"
@@ -22,4 +23,5 @@ export const Handlers: Handler<keyof ClientEvents>[] = [
   new MessageDeleteHandler(),
   new GuildBanRemoveHandler(),
   new MessageDeleteBulkHandler(),
+  new AppendImageHandler(),
 ]

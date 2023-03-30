@@ -21,12 +21,14 @@ export function warnMessage(
     verb = "warned in"
   }
 
-  const embeds = warning.images.map((i) =>
-    new EmbedBuilder()
-      .setImage(i.url)
-      .setURL("https://jochem.cc/")
-      .setColor(0xff0000)
-  )
+  const embeds = warning.images
+    .filter((i) => !i.extra)
+    .map((i) =>
+      new EmbedBuilder()
+        .setImage(i.url)
+        .setURL("https://jochem.cc/")
+        .setColor(0xff0000)
+    )
 
   let mainEmbed: EmbedBuilder | undefined = embeds[0]
   if (!mainEmbed) {

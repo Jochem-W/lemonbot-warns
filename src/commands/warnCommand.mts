@@ -280,9 +280,14 @@ export class WarnCommand extends ChatInputCommand {
     })
 
     const logMessage = await warnLogMessage(warning)
-    await interaction.editReply(logMessage)
+    let message = await interaction.editReply(logMessage)
     if (interaction.channelId !== warnLogsChannel.id || interaction.ephemeral) {
-      await warnLogsChannel.send(logMessage)
+      message = await warnLogsChannel.send(logMessage)
     }
+
+    await Prisma.warning.update({
+      where: { id: warning.id },
+      data: { messageId: message.id },
+    })
   }
 }

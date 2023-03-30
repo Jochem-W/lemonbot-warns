@@ -69,9 +69,19 @@ export async function warnLogMessage(
       break
   }
 
-  const embeds = warning.images.map((i) =>
-    new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/")
-  )
+  const embeds = warning.images
+    .filter((i) => !i.extra)
+    .map((i) => new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/"))
+
+  const extraImages = warning.images
+    .filter((i) => i.extra)
+    .map((i) =>
+      new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/extra")
+    )
+
+  extraImages[0]?.setAuthor({ name: "Extra images" })
+
+  embeds.push(...extraImages)
 
   let mainEmbed: EmbedBuilder | undefined = embeds[0]
   if (!mainEmbed) {

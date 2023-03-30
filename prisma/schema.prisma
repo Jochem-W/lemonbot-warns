@@ -61,6 +61,8 @@ model Warning {
   notified    Notified?
   penalised   Penalised?
 
+  messageId String?
+
   penalty   Penalty @relation(fields: [penaltyId], references: [id])
   penaltyId Int
 

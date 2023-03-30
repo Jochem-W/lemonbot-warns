@@ -72,11 +72,25 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
 
     const createdBy = await Discord.users.fetch(warning.createdBy)
 
-    const warningEmbeds = warning.images.map((i) =>
-      new EmbedBuilder()
-        .setImage(i.url)
-        .setURL(`https://jochem.cc/${warning.id}`)
-    )
+    const warningEmbeds = warning.images
+      .filter((i) => !i.extra)
+      .map((i) =>
+        new EmbedBuilder()
+          .setImage(i.url)
+          .setURL(`https://jochem.cc/${warning.id}`)
+      )
+
+    const extraImages = warning.images
+      .filter((i) => i.extra)
+      .map((i) =>
+        new EmbedBuilder()
+          .setImage(i.url)
+          .setURL(`https://jochem.cc/${warning.id}/extra`)
+      )
+
+    extraImages[0]?.setAuthor({ name: "Extra images" })
+
+    warningEmbeds.push(...extraImages)
 
     let warningInfoEmbed = warningEmbeds[0]
     if (!warningInfoEmbed) {
