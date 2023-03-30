@@ -6,6 +6,7 @@ import { HistoryCommand } from "./commands/historyCommand.mjs"
 import { RestCommand } from "./commands/restCommand.mjs"
 import { S3Command } from "./commands/s3Command.mjs"
 import { SearchCommand } from "./commands/searchCommand.mjs"
+import { ShowEmbedCommand } from "./commands/showEmbedCommand.mjs"
 import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
 import { StatusCommand } from "./commands/statusCommand.mjs"
 import { WarningsCommand } from "./commands/warningsCommand.mjs"
@@ -27,6 +28,7 @@ export const SlashCommands: ChatInputCommand[] = [
   new SearchCommand(),
   new RestCommand(),
   new EvalCommand(),
+  new ShowEmbedCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = [
