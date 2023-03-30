@@ -75,18 +75,6 @@ export async function warnLogMessage(
       new EmbedBuilder().setImage(i.url).setURL(warningUrl(warning).toString())
     )
 
-  const extraImages = warning.images
-    .filter((i) => i.extra)
-    .map((i) =>
-      new EmbedBuilder()
-        .setImage(i.url)
-        .setURL(warningUrl(warning, "extra").toString())
-    )
-
-  extraImages[0]?.setAuthor({ name: "Extra images" })
-
-  embeds.push(...extraImages)
-
   let mainEmbed: EmbedBuilder | undefined = embeds[0]
   if (!mainEmbed) {
     mainEmbed = new EmbedBuilder()
@@ -117,6 +105,18 @@ export async function warnLogMessage(
       iconURL: (createdByMember ?? createdByUser).displayAvatarURL(),
     })
     .setTimestamp(warning.createdAt)
+
+  const extraImages = warning.images
+    .filter((i) => i.extra)
+    .map((i) =>
+      new EmbedBuilder()
+        .setImage(i.url)
+        .setURL(warningUrl(warning, "extra").toString())
+    )
+
+  extraImages[0]?.setAuthor({ name: "Extra images" })
+
+  embeds.push(...extraImages)
 
   return {
     embeds,
