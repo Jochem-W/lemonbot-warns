@@ -77,7 +77,7 @@ export class EditCommand extends ChatInputCommand {
     const warningId = interaction.options.getInteger("id", true)
     const images = await Prisma.image.findMany({ where: { warningId } })
     await Prisma.image.deleteMany({ where: { warningId } })
-    await Prisma.warning.delete({ where: { id: warningId } })
+    const warning = await Prisma.warning.delete({ where: { id: warningId } })
     for (const image of images) {
       await S3.send(
         new DeleteObjectCommand({
@@ -85,6 +85,15 @@ export class EditCommand extends ChatInputCommand {
           Key: new URL(image.url).pathname.slice(1),
         })
       )
+    }
+
+    const user = await Prisma.user.findFirstOrThrow({
+      where: { id: warning.userId },
+      include: { warnings: true },
+    })
+
+    if (user.warnings.length === 0) {
+      await Prisma.user.delete({ where: { id: user.id } })
     }
   }
 
