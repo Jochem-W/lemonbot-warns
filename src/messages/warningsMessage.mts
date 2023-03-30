@@ -38,13 +38,16 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
 
   const lastWarning = prismaUser.warnings.at(-1)
   if (lastWarning) {
-    summaryEmbed.setFields({
-      name: "Most recent penalty",
-      value: `${lastWarning.penalty.name} (${time(
-        lastWarning.createdAt,
-        TimestampStyles.RelativeTime
-      )})`,
-    })
+    summaryEmbed.setFields(
+      { name: "User ID", value: prismaUser.id },
+      {
+        name: "Most recent penalty",
+        value: `${lastWarning.penalty.name} (${time(
+          lastWarning.createdAt,
+          TimestampStyles.RelativeTime
+        )})`,
+      }
+    )
   }
 
   let highestPenaltyWarning = null
