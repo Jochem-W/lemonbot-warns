@@ -1,3 +1,4 @@
+import { CleanCommand } from "./commands/cleanCommand.mjs"
 import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { EvalCommand } from "./commands/evalCommand.mjs"
@@ -29,6 +30,7 @@ export const SlashCommands: ChatInputCommand[] = [
   new RestCommand(),
   new EvalCommand(),
   new ShowEmbedCommand(),
+  new CleanCommand(),
 ]
 
 export const MessageContextMenuCommands: MessageContextMenuCommand[] = [
