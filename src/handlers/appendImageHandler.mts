@@ -84,7 +84,7 @@ export class AppendImageHandler implements Handler<"messageCreate"> {
     const reply = await message.reply({
       embeds: [
         new EmbedBuilder().setAuthor({
-          name: "Images added",
+          name: `Image${attachments.length === 1 ? "" : "s"} added`,
           iconURL: DefaultConfig.icons.success.toString(),
         }),
       ],
