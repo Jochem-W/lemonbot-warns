@@ -1,5 +1,5 @@
 import { Discord } from "../clients.mjs"
-import { tryFetchMember } from "../utilities/discordUtilities.mjs"
+import { tryFetchMember, warningUrl } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type { Image, Penalty, Reason, Warning } from "@prisma/client"
@@ -71,12 +71,16 @@ export async function warnLogMessage(
 
   const embeds = warning.images
     .filter((i) => !i.extra)
-    .map((i) => new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/"))
+    .map((i) =>
+      new EmbedBuilder().setImage(i.url).setURL(warningUrl(warning).toString())
+    )
 
   const extraImages = warning.images
     .filter((i) => i.extra)
     .map((i) =>
-      new EmbedBuilder().setImage(i.url).setURL("https://jochem.cc/extra")
+      new EmbedBuilder()
+        .setImage(i.url)
+        .setURL(warningUrl(warning, "extra").toString())
     )
 
   extraImages[0]?.setAuthor({ name: "Extra images" })

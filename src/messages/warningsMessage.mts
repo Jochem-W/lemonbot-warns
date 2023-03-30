@@ -1,4 +1,5 @@
 import { Discord, Prisma } from "../clients.mjs"
+import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
@@ -80,7 +81,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       .map((i) =>
         new EmbedBuilder()
           .setImage(i.url)
-          .setURL(`https://jochem.cc/${warning.id}`)
+          .setURL(warningUrl(warning).toString())
       )
 
     const extraImages = warning.images
@@ -88,7 +89,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       .map((i) =>
         new EmbedBuilder()
           .setImage(i.url)
-          .setURL(`https://jochem.cc/${warning.id}/extra`)
+          .setURL(warningUrl(warning, "extra").toString())
       )
 
     extraImages[0]?.setAuthor({ name: "Extra images" })
@@ -102,15 +103,12 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
     }
 
     warningInfoEmbed
-      .setAuthor({
-        name: `${verb} by ${createdBy.tag} for ${warning.reasons
+      .setTitle(
+        `${verb} by ${createdBy.tag} for ${warning.reasons
           .sort(compareReason)
           .map((r) => r.name)
-          .join(", ")} ${time(
-          warning.createdAt,
-          TimestampStyles.RelativeTime
-        )}`,
-      })
+          .join(", ")} ${time(warning.createdAt, TimestampStyles.RelativeTime)}`
+      )
       .setDescription(warning.description)
       .setFooter({ text: warning.id.toString() } as EmbedFooterOptions)
       .setTimestamp(warning.createdAt)

@@ -6,6 +6,7 @@ import {
   OwnerOnlyError,
 } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import type { Warning } from "@prisma/client"
 import type {
   FetchChannelOptions,
   GuildBasedChannel,
@@ -108,4 +109,15 @@ export function isInPrivateChannel(interaction: Interaction) {
   }
 
   return DefaultConfig.guild.privateChannels.includes(interaction.channelId)
+}
+
+export function warningUrl(warning: Warning, search = "") {
+  const url = new URL(
+    `https://discord.com/channels/${DefaultConfig.guild.id}/${
+      DefaultConfig.guild.warnLogsChannel
+    }/${warning.messageId ?? ""}`
+  )
+
+  url.search = search
+  return url
 }

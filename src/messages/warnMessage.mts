@@ -1,5 +1,6 @@
 import { Discord } from "../clients.mjs"
 import { DefaultConfig } from "../models/config.mjs"
+import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
 import type { Image, Penalty, Warning } from "@prisma/client"
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
@@ -26,7 +27,7 @@ export function warnMessage(
     .map((i) =>
       new EmbedBuilder()
         .setImage(i.url)
-        .setURL("https://jochem.cc/")
+        .setURL(warningUrl(warning).toString())
         .setColor(0xff0000)
     )
 
