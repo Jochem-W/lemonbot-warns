@@ -96,6 +96,7 @@ function makePenalty(type: "ban" | "kick" | number | null) {
     kick: type === "kick",
     timeout: typeof type === "number" ? type : null,
     deleteMessages: false,
+    hidden: false,
   }
 }
 
