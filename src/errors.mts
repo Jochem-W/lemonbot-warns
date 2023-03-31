@@ -200,12 +200,6 @@ export class InvalidEmbedError extends CustomError {
   }
 }
 
-export class PenaltyNotFoundError extends CustomError {
-  public constructor(message: string) {
-    super(message)
-  }
-}
-
 export class NoMessageRevisionsError extends CustomError {
   public constructor(id: Snowflake) {
     super(`Message with ID "${id}" has no revisions`)

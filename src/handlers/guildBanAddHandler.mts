@@ -1,10 +1,6 @@
 import { EditWarnButton } from "../buttons/editWarnButton.mjs"
 import { Prisma } from "../clients.mjs"
-import {
-  AuditLogNotFoundError,
-  InvalidAuditLogEntryError,
-  PenaltyNotFoundError,
-} from "../errors.mjs"
+import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
 import { button } from "../utilities/button.mjs"
@@ -18,6 +14,11 @@ import {
   ChannelType,
   GuildBan,
 } from "discord.js"
+
+const loggingChannel = await fetchChannel(
+  DefaultConfig.guild.warnLogsChannel,
+  ChannelType.GuildText
+)
 
 export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"
@@ -41,11 +42,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   }
 
   public async handle(ban: GuildBan) {
-    const loggingChannel = await fetchChannel(
-      DefaultConfig.guild.warnLogsChannel,
-      ChannelType.GuildText
-    )
-
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
@@ -62,16 +58,12 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
       return
     }
 
-    const penalty = await Prisma.penalty.findFirst({
+    const penalty = await Prisma.penalty.findFirstOrThrow({
       where: {
         ban: true,
         hidden: true,
       },
     })
-
-    if (!penalty) {
-      throw new PenaltyNotFoundError("Couldn't find a ban penalty")
-    }
 
     const args: Parameters<typeof Prisma.warning.create>[0] = {
       data: {
