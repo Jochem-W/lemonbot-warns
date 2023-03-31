@@ -103,6 +103,7 @@ model Penalty {
   kick           Boolean
   timeout        Int?
   deleteMessages Boolean
+  hidden         Boolean @default(false)
 
   warnings Warning[]
 }

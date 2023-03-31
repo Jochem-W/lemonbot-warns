@@ -65,6 +65,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     const penalty = await Prisma.penalty.findFirst({
       where: {
         ban: true,
+        hidden: true,
       },
     })
 
