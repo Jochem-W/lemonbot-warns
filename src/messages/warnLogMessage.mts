@@ -93,10 +93,11 @@ export async function warnLogMessage(
       { name: "Description", value: warning.description ?? "-" },
       {
         name: warning.reasons.length === 1 ? "Reason" : "Reasons",
-        value: warning.reasons
-          .sort(compareReason)
-          .map((r) => r.name)
-          .join(", "),
+        value:
+          warning.reasons
+            .sort(compareReason)
+            .map((r) => r.name)
+            .join(", ") || "-",
       },
       { name: "Penalty", value: warning.penalty.name },
       { name: "Notification", value: notificationText },
