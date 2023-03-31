@@ -1,9 +1,19 @@
 import { Prisma } from "../clients.mjs"
-import { InvalidCustomIdError } from "../errors.mjs"
+import { InvalidCustomIdError, reportError } from "../errors.mjs"
+import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
-import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
+import {
+  fetchChannel,
+  isInPrivateChannel,
+} from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { registerModalHandler } from "../utilities/modal.mjs"
+import { ChannelType } from "discord.js"
+
+const warnLogsChannel = await fetchChannel(
+  DefaultConfig.guild.warnLogsChannel,
+  ChannelType.GuildText
+)
 
 export const EditWarnModal = registerModalHandler(
   "edit-warn",
@@ -22,9 +32,10 @@ export const EditWarnModal = registerModalHandler(
       data: {
         description: interaction.fields.getTextInputValue("description"),
       },
+      include: { penalty: true, reasons: true, images: true },
     })
 
-    await interaction.reply({
+    const reply = await interaction.reply({
       embeds: [
         makeEmbed("Warning edited", DefaultConfig.icons.success).addFields(
           { name: "Old description", value: oldWarning.description ?? "-" },
@@ -33,5 +44,14 @@ export const EditWarnModal = registerModalHandler(
       ],
       ephemeral: !isInPrivateChannel(interaction),
     })
+
+    setTimeout(() => void reply.delete().catch(reportError), 5000)
+
+    if (warning.messageId) {
+      await warnLogsChannel.messages.edit(
+        warning.messageId,
+        await warnLogMessage(warning)
+      )
+    }
   }
 )
