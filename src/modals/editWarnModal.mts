@@ -45,7 +45,7 @@ export const EditWarnModal = registerModalHandler(
       ephemeral: !isInPrivateChannel(interaction),
     })
 
-    setTimeout(() => void reply.delete().catch(reportError), 5000)
+    setTimeout(() => void reply.delete().catch(reportError), 2500)
 
     if (warning.messageId) {
       await warnLogsChannel.messages.edit(

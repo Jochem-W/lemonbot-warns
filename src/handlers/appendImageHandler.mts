@@ -91,6 +91,6 @@ export class AppendImageHandler implements Handler<"messageCreate"> {
     })
     await message.delete()
 
-    setTimeout(() => void reply.delete().catch(reportError), 5000)
+    setTimeout(() => void reply.delete().catch(reportError), 2500)
   }
 }
