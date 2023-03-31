@@ -48,6 +48,9 @@ export async function warnLogMessage(
     case "CHANNEL":
       notificationText = "✅ (via channel)"
       break
+    case "REGULAR_BAN":
+      notificationText = "❌ (regular ban)"
+      break
     case null:
       notificationText = "❓"
       break

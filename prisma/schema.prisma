@@ -36,6 +36,7 @@ enum Notified {
   DM
   DMS_DISABLED
   CHANNEL
+  REGULAR_BAN
 }
 
 enum Penalised {

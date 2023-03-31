@@ -86,6 +86,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             },
           },
         },
+        penalised: "APPLIED",
+        notified: "REGULAR_BAN",
       },
     }
 
