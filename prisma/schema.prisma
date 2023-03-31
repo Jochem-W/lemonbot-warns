@@ -108,34 +108,3 @@ model Penalty {
 
   warnings Warning[]
 }
-
-model Message {
-  id        String @id
-  userId    String
-  channelId String
-
-  deleted Boolean
-
-  revisions   MessageRevision[]
-  attachments MessageAttachment[]
-}
-
-model MessageRevision {
-  id Int @id @default(autoincrement())
-
-  message   Message @relation(fields: [messageId], references: [id])
-  messageId String
-
-  timestamp DateTime
-  content   String?
-}
-
-model MessageAttachment {
-  id String @id
-
-  message   Message @relation(fields: [messageId], references: [id])
-  messageId String
-
-  key      String
-  mimeType String?
-}

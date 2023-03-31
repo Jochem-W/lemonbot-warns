@@ -3,7 +3,6 @@ import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { EvalCommand } from "./commands/evalCommand.mjs"
 import { EvalMessageCommand } from "./commands/evalMessageCommand.mjs"
-import { HistoryCommand } from "./commands/historyCommand.mjs"
 import { RestCommand } from "./commands/restCommand.mjs"
 import { S3Command } from "./commands/s3Command.mjs"
 import { SearchCommand } from "./commands/searchCommand.mjs"
@@ -24,7 +23,6 @@ export const SlashCommands: ChatInputCommand[] = [
   new DumpJsonCommand(),
   new S3Command(),
   new StatisticsCommand(),
-  new HistoryCommand(),
   new EditCommand(),
   new SearchCommand(),
   new RestCommand(),
