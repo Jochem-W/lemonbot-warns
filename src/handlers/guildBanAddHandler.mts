@@ -72,27 +72,6 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
       throw new PenaltyNotFoundError("Couldn't find a ban penalty")
     }
 
-    const warning = await Prisma.warning.findFirst({
-      where: {
-        user: {
-          id: ban.user.id,
-        },
-      },
-      orderBy: [
-        {
-          createdAt: "desc",
-        },
-      ],
-      include: {
-        penalty: true,
-      },
-    })
-
-    if (warning?.penalty.ban) {
-      // TODO: check time
-      return
-    }
-
     const args: Parameters<typeof Prisma.warning.create>[0] = {
       data: {
         createdAt: auditLogEntry.createdAt,
@@ -122,7 +101,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
     }
 
     const prismaBan = await Prisma.warning.create(args)
-    await loggingChannel.send({
+
+    const message = await loggingChannel.send({
       embeds: [
         makeEmbed(
           `Banned ${ban.user.tag} [${prismaBan.id}] (No DM)`,
@@ -151,6 +131,11 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
             .setCustomId(button(EditWarnButton, [prismaBan.id.toString()])),
         ]),
       ],
+    })
+
+    await Prisma.warning.update({
+      where: { id: prismaBan.id },
+      data: { messageId: message.id },
     })
   }
 }
