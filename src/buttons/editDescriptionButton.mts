@@ -11,7 +11,7 @@ import {
 } from "discord.js"
 import type { ModalActionRowComponentBuilder } from "discord.js"
 
-export const EditWarnButton = registerButtonHandler(
+export const EditDescriptionButton = registerButtonHandler(
   "edit-warn",
   async (interaction, [warningId]) => {
     if (!warningId) {

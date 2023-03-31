@@ -1,9 +1,17 @@
+import { EditDescriptionButton } from "../buttons/editDescriptionButton.mjs"
 import { Discord } from "../clients.mjs"
+import { button } from "../utilities/button.mjs"
 import { tryFetchMember, warningUrl } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type { Image, Penalty, Reason, Warning } from "@prisma/client"
-import { EmbedBuilder, inlineCode } from "discord.js"
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  EmbedBuilder,
+  inlineCode,
+} from "discord.js"
 
 export async function warnLogMessage(
   warning: Warning & { penalty: Penalty; reasons: Reason[]; images: Image[] }
@@ -122,7 +130,20 @@ export async function warnLogMessage(
 
   embeds.push(...extraImages)
 
+  const components = []
+  if (!warning.description) {
+    components.push(
+      new ActionRowBuilder<ButtonBuilder>().setComponents(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Secondary)
+          .setLabel("Edit description")
+          .setCustomId(button(EditDescriptionButton, [warning.id.toString()]))
+      )
+    )
+  }
+
   return {
     embeds,
+    components,
   }
 }

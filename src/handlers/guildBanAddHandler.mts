@@ -1,19 +1,10 @@
-import { EditWarnButton } from "../buttons/editWarnButton.mjs"
 import { Prisma } from "../clients.mjs"
 import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
+import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
-import { button } from "../utilities/button.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
-import {
-  ActionRowBuilder,
-  AuditLogEvent,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  GuildBan,
-} from "discord.js"
+import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 const loggingChannel = await fetchChannel(
   DefaultConfig.guild.warnLogsChannel,
@@ -53,8 +44,8 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
       return
     }
 
-    const reason = auditLogEntry.reason?.trim()
-    if (reason?.includes("Account was less than 30 days old")) {
+    const auditLogReason = auditLogEntry.reason?.trim()
+    if (auditLogReason?.includes("Account was less than 30 days old")) {
       return
     }
 
@@ -91,42 +82,16 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
       },
     }
 
-    if (reason) {
-      args.data.description = reason
+    if (auditLogReason) {
+      args.data.description = auditLogReason
     }
 
-    const prismaBan = await Prisma.warning.create(args)
-
-    const message = await loggingChannel.send({
-      embeds: [
-        makeEmbed(
-          `Banned ${ban.user.tag} [${prismaBan.id}] (No DM)`,
-          new URL(ban.user.displayAvatarURL())
-        )
-          .setFields(
-            {
-              name: "Reason",
-              value: reason ?? "N/A :(",
-            },
-            {
-              name: "User ID",
-              value: ban.user.id,
-            }
-          )
-          .setFooter({
-            text: `Banned by ${auditLogEntry.executor.tag}`,
-            iconURL: auditLogEntry.executor.displayAvatarURL(),
-          }),
-      ],
-      components: [
-        new ActionRowBuilder<ButtonBuilder>().addComponents([
-          new ButtonBuilder()
-            .setStyle(ButtonStyle.Secondary)
-            .setLabel("Edit description")
-            .setCustomId(button(EditWarnButton, [prismaBan.id.toString()])),
-        ]),
-      ],
+    const prismaBan = await Prisma.warning.create({
+      ...args,
+      include: { penalty: true, reasons: true, images: true },
     })
+
+    const message = await loggingChannel.send(await warnLogMessage(prismaBan))
 
     await Prisma.warning.update({
       where: { id: prismaBan.id },
