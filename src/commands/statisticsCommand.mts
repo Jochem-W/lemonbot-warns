@@ -81,7 +81,12 @@ export class StatisticsCommand extends ChatInputCommand {
           count += last.count
         }
 
-        value.push({ date: cursor.toISODate(), count })
+        const date = cursor.toISODate()
+        if (!date) {
+          continue
+        }
+
+        value.push({ date, count })
       }
 
       cursor = cursor.plus({ days: 1 })
