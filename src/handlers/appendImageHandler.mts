@@ -24,7 +24,8 @@ export class AppendImageHandler implements Handler<"messageCreate"> {
 
     if (
       message.channelId !== DefaultConfig.guild.warnLogsChannel ||
-      !message.reference?.messageId
+      !message.reference?.messageId ||
+      message.attachments.size === 0
     ) {
       return
     }
