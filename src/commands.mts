@@ -10,6 +10,7 @@ import { ShowEmbedCommand } from "./commands/showEmbedCommand.mjs"
 import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
 import { StatusCommand } from "./commands/statusCommand.mjs"
 import { WarningsCommand } from "./commands/warningsCommand.mjs"
+import { WarningsContextCommand } from "./commands/warningsContextCommand.mjs"
 import type { ChatInputCommand } from "./models/chatInputCommand.mjs"
 import type { MessageContextMenuCommand } from "./models/messageContextMenuCommand.mjs"
 import type { UserContextMenuCommand } from "./models/userContextMenuCommand.mjs"
@@ -35,7 +36,9 @@ export const MessageContextMenuCommands: MessageContextMenuCommand[] = [
   new EvalMessageCommand(),
 ]
 
-export const UserContextMenuCommands: UserContextMenuCommand[] = []
+export const UserContextMenuCommands: UserContextMenuCommand[] = [
+  new WarningsContextCommand(),
+]
 
 export const RegisteredCommands = new Collection<
   Snowflake,
