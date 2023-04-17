@@ -21,9 +21,9 @@ export class MessageCreateHandler implements Handler<"messageCreate"> {
       await message.reply({
         embeds: [
           new EmbedBuilder().setDescription(
-            `Messages that are sent here won't be read, please open a mod mail thread by sending a direct message to ${
-              mailUser.username
-            } ${userMention(mailUser.id)} instead!`
+            `Messages that are sent here won't be read, please open a mod mail thread by sending a direct message to ${userMention(
+              mailUser.id
+            )} instead!`
           ),
         ],
       })
