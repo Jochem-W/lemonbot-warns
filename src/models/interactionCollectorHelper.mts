@@ -50,7 +50,7 @@ export class InteractionCollectorHelper {
     const options: InteractionCollectorOptions<CollectedInteraction> = {
       channel: interaction.channel ?? interaction.channelId,
       message: await interaction.fetchReply(),
-      idle: Duration.fromDurationLike({ minutes: 15 }).toMillis(),
+      time: Duration.fromDurationLike({ minutes: 10 }).toMillis(),
       dispose: true,
     }
 
