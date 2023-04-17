@@ -84,7 +84,6 @@ export async function upload(
       Bucket: bucket,
       Key: key,
     },
-    queueSize: 3, // for Cloudflare R2
   }
 
   if (body) {
