@@ -70,7 +70,7 @@ export async function searchMessage(
     })
 
     warning.embeds.at(-1)?.setFooter({
-      text: `${verb} by ${user.tag}`,
+      text: `${verb} by ${warnedBy.tag}`,
       iconURL: warnedBy.displayAvatarURL(),
     })
 
