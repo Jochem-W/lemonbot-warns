@@ -2,6 +2,7 @@ import { Variables } from "./variables.mjs"
 import { S3Client } from "@aws-sdk/client-s3"
 import { auth, forms } from "@googleapis/forms"
 import { sheets } from "@googleapis/sheets"
+import { Octokit } from "@octokit/rest"
 import { PrismaClient } from "@prisma/client"
 import { Client, GatewayIntentBits, Partials } from "discord.js"
 
@@ -44,3 +45,4 @@ export const Discord = new Client({
   ],
 })
 Discord.rest.setToken(Variables.discordToken)
+export const GitHubClient = new Octokit({ auth: Variables.githubToken })

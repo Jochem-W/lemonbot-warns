@@ -1,11 +1,10 @@
-import { Discord } from "../clients.mjs"
+import { Discord, GitHubClient } from "../clients.mjs"
 import { Jobs } from "../jobs.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Handler } from "../types/handler.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
-import { Octokit } from "@octokit/rest"
 import { ChannelType, Client, codeBlock, userMention } from "discord.js"
 import type { MessageCreateOptions } from "discord.js"
 import { writeFileSync } from "fs"
@@ -93,9 +92,7 @@ async function getChangelog() {
     return null
   }
 
-  // FIXME
-  const octokit = new Octokit({ auth: Variables.githubToken })
-  const response = await octokit.rest.repos.compareCommits({
+  const response = await GitHubClient.rest.repos.compareCommits({
     base: previousVersion.trim(),
     head: Variables.commitHash,
     owner: DefaultConfig.repository.owner,
