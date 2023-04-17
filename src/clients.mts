@@ -26,11 +26,12 @@ export const Forms = forms({ version: "v1", auth: GoogleAuth })
 export const Sheets = sheets({ version: "v4", auth: GoogleAuth })
 export const Discord = new Client({
   intents: [
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
   ],
   partials: [
     Partials.User,

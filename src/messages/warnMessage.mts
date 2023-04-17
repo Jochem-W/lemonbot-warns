@@ -7,6 +7,7 @@ import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
 
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
+const mailUser = await Discord.users.fetch(DefaultConfig.guild.mailUserId)
 
 export function warnMessage(
   warning: Warning & { penalty: Penalty; images: Image[] }
@@ -51,7 +52,7 @@ export function warnMessage(
 
   if (!warning.penalty.ban) {
     mainEmbed.setFooter({
-      text: "If you have any questions, please DM ModMail.",
+      text: `If you have any questions, please DM ${mailUser.username}`,
     })
   } else {
     embeds.push(

@@ -107,6 +107,11 @@
           "type": "string",
           "pattern": "^\\d+$"
         },
+        "mailUserId": {
+          "description": "The user ID of the mod mail bot",
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
         "privateChannels": {
           "description": "List of channels where bot replies are publicly visible",
           "type": "array",
@@ -151,6 +156,7 @@
         "discussionChannel",
         "errorChannel",
         "id",
+        "mailUserId",
         "privateChannels",
         "restart",
         "warnCategory",

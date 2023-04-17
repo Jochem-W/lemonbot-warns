@@ -22,6 +22,7 @@ type RawConfig = {
     discussionChannel: string
     errorChannel: string
     id: string
+    mailUserId: string
     privateChannels: string[]
     restart: {
       channel: string
@@ -85,6 +86,7 @@ class GuildConfig {
   public readonly discussionChannel: Snowflake
   public readonly errorChannel: Snowflake
   public readonly id: Snowflake
+  public readonly mailUserId: Snowflake
   public readonly privateChannels: Snowflake[]
   public readonly restart: GuildRestartConfig
   public readonly warnCategory: Snowflake
@@ -94,6 +96,7 @@ class GuildConfig {
     this.discussionChannel = data.discussionChannel
     this.errorChannel = data.errorChannel
     this.id = data.id
+    this.mailUserId = data.mailUserId
     this.privateChannels = [...data.privateChannels]
     this.restart = new GuildRestartConfig(data.restart)
     this.warnCategory = data.warnCategory
