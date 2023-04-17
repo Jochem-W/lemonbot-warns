@@ -84,6 +84,7 @@ export class RestCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
+    await interaction.deferReply({ ephemeral: true })
 
     const path = interaction.options.getString("path", true)
     const query = interaction.options.getString("query")

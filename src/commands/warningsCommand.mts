@@ -1,9 +1,11 @@
 import { BotError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { tryFetchMember } from "../utilities/discordUtilities.mjs"
+import {
+  isInPrivateChannel,
+  tryFetchMember,
+} from "../utilities/discordUtilities.mjs"
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
-import type { InteractionReplyOptions } from "discord.js"
 
 export class WarningsCommand extends ChatInputCommand {
   public constructor() {
@@ -18,6 +20,8 @@ export class WarningsCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    const ephemeral = !isInPrivateChannel(interaction)
+
     const user = interaction.options.getUser("user", true)
     const member = await tryFetchMember(user)
 
@@ -27,17 +31,9 @@ export class WarningsCommand extends ChatInputCommand {
       throw new BotError("Response has 0 messages")
     }
 
-    await interaction.editReply(messages[0])
+    await interaction.reply({ ...messages[0], ephemeral })
     for (const message of messages.slice(1)) {
-      const options: InteractionReplyOptions = {
-        ...message,
-      }
-
-      if (interaction.ephemeral) {
-        options.ephemeral = true
-      }
-
-      await interaction.followUp(options)
+      await interaction.followUp({ ...message, ephemeral })
     }
   }
 }

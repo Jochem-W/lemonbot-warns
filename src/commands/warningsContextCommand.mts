@@ -1,12 +1,14 @@
 import { BotError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { UserContextMenuCommand } from "../models/userContextMenuCommand.mjs"
-import { tryFetchMember } from "../utilities/discordUtilities.mjs"
+import {
+  isInPrivateChannel,
+  tryFetchMember,
+} from "../utilities/discordUtilities.mjs"
 import {
   PermissionFlagsBits,
   UserContextMenuCommandInteraction,
 } from "discord.js"
-import type { InteractionReplyOptions } from "discord.js"
 
 export class WarningsContextCommand extends UserContextMenuCommand {
   public constructor() {
@@ -14,6 +16,8 @@ export class WarningsContextCommand extends UserContextMenuCommand {
   }
 
   public async handle(interaction: UserContextMenuCommandInteraction) {
+    const ephemeral = !isInPrivateChannel(interaction)
+
     const member = await tryFetchMember(interaction.targetUser)
 
     const messages = await warningsMessage(member ?? interaction.targetUser)
@@ -22,17 +26,9 @@ export class WarningsContextCommand extends UserContextMenuCommand {
       throw new BotError("Response has 0 messages")
     }
 
-    await interaction.editReply(messages[0])
+    await interaction.reply({ ...messages[0], ephemeral })
     for (const message of messages.slice(1)) {
-      const options: InteractionReplyOptions = {
-        ...message,
-      }
-
-      if (interaction.ephemeral) {
-        options.ephemeral = true
-      }
-
-      await interaction.followUp(options)
+      await interaction.followUp({ ...message, ephemeral })
     }
   }
 }

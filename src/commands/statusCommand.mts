@@ -56,7 +56,7 @@ export class StatusCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    await interaction.editReply(
+    await interaction.reply(
       StatusCommand.buildResponse({ ping: Discord.ws.ping })
     )
   }

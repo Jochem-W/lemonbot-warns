@@ -119,8 +119,9 @@ export class EditCommand extends ChatInputCommand {
         throw new SubcommandGroupNotFoundError(interaction, subcommandGroup)
     }
 
-    await interaction.editReply({
+    await interaction.reply({
       embeds: [makeEmbed("Warning edited", DefaultConfig.icons.success)],
+      ephemeral: true,
     })
   }
 }

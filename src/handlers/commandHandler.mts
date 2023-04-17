@@ -6,7 +6,6 @@ import {
   reportError,
 } from "../errors.mjs"
 import type { Handler } from "../types/handler.mjs"
-import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import { AutocompleteInteraction, CommandInteraction } from "discord.js"
 import type { Interaction } from "discord.js"
@@ -56,9 +55,6 @@ export class CommandHandler implements Handler<"interactionCreate"> {
     }
 
     if (interaction instanceof CommandInteraction) {
-      await interaction.deferReply({
-        ephemeral: !isInPrivateChannel(interaction),
-      })
       try {
         await CommandHandler.handleCommand(interaction)
       } catch (e) {
@@ -67,7 +63,14 @@ export class CommandHandler implements Handler<"interactionCreate"> {
         }
 
         await reportError(e)
-        await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
+        if (interaction.replied || interaction.deferred) {
+          await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
+        } else {
+          await interaction.reply({
+            embeds: [makeErrorEmbed(e)],
+            ephemeral: true,
+          })
+        }
       }
 
       return

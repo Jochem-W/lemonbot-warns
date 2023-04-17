@@ -136,6 +136,7 @@ export class S3Command extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
+    await interaction.deferReply({ ephemeral: true })
 
     switch (interaction.options.getSubcommandGroup()) {
       case "api":

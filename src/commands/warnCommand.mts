@@ -218,6 +218,10 @@ export class WarnCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: interaction.channelId !== DefaultConfig.guild.warnLogsChannel,
+    })
+
     const targetUser = interaction.options.getUser("user", true)
     const targetMember = await tryFetchMember(targetUser.id)
     const reasons = [

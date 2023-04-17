@@ -37,10 +37,13 @@ export class ShowEmbedCommand extends ChatInputCommand {
 
     switch (type) {
       case "warn-dm":
-        await interaction.editReply(warnMessage(warning))
+        await interaction.reply({ ...warnMessage(warning), ephemeral: true })
         break
       case "warn-log":
-        await interaction.editReply(await warnLogMessage(warning))
+        await interaction.reply({
+          ...(await warnLogMessage(warning)),
+          ephemeral: true,
+        })
         break
       default:
         throw new Error("Invalid type")

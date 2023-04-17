@@ -14,6 +14,7 @@ export class EvalMessageCommand extends MessageContextMenuCommand {
 
   public async handle(interaction: MessageContextMenuCommandInteraction) {
     await ensureOwner(interaction)
+    await interaction.deferReply({ ephemeral: true })
 
     const match =
       interaction.targetMessage.content.match(/^```js\n(.*)\n```$/s)?.[1]

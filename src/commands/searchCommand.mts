@@ -7,6 +7,7 @@ import {
   stringToCustomId,
 } from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
+import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import type { Warning, Penalty, Reason } from "@prisma/client"
 import {
   ActionRowBuilder,
@@ -132,6 +133,10 @@ export class SearchCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply({
+      ephemeral: !isInPrivateChannel(interaction),
+    })
+
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
     }

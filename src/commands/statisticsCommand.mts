@@ -105,6 +105,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await ensureOwner(interaction)
+    await interaction.deferReply({ ephemeral: true })
 
     const fileName = `${interaction.id}.zip`
     const output = createWriteStream(fileName)
