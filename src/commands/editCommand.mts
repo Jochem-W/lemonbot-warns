@@ -50,9 +50,7 @@ export class EditCommand extends ChatInputCommand {
       )
   }
 
-  private static async handleDescription(
-    interaction: ChatInputCommandInteraction
-  ) {
+  private async handleDescription(interaction: ChatInputCommandInteraction) {
     const warningId = interaction.options.getInteger("id", true)
     const description = interaction.options.getString("description", true)
 
@@ -73,7 +71,7 @@ export class EditCommand extends ChatInputCommand {
     }
   }
 
-  private static async handleDelete(interaction: ChatInputCommandInteraction) {
+  private async handleDelete(interaction: ChatInputCommandInteraction) {
     const warningId = interaction.options.getInteger("id", true)
     const images = await Prisma.image.findMany({ where: { warningId } })
     await Prisma.image.deleteMany({ where: { warningId } })
@@ -104,12 +102,12 @@ export class EditCommand extends ChatInputCommand {
     const subcommandGroup = interaction.options.getSubcommandGroup()
     switch (subcommandGroup) {
       case "description":
-        await EditCommand.handleDescription(interaction)
+        await this.handleDescription(interaction)
         break
       case null:
         switch (subcommand) {
           case "delete":
-            await EditCommand.handleDelete(interaction)
+            await this.handleDelete(interaction)
             break
           default:
             throw new SubcommandNotFoundError(interaction, subcommand)

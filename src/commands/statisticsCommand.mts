@@ -29,7 +29,7 @@ export class StatisticsCommand extends ChatInputCommand {
     )
   }
 
-  private static async addWarningStatistics(archive: Archiver) {
+  private async addWarningStatistics(archive: Archiver) {
     const data = (
       await Prisma.warning.findMany({
         select: {
@@ -144,7 +144,7 @@ export class StatisticsCommand extends ChatInputCommand {
 
     archive.pipe(output)
 
-    await StatisticsCommand.addWarningStatistics(archive)
+    await this.addWarningStatistics(archive)
 
     await archive.finalize()
   }
