@@ -3,7 +3,7 @@ import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
-import type { EmbedFooterOptions, GuildMember } from "discord.js"
+import type { GuildMember } from "discord.js"
 import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
 
 export async function warningsMessage(userOrMember: User | GuildMember) {
@@ -110,7 +110,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
           .join(", ")} ${time(warning.createdAt, TimestampStyles.RelativeTime)}`
       )
       .setDescription(warning.description)
-      .setFooter({ text: warning.id.toString() } as EmbedFooterOptions)
+      .setFooter({ text: warning.id.toString() })
       .setTimestamp(warning.createdAt)
 
     if (message.embeds.length + warningEmbeds.length > 10) {
