@@ -3,11 +3,11 @@ import {
   InvalidCustomIdError,
   reportError,
   UnregisteredNameError,
-} from "../errors.mjs"
-import { RegisteredButtons, RegisteredModals } from "../interactable.mjs"
-import { InteractionScope, stringToCustomId } from "../models/customId.mjs"
-import type { Handler } from "../types/handler.mjs"
-import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
+} from "../../errors.mjs"
+import { RegisteredButtons, RegisteredModals } from "../../interactable.mjs"
+import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
+import type { Handler } from "../../types/handler.mjs"
+import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { MessageComponentInteraction, ModalSubmitInteraction } from "discord.js"
 import type { Interaction } from "discord.js"
 

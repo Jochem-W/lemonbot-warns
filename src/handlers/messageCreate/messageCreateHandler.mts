@@ -1,8 +1,8 @@
-import { Discord } from "../clients.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Handler } from "../types/handler.mjs"
-import { upload } from "../utilities/s3Utilities.mjs"
-import { Variables } from "../variables.mjs"
+import { Discord } from "../../clients.mjs"
+import { DefaultConfig } from "../../models/config.mjs"
+import type { Handler } from "../../types/handler.mjs"
+import { upload } from "../../utilities/s3Utilities.mjs"
+import { Variables } from "../../variables.mjs"
 import type { Message } from "discord.js"
 import { EmbedBuilder, userMention } from "discord.js"
 

@@ -1,12 +1,12 @@
-import { RegisteredCommands } from "../commands.mjs"
+import { RegisteredCommands } from "../../commands.mjs"
 import {
   CommandNotFoundByIdError,
   NoAutocompleteHandlerError,
   NoPermissionError,
   reportError,
-} from "../errors.mjs"
-import type { Handler } from "../types/handler.mjs"
-import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
+} from "../../errors.mjs"
+import type { Handler } from "../../types/handler.mjs"
+import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { AutocompleteInteraction, CommandInteraction } from "discord.js"
 import type { Interaction } from "discord.js"
 

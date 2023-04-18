@@ -1,9 +1,12 @@
-import { Prisma } from "../clients.mjs"
-import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
-import { warnLogMessage } from "../messages/warnLogMessage.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Handler } from "../types/handler.mjs"
-import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { Prisma } from "../../clients.mjs"
+import {
+  AuditLogNotFoundError,
+  InvalidAuditLogEntryError,
+} from "../../errors.mjs"
+import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
+import { DefaultConfig } from "../../models/config.mjs"
+import type { Handler } from "../../types/handler.mjs"
+import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 const loggingChannel = await fetchChannel(
