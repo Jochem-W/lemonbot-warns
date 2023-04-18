@@ -7,6 +7,7 @@ import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
 import { Attachment, ChannelType, CommandInteraction } from "discord.js"
 import type { Snowflake, Channel } from "discord.js"
+import type { DateTime } from "luxon"
 
 class CustomError extends Error {
   public constructor(message: string) {
@@ -217,6 +218,12 @@ export class InvalidFormResponseError extends CustomError {
 export class InvalidStreamError extends CustomError {
   public constructor() {
     super("The stream isn't an instance of Readable")
+  }
+}
+
+export class InvalidDateTimeError extends CustomError {
+  public constructor(date: DateTime) {
+    super(`The date ${JSON.stringify(date.toObject())} is invalid`)
   }
 }
 

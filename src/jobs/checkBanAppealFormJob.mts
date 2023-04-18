@@ -1,5 +1,5 @@
 import { Discord, Forms } from "../clients.mjs"
-import { reportError } from "../errors.mjs"
+import { InvalidDateTimeError, reportError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
@@ -28,10 +28,14 @@ const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
 async function onTick() {
   const end = DateTime.now().toUTC().startOf("minute")
   const start = end.minus({ minutes: 1 })
+  const timestamp = start.toISO()
+  if (timestamp === null) {
+    throw new InvalidDateTimeError(start)
+  }
 
   const response = await Forms.forms.responses.list({
     formId: "1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU",
-    filter: `timestamp >= ${start.toISO()}`,
+    filter: `timestamp >= ${timestamp}`,
   })
 
   if (!response.data.responses) {
