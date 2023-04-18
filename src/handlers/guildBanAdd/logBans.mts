@@ -14,31 +14,30 @@ const loggingChannel = await fetchChannel(
   ChannelType.GuildText
 )
 
-export class LogBans implements Handler<"guildBanAdd"> {
-  public readonly event = "guildBanAdd"
-  public readonly once = false
+async function getAuditLogEntry(ban: GuildBan) {
+  const auditLogs = await ban.guild.fetchAuditLogs({
+    type: AuditLogEvent.MemberBanAdd,
+    limit: 10,
+  })
 
-  private static async getAuditLogEntry(ban: GuildBan) {
-    const auditLogs = await ban.guild.fetchAuditLogs({
-      type: AuditLogEvent.MemberBanAdd,
-      limit: 10,
-    })
-
-    for (const [, entry] of auditLogs.entries) {
-      if (entry.target?.id === ban.user.id) {
-        return entry
-      }
+  for (const [, entry] of auditLogs.entries) {
+    if (entry.target?.id === ban.user.id) {
+      return entry
     }
-
-    throw new AuditLogNotFoundError(
-      `Couldn't find an audit log entry for ban target ${ban.user.id}`
-    )
   }
 
-  public async handle(ban: GuildBan) {
+  throw new AuditLogNotFoundError(
+    `Couldn't find an audit log entry for ban target ${ban.user.id}`
+  )
+}
+
+export const LogBans: Handler<"guildBanAdd"> = {
+  event: "guildBanAdd",
+  once: false,
+  async handle(ban: GuildBan) {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    const auditLogEntry = await LogBans.getAuditLogEntry(ban)
+    const auditLogEntry = await getAuditLogEntry(ban)
     if (!auditLogEntry.executor) {
       throw new InvalidAuditLogEntryError("Audit log entry has no executor")
     }
@@ -100,5 +99,5 @@ export class LogBans implements Handler<"guildBanAdd"> {
       where: { id: prismaBan.id },
       data: { messageId: message.id },
     })
-  }
+  },
 }

@@ -4,11 +4,10 @@ import { upload } from "../../utilities/s3Utilities.mjs"
 import { Variables } from "../../variables.mjs"
 import type { Message } from "discord.js"
 
-export class UploadAttachments implements Handler<"messageCreate"> {
-  public readonly event = "messageCreate"
-  public readonly once = false
-
-  public async handle(message: Message) {
+export const UploadAttachments: Handler<"messageCreate"> = {
+  event: "messageCreate",
+  once: false,
+  async handle(message: Message) {
     if (
       message.author.bot ||
       !message.inGuild() ||
@@ -27,5 +26,5 @@ export class UploadAttachments implements Handler<"messageCreate"> {
         attachment.contentType ?? undefined
       )
     }
-  }
+  },
 }

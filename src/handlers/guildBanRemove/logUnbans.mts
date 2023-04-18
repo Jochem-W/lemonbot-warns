@@ -8,28 +8,27 @@ import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../../utilities/embedUtilities.mjs"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
-export class LogUnbans implements Handler<"guildBanRemove"> {
-  public readonly event = "guildBanRemove"
-  public readonly once = false
+async function getAuditLogEntry(ban: GuildBan) {
+  const auditLogs = await ban.guild.fetchAuditLogs({
+    type: AuditLogEvent.MemberBanRemove,
+    limit: 10,
+  })
 
-  private static async getAuditLogEntry(ban: GuildBan) {
-    const auditLogs = await ban.guild.fetchAuditLogs({
-      type: AuditLogEvent.MemberBanRemove,
-      limit: 10,
-    })
-
-    for (const [, entry] of auditLogs.entries) {
-      if (entry.target?.id === ban.user.id) {
-        return entry
-      }
+  for (const [, entry] of auditLogs.entries) {
+    if (entry.target?.id === ban.user.id) {
+      return entry
     }
-
-    throw new AuditLogNotFoundError(
-      `Couldn't find an audit log entry for ban target ${ban.user.id}`
-    )
   }
 
-  public async handle(ban: GuildBan) {
+  throw new AuditLogNotFoundError(
+    `Couldn't find an audit log entry for ban target ${ban.user.id}`
+  )
+}
+
+export const LogUnbans: Handler<"guildBanRemove"> = {
+  event: "guildBanRemove",
+  once: false,
+  async handle(ban: GuildBan) {
     const discussionChannel = await fetchChannel(
       DefaultConfig.guild.discussionChannel,
       ChannelType.GuildText
@@ -50,7 +49,7 @@ export class LogUnbans implements Handler<"guildBanRemove"> {
 
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    const auditLogEntry = await LogUnbans.getAuditLogEntry(ban)
+    const auditLogEntry = await getAuditLogEntry(ban)
     if (!auditLogEntry.executor) {
       throw new InvalidAuditLogEntryError("Audit log entry has no executor")
     }
@@ -86,5 +85,5 @@ export class LogUnbans implements Handler<"guildBanRemove"> {
           }),
       ],
     })
-  }
+  },
 }

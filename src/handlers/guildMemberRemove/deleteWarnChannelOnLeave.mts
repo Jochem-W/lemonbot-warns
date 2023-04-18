@@ -5,11 +5,10 @@ import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { ChannelType, GuildMember } from "discord.js"
 import type { PartialGuildMember } from "discord.js"
 
-export class DeleteWarnChannelOnLeave implements Handler<"guildMemberRemove"> {
-  public readonly event = "guildMemberRemove"
-  public readonly once = false
-
-  public async handle(member: GuildMember | PartialGuildMember) {
+export const DeleteWarnChannelOnLeave: Handler<"guildMemberRemove"> = {
+  event: "guildMemberRemove",
+  once: false,
+  async handle(member: GuildMember | PartialGuildMember) {
     const user = await Discord.users.fetch(member.id)
 
     const warnCategory = await fetchChannel(
@@ -38,5 +37,5 @@ export class DeleteWarnChannelOnLeave implements Handler<"guildMemberRemove"> {
         break
       }
     }
-  }
+  },
 }

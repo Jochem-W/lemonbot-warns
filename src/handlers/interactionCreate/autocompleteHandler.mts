@@ -6,11 +6,10 @@ import {
 import type { Handler } from "../../types/handler.mjs"
 import type { Interaction } from "discord.js"
 
-export class AutocompleteHandler implements Handler<"interactionCreate"> {
-  public readonly event = "interactionCreate"
-  public readonly once = false
-
-  public async handle(interaction: Interaction) {
+export const AutocompleteHandler: Handler<"interactionCreate"> = {
+  event: "interactionCreate",
+  once: false,
+  async handle(interaction: Interaction) {
     if (!interaction.isAutocomplete()) {
       return
     }
@@ -25,5 +24,5 @@ export class AutocompleteHandler implements Handler<"interactionCreate"> {
     }
 
     await interaction.respond(await command.handleAutocomplete(interaction))
-  }
+  },
 }

@@ -6,11 +6,10 @@ import { EmbedBuilder, userMention } from "discord.js"
 
 const mailUser = await Discord.users.fetch(DefaultConfig.guild.mailUserId)
 
-export class ReplyToDMs implements Handler<"messageCreate"> {
-  public readonly event = "messageCreate"
-  public readonly once = false
-
-  public async handle(message: Message) {
+export const ReplyToDMs: Handler<"messageCreate"> = {
+  event: "messageCreate",
+  once: false,
+  async handle(message: Message) {
     if (message.author.bot || message.inGuild()) {
       return
     }
@@ -24,5 +23,5 @@ export class ReplyToDMs implements Handler<"messageCreate"> {
         ),
       ],
     })
-  }
+  },
 }

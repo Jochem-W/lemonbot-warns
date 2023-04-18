@@ -6,31 +6,30 @@ import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { ModalSubmitInteraction } from "discord.js"
 import type { Interaction } from "discord.js"
 
-export class ModalHandler implements Handler<"interactionCreate"> {
-  public readonly event = "interactionCreate"
-  public readonly once = false
-
-  private async handleModalSubmit(interaction: ModalSubmitInteraction) {
-    const data = stringToCustomId(interaction.customId)
-    if (data.scope !== InteractionScope.Modal) {
-      return
-    }
-
-    const modal = RegisteredModals.get(data.name)
-    if (!modal) {
-      throw new UnregisteredNameError("modal", data.name)
-    }
-
-    await modal(interaction, data.args)
+async function handleModalSubmit(interaction: ModalSubmitInteraction) {
+  const data = stringToCustomId(interaction.customId)
+  if (data.scope !== InteractionScope.Modal) {
+    return
   }
 
-  public async handle(interaction: Interaction) {
+  const modal = RegisteredModals.get(data.name)
+  if (!modal) {
+    throw new UnregisteredNameError("modal", data.name)
+  }
+
+  await modal(interaction, data.args)
+}
+
+export const ModalHandler: Handler<"interactionCreate"> = {
+  event: "interactionCreate",
+  once: false,
+  async handle(interaction: Interaction) {
     if (!interaction.isModalSubmit()) {
       return
     }
 
     try {
-      await this.handleModalSubmit(interaction)
+      await handleModalSubmit(interaction)
     } catch (e) {
       if (!(e instanceof Error)) {
         throw e
@@ -41,5 +40,5 @@ export class ModalHandler implements Handler<"interactionCreate"> {
     }
 
     return
-  }
+  },
 }

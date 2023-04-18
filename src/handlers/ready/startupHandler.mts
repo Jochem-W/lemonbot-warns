@@ -12,11 +12,10 @@ import { mkdir, readFile, writeFile } from "fs/promises"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
-export class StartupHandler implements Handler<"ready"> {
-  public readonly event = "ready"
-  public readonly once = true
-
-  public async handle(client: Client<true>) {
+export const StartupHandler: Handler<"ready"> = {
+  event: "ready",
+  once: true,
+  async handle(client: Client<true>) {
     console.log(`Running as: ${client.user.tag}`)
 
     let title = "Bot "
@@ -67,7 +66,7 @@ export class StartupHandler implements Handler<"ready"> {
     for (const job of Jobs) {
       job.start()
     }
-  }
+  },
 }
 
 async function getChangelog() {

@@ -13,15 +13,15 @@ import type { Handler } from "./types/handler.mjs"
 import type { ClientEvents } from "discord.js"
 
 export const Handlers: Handler<keyof ClientEvents>[] = [
-  new LogBans(),
-  new LogUnbans(),
-  new DeleteWarnChannelOnLeave(),
-  new AutocompleteHandler(),
-  new CommandHandler(),
-  new MessageComponentHandler(),
-  new ModalHandler(),
-  new AppendImagesToWarnings(),
-  new ReplyToDMs(),
-  new UploadAttachments(),
-  new StartupHandler(),
+  LogBans,
+  LogUnbans,
+  DeleteWarnChannelOnLeave,
+  AutocompleteHandler,
+  CommandHandler,
+  MessageComponentHandler,
+  ModalHandler,
+  AppendImagesToWarnings,
+  ReplyToDMs,
+  UploadAttachments,
+  StartupHandler,
 ]

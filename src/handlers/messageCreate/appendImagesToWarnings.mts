@@ -13,11 +13,10 @@ const warnLogsChannel = await fetchChannel(
   ChannelType.GuildText
 )
 
-export class AppendImagesToWarnings implements Handler<"messageCreate"> {
-  public readonly event = "messageCreate"
-  public readonly once = false
-
-  public async handle(message: Message) {
+export const AppendImagesToWarnings: Handler<"messageCreate"> = {
+  event: "messageCreate",
+  once: false,
+  async handle(message: Message) {
     if (message.author.bot) {
       return
     }
@@ -93,5 +92,5 @@ export class AppendImagesToWarnings implements Handler<"messageCreate"> {
     await message.delete()
 
     setTimeout(() => void reply.delete().catch(reportError), 2500)
-  }
+  },
 }
