@@ -14,7 +14,7 @@ const loggingChannel = await fetchChannel(
   ChannelType.GuildText
 )
 
-export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
+export class LogBans implements Handler<"guildBanAdd"> {
   public readonly event = "guildBanAdd"
   public readonly once = false
 
@@ -38,7 +38,7 @@ export class GuildBanAddHandler implements Handler<"guildBanAdd"> {
   public async handle(ban: GuildBan) {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    const auditLogEntry = await GuildBanAddHandler.getAuditLogEntry(ban)
+    const auditLogEntry = await LogBans.getAuditLogEntry(ban)
     if (!auditLogEntry.executor) {
       throw new InvalidAuditLogEntryError("Audit log entry has no executor")
     }

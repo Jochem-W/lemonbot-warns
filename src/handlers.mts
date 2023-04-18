@@ -1,21 +1,27 @@
-import { GuildBanAddHandler } from "./handlers/guildBanAdd/guildBanAddHandler.mjs"
-import { GuildBanRemoveHandler } from "./handlers/guildBanRemove/guildBanRemoveHandler.mjs"
-import { MemberRemoveHandler } from "./handlers/guildMemberRemove/memberRemoveHandler.mjs"
+import { LogBans } from "./handlers/guildBanAdd/logBans.mjs"
+import { LogUnbans } from "./handlers/guildBanRemove/logUnbans.mjs"
+import { DeleteWarnChannelOnLeave } from "./handlers/guildMemberRemove/deleteWarnChannelOnLeave.mjs"
+import { AutocompleteHandler } from "./handlers/interactionCreate/autocompleteHandler.mjs"
 import { CommandHandler } from "./handlers/interactionCreate/commandHandler.mjs"
-import { InteractionHandler } from "./handlers/interactionCreate/interactionHandler.mjs"
-import { AppendImageHandler } from "./handlers/messageCreate/appendImageHandler.mjs"
-import { MessageCreateHandler } from "./handlers/messageCreate/messageCreateHandler.mjs"
-import { ReadyHandler } from "./handlers/ready/readyHandler.mjs"
+import { MessageComponentHandler } from "./handlers/interactionCreate/messageComponentHandler.mjs"
+import { ModalHandler } from "./handlers/interactionCreate/modalHandler.mjs"
+import { AppendImagesToWarnings } from "./handlers/messageCreate/appendImagesToWarnings.mjs"
+import { ReplyToDMs } from "./handlers/messageCreate/replyToDMs.mjs"
+import { UploadAttachments } from "./handlers/messageCreate/uploadAttachments.mjs"
+import { StartupHandler } from "./handlers/ready/startupHandler.mjs"
 import type { Handler } from "./types/handler.mjs"
 import type { ClientEvents } from "discord.js"
 
 export const Handlers: Handler<keyof ClientEvents>[] = [
+  new LogBans(),
+  new LogUnbans(),
+  new DeleteWarnChannelOnLeave(),
+  new AutocompleteHandler(),
   new CommandHandler(),
-  new InteractionHandler(),
-  new ReadyHandler(),
-  new MemberRemoveHandler(),
-  new GuildBanAddHandler(),
-  new MessageCreateHandler(),
-  new GuildBanRemoveHandler(),
-  new AppendImageHandler(),
+  new MessageComponentHandler(),
+  new ModalHandler(),
+  new AppendImagesToWarnings(),
+  new ReplyToDMs(),
+  new UploadAttachments(),
+  new StartupHandler(),
 ]

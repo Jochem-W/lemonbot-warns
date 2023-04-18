@@ -5,7 +5,7 @@ import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { ChannelType, GuildMember } from "discord.js"
 import type { PartialGuildMember } from "discord.js"
 
-export class MemberRemoveHandler implements Handler<"guildMemberRemove"> {
+export class DeleteWarnChannelOnLeave implements Handler<"guildMemberRemove"> {
   public readonly event = "guildMemberRemove"
   public readonly once = false
 

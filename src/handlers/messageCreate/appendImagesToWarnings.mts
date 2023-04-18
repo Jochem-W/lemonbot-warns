@@ -13,7 +13,7 @@ const warnLogsChannel = await fetchChannel(
   ChannelType.GuildText
 )
 
-export class AppendImageHandler implements Handler<"messageCreate"> {
+export class AppendImagesToWarnings implements Handler<"messageCreate"> {
   public readonly event = "messageCreate"
   public readonly once = false
 

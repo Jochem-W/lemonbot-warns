@@ -8,7 +8,7 @@ import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../../utilities/embedUtilities.mjs"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
-export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
+export class LogUnbans implements Handler<"guildBanRemove"> {
   public readonly event = "guildBanRemove"
   public readonly once = false
 
@@ -50,7 +50,7 @@ export class GuildBanRemoveHandler implements Handler<"guildBanRemove"> {
 
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
-    const auditLogEntry = await GuildBanRemoveHandler.getAuditLogEntry(ban)
+    const auditLogEntry = await LogUnbans.getAuditLogEntry(ban)
     if (!auditLogEntry.executor) {
       throw new InvalidAuditLogEntryError("Audit log entry has no executor")
     }

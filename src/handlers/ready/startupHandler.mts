@@ -12,7 +12,7 @@ import { mkdir, readFile, writeFile } from "fs/promises"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
-export class ReadyHandler implements Handler<"ready"> {
+export class StartupHandler implements Handler<"ready"> {
   public readonly event = "ready"
   public readonly once = true
 

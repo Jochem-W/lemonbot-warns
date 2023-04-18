@@ -1,37 +1,19 @@
-import { Discord } from "../../clients.mjs"
 import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { upload } from "../../utilities/s3Utilities.mjs"
 import { Variables } from "../../variables.mjs"
 import type { Message } from "discord.js"
-import { EmbedBuilder, userMention } from "discord.js"
 
-const mailUser = await Discord.users.fetch(DefaultConfig.guild.mailUserId)
-
-export class MessageCreateHandler implements Handler<"messageCreate"> {
+export class UploadAttachments implements Handler<"messageCreate"> {
   public readonly event = "messageCreate"
   public readonly once = false
 
   public async handle(message: Message) {
-    if (message.author.bot) {
-      return
-    }
-
-    if (!message.inGuild()) {
-      await message.reply({
-        embeds: [
-          new EmbedBuilder().setDescription(
-            `Messages that are sent here won't be read, please open a mod mail thread by sending a direct message to ${userMention(
-              mailUser.id
-            )} instead!`
-          ),
-        ],
-      })
-
-      return
-    }
-
-    if (message.guildId !== DefaultConfig.guild.id) {
+    if (
+      message.author.bot ||
+      !message.inGuild() ||
+      message.guildId !== DefaultConfig.guild.id
+    ) {
       return
     }
 

@@ -1,35 +1,19 @@
 import { RegisteredCommands } from "../../commands.mjs"
 import {
   CommandNotFoundByIdError,
-  NoAutocompleteHandlerError,
   NoPermissionError,
   reportError,
 } from "../../errors.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
-import { AutocompleteInteraction, CommandInteraction } from "discord.js"
+import { CommandInteraction } from "discord.js"
 import type { Interaction } from "discord.js"
 
 export class CommandHandler implements Handler<"interactionCreate"> {
   public readonly event = "interactionCreate"
   public readonly once = false
 
-  private static async handleAutocomplete(
-    interaction: AutocompleteInteraction
-  ) {
-    const command = RegisteredCommands.get(interaction.commandId)
-    if (!command) {
-      throw new CommandNotFoundByIdError(interaction.commandId)
-    }
-
-    if (!command.handleAutocomplete) {
-      throw new NoAutocompleteHandlerError(command)
-    }
-
-    await interaction.respond(await command.handleAutocomplete(interaction))
-  }
-
-  private static async handleCommand(interaction: CommandInteraction) {
+  private async handleCommand(interaction: CommandInteraction) {
     const command = RegisteredCommands.get(interaction.commandId)
     if (!command) {
       throw new CommandNotFoundByIdError(interaction.commandId)
@@ -49,31 +33,28 @@ export class CommandHandler implements Handler<"interactionCreate"> {
   }
 
   public async handle(interaction: Interaction) {
-    if (interaction instanceof AutocompleteInteraction) {
-      await CommandHandler.handleAutocomplete(interaction)
+    if (!interaction.isCommand()) {
       return
     }
 
-    if (interaction instanceof CommandInteraction) {
-      try {
-        await CommandHandler.handleCommand(interaction)
-      } catch (e) {
-        if (!(e instanceof Error)) {
-          throw e
-        }
-
-        await reportError(e)
-        if (interaction.replied || interaction.deferred) {
-          await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
-        } else {
-          await interaction.reply({
-            embeds: [makeErrorEmbed(e)],
-            ephemeral: true,
-          })
-        }
+    try {
+      await this.handleCommand(interaction)
+    } catch (e) {
+      if (!(e instanceof Error)) {
+        throw e
       }
 
-      return
+      await reportError(e)
+      if (interaction.replied || interaction.deferred) {
+        await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
+      } else {
+        await interaction.reply({
+          embeds: [makeErrorEmbed(e)],
+          ephemeral: true,
+        })
+      }
     }
+
+    return
   }
 }
