@@ -232,6 +232,7 @@ if (!channel) {
 let textChannel: TextBasedChannel
 if (channel.isTextBased()) {
   textChannel = channel
+} else {
   throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
 }
 
