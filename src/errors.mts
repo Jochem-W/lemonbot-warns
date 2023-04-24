@@ -1,11 +1,10 @@
+import { Discord } from "./clients.mjs"
 import { DefaultConfig } from "./models/config.mjs"
-import type { CustomId } from "./models/customId.mjs"
-import { customIdToString } from "./models/customId.mjs"
 import type { Command } from "./types/command.mjs"
-import { fetchChannel } from "./utilities/discordUtilities.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
 import { Attachment, ChannelType, CommandInteraction } from "discord.js"
+import type { TextBasedChannel } from "discord.js"
 import type { Snowflake, Channel } from "discord.js"
 import type { DateTime } from "luxon"
 
@@ -107,11 +106,7 @@ export class ImageOnlyError extends BotError {
 }
 
 export class InvalidCustomIdError extends BotError {
-  public constructor(customId: string | CustomId) {
-    if (typeof customId !== "string") {
-      customId = customIdToString(customId)
-    }
-
+  public constructor(customId: string) {
     super(`Invalid custom ID "${customId}".`)
   }
 }
@@ -160,14 +155,14 @@ export class NoValidCodeError extends BotError {
 }
 
 export class ButtonNotFoundError extends BotError {
-  public constructor(customId: CustomId) {
-    super(`Couldn't find a button for custom ID ${customIdToString(customId)}`)
+  public constructor(name: string) {
+    super(`Couldn't find a button with name "${name}"`)
   }
 }
 
 export class ModalNotFoundError extends BotError {
-  public constructor(customId: CustomId) {
-    super(`Couldn't find a modal for custom ID ${customIdToString(customId)}`)
+  public constructor(name: string) {
+    super(`Couldn't find a modal with name "${name}"`)
   }
 }
 
@@ -227,11 +222,18 @@ export class InvalidDateTimeError extends CustomError {
   }
 }
 
+const channel = await Discord.channels.fetch(DefaultConfig.guild.errorChannel)
+if (!channel) {
+  throw new ChannelNotFoundError(DefaultConfig.guild.errorChannel)
+}
+
+let textChannel: TextBasedChannel
+if (channel.isTextBased()) {
+  textChannel = channel
+  throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
+}
+
 export async function reportError(error: Error) {
   console.error(error)
-  const channel = await fetchChannel(
-    DefaultConfig.guild.errorChannel,
-    ChannelType.GuildText
-  )
-  await channel.send({ embeds: [makeErrorEmbed(error)] })
+  await textChannel.send({ embeds: [makeErrorEmbed(error)] })
 }

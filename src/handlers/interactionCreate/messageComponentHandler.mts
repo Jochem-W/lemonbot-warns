@@ -19,12 +19,12 @@ async function handleMessageComponent(
   }
 
   if (!interaction.isButton()) {
-    throw new InvalidCustomIdError(data)
+    throw new InvalidCustomIdError(interaction.customId)
   }
 
   const button = RegisteredButtons.get(data.name)
   if (!button) {
-    throw new ButtonNotFoundError(data)
+    throw new ButtonNotFoundError(data.name)
   }
 
   await button(interaction, data.args)
