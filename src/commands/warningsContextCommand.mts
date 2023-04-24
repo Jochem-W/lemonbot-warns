@@ -16,7 +16,7 @@ export class WarningsContextCommand extends UserContextMenuCommand {
   }
 
   public async handle(interaction: UserContextMenuCommandInteraction) {
-    const ephemeral = !isInPrivateChannel(interaction)
+    const ephemeral = !(await isInPrivateChannel(interaction))
 
     const member = await tryFetchMember(interaction.targetUser)
 

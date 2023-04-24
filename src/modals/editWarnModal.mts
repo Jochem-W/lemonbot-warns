@@ -42,7 +42,7 @@ export const EditWarnModal = registerModalHandler(
           { name: "New description", value: warning.description ?? "-" }
         ),
       ],
-      ephemeral: !isInPrivateChannel(interaction),
+      ephemeral: !(await isInPrivateChannel(interaction)),
     })
 
     setTimeout(() => void reply.delete().catch(reportError), 2500)

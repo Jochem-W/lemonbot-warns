@@ -20,7 +20,7 @@ export class WarningsCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
-    const ephemeral = !isInPrivateChannel(interaction)
+    const ephemeral = !(await isInPrivateChannel(interaction))
 
     const user = interaction.options.getUser("user", true)
     const member = await tryFetchMember(user)

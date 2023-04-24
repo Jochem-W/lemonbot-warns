@@ -104,7 +104,7 @@ export async function ensureOwner(interaction: Interaction) {
   }
 }
 
-export function isInPrivateChannel(interaction: Interaction) {
+export async function isInPrivateChannel(interaction: Interaction) {
   if (!interaction.inGuild()) {
     return false
   }
@@ -113,7 +113,21 @@ export function isInPrivateChannel(interaction: Interaction) {
     return false
   }
 
-  return DefaultConfig.guild.privateChannels.includes(interaction.channelId)
+  if (DefaultConfig.guild.privateChannels.includes(interaction.channelId)) {
+    return true
+  }
+
+  const channel =
+    interaction.channel ?? (await Discord.channels.fetch(interaction.channelId))
+  if (!channel || channel.isDMBased()) {
+    return false
+  }
+
+  if (!channel.parentId) {
+    return false
+  }
+
+  return DefaultConfig.guild.privateChannels.includes(channel.parentId)
 }
 
 export function warningUrl(warning: Warning, search = "") {

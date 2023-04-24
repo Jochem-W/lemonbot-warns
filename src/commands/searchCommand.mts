@@ -25,7 +25,7 @@ export class SearchCommand extends ChatInputCommand {
 
   public async handle(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({
-      ephemeral: !isInPrivateChannel(interaction),
+      ephemeral: !(await isInPrivateChannel(interaction)),
     })
 
     if (!interaction.inGuild()) {
