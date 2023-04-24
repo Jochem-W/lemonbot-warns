@@ -222,7 +222,9 @@ export class InvalidDateTimeError extends CustomError {
   }
 }
 
-const channel = await Discord.channels.fetch(DefaultConfig.guild.errorChannel)
+const channel = await Discord.channels.fetch(DefaultConfig.guild.errorChannel, {
+  allowUnknownGuild: true,
+})
 if (!channel) {
   throw new ChannelNotFoundError(DefaultConfig.guild.errorChannel)
 }
