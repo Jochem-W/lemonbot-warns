@@ -1,5 +1,5 @@
 import { Discord } from "../clients.mjs"
-import { reportError } from "../errors.mjs"
+import { logError } from "../errors.mjs"
 import { makeErrorEmbed } from "../utilities/embedUtilities.mjs"
 import {
   ActionRowBuilder,
@@ -40,7 +40,7 @@ export class InteractionCollectorHelper {
         }
 
         if (e instanceof Error) {
-          await reportError(e)
+          await logError(e)
         }
       }
     })
@@ -74,7 +74,7 @@ export class InteractionCollectorHelper {
           throw e
         }
 
-        await reportError(e)
+        await logError(e)
 
         const message: InteractionReplyOptions = {
           embeds: [makeErrorEmbed(e)],

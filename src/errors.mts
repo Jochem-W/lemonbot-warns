@@ -220,7 +220,7 @@ export class InvalidDateTimeError extends CustomError {
   }
 }
 
-export async function reportError(error: Error) {
+export async function logError(error: Error) {
   console.error(error)
   const guilds = await Prisma.warningGuild.findMany() // this sucks
   for (const guild of guilds) {

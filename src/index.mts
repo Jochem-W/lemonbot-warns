@@ -1,7 +1,7 @@
 import { Discord, Forms } from "./clients.mjs"
 import { SlashCommands } from "./commands.mjs"
 import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
-import { reportError } from "./errors.mjs"
+import { logError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
 import { DefaultConfig } from "./models/config.mjs"
 import { testComparePenalty } from "./utilities/penaltyUtilities.mjs"
@@ -27,7 +27,7 @@ for (const handler of Handlers) {
           throw e
         }
 
-        await reportError(e)
+        await logError(e)
       }
     })
     continue
@@ -41,7 +41,7 @@ for (const handler of Handlers) {
         throw e
       }
 
-      await reportError(e)
+      await logError(e)
     }
   })
 }

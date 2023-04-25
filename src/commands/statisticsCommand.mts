@@ -1,5 +1,5 @@
 import { Discord, Prisma } from "../clients.mjs"
-import { reportError } from "../errors.mjs"
+import { logError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import archiver from "archiver"
@@ -123,7 +123,7 @@ export class StatisticsCommand extends ChatInputCommand {
         })
         .catch((e) => {
           if (e instanceof Error) {
-            void reportError(e)
+            void logError(e)
           } else {
             console.log(e)
           }
@@ -131,7 +131,7 @@ export class StatisticsCommand extends ChatInputCommand {
         .finally(() => {
           unlink(fileName).catch((e) => {
             if (e instanceof Error) {
-              void reportError(e)
+              void logError(e)
             } else {
               console.log(e)
             }
@@ -139,8 +139,8 @@ export class StatisticsCommand extends ChatInputCommand {
         })
     })
 
-    archive.on("warning", (err) => void reportError(err))
-    archive.on("error", (err) => void reportError(err))
+    archive.on("warning", (err) => void logError(err))
+    archive.on("error", (err) => void logError(err))
 
     archive.pipe(output)
 

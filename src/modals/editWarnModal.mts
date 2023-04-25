@@ -1,5 +1,5 @@
 import { Prisma } from "../clients.mjs"
-import { InvalidCustomIdError, reportError } from "../errors.mjs"
+import { InvalidCustomIdError, logError } from "../errors.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import {
@@ -40,7 +40,7 @@ export const EditWarnModal = registerModalHandler(
       ephemeral: !(await isInPrivateChannel(interaction)),
     })
 
-    setTimeout(() => void reply.delete().catch(reportError), 2500)
+    setTimeout(() => void reply.delete().catch(logError), 2500)
 
     const warnLogsChannel = await fetchChannel(
       warning.guild.warnLogsChannel,

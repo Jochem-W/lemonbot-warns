@@ -2,7 +2,7 @@ import { RegisteredCommands } from "../../commands.mjs"
 import {
   CommandNotFoundByIdError,
   NoPermissionError,
-  reportError,
+  logError,
 } from "../../errors.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
@@ -43,7 +43,7 @@ export const CommandHandler: Handler<"interactionCreate"> = {
         throw e
       }
 
-      await reportError(e)
+      await logError(e)
       if (interaction.replied || interaction.deferred) {
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
       } else {

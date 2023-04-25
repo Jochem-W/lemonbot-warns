@@ -1,4 +1,4 @@
-import { reportError, UnregisteredNameError } from "../../errors.mjs"
+import { logError, UnregisteredNameError } from "../../errors.mjs"
 import { RegisteredModals } from "../../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
 import type { Handler } from "../../types/handler.mjs"
@@ -35,7 +35,7 @@ export const ModalHandler: Handler<"interactionCreate"> = {
         throw e
       }
 
-      await reportError(e)
+      await logError(e)
       await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
     }
 

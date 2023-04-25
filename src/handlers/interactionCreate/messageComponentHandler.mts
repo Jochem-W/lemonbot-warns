@@ -1,7 +1,7 @@
 import {
   ButtonNotFoundError,
   InvalidCustomIdError,
-  reportError,
+  logError,
 } from "../../errors.mjs"
 import { RegisteredButtons } from "../../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
@@ -45,7 +45,7 @@ export const MessageComponentHandler: Handler<"interactionCreate"> = {
         throw e
       }
 
-      await reportError(e)
+      await logError(e)
       await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
     }
 

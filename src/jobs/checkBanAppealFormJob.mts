@@ -1,5 +1,5 @@
 import { Discord, Forms, Prisma } from "../clients.mjs"
-import { InvalidDateTimeError, reportError } from "../errors.mjs"
+import { InvalidDateTimeError, logError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
@@ -217,7 +217,7 @@ async function onTick() {
 export const CheckBanAppealFormJob = new CronJob("* * * * *", () => {
   onTick().catch((e) => {
     if (e instanceof Error) {
-      void reportError(e)
+      void logError(e)
     }
   })
 })

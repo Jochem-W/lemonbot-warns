@@ -1,5 +1,5 @@
 import { Prisma } from "../../clients.mjs"
-import { reportError } from "../../errors.mjs"
+import { logError } from "../../errors.mjs"
 import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
 import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
@@ -86,6 +86,6 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
     })
     await message.delete()
 
-    setTimeout(() => void reply.delete().catch(reportError), 2500)
+    setTimeout(() => void reply.delete().catch(logError), 2500)
   },
 }
