@@ -88,80 +88,10 @@
         "applicationId"
       ]
     },
-    "guild": {
-      "description": "Guild configuration",
-      "type": "object",
-      "properties": {
-        "discussionChannel": {
-          "description": "The channel used for discussing moderation actions",
-          "type": "string",
-          "pattern": "^\\d+$"
-        },
-        "errorChannel": {
-          "description": "The channel to log errors in",
-          "type": "string",
-          "pattern": "^\\d+$"
-        },
-        "id": {
-          "description": "The guild to register commands for",
-          "type": "string",
-          "pattern": "^\\d+$"
-        },
-        "mailUserId": {
-          "description": "The user ID of the mod mail bot",
-          "type": "string",
-          "pattern": "^\\d+$"
-        },
-        "privateChannels": {
-          "description": "List of channels where bot replies are publicly visible",
-          "type": "array",
-          "items": [
-            {
-              "type": "string",
-              "pattern": "^\\d+$"
-            }
-          ]
-        },
-        "restart": {
-          "description": "Restart message configuration",
-          "type": "object",
-          "properties": {
-            "channel": {
-              "description": "The channel to send restart messages in",
-              "type": "string",
-              "pattern": "^\\d+$"
-            },
-            "user": {
-              "description": "The user that is mentioned in restart messages",
-              "type": "string",
-              "pattern": "^\\d+$"
-            }
-          },
-          "required": [
-            "channel"
-          ]
-        },
-        "warnCategory": {
-          "description": "The category under which warning channels are created",
-          "type": "string",
-          "pattern": "^\\d+$"
-        },
-        "warnLogsChannel": {
-          "description": "The channel to send warning logs in",
-          "type": "string",
-          "pattern": "^\\d+$"
-        }
-      },
-      "required": [
-        "discussionChannel",
-        "errorChannel",
-        "id",
-        "mailUserId",
-        "privateChannels",
-        "restart",
-        "warnCategory",
-        "warnLogsChannel"
-      ]
+    "mailUserId": {
+      "description": "The user ID of the mod mail bot",
+      "type": "string",
+      "pattern": "^\\d+$"
     },
     "icons": {
       "description": "Embed author icon configuration",
@@ -216,7 +146,7 @@
   "required": [
     "banAppealForm",
     "bot",
-    "guild",
+    "mailUserId",
     "icons",
     "repository"
   ]
