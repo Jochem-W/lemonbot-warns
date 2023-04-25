@@ -68,7 +68,7 @@ async function onTick() {
     )
     if (userTag !== user.tag) {
       notes.push(
-        "• The tag filled in by the user doesn't match the tag of the account with the ID they filled in"
+        "• The tag doesn't match the tag of the account with the ID they filled in"
       )
     }
 
