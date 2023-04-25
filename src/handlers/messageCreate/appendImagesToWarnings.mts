@@ -8,21 +8,12 @@ import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
 import type { Message } from "discord.js"
 import { ChannelType, EmbedBuilder } from "discord.js"
 
-const warnLogsChannel = await fetchChannel(
-  DefaultConfig.guild.warnLogsChannel,
-  ChannelType.GuildText
-)
-
 export const AppendImagesToWarnings: Handler<"messageCreate"> = {
   event: "messageCreate",
   once: false,
   async handle(message: Message) {
-    if (message.author.bot) {
-      return
-    }
-
     if (
-      message.channelId !== DefaultConfig.guild.warnLogsChannel ||
+      message.author.bot ||
       !message.reference?.messageId ||
       message.attachments.size === 0
     ) {
@@ -31,9 +22,8 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
 
     const warning = await Prisma.warning.findFirst({
       where: { messageId: message.reference.messageId },
-      include: { images: true },
+      include: { images: true, guild: true },
     })
-
     if (!warning) {
       return
     }
@@ -73,9 +63,14 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
         penalty: true,
         reasons: true,
         images: true,
+        guild: true,
       },
     })
 
+    const warnLogsChannel = await fetchChannel(
+      warning.guild.warnLogsChannel,
+      ChannelType.GuildText
+    )
     await warnLogsChannel.messages.edit(
       message.reference.messageId,
       await warnLogMessage(updatedWarning)

@@ -4,7 +4,13 @@ import { button } from "../utilities/button.mjs"
 import { tryFetchMember, warningUrl } from "../utilities/discordUtilities.mjs"
 import { formatName } from "../utilities/embedUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
-import type { Image, Penalty, Reason, Warning } from "@prisma/client"
+import type {
+  Image,
+  Penalty,
+  Reason,
+  Warning,
+  WarningGuild,
+} from "@prisma/client"
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -14,12 +20,19 @@ import {
 } from "discord.js"
 
 export async function warnLogMessage(
-  warning: Warning & { penalty: Penalty; reasons: Reason[]; images: Image[] }
+  warning: Warning & {
+    penalty: Penalty
+    reasons: Reason[]
+    images: Image[]
+    guild: WarningGuild
+  }
 ) {
-  const member = await tryFetchMember(warning.userId)
+  const guild = await Discord.guilds.fetch(warning.guildId)
+
+  const member = await tryFetchMember(guild, warning.userId)
   const user = member?.user ?? (await Discord.users.fetch(warning.userId))
 
-  const createdByMember = await tryFetchMember(warning.createdBy)
+  const createdByMember = await tryFetchMember(guild, warning.createdBy)
   const createdByUser =
     createdByMember?.user ?? (await Discord.users.fetch(warning.createdBy))
 

@@ -1,15 +1,21 @@
 import { DismissWarnButton } from "../buttons/dismissWarnButton.mjs"
 import { Discord, Prisma } from "../clients.mjs"
+import { GuildOnlyError } from "../errors.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { button } from "../utilities/button.mjs"
 import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
-import type { Image, Penalty, Reason, Warning } from "@prisma/client"
+import type {
+  Image,
+  Penalty,
+  Reason,
+  Warning,
+  WarningGuild,
+} from "@prisma/client"
 import type {
   Attachment,
   BanOptions,
@@ -27,17 +33,13 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  Guild,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"
 
 const { nolookalikesSafe } = nanoidDictionary
 const nanoid = customAlphabet(nolookalikesSafe)
-const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
-const warnLogsChannel = await fetchChannel(
-  DefaultConfig.guild.warnLogsChannel,
-  ChannelType.GuildText
-)
 
 export class WarnCommand extends ChatInputCommand {
   public constructor(reasons: Reason[], penalties: Penalty[]) {
@@ -116,7 +118,12 @@ export class WarnCommand extends ChatInputCommand {
 
   private async notify(
     target: GuildMember | User,
-    warning: Warning & { penalty: Penalty; images: Image[] }
+    warning: Warning & {
+      penalty: Penalty
+      images: Image[]
+      guild: WarningGuild
+    },
+    guild: Guild
   ) {
     if (warning.silent) {
       return "SILENT"
@@ -126,7 +133,7 @@ export class WarnCommand extends ChatInputCommand {
       return "NOT_IN_SERVER"
     }
 
-    const message = warnMessage(warning)
+    const message = await warnMessage(warning)
 
     try {
       await target.send(message)
@@ -148,7 +155,7 @@ export class WarnCommand extends ChatInputCommand {
     const newChannel = await guild.channels.create({
       name: `${target.user.username}-${target.user.discriminator}-${nanoid(4)}`,
       type: ChannelType.GuildText,
-      parent: DefaultConfig.guild.warnCategory,
+      parent: warning.guild.warnCategory,
       reason: "Create a channel for warning a user that has DMs disabled",
     })
 
@@ -183,7 +190,8 @@ export class WarnCommand extends ChatInputCommand {
 
   private async penalise(
     target: GuildMember | User,
-    warning: Warning & { penalty: Penalty; reasons: Reason[] }
+    warning: Warning & { penalty: Penalty; reasons: Reason[] },
+    guild: Guild
   ) {
     const by = await Discord.users.fetch(warning.createdBy)
     const reason = `By ${by.tag} for ${warning.reasons
@@ -218,12 +226,22 @@ export class WarnCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    if (!interaction.inGuild()) {
+      throw new GuildOnlyError()
+    }
+
+    const guild =
+      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
+    const prismaGuild = await Prisma.warningGuild.findFirstOrThrow({
+      where: { id: guild.id },
+    })
+
     await interaction.deferReply({
-      ephemeral: interaction.channelId !== DefaultConfig.guild.warnLogsChannel,
+      ephemeral: interaction.channelId !== prismaGuild.warnLogsChannel,
     })
 
     const targetUser = interaction.options.getUser("user", true)
-    const targetMember = await tryFetchMember(targetUser.id)
+    const targetMember = await tryFetchMember(guild, targetUser.id)
     const reasons = [
       interaction.options.getString("reason", true),
       interaction.options.getString("reason2"),
@@ -268,21 +286,38 @@ export class WarnCommand extends ChatInputCommand {
             data: attachmentUrls.map((url) => ({ url, extra: false })),
           },
         },
+        guild: {
+          connect: {
+            id: prismaGuild.id,
+          },
+        },
       },
-      include: { penalty: true, reasons: true, images: true },
+      include: { penalty: true, reasons: true, images: true, guild: true },
     })
 
     console.log("Created warning with ID", warning.id)
 
-    const notified = await this.notify(targetMember ?? targetUser, warning)
-    const penalised = await this.penalise(targetMember ?? targetUser, warning)
+    const notified = await this.notify(
+      targetMember ?? targetUser,
+      warning,
+      guild
+    )
+    const penalised = await this.penalise(
+      targetMember ?? targetUser,
+      warning,
+      guild
+    )
 
     warning = await Prisma.warning.update({
       where: { id: warning.id },
       data: { notified: notified, penalised },
-      include: { penalty: true, reasons: true, images: true },
+      include: { penalty: true, reasons: true, images: true, guild: true },
     })
 
+    const warnLogsChannel = await fetchChannel(
+      prismaGuild.warnLogsChannel,
+      ChannelType.GuildText
+    )
     const logMessage = await warnLogMessage(warning)
     let message = await interaction.editReply(logMessage)
     if (interaction.channelId !== warnLogsChannel.id || interaction.ephemeral) {

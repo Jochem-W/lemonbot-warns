@@ -10,11 +10,6 @@ import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { registerModalHandler } from "../utilities/modal.mjs"
 import { ChannelType } from "discord.js"
 
-const warnLogsChannel = await fetchChannel(
-  DefaultConfig.guild.warnLogsChannel,
-  ChannelType.GuildText
-)
-
 export const EditWarnModal = registerModalHandler(
   "edit-warn",
   async (interaction, [warningId]) => {
@@ -32,7 +27,7 @@ export const EditWarnModal = registerModalHandler(
       data: {
         description: interaction.fields.getTextInputValue("description"),
       },
-      include: { penalty: true, reasons: true, images: true },
+      include: { penalty: true, reasons: true, images: true, guild: true },
     })
 
     const reply = await interaction.reply({
@@ -47,6 +42,10 @@ export const EditWarnModal = registerModalHandler(
 
     setTimeout(() => void reply.delete().catch(reportError), 2500)
 
+    const warnLogsChannel = await fetchChannel(
+      warning.guild.warnLogsChannel,
+      ChannelType.GuildText
+    )
     if (warning.messageId) {
       await warnLogsChannel.messages.edit(
         warning.messageId,

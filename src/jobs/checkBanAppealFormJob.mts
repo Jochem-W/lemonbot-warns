@@ -1,4 +1,4 @@
-import { Discord, Forms } from "../clients.mjs"
+import { Discord, Forms, Prisma } from "../clients.mjs"
 import { InvalidDateTimeError, reportError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
@@ -12,18 +12,34 @@ import { CronJob } from "cron"
 import {
   ChannelType,
   DiscordAPIError,
+  GuildBan,
   hyperlink,
   RESTJSONErrorCodes,
   time,
   TimestampStyles,
 } from "discord.js"
+import type { Snowflake } from "discord.js"
 import { DateTime } from "luxon"
 
-const discussionChannel = await fetchChannel(
-  DefaultConfig.guild.discussionChannel,
-  ChannelType.GuildText
-)
-const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
+async function findBans(userId: Snowflake) {
+  const results: GuildBan[] = []
+  const guilds = await Prisma.warningGuild.findMany()
+  for (const prismaGuild of guilds) {
+    const guild = await Discord.guilds.fetch(prismaGuild.id)
+    try {
+      results.push(await guild.bans.fetch(userId))
+    } catch (e) {
+      if (
+        !(e instanceof DiscordAPIError) ||
+        e.code !== RESTJSONErrorCodes.UnknownBan
+      ) {
+        throw e
+      }
+    }
+  }
+
+  return results
+}
 
 async function onTick() {
   const end = DateTime.now().toUTC().startOf("minute")
@@ -34,7 +50,7 @@ async function onTick() {
   }
 
   const response = await Forms.forms.responses.list({
-    formId: "1FUehfqF-wdpbPAlrCOusVmdnfmLIvGer52R35tA2JKU",
+    formId: DefaultConfig.banAppealForm.id,
     filter: `timestamp >= ${timestamp}`,
   })
 
@@ -140,20 +156,15 @@ async function onTick() {
           : claimedBanReason,
     })
 
-    try {
-      const ban = await guild.bans.fetch(user.id)
+    const bans = await findBans(user.id)
+    if (bans.length > 0) {
       embed.addFields({
-        name: "Audit log ban reason",
-        value: ban.reason ?? "N/A",
+        name: "Audit log ban reasons",
+        value: bans
+          .map((b) => `${b.reason ?? "N/A"} (${b.guild.name})`)
+          .join("\n"),
       })
-    } catch (e) {
-      if (
-        !(e instanceof DiscordAPIError) ||
-        e.code !== RESTJSONErrorCodes.UnknownBan
-      ) {
-        throw e
-      }
-
+    } else {
       notes.push("• The user isn't actually banned")
     }
 
@@ -174,16 +185,31 @@ async function onTick() {
 
     embed.setDescription(notes.join("\n") || null)
 
-    const message = await discussionChannel.send({
-      embeds: [embed],
-    })
-    const thread = await message.startThread({
-      name: `${user.tag}'s ban appeal`,
-      reason: "Create thread for more coherent discussion",
-    })
+    let loggingGuilds = await Promise.all(
+      bans.map((b) =>
+        Prisma.warningGuild.findFirstOrThrow({ where: { id: b.guild.id } })
+      )
+    )
+    if (loggingGuilds.length === 0) {
+      loggingGuilds = await Prisma.warningGuild.findMany()
+    }
 
-    for (const message of await warningsMessage(user)) {
-      await thread.send(message)
+    for (const prismaGuild of loggingGuilds) {
+      const appealsChannel = await fetchChannel(
+        prismaGuild.appealsChannel,
+        ChannelType.GuildText
+      )
+      const message = await appealsChannel.send({
+        embeds: [embed],
+      })
+      const thread = await message.startThread({
+        name: `${user.tag}'s ban appeal`,
+        reason: "Create thread for more coherent discussion",
+      })
+
+      for (const message of await warningsMessage(user)) {
+        await thread.send(message)
+      }
     }
   }
 }

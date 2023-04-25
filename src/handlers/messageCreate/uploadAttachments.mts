@@ -1,4 +1,4 @@
-import { DefaultConfig } from "../../models/config.mjs"
+import { Prisma } from "../../clients.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { upload } from "../../utilities/s3Utilities.mjs"
 import { Variables } from "../../variables.mjs"
@@ -8,11 +8,14 @@ export const UploadAttachments: Handler<"messageCreate"> = {
   event: "messageCreate",
   once: false,
   async handle(message: Message) {
-    if (
-      message.author.bot ||
-      !message.inGuild() ||
-      message.guildId !== DefaultConfig.guild.id
-    ) {
+    if (message.author.bot || !message.inGuild()) {
+      return
+    }
+
+    const prismaGuild = await Prisma.warningGuild.findFirst({
+      where: { id: message.guild.id },
+    })
+    if (!prismaGuild) {
       return
     }
 

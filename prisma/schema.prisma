@@ -73,6 +73,30 @@ model Warning {
   userId String
 
   images Image[]
+
+  guild   WarningGuild @relation(fields: [guildId], references: [id])
+  guildId String
+}
+
+model WarningGuild {
+  id String @id
+
+  appealsChannel  String @unique
+  errorChannel    String @unique
+  restartChannel  String @unique
+  warnCategory    String @unique
+  warnLogsChannel String @unique
+
+  warning Warning[]
+
+  privateChannels WarningGuildPrivateChannel[]
+}
+
+model WarningGuildPrivateChannel {
+  id String @id
+
+  guild   WarningGuild @relation(fields: [guildId], references: [id])
+  guildId String
 }
 
 model Image {

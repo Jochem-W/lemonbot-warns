@@ -61,43 +61,46 @@ export class ReRegisterCommand extends ChatInputCommand {
       console.log(`Constructed command '${command.builder.name}'`)
     }
 
-    const route =
-      Variables.nodeEnvironment === "production"
-        ? Routes.applicationCommands(DefaultConfig.bot.applicationId)
-        : Routes.applicationGuildCommands(
-            DefaultConfig.bot.applicationId,
-            DefaultConfig.guild.id
-          )
+    const guilds = await Prisma.warningGuild.findMany()
+    for (const guild of guilds) {
+      const route =
+        Variables.nodeEnvironment === "production"
+          ? Routes.applicationCommands(DefaultConfig.bot.applicationId)
+          : Routes.applicationGuildCommands(
+              DefaultConfig.bot.applicationId,
+              guild.id
+            )
 
-    const applicationCommands = (await Discord.rest.put(route, {
-      body: commandsBody,
-    })) as RESTPutAPIApplicationGuildCommandsResult
-    console.log("Commands updated")
-    for (const applicationCommand of applicationCommands) {
-      let command: Command<CommandInteraction> | undefined
-      switch (applicationCommand.type) {
-        case ApplicationCommandType.ChatInput:
-          command = SlashCommands.find(
-            (command) => command.builder.name === applicationCommand.name
-          )
-          break
-        case ApplicationCommandType.User:
-          command = UserContextMenuCommands.find(
-            (command) => command.builder.name === applicationCommand.name
-          )
-          break
-        case ApplicationCommandType.Message:
-          command = MessageContextMenuCommands.find(
-            (command) => command.builder.name === applicationCommand.name
-          )
-          break
+      const applicationCommands = (await Discord.rest.put(route, {
+        body: commandsBody,
+      })) as RESTPutAPIApplicationGuildCommandsResult
+      console.log("Commands updated")
+      for (const applicationCommand of applicationCommands) {
+        let command: Command<CommandInteraction> | undefined
+        switch (applicationCommand.type) {
+          case ApplicationCommandType.ChatInput:
+            command = SlashCommands.find(
+              (command) => command.builder.name === applicationCommand.name
+            )
+            break
+          case ApplicationCommandType.User:
+            command = UserContextMenuCommands.find(
+              (command) => command.builder.name === applicationCommand.name
+            )
+            break
+          case ApplicationCommandType.Message:
+            command = MessageContextMenuCommands.find(
+              (command) => command.builder.name === applicationCommand.name
+            )
+            break
+        }
+
+        if (!command) {
+          throw new CommandNotFoundByNameError(applicationCommand.name)
+        }
+
+        RegisteredCommands.set(applicationCommand.id, command)
       }
-
-      if (!command) {
-        throw new CommandNotFoundByNameError(applicationCommand.name)
-      }
-
-      RegisteredCommands.set(applicationCommand.id, command)
     }
   }
 

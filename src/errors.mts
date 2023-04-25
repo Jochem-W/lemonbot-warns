@@ -1,10 +1,8 @@
-import { Discord } from "./clients.mjs"
-import { DefaultConfig } from "./models/config.mjs"
+import { Discord, Prisma } from "./clients.mjs"
 import type { Command } from "./types/command.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
 import { Attachment, ChannelType, CommandInteraction } from "discord.js"
-import type { TextBasedChannel } from "discord.js"
 import type { Snowflake, Channel } from "discord.js"
 import type { DateTime } from "luxon"
 
@@ -222,21 +220,18 @@ export class InvalidDateTimeError extends CustomError {
   }
 }
 
-const channel = await Discord.channels.fetch(DefaultConfig.guild.errorChannel, {
-  allowUnknownGuild: true,
-})
-if (!channel) {
-  throw new ChannelNotFoundError(DefaultConfig.guild.errorChannel)
-}
-
-let textChannel: TextBasedChannel
-if (channel.isTextBased()) {
-  textChannel = channel
-} else {
-  throw new InvalidChannelTypeError(channel, ChannelType.GuildText)
-}
-
 export async function reportError(error: Error) {
   console.error(error)
-  await textChannel.send({ embeds: [makeErrorEmbed(error)] })
+  const guilds = await Prisma.warningGuild.findMany() // this sucks
+  for (const guild of guilds) {
+    const channel = await Discord.channels.fetch(guild.errorChannel, {
+      allowUnknownGuild: true,
+    })
+    if (!channel?.isTextBased()) {
+      console.error(guild, "has an incorrect errorChannel")
+      continue
+    }
+
+    await channel.send({ embeds: [makeErrorEmbed(error)] })
+  }
 }

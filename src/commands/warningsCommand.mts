@@ -1,4 +1,5 @@
-import { BotError } from "../errors.mjs"
+import { Discord } from "../clients.mjs"
+import { BotError, GuildOnlyError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import {
@@ -20,10 +21,16 @@ export class WarningsCommand extends ChatInputCommand {
   }
 
   public async handle(interaction: ChatInputCommandInteraction) {
+    if (!interaction.inGuild()) {
+      throw new GuildOnlyError()
+    }
+
     const ephemeral = !(await isInPrivateChannel(interaction))
 
+    const guild =
+      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
     const user = interaction.options.getUser("user", true)
-    const member = await tryFetchMember(user)
+    const member = await tryFetchMember(guild, user)
 
     const messages = await warningsMessage(member ?? user)
 

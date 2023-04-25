@@ -1,12 +1,11 @@
-import { Discord } from "../clients.mjs"
+import { Discord, Prisma } from "../clients.mjs"
 import {
   ChannelNotFoundError,
   GuildOnlyError,
   InvalidChannelTypeError,
   OwnerOnlyError,
 } from "../errors.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import type { Warning } from "@prisma/client"
+import type { Warning, WarningGuild } from "@prisma/client"
 import type {
   Channel,
   FetchChannelOptions,
@@ -17,6 +16,7 @@ import {
   ChannelType,
   DiscordAPIError,
   RESTJSONErrorCodes,
+  Guild,
   Team,
 } from "discord.js"
 import type {
@@ -26,8 +26,6 @@ import type {
 } from "discord.js"
 import { DateTime } from "luxon"
 
-const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
-
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(
     Number((BigInt(snowflake) >> 22n) + 1420070400000n),
@@ -36,8 +34,13 @@ export function snowflakeToDateTime(snowflake: Snowflake) {
 }
 
 export async function tryFetchMember(
+  guild: Snowflake | Guild,
   options: FetchMemberOptions | UserResolvable
 ) {
+  if (!(guild instanceof Guild)) {
+    guild = await Discord.guilds.fetch(guild)
+  }
+
   try {
     return await guild.members.fetch(options)
   } catch (e) {
@@ -57,7 +60,10 @@ export async function fetchChannel<T extends ChannelType>(
   type: T,
   options?: FetchChannelOptions
 ) {
-  const channel = await Discord.channels.fetch(id, options)
+  const channel = await Discord.channels.fetch(id, {
+    allowUnknownGuild: true,
+    ...options,
+  })
   if (!channel) {
     throw new ChannelNotFoundError(id)
   }
@@ -113,7 +119,17 @@ export async function isInPrivateChannel(interaction: Interaction) {
     return false
   }
 
-  if (DefaultConfig.guild.privateChannels.includes(interaction.channelId)) {
+  const prismaGuild = await Prisma.warningGuild.findFirst({
+    where: { id: interaction.guildId },
+    include: { privateChannels: true },
+  })
+  if (!prismaGuild) {
+    return false
+  }
+
+  const channelIds = prismaGuild.privateChannels.map((p) => p.id)
+
+  if (channelIds.includes(interaction.channelId)) {
     return true
   }
 
@@ -127,13 +143,16 @@ export async function isInPrivateChannel(interaction: Interaction) {
     return false
   }
 
-  return DefaultConfig.guild.privateChannels.includes(channel.parentId)
+  return channelIds.includes(interaction.channelId)
 }
 
-export function warningUrl(warning: Warning, search = "") {
+export function warningUrl(
+  warning: Warning & { guild: WarningGuild },
+  search = ""
+) {
   const url = new URL(
-    `https://discord.com/channels/${DefaultConfig.guild.id}/${
-      DefaultConfig.guild.warnLogsChannel
+    `https://discord.com/channels/${warning.guild.id}/${
+      warning.guild.warnLogsChannel
     }/${warning.messageId ?? ""}`
   )
 

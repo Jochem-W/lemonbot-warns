@@ -1,4 +1,5 @@
-import { BotError } from "../errors.mjs"
+import { Discord } from "../clients.mjs"
+import { BotError, GuildOnlyError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { UserContextMenuCommand } from "../models/userContextMenuCommand.mjs"
 import {
@@ -16,9 +17,15 @@ export class WarningsContextCommand extends UserContextMenuCommand {
   }
 
   public async handle(interaction: UserContextMenuCommandInteraction) {
+    if (!interaction.inGuild()) {
+      throw new GuildOnlyError()
+    }
+
     const ephemeral = !(await isInPrivateChannel(interaction))
 
-    const member = await tryFetchMember(interaction.targetUser)
+    const guild =
+      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
+    const member = await tryFetchMember(guild, interaction.targetUser)
 
     const messages = await warningsMessage(member ?? interaction.targetUser)
 

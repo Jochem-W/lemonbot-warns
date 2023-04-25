@@ -1,12 +1,11 @@
-import { Discord, GitHubClient } from "../../clients.mjs"
+import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
 import { Jobs } from "../../jobs.mjs"
 import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../../utilities/embedUtilities.mjs"
 import { Variables } from "../../variables.mjs"
-import { ChannelType, Client, codeBlock, userMention } from "discord.js"
-import type { MessageCreateOptions } from "discord.js"
+import { ChannelType, Client, codeBlock } from "discord.js"
 import { writeFileSync } from "fs"
 import { mkdir, readFile, writeFile } from "fs/promises"
 
@@ -31,12 +30,8 @@ export const StartupHandler: Handler<"ready"> = {
         break
     }
 
-    const channel = await fetchChannel(
-      DefaultConfig.guild.restart.channel,
-      ChannelType.GuildText
-    )
-
-    const options: MessageCreateOptions = {
+    const guilds = await Prisma.warningGuild.findMany()
+    const message = {
       embeds: [
         makeEmbed(
           title,
@@ -46,12 +41,13 @@ export const StartupHandler: Handler<"ready"> = {
         ),
       ],
     }
-
-    if (DefaultConfig.guild.restart.user) {
-      options.content = userMention(DefaultConfig.guild.restart.user)
+    for (const guild of guilds) {
+      const channel = await fetchChannel(
+        guild.restartChannel,
+        ChannelType.GuildText
+      )
+      await channel.send(message)
     }
-
-    await channel.send(options)
 
     await setState("UP")
     await setVersion()

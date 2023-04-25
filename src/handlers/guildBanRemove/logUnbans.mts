@@ -1,8 +1,8 @@
+import { Prisma } from "../../clients.mjs"
 import {
   AuditLogNotFoundError,
   InvalidAuditLogEntryError,
 } from "../../errors.mjs"
-import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { makeEmbed } from "../../utilities/embedUtilities.mjs"
@@ -29,21 +29,15 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
   event: "guildBanRemove",
   once: false,
   async handle(ban: GuildBan) {
-    const discussionChannel = await fetchChannel(
-      DefaultConfig.guild.discussionChannel,
-      ChannelType.GuildText
-    )
-
-    const threads = await discussionChannel.threads.fetchActive()
-    for (const [, thread] of threads.threads) {
-      if (thread.name.includes(ban.user.id)) {
-        await thread.setArchived(true, "User was unbanned")
-        await thread.setLocked(true, "Ban appeal thread should remain archived")
-      }
+    const prismaGuild = await Prisma.warningGuild.findFirst({
+      where: { id: ban.guild.id },
+    })
+    if (!prismaGuild) {
+      return
     }
 
-    const loggingChannel = await fetchChannel(
-      DefaultConfig.guild.warnLogsChannel,
+    const warnLogsChannel = await fetchChannel(
+      prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )
 
@@ -63,7 +57,7 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
       return
     }
 
-    await loggingChannel.send({
+    await warnLogsChannel.send({
       embeds: [
         makeEmbed(
           `Unbanned ${ban.user.tag}`,

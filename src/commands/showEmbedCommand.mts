@@ -32,12 +32,15 @@ export class ShowEmbedCommand extends ChatInputCommand {
     const id = interaction.options.getInteger("id", true)
     const warning = await Prisma.warning.findFirstOrThrow({
       where: { id },
-      include: { penalty: true, reasons: true, images: true },
+      include: { penalty: true, reasons: true, images: true, guild: true },
     })
 
     switch (type) {
       case "warn-dm":
-        await interaction.reply({ ...warnMessage(warning), ephemeral: true })
+        await interaction.reply({
+          ...(await warnMessage(warning)),
+          ephemeral: true,
+        })
         break
       case "warn-log":
         await interaction.reply({

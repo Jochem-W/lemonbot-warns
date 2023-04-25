@@ -2,15 +2,14 @@ import { Discord } from "../clients.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
-import type { Image, Penalty, Warning } from "@prisma/client"
+import type { Image, Penalty, Warning, WarningGuild } from "@prisma/client"
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
 
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
-const guild = await Discord.guilds.fetch(DefaultConfig.guild.id)
-const mailUser = await Discord.users.fetch(DefaultConfig.guild.mailUserId)
+const mailUser = await Discord.users.fetch(DefaultConfig.mailUserId)
 
-export function warnMessage(
-  warning: Warning & { penalty: Penalty; images: Image[] }
+export async function warnMessage(
+  warning: Warning & { penalty: Penalty; images: Image[]; guild: WarningGuild }
 ) {
   let verb
   if (warning.penalty.ban) {
@@ -37,6 +36,8 @@ export function warnMessage(
     mainEmbed = new EmbedBuilder().setColor(0xff0000)
     embeds.push(mainEmbed)
   }
+
+  const guild = await Discord.guilds.fetch(warning.guild.id)
 
   mainEmbed
     .setAuthor({
