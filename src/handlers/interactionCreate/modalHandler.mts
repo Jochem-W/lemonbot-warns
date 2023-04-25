@@ -35,7 +35,7 @@ export const ModalHandler: Handler<"interactionCreate"> = {
         throw e
       }
 
-      await logError(e)
+      await logError(e, interaction.guild ?? interaction.guildId)
       await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
     }
 

@@ -2,7 +2,8 @@ import { Discord, Prisma } from "./clients.mjs"
 import type { Command } from "./types/command.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
-import { Attachment, ChannelType, CommandInteraction } from "discord.js"
+import type { WarningGuild } from "@prisma/client"
+import { Attachment, ChannelType, CommandInteraction, Guild } from "discord.js"
 import type { Snowflake, Channel } from "discord.js"
 import type { DateTime } from "luxon"
 
@@ -220,9 +221,18 @@ export class InvalidDateTimeError extends CustomError {
   }
 }
 
-export async function logError(error: Error) {
+export async function logError(
+  error: Error,
+  guild?: Guild | WarningGuild | Snowflake | null
+) {
   console.error(error)
-  const guilds = await Prisma.warningGuild.findMany() // this sucks
+  if (guild instanceof Guild) {
+    guild = await Prisma.warningGuild.findFirst({ where: { id: guild.id } })
+  } else if (typeof guild === "string") {
+    guild = await Prisma.warningGuild.findFirst({ where: { id: guild } })
+  }
+
+  const guilds = guild ? [guild] : await Prisma.warningGuild.findMany()
   for (const guild of guilds) {
     const channel = await Discord.channels.fetch(guild.errorChannel, {
       allowUnknownGuild: true,

@@ -43,7 +43,7 @@ export const CommandHandler: Handler<"interactionCreate"> = {
         throw e
       }
 
-      await logError(e)
+      await logError(e, interaction.guild ?? interaction.guildId)
       if (interaction.replied || interaction.deferred) {
         await interaction.editReply({ embeds: [makeErrorEmbed(e)] })
       } else {

@@ -40,7 +40,7 @@ export class InteractionCollectorHelper {
         }
 
         if (e instanceof Error) {
-          await logError(e)
+          await logError(e, interaction.guild ?? interaction.guildId)
         }
       }
     })
@@ -74,7 +74,7 @@ export class InteractionCollectorHelper {
           throw e
         }
 
-        await logError(e)
+        await logError(e, collected.guild ?? collected.guildId)
 
         const message: InteractionReplyOptions = {
           embeds: [makeErrorEmbed(e)],

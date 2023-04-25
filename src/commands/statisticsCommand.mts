@@ -123,7 +123,7 @@ export class StatisticsCommand extends ChatInputCommand {
         })
         .catch((e) => {
           if (e instanceof Error) {
-            void logError(e)
+            void logError(e, interaction.guild ?? interaction.guildId)
           } else {
             console.log(e)
           }
@@ -131,7 +131,7 @@ export class StatisticsCommand extends ChatInputCommand {
         .finally(() => {
           unlink(fileName).catch((e) => {
             if (e instanceof Error) {
-              void logError(e)
+              void logError(e, interaction.guild ?? interaction.guildId)
             } else {
               console.log(e)
             }
@@ -139,8 +139,14 @@ export class StatisticsCommand extends ChatInputCommand {
         })
     })
 
-    archive.on("warning", (err) => void logError(err))
-    archive.on("error", (err) => void logError(err))
+    archive.on(
+      "warning",
+      (err) => void logError(err, interaction.guild ?? interaction.guildId)
+    )
+    archive.on(
+      "error",
+      (err) => void logError(err, interaction.guild ?? interaction.guildId)
+    )
 
     archive.pipe(output)
 
