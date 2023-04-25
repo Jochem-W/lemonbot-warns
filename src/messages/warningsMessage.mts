@@ -102,13 +102,19 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       warningEmbeds.push(warningInfoEmbed)
     }
 
-    warningInfoEmbed
-      .setTitle(
-        `${verb} by ${createdBy.tag} for ${warning.reasons
+    let title = `${verb} by ${createdBy.tag} `
+    if (warning.reasons.length > 0) {
+      title +=
+        warning.reasons
           .sort(compareReason)
           .map((r) => r.name)
-          .join(", ")} ${time(warning.createdAt, TimestampStyles.RelativeTime)}`
-      )
+          .join(", ") + " "
+    }
+
+    title += time(warning.createdAt, TimestampStyles.RelativeTime)
+
+    warningInfoEmbed
+      .setTitle(title)
       .setDescription(warning.description)
       .setFooter({ text: warning.id.toString() })
       .setTimestamp(warning.createdAt)
