@@ -223,7 +223,7 @@ export class InvalidDateTimeError extends CustomError {
 
 export async function logError(
   error: Error,
-  guild?: Guild | WarningGuild | Snowflake | null
+  guild?: Guild | WarningGuild | string | null
 ) {
   console.error(error)
   if (guild instanceof Guild) {
