@@ -111,39 +111,31 @@ export async function ensureOwner(interaction: Interaction) {
 }
 
 export async function isInPrivateChannel(interaction: Interaction) {
-  if (!interaction.inGuild()) {
+  if (!interaction.inGuild() || !interaction.channelId) {
     return false
   }
 
-  if (!interaction.channelId) {
-    return false
-  }
-
-  const prismaGuild = await Prisma.warningGuild.findFirst({
-    where: { id: interaction.guildId },
-    include: { privateChannels: true },
-  })
-  if (!prismaGuild) {
-    return false
-  }
-
-  const channelIds = prismaGuild.privateChannels.map((p) => p.id)
-
-  if (channelIds.includes(interaction.channelId)) {
+  if (
+    await Prisma.warningGuildPrivateChannel.findFirst({
+      where: { id: interaction.channelId, guildId: interaction.guildId },
+    })
+  ) {
     return true
   }
 
   const channel =
-    interaction.channel ?? (await Discord.channels.fetch(interaction.channelId))
-  if (!channel || channel.isDMBased()) {
+    interaction.channel ??
+    (await Discord.channels.fetch(interaction.channelId, {
+      allowUnknownGuild: true,
+    }))
+
+  if (!channel || channel.isDMBased() || !channel.parentId) {
     return false
   }
 
-  if (!channel.parentId) {
-    return false
-  }
-
-  return channelIds.includes(interaction.channelId)
+  return !!(await Prisma.warningGuildPrivateChannel.findFirst({
+    where: { id: channel.parentId, guildId: channel.guildId },
+  }))
 }
 
 export function warningUrl(
