@@ -42,6 +42,10 @@ export const StartupHandler: Handler<"ready"> = {
       ],
     }
     for (const guild of guilds) {
+      if (!guild.restartChannel) {
+        continue
+      }
+
       const channel = await fetchChannel(
         guild.restartChannel,
         ChannelType.GuildText

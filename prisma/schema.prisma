@@ -81,11 +81,11 @@ model Warning {
 model WarningGuild {
   id String @id
 
-  appealsChannel  String @unique
-  errorChannel    String @unique
-  restartChannel  String @unique
-  warnCategory    String @unique
-  warnLogsChannel String @unique
+  appealsChannel  String  @unique
+  errorChannel    String? @unique
+  restartChannel  String? @unique
+  warnCategory    String  @unique
+  warnLogsChannel String  @unique
 
   warning Warning[]
 

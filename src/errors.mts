@@ -232,8 +232,16 @@ export async function logError(
     guild = await Prisma.warningGuild.findFirst({ where: { id: guild } })
   }
 
+  if (guild && !guild.errorChannel) {
+    guild = null
+  }
+
   const guilds = guild ? [guild] : await Prisma.warningGuild.findMany()
   for (const guild of guilds) {
+    if (!guild.errorChannel) {
+      continue
+    }
+
     const channel = await Discord.channels.fetch(guild.errorChannel, {
       allowUnknownGuild: true,
     })
