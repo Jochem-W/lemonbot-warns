@@ -2,14 +2,25 @@ import { Discord } from "../clients.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
-import type { Image, Penalty, Warning, WarningGuild } from "@prisma/client"
+import type {
+  Image,
+  Penalty,
+  Warning,
+  WarningGuild,
+  WarningLogMessage,
+} from "@prisma/client"
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
 
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 const mailUser = await Discord.users.fetch(DefaultConfig.mailUserId)
 
 export async function warnMessage(
-  warning: Warning & { penalty: Penalty; images: Image[]; guild: WarningGuild }
+  warning: Warning & {
+    penalty: Penalty
+    images: Image[]
+    guild: WarningGuild
+    messages: WarningLogMessage[]
+  }
 ) {
   let verb
   if (warning.penalty.ban) {

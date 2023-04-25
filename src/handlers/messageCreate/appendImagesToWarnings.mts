@@ -21,7 +21,7 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
     }
 
     const warning = await Prisma.warning.findFirst({
-      where: { messageId: message.reference.messageId },
+      where: { messages: { some: { id: message.reference.messageId } } },
       include: { images: true, guild: true },
     })
     if (!warning) {
@@ -64,17 +64,9 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
         reasons: true,
         images: true,
         guild: true,
+        messages: true,
       },
     })
-
-    const warnLogsChannel = await fetchChannel(
-      warning.guild.warnLogsChannel,
-      ChannelType.GuildText
-    )
-    await warnLogsChannel.messages.edit(
-      message.reference.messageId,
-      await warnLogMessage(updatedWarning)
-    )
 
     const reply = await message.reply({
       embeds: [
@@ -87,5 +79,14 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
     await message.delete()
 
     setTimeout(() => void reply.delete().catch(logError), 2500)
+
+    const logMessage = await warnLogMessage(updatedWarning)
+    for (const message of updatedWarning.messages) {
+      const channel = await fetchChannel(
+        message.channelId,
+        ChannelType.GuildText
+      )
+      await channel.messages.edit(message.id, logMessage)
+    }
   },
 }

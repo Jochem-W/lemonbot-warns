@@ -62,8 +62,6 @@ model Warning {
   notified    Notified?
   penalised   Penalised?
 
-  messageId String?
-
   penalty   Penalty @relation(fields: [penaltyId], references: [id])
   penaltyId Int
 
@@ -76,6 +74,18 @@ model Warning {
 
   guild   WarningGuild @relation(fields: [guildId], references: [id])
   guildId String
+
+  messages WarningLogMessage[]
+}
+
+model WarningLogMessage {
+  id String @id
+
+  channelId String
+  main      Boolean
+
+  warning   Warning @relation(fields: [warningId], references: [id])
+  warningId Int
 }
 
 model WarningGuild {

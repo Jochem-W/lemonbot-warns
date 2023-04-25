@@ -27,7 +27,13 @@ export const EditWarnModal = registerModalHandler(
       data: {
         description: interaction.fields.getTextInputValue("description"),
       },
-      include: { penalty: true, reasons: true, images: true, guild: true },
+      include: {
+        penalty: true,
+        reasons: true,
+        images: true,
+        guild: true,
+        messages: true,
+      },
     })
 
     const reply = await interaction.reply({
@@ -42,15 +48,13 @@ export const EditWarnModal = registerModalHandler(
 
     setTimeout(() => void reply.delete().catch(logError), 2500)
 
-    const warnLogsChannel = await fetchChannel(
-      warning.guild.warnLogsChannel,
-      ChannelType.GuildText
-    )
-    if (warning.messageId) {
-      await warnLogsChannel.messages.edit(
-        warning.messageId,
-        await warnLogMessage(warning)
+    const logMessage = await warnLogMessage(warning)
+    for (const message of warning.messages) {
+      const channel = await fetchChannel(
+        message.channelId,
+        ChannelType.GuildText
       )
+      await channel.messages.edit(message.id, logMessage)
     }
   }
 )

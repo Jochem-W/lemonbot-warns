@@ -5,7 +5,7 @@ import {
   InvalidChannelTypeError,
   OwnerOnlyError,
 } from "../errors.mjs"
-import type { Warning, WarningGuild } from "@prisma/client"
+import type { Warning, WarningGuild, WarningLogMessage } from "@prisma/client"
 import type {
   Channel,
   FetchChannelOptions,
@@ -139,13 +139,15 @@ export async function isInPrivateChannel(interaction: Interaction) {
 }
 
 export function warningUrl(
-  warning: Warning & { guild: WarningGuild },
+  warning: Warning & { guild: WarningGuild; messages: WarningLogMessage[] },
   search = ""
 ) {
+  const message = warning.messages.find((m) => m.main)
+
   const url = new URL(
     `https://discord.com/channels/${warning.guild.id}/${
       warning.guild.warnLogsChannel
-    }/${warning.messageId ?? ""}`
+    }/${message?.id ?? ""}`
   )
 
   url.search = search

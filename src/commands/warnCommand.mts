@@ -15,6 +15,7 @@ import type {
   Reason,
   Warning,
   WarningGuild,
+  WarningLogMessage,
 } from "@prisma/client"
 import type {
   Attachment,
@@ -122,6 +123,7 @@ export class WarnCommand extends ChatInputCommand {
       penalty: Penalty
       images: Image[]
       guild: WarningGuild
+      messages: WarningLogMessage[]
     },
     guild: Guild
   ) {
@@ -292,7 +294,13 @@ export class WarnCommand extends ChatInputCommand {
           },
         },
       },
-      include: { penalty: true, reasons: true, images: true, guild: true },
+      include: {
+        penalty: true,
+        reasons: true,
+        images: true,
+        guild: true,
+        messages: true,
+      },
     })
 
     console.log("Created warning with ID", warning.id)
@@ -311,22 +319,57 @@ export class WarnCommand extends ChatInputCommand {
     warning = await Prisma.warning.update({
       where: { id: warning.id },
       data: { notified: notified, penalised },
-      include: { penalty: true, reasons: true, images: true, guild: true },
+      include: {
+        penalty: true,
+        reasons: true,
+        images: true,
+        guild: true,
+        messages: true,
+      },
     })
 
-    const warnLogsChannel = await fetchChannel(
+    const logMessage = await warnLogMessage(warning)
+
+    let channel = await fetchChannel(
       prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )
-    const logMessage = await warnLogMessage(warning)
+
     let message = await interaction.editReply(logMessage)
-    if (interaction.channelId !== warnLogsChannel.id || interaction.ephemeral) {
-      message = await warnLogsChannel.send(logMessage)
+    if (interaction.channelId !== channel.id || interaction.ephemeral) {
+      message = await channel.send(logMessage)
     }
 
-    await Prisma.warning.update({
-      where: { id: warning.id },
-      data: { messageId: message.id },
+    await Prisma.warningLogMessage.create({
+      data: {
+        id: message.id,
+        channelId: channel.id,
+        main: true,
+        warning: { connect: { id: warning.id } },
+      },
     })
+
+    const otherGuilds = await Prisma.warningGuild.findMany({
+      where: { id: { not: guild.id } },
+    })
+    for (const otherGuild of otherGuilds) {
+      if (!(await tryFetchMember(otherGuild.id, warning.userId))) {
+        continue
+      }
+
+      channel = await fetchChannel(
+        otherGuild.warnLogsChannel,
+        ChannelType.GuildText
+      )
+      message = await channel.send(logMessage)
+      await Prisma.warningLogMessage.create({
+        data: {
+          id: message.id,
+          channelId: channel.id,
+          main: false,
+          warning: { connect: { id: warning.id } },
+        },
+      })
+    }
   }
 }

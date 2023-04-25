@@ -5,7 +5,10 @@ import {
 } from "../../errors.mjs"
 import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
 import type { Handler } from "../../types/handler.mjs"
-import { fetchChannel } from "../../utilities/discordUtilities.mjs"
+import {
+  fetchChannel,
+  tryFetchMember,
+} from "../../utilities/discordUtilities.mjs"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 async function getAuditLogEntry(ban: GuildBan) {
@@ -92,18 +95,53 @@ export const LogBans: Handler<"guildBanAdd"> = {
 
     const prismaBan = await Prisma.warning.create({
       ...args,
-      include: { penalty: true, reasons: true, images: true, guild: true },
+      include: {
+        penalty: true,
+        reasons: true,
+        images: true,
+        guild: true,
+        messages: true,
+      },
     })
 
-    const warnLogsChannel = await fetchChannel(
+    const logMessage = await warnLogMessage(prismaBan)
+
+    let channel = await fetchChannel(
       prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )
-    const message = await warnLogsChannel.send(await warnLogMessage(prismaBan))
+    let message = await channel.send(logMessage)
 
-    await Prisma.warning.update({
-      where: { id: prismaBan.id },
-      data: { messageId: message.id },
+    await Prisma.warningLogMessage.create({
+      data: {
+        id: message.id,
+        channelId: channel.id,
+        main: true,
+        warning: { connect: { id: prismaBan.id } },
+      },
     })
+
+    const otherGuilds = await Prisma.warningGuild.findMany({
+      where: { id: { not: prismaGuild.id } },
+    })
+    for (const otherGuild of otherGuilds) {
+      if (!(await tryFetchMember(otherGuild.id, ban.user.id))) {
+        continue
+      }
+
+      channel = await fetchChannel(
+        otherGuild.warnLogsChannel,
+        ChannelType.GuildText
+      )
+      message = await channel.send(logMessage)
+      await Prisma.warningLogMessage.create({
+        data: {
+          id: message.id,
+          channelId: channel.id,
+          main: false,
+          warning: { connect: { id: prismaBan.id } },
+        },
+      })
+    }
   },
 }

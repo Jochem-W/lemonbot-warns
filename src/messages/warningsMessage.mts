@@ -16,6 +16,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
           reasons: true,
           images: true,
           guild: true,
+          messages: true,
         },
         orderBy: {
           createdAt: "asc",

@@ -10,6 +10,7 @@ import type {
   Reason,
   Warning,
   WarningGuild,
+  WarningLogMessage,
 } from "@prisma/client"
 import {
   ActionRowBuilder,
@@ -25,6 +26,7 @@ export async function warnLogMessage(
     reasons: Reason[]
     images: Image[]
     guild: WarningGuild
+    messages: WarningLogMessage[]
   }
 ) {
   const guild = await Discord.guilds.fetch(warning.guildId)
