@@ -5,8 +5,7 @@ import {
 } from "../../errors.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../../utilities/embedUtilities.mjs"
-import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
+import { AuditLogEvent, ChannelType, EmbedBuilder, GuildBan } from "discord.js"
 
 async function getAuditLogEntry(ban: GuildBan) {
   const auditLogs = await ban.guild.fetchAuditLogs({
@@ -59,10 +58,11 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
 
     await warnLogsChannel.send({
       embeds: [
-        makeEmbed(
-          `Unbanned ${ban.user.tag}`,
-          new URL(ban.user.displayAvatarURL())
-        )
+        new EmbedBuilder()
+          .setAuthor({
+            name: `Unbanned ${ban.user.tag}`,
+            iconURL: ban.user.displayAvatarURL(),
+          })
           .setFields(
             {
               name: "Reason",

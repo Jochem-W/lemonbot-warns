@@ -1,9 +1,11 @@
 import { Discord } from "../clients.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} from "discord.js"
 import { Duration } from "luxon"
 
 export class StatusCommand extends ChatInputCommand {
@@ -18,7 +20,7 @@ export class StatusCommand extends ChatInputCommand {
   public async handle(interaction: ChatInputCommandInteraction) {
     await interaction.reply({
       embeds: [
-        makeEmbed("Status", DefaultConfig.icons.success).setFields(
+        new EmbedBuilder().setTitle("Status").setFields(
           {
             name: "Ping",
             value: `${Discord.ws.ping}ms`,

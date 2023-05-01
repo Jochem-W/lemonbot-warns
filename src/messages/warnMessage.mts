@@ -10,6 +10,7 @@ import type {
   WarningLogMessage,
 } from "@prisma/client"
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
+import type { EmbedAuthorOptions } from "discord.js"
 
 const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
 const mailUser = await Discord.users.fetch(DefaultConfig.mailUserId)
@@ -49,14 +50,15 @@ export async function warnMessage(
   }
 
   const guild = await Discord.guilds.fetch(warning.guild.id)
+  const author: EmbedAuthorOptions = {
+    name: `You have been ${verb} ${guild.name}`,
+  }
+  const guildIcon = guild.iconURL()
+  if (guildIcon) {
+    author.iconURL = guildIcon
+  }
 
-  mainEmbed
-    .setAuthor({
-      name: `You have been ${verb} ${guild.name}`,
-      iconURL: DefaultConfig.icons.warning.toString(),
-    })
-    .setTimestamp(warning.createdAt)
-    .setColor(0xff0000)
+  mainEmbed.setAuthor(author).setTimestamp(warning.createdAt).setColor(0xff0000)
 
   if (warning.description) {
     mainEmbed.setFields({ name: "Reason", value: warning.description })
@@ -65,6 +67,7 @@ export async function warnMessage(
   if (!warning.penalty.ban) {
     mainEmbed.setFooter({
       text: `If you have any questions, please DM ${mailUser.username}`,
+      iconURL: mailUser.displayAvatarURL(),
     })
   } else {
     embeds.push(

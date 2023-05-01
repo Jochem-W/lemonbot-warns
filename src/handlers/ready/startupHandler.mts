@@ -3,9 +3,8 @@ import { Jobs } from "../../jobs.mjs"
 import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../../utilities/embedUtilities.mjs"
 import { Variables } from "../../variables.mjs"
-import { ChannelType, Client, codeBlock } from "discord.js"
+import { ChannelType, Client, codeBlock, EmbedBuilder } from "discord.js"
 import { writeFileSync } from "fs"
 import { mkdir, readFile, writeFile } from "fs/promises"
 
@@ -33,12 +32,7 @@ export const StartupHandler: Handler<"ready"> = {
     const guilds = await Prisma.warningGuild.findMany()
     const message = {
       embeds: [
-        makeEmbed(
-          title,
-          DefaultConfig.icons.success,
-          undefined,
-          (await getChangelog()) ?? undefined
-        ),
+        new EmbedBuilder().setTitle(title).setDescription(await getChangelog()),
       ],
     }
     for (const guild of guilds) {

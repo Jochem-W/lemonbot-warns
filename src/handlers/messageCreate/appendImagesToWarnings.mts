@@ -1,7 +1,6 @@
 import { Prisma } from "../../clients.mjs"
 import { logError } from "../../errors.mjs"
 import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
-import { DefaultConfig } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
@@ -35,10 +34,7 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
       await message.reply({
         embeds: [
           new EmbedBuilder()
-            .setAuthor({
-              name: "Too many images",
-              iconURL: DefaultConfig.icons.success.toString(),
-            })
+            .setTitle("Too many images")
             .setDescription(
               `You're trying to add ${exceedsBy} too many image${
                 exceedsBy === 1 ? "" : "s"
@@ -70,10 +66,9 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
 
     const reply = await message.reply({
       embeds: [
-        new EmbedBuilder().setAuthor({
-          name: `Image${attachments.length === 1 ? "" : "s"} added`,
-          iconURL: DefaultConfig.icons.success.toString(),
-        }),
+        new EmbedBuilder().setTitle(
+          `Image${attachments.length === 1 ? "" : "s"} added`
+        ),
       ],
     })
     await message.delete()

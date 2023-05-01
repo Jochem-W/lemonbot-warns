@@ -1,14 +1,12 @@
 import { Prisma } from "../clients.mjs"
 import { InvalidCustomIdError, logError } from "../errors.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import {
   fetchChannel,
   isInPrivateChannel,
 } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { registerModalHandler } from "../utilities/modal.mjs"
-import { ChannelType } from "discord.js"
+import { ChannelType, EmbedBuilder } from "discord.js"
 
 export const EditWarnModal = registerModalHandler(
   "edit-warn",
@@ -38,10 +36,12 @@ export const EditWarnModal = registerModalHandler(
 
     const reply = await interaction.reply({
       embeds: [
-        makeEmbed("Warning edited", DefaultConfig.icons.success).addFields(
-          { name: "Old description", value: oldWarning.description ?? "-" },
-          { name: "New description", value: warning.description ?? "-" }
-        ),
+        new EmbedBuilder()
+          .setTitle("Warning edited")
+          .setFields(
+            { name: "Old description", value: oldWarning.description ?? "-" },
+            { name: "New description", value: warning.description ?? "-" }
+          ),
       ],
       ephemeral: !(await isInPrivateChannel(interaction)),
     })

@@ -1,8 +1,7 @@
 import { Discord } from "../clients.mjs"
 import { ChannelNotFoundError, InvalidCustomIdError } from "../errors.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { registerButtonHandler } from "../utilities/button.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
+import { EmbedBuilder } from "discord.js"
 
 export const DismissWarnButton = registerButtonHandler(
   "dismiss-warn",
@@ -14,11 +13,9 @@ export const DismissWarnButton = registerButtonHandler(
     if (interaction.user.id !== userId) {
       await interaction.reply({
         embeds: [
-          makeEmbed(
-            "Something went wrong while handling this interaction",
-            DefaultConfig.icons.fail,
-            "You can't use this component!"
-          ),
+          new EmbedBuilder()
+            .setTitle("Something went wrong while handling this interaction")
+            .setDescription("You can't use this component!"),
         ],
         ephemeral: true,
       })

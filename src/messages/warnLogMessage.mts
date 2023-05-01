@@ -141,7 +141,7 @@ export async function warnLogMessage(
         .setURL(warningUrl(warning, "extra").toString())
     )
 
-  extraImages[0]?.setAuthor({ name: "Extra images" })
+  extraImages[0]?.setAuthor({ name: "Extra images" }) // Looks better than title
 
   embeds.push(...extraImages)
 

@@ -1,12 +1,11 @@
 import { Discord } from "../clients.mjs"
 import { InvalidMethodError, InvalidPathError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
+  EmbedBuilder,
   PermissionFlagsBits,
   RequestMethod,
   REST,
@@ -121,11 +120,8 @@ export class RestCommand extends ChatInputCommand {
     const json = JSON.stringify(await response.body.json(), undefined, 4).trim()
 
     const files: AttachmentBuilder[] = []
-    const embed = makeEmbed(
-      `${STATUS_CODES[response.statusCode] ?? ""} ${
-        response.statusCode
-      }`.trim(),
-      DefaultConfig.icons.success
+    const embed = new EmbedBuilder().setTitle(
+      `${STATUS_CODES[response.statusCode] ?? ""} ${response.statusCode}`.trim()
     )
     if (json.length <= 2036) {
       embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)

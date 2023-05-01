@@ -4,12 +4,14 @@ import {
   SubcommandNotFoundError,
 } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import { DeleteObjectCommand } from "@aws-sdk/client-s3"
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} from "discord.js"
 
 export class EditCommand extends ChatInputCommand {
   public constructor() {
@@ -118,7 +120,7 @@ export class EditCommand extends ChatInputCommand {
     }
 
     await interaction.reply({
-      embeds: [makeEmbed("Warning edited", DefaultConfig.icons.success)],
+      embeds: [new EmbedBuilder().setTitle("Warning edited")],
       ephemeral: true,
     })
   }

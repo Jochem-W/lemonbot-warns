@@ -10,13 +10,13 @@ import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import type { Command } from "../types/command.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import { WarnCommand } from "./warnCommand.mjs"
 import {
   ApplicationCommandType,
   ChatInputCommandInteraction,
   CommandInteraction,
+  EmbedBuilder,
   PermissionFlagsBits,
   Routes,
 } from "discord.js"
@@ -110,9 +110,7 @@ export class ReRegisterCommand extends ChatInputCommand {
 
     await ReRegisterCommand.register()
     await interaction.editReply({
-      embeds: [
-        makeEmbed("Commands re-registered", DefaultConfig.icons.success),
-      ],
+      embeds: [new EmbedBuilder().setTitle("Commands re-registered")],
     })
   }
 }

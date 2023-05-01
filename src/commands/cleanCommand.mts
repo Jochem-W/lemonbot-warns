@@ -1,6 +1,5 @@
 import { Prisma, S3 } from "../clients.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { search } from "../utilities/s3Utilities.mjs"
 import { Variables } from "../variables.mjs"
@@ -71,25 +70,20 @@ export class CleanCommand extends ChatInputCommand {
 
     await interaction.editReply({
       embeds: [
-        new EmbedBuilder()
-          .setAuthor({
-            name: "Cleanup completed",
-            iconURL: DefaultConfig.icons.success.toString(),
-          })
-          .setFields(
-            {
-              name: "Users deleted from database",
-              value:
-                users.map((u) => `- ${userMention(u.id)}`).join("\n") || "None",
-            },
-            {
-              name: "Images deleted from S3",
-              value:
-                keys.length === 0
-                  ? "None"
-                  : codeBlock("diff", keys.map((k) => `- ${k}`).join("\n")),
-            }
-          ),
+        new EmbedBuilder().setTitle("Cleanup completed").setFields(
+          {
+            name: "Users deleted from database",
+            value:
+              users.map((u) => `- ${userMention(u.id)}`).join("\n") || "None",
+          },
+          {
+            name: "Images deleted from S3",
+            value:
+              keys.length === 0
+                ? "None"
+                : codeBlock("diff", keys.map((k) => `- ${k}`).join("\n")),
+          }
+        ),
       ],
     })
   }

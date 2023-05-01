@@ -3,7 +3,6 @@ import { InvalidDateTimeError, logError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { DefaultConfig } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
@@ -12,6 +11,7 @@ import { CronJob } from "cron"
 import {
   ChannelType,
   DiscordAPIError,
+  EmbedBuilder,
   GuildBan,
   hyperlink,
   RESTJSONErrorCodes,
@@ -88,11 +88,12 @@ async function onTick() {
       )
     }
 
-    const embed = makeEmbed(
-      `${user.tag} responded to the ban appeal form`,
-      new URL(user.displayAvatarURL()),
-      "View full response"
-    )
+    const embed = new EmbedBuilder()
+      .setAuthor({
+        name: `${user.tag} responded to the ban appeal form`,
+        iconURL: user.displayAvatarURL(),
+      })
+      .setTitle("View full response")
       .setURL(
         getFormEditUrl(
           DefaultConfig.banAppealForm.id,

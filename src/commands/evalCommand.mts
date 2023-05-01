@@ -1,8 +1,6 @@
 import { Forms, Prisma, S3, Sheets } from "../clients.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
-import { makeEmbed } from "../utilities/embedUtilities.mjs"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
@@ -54,7 +52,7 @@ export class EvalCommand extends ChatInputCommand {
     const files: AttachmentBuilder[] = []
 
     if (returnString.length <= 2036) {
-      const embed = makeEmbed("eval", DefaultConfig.icons.success)
+      const embed = new EmbedBuilder().setTitle("eval")
       embed.setDescription(
         `\`\`\`${json ? "json" : ""}\n${returnString}\n\`\`\``
       )

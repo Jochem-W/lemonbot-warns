@@ -18,11 +18,6 @@ type RawConfig = {
   bot: {
     applicationId: string
   }
-  icons: {
-    fail: string
-    success: string
-    warning: string
-  }
   mailUserId: string
   repository: {
     name: string
@@ -70,18 +65,6 @@ class BotConfig {
   }
 }
 
-class IconsConfig {
-  public readonly fail: URL
-  public readonly success: URL
-  public readonly warning: URL
-
-  public constructor(data: RawConfig["icons"]) {
-    this.fail = new URL(data.fail)
-    this.success = new URL(data.success)
-    this.warning = new URL(data.warning)
-  }
-}
-
 class RepositoryConfig {
   public readonly name: string
   public readonly owner: string
@@ -95,14 +78,12 @@ class RepositoryConfig {
 class Config {
   public readonly banAppealForm: BanAppealFormConfig
   public readonly bot: BotConfig
-  public readonly icons: IconsConfig
   public readonly mailUserId: Snowflake
   public readonly repository: RepositoryConfig
 
   private constructor(data: RawConfig) {
     this.banAppealForm = new BanAppealFormConfig(data.banAppealForm)
     this.bot = new BotConfig(data.bot)
-    this.icons = new IconsConfig(data.icons)
     this.mailUserId = data.mailUserId
     this.repository = new RepositoryConfig(data.repository)
   }
