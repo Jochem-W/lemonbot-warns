@@ -49,10 +49,6 @@ export async function warnLogMessage(
     verb = "Warned"
   }
 
-  if (warning.silent) {
-    verb += "*"
-  }
-
   let notificationText
   switch (warning.notified) {
     case "SILENT":
