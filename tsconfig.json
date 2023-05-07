@@ -2,9 +2,7 @@
   "extends": ["@tsconfig/node18/tsconfig", "@tsconfig/esm/tsconfig", "@tsconfig/strictest/tsconfig"],
   "compilerOptions": {
     "outDir": "dist",
-    "lib": [
-      "DOM"
-    ],
+
     "sourceMap": true,
   }
 }
