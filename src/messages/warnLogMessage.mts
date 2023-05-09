@@ -105,7 +105,9 @@ export async function warnLogMessage(
 
   mainEmbed
     .setAuthor({
-      name: `${verb} ${formatName(member ?? user)} [${warning.id}]`,
+      name: `${verb} ${formatName(member ?? user)} in ${guild.name} [${
+        warning.id
+      }]`,
       iconURL: (member ?? user).displayAvatarURL(),
     })
     .setFields(
@@ -124,7 +126,7 @@ export async function warnLogMessage(
       { name: "User ID", value: user.id }
     )
     .setFooter({
-      text: `${verb} by ${createdByUser.tag}`,
+      text: createdByUser.tag,
       iconURL: (createdByMember ?? createdByUser).displayAvatarURL(),
     })
     .setTimestamp(warning.createdAt)
