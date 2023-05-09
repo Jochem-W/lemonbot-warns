@@ -16,7 +16,7 @@ export function makeErrorEmbed(error: Error) {
 
 export function formatName(user: GuildMember | User) {
   if (user instanceof GuildMember) {
-    return user.nickname ? `${user.user.tag} [${user.nickname}]` : user.user.tag
+    return user.nickname ? `${user.user.tag} (${user.nickname})` : user.user.tag
   }
 
   return user.tag
