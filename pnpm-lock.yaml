@@ -25,9 +25,9 @@ dependencies:
   cron:
     specifier: ^2.3.0
     version: 2.3.0
-  csv:
-    specifier: ^6.3.0
-    version: 6.3.0
+  csv-stringify:
+    specifier: ^6.4.0
+    version: 6.4.0
   discord.js:
     specifier: ^14.11.0
     version: 14.11.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
@@ -2012,26 +2012,8 @@ packages:
       which: 2.0.2
     dev: true
 
-  /csv-generate@4.2.6:
-    resolution: {integrity: sha512-VtnYqhWLcsUocA346ewFOk+rrqcoT663j11vXzD2uelXq9WguQ3QzDeVD8ISso7hhVtkDSHcWl9psdemeiEHDA==}
-    dev: false
-
-  /csv-parse@5.3.10:
-    resolution: {integrity: sha512-cTXY6iy0gN5Ha/cGILeDgQE+nKiKDU2m0DjSRdJhr86BN3cM7oefBsTk2aH0LQeaYtL7Z7HvW+jYoadmdhzeDA==}
-    dev: false
-
   /csv-stringify@6.4.0:
     resolution: {integrity: sha512-HQsw0QXiN5fdlO+R8/JzCZnR3Fqp8E87YVnhHlaPtNGJjt6ffbV0LpOkieIb1x6V1+xt878IYq77SpXHWAqKkA==}
-    dev: false
-
-  /csv@6.3.0:
-    resolution: {integrity: sha512-wXakaMNIz6qe/a15AXQ6JA9urN2lEx08J/3xpxv7Ke3GOrio300Ikbqzrlg1ML0fuEOULHhswvSxtN5h/72sHg==}
-    engines: {node: '>= 0.1.90'}
-    dependencies:
-      csv-generate: 4.2.6
-      csv-parse: 5.3.10
-      csv-stringify: 6.4.0
-      stream-transform: 3.2.6
     dev: false
 
   /debug@4.3.4:
@@ -3007,10 +2989,6 @@ packages:
     dependencies:
       inherits: 2.0.4
       readable-stream: 3.6.2
-    dev: false
-
-  /stream-transform@3.2.6:
-    resolution: {integrity: sha512-/pyOvaCQFqYTmrFhmMbnAEVo3SsTx1H39eUVPOtYeAgbEUc+rDo7GoP8LbHJgU83mKtzJe/7Nq/ipaAnUOHgJQ==}
     dev: false
 
   /streamsearch@1.1.0:

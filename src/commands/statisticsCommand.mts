@@ -4,7 +4,7 @@ import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import archiver from "archiver"
 import type { Archiver } from "archiver"
-import { stringify } from "csv"
+import { stringify } from "csv-stringify"
 import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
