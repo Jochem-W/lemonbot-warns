@@ -9,7 +9,6 @@ export abstract class MessageContextMenuCommand
   implements Command<MessageContextMenuCommandInteraction>
 {
   public readonly builder = new ContextMenuCommandBuilder()
-  public readonly handleAutocomplete = undefined
 
   protected constructor(name: string, defaultMemberPermissions: bigint | null) {
     this.builder
