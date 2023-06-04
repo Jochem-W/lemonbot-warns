@@ -1,7 +1,7 @@
 import { Discord, Forms, Prisma } from "../clients.mjs"
 import { InvalidDateTimeError, logError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
-import { DefaultConfig } from "../models/config.mjs"
+import { Config } from "../models/config.mjs"
 import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import {
   getFirstTextAnswer,
@@ -50,7 +50,7 @@ async function onTick() {
   }
 
   const response = await Forms.forms.responses.list({
-    formId: DefaultConfig.banAppealForm.id,
+    formId: Config.banAppealForm.id,
     filter: `timestamp >= ${timestamp}`,
   })
 
@@ -74,13 +74,13 @@ async function onTick() {
 
     const userId = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.discordId
+      Config.banAppealForm.questions.discordId
     )
     const user = await Discord.users.fetch(userId)
 
     const userTag = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.discordTag
+      Config.banAppealForm.questions.discordTag
     )
     if (userTag !== user.tag) {
       notes.push(
@@ -96,7 +96,7 @@ async function onTick() {
       .setTitle("View full response")
       .setURL(
         getFormEditUrl(
-          DefaultConfig.banAppealForm.id,
+          Config.banAppealForm.id,
           formResponse.responseId
         ).toString()
       )
@@ -104,7 +104,7 @@ async function onTick() {
 
     const contactMethod = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.contactMethod
+      Config.banAppealForm.questions.contactMethod
     )
     let contact
     switch (contactMethod) {
@@ -114,7 +114,7 @@ async function onTick() {
       case "Twitter":
         contact = getFirstTextAnswer(
           formResponse,
-          DefaultConfig.banAppealForm.questions.twitterUsername
+          Config.banAppealForm.questions.twitterUsername
         )
         contact = hyperlink(
           `@${contact}`,
@@ -132,7 +132,7 @@ async function onTick() {
 
     const claimedBanDate = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.banDate,
+      Config.banAppealForm.questions.banDate,
       false
     )
     embed.addFields({
@@ -147,7 +147,7 @@ async function onTick() {
 
     const claimedBanReason = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.banReason
+      Config.banAppealForm.questions.banReason
     )
     embed.addFields({
       name: "Why were you banned?",
@@ -171,7 +171,7 @@ async function onTick() {
 
     const unbanReason = getFirstTextAnswer(
       formResponse,
-      DefaultConfig.banAppealForm.questions.unbanReason,
+      Config.banAppealForm.questions.unbanReason,
       false
     )
     if (unbanReason) {

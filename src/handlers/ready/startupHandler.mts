@@ -1,6 +1,6 @@
 import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
 import { Jobs } from "../../jobs.mjs"
-import { DefaultConfig } from "../../models/config.mjs"
+import { Config } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { Variables } from "../../variables.mjs"
@@ -88,8 +88,8 @@ async function getChangelog() {
   const response = await GitHubClient.rest.repos.compareCommits({
     base: previousVersion.trim(),
     head: Variables.commitHash,
-    owner: DefaultConfig.repository.owner,
-    repo: DefaultConfig.repository.name,
+    owner: Config.repository.owner,
+    repo: Config.repository.name,
   })
 
   let description = `${previousVersion.slice(

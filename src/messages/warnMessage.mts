@@ -1,5 +1,5 @@
 import { Discord } from "../clients.mjs"
-import { DefaultConfig } from "../models/config.mjs"
+import { Config } from "../models/config.mjs"
 import { warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
 import type {
@@ -12,8 +12,8 @@ import type {
 import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
 import type { EmbedAuthorOptions } from "discord.js"
 
-const formUrl = await getFormResponderUri(DefaultConfig.banAppealForm.id)
-const mailUser = await Discord.users.fetch(DefaultConfig.mailUserId)
+const formUrl = await getFormResponderUri(Config.banAppealForm.id)
+const mailUser = await Discord.users.fetch(Config.mailUserId)
 
 export async function warnMessage(
   warning: Warning & {

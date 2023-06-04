@@ -1,98 +1,30 @@
-import type { Snowflake } from "discord.js"
 import { readFile } from "fs/promises"
+import { z } from "zod"
 
-type RawConfig = {
-  banAppealForm: {
-    id: string
-    questions: {
-      banDate: string
-      banReason: string
-      contactMethod: string
-      discordId: string
-      discordTag: string
-      emailAddress: string
-      twitterUsername: string
-      unbanReason: string
-    }
-  }
-  bot: {
-    applicationId: string
-  }
-  mailUserId: string
-  repository: {
-    name: string
-    owner: string
-  }
-}
+const model = z.object({
+  banAppealForm: z.object({
+    id: z.string(),
+    questions: z.object({
+      banDate: z.string(),
+      banReason: z.string(),
+      contactMethod: z.string(),
+      discordId: z.string(),
+      discordTag: z.string(),
+      emailAddress: z.string(),
+      twitterUsername: z.string(),
+      unbanReason: z.string(),
+    }),
+  }),
+  bot: z.object({
+    applicationId: z.string(),
+  }),
+  mailUserId: z.string(),
+  repository: z.object({
+    name: z.string(),
+    owner: z.string(),
+  }),
+})
 
-class BanAppealFormConfig {
-  public readonly id: string
-  public readonly questions: BanAppealFormQuestionsConfig
-
-  public constructor(data: RawConfig["banAppealForm"]) {
-    this.id = data.id
-    this.questions = new BanAppealFormQuestionsConfig(data.questions)
-  }
-}
-
-class BanAppealFormQuestionsConfig {
-  public readonly banDate: string
-  public readonly banReason: string
-  public readonly contactMethod: string
-  public readonly discordId: string
-  public readonly discordTag: string
-  public readonly emailAddress: string
-  public readonly twitterUsername: string
-  public readonly unbanReason: string
-
-  public constructor(data: RawConfig["banAppealForm"]["questions"]) {
-    this.banDate = data.banDate
-    this.banReason = data.banReason
-    this.contactMethod = data.contactMethod
-    this.discordId = data.discordId
-    this.discordTag = data.discordTag
-    this.emailAddress = data.emailAddress
-    this.twitterUsername = data.twitterUsername
-    this.unbanReason = data.unbanReason
-  }
-}
-
-class BotConfig {
-  public readonly applicationId: Snowflake
-
-  public constructor(data: RawConfig["bot"]) {
-    this.applicationId = data.applicationId
-  }
-}
-
-class RepositoryConfig {
-  public readonly name: string
-  public readonly owner: string
-
-  public constructor(data: RawConfig["repository"]) {
-    this.name = data.name
-    this.owner = data.owner
-  }
-}
-
-class Config {
-  public readonly banAppealForm: BanAppealFormConfig
-  public readonly bot: BotConfig
-  public readonly mailUserId: Snowflake
-  public readonly repository: RepositoryConfig
-
-  private constructor(data: RawConfig) {
-    this.banAppealForm = new BanAppealFormConfig(data.banAppealForm)
-    this.bot = new BotConfig(data.bot)
-    this.mailUserId = data.mailUserId
-    this.repository = new RepositoryConfig(data.repository)
-  }
-
-  public static async load() {
-    return new Config(
-      JSON.parse(await readFile("config.json", "utf-8")) as RawConfig
-    )
-  }
-}
-
-export const DefaultConfig = await Config.load()
+export const Config = await model.parseAsync(
+  JSON.parse(await readFile("config.json", "utf-8"))
+)

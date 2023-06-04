@@ -7,7 +7,7 @@ import {
 } from "../commands.mjs"
 import { CommandNotFoundByNameError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { DefaultConfig } from "../models/config.mjs"
+import { Config } from "../models/config.mjs"
 import type { Command } from "../types/command.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { Variables } from "../variables.mjs"
@@ -65,11 +65,8 @@ export class ReRegisterCommand extends ChatInputCommand {
     for (const guild of guilds) {
       const route =
         Variables.nodeEnv === "production"
-          ? Routes.applicationCommands(DefaultConfig.bot.applicationId)
-          : Routes.applicationGuildCommands(
-              DefaultConfig.bot.applicationId,
-              guild.id
-            )
+          ? Routes.applicationCommands(Config.bot.applicationId)
+          : Routes.applicationGuildCommands(Config.bot.applicationId, guild.id)
 
       const applicationCommands = (await Discord.rest.put(route, {
         body: commandsBody,
