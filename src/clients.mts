@@ -44,5 +44,5 @@ export const Discord = new Client({
     Partials.ThreadMember,
   ],
 })
-Discord.rest.setToken(Variables.discordToken)
+Discord.rest.setToken(Variables.discordBotToken)
 export const GitHubClient = new Octokit({ auth: Variables.githubToken })

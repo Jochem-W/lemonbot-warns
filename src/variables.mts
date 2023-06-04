@@ -1,14 +1,21 @@
-export const Variables = {
-  discordToken: process.env["DISCORD_BOT_TOKEN"] as string,
-  commitHash: process.env["COMMIT_HASH"],
-  githubToken: process.env["GITHUB_TOKEN"] as string,
-  s3AccessKeyId: process.env["S3_ACCESS_KEY_ID"] as string,
-  s3Endpoint: process.env["S3_ENDPOINT"] as string,
-  s3Region: process.env["S3_REGION"] as string,
-  s3SecretAccessKey: process.env["S3_SECRET_ACCESS_KEY"] as string,
-  s3ArchiveBucketName: process.env["S3_ARCHIVE_BUCKET_NAME"] as string,
-  s3ArchiveBucketUrl: process.env["S3_ARCHIVE_BUCKET_URL"] as string,
-  s3WarningsBucketName: process.env["S3_WARNINGS_BUCKET_NAME"] as string,
-  s3WarningsBucketUrl: process.env["S3_WARNINGS_BUCKET_URL"] as string,
-  nodeEnvironment: process.env["NODE_ENV"] as string,
-}
+import camelcaseKeys from "camelcase-keys"
+import { z } from "zod"
+
+const model = z
+  .object({
+    DISCORD_BOT_TOKEN: z.string(),
+    COMMIT_HASH: z.string().optional(),
+    GITHUB_TOKEN: z.string(),
+    S3_ACCESS_KEY_ID: z.string(),
+    S3_ENDPOINT: z.string(),
+    S3_REGION: z.string(),
+    S3_SECRET_ACCESS_KEY: z.string(),
+    S3_ARCHIVE_BUCKET_NAME: z.string(),
+    S3_ARCHIVE_BUCKET_URL: z.string(),
+    S3_WARNINGS_BUCKET_NAME: z.string(),
+    S3_WARNINGS_BUCKET_URL: z.string(),
+    NODE_ENV: z.string(),
+  })
+  .transform((arg) => camelcaseKeys(arg))
+
+export const Variables = await model.parseAsync(process.env)

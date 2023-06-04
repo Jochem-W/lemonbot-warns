@@ -64,7 +64,7 @@ export class ReRegisterCommand extends ChatInputCommand {
     const guilds = await Prisma.warningGuild.findMany()
     for (const guild of guilds) {
       const route =
-        Variables.nodeEnvironment === "production"
+        Variables.nodeEnv === "production"
           ? Routes.applicationCommands(DefaultConfig.bot.applicationId)
           : Routes.applicationGuildCommands(
               DefaultConfig.bot.applicationId,

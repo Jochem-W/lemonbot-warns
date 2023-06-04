@@ -43,4 +43,4 @@ for (const handler of Handlers) {
   })
 }
 
-await Discord.login(Variables.discordToken)
+await Discord.login(Variables.discordBotToken)
