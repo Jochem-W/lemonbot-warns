@@ -1,8 +1,11 @@
 import { EditDescriptionButton } from "../buttons/editDescriptionButton.mjs"
 import { Discord } from "../clients.mjs"
 import { button } from "../utilities/button.mjs"
-import { tryFetchMember, warningUrl } from "../utilities/discordUtilities.mjs"
-import { formatName } from "../utilities/embedUtilities.mjs"
+import {
+  displayName,
+  tryFetchMember,
+  warningUrl,
+} from "../utilities/discordUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type {
   Image,
@@ -31,12 +34,13 @@ export async function warnLogMessage(
 ) {
   const guild = await Discord.guilds.fetch(warning.guildId)
 
-  const member = await tryFetchMember(guild, warning.userId)
-  const user = member?.user ?? (await Discord.users.fetch(warning.userId))
+  const memberOrUser =
+    (await tryFetchMember(guild, warning.userId)) ??
+    (await Discord.users.fetch(warning.userId))
 
-  const createdByMember = await tryFetchMember(guild, warning.createdBy)
-  const createdByUser =
-    createdByMember?.user ?? (await Discord.users.fetch(warning.createdBy))
+  const createdBy =
+    (await tryFetchMember(guild, warning.createdBy)) ??
+    (await Discord.users.fetch(warning.createdBy))
 
   let verb
   if (warning.penalty.ban) {
@@ -105,10 +109,10 @@ export async function warnLogMessage(
 
   mainEmbed
     .setAuthor({
-      name: `${verb} ${formatName(member ?? user)} in ${guild.name} [${
+      name: `${verb} ${displayName(memberOrUser)} in ${guild.name} [${
         warning.id
       }]`,
-      iconURL: (member ?? user).displayAvatarURL(),
+      iconURL: memberOrUser.displayAvatarURL(),
     })
     .setFields(
       { name: "Description", value: warning.description ?? "-" },
@@ -123,11 +127,11 @@ export async function warnLogMessage(
       { name: "Penalty", value: warning.penalty.name },
       { name: "Notification", value: notificationText },
       { name: "Penalised", value: penaltyText },
-      { name: "User ID", value: user.id }
+      { name: "User ID", value: memberOrUser.id }
     )
     .setFooter({
-      text: createdByUser.tag,
-      iconURL: (createdByMember ?? createdByUser).displayAvatarURL(),
+      text: displayName(createdBy),
+      iconURL: createdBy.displayAvatarURL(),
     })
     .setTimestamp(warning.createdAt)
 

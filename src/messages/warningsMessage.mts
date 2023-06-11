@@ -1,6 +1,9 @@
 import { Discord, Prisma } from "../clients.mjs"
-import { warningUrl } from "../utilities/discordUtilities.mjs"
-import { formatName } from "../utilities/embedUtilities.mjs"
+import {
+  displayName,
+  tryFetchMember,
+  warningUrl,
+} from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type { GuildMember } from "discord.js"
@@ -26,7 +29,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
   })
 
   const summaryEmbed = new EmbedBuilder().setAuthor({
-    name: `Warnings for ${formatName(userOrMember)}`,
+    name: `Warnings for ${displayName(userOrMember)}`,
     iconURL: userOrMember.displayAvatarURL(),
   })
 
@@ -76,7 +79,9 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       verb = "Warned"
     }
 
-    const createdBy = await Discord.users.fetch(warning.createdBy)
+    const createdBy =
+      (await tryFetchMember(warning.guildId, warning.createdBy)) ??
+      (await Discord.users.fetch(warning.createdBy))
 
     const warningEmbeds = warning.images
       .filter((i) => !i.extra)
@@ -104,7 +109,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       warningEmbeds.push(warningInfoEmbed)
     }
 
-    let title = `${verb} by ${createdBy.tag} `
+    let title = `${verb} by ${displayName(createdBy)} `
     if (warning.reasons.length > 0) {
       title +=
         warning.reasons

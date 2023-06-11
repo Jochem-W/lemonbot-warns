@@ -4,7 +4,11 @@ import {
   InvalidAuditLogEntryError,
 } from "../../errors.mjs"
 import type { Handler } from "../../types/handler.mjs"
-import { fetchChannel } from "../../utilities/discordUtilities.mjs"
+import {
+  displayName,
+  fetchChannel,
+  tryFetchMember,
+} from "../../utilities/discordUtilities.mjs"
 import { AuditLogEvent, ChannelType, EmbedBuilder, GuildBan } from "discord.js"
 
 async function getAuditLogEntry(ban: GuildBan) {
@@ -56,11 +60,15 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
       return
     }
 
+    const executor =
+      (await tryFetchMember(ban.guild, auditLogEntry.executor)) ??
+      auditLogEntry.executor
+
     await warnLogsChannel.send({
       embeds: [
         new EmbedBuilder()
           .setAuthor({
-            name: `Unbanned ${ban.user.tag}`,
+            name: `Unbanned ${displayName(ban.user)}`,
             iconURL: ban.user.displayAvatarURL(),
           })
           .setFields(
@@ -74,8 +82,8 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
             }
           )
           .setFooter({
-            text: `Unbanned by ${auditLogEntry.executor.tag}`,
-            iconURL: auditLogEntry.executor.displayAvatarURL(),
+            text: `Unbanned by ${displayName(executor)}`,
+            iconURL: executor.displayAvatarURL(),
           }),
       ],
     })

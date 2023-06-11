@@ -5,7 +5,12 @@ import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { button } from "../utilities/button.mjs"
-import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
+import {
+  displayName,
+  fetchChannel,
+  tryFetchMember,
+  uniqueName,
+} from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
@@ -155,7 +160,7 @@ export class WarnCommand extends ChatInputCommand {
     }
 
     const newChannel = await guild.channels.create({
-      name: `${target.user.username}-${target.user.discriminator}-${nanoid(4)}`,
+      name: `${uniqueName(target.user).replace("#", "-")}-${nanoid(4)}`,
       type: ChannelType.GuildText,
       parent: warning.guild.warnCategory,
       reason: "Create a channel for warning a user that has DMs disabled",
@@ -195,8 +200,10 @@ export class WarnCommand extends ChatInputCommand {
     warning: Warning & { penalty: Penalty; reasons: Reason[] },
     guild: Guild
   ) {
-    const by = await Discord.users.fetch(warning.createdBy)
-    const reason = `By ${by.tag} for ${warning.reasons
+    const by =
+      (await tryFetchMember(warning.guildId, warning.createdBy)) ??
+      (await Discord.users.fetch(warning.createdBy))
+    const reason = `By ${displayName(by)} for ${warning.reasons
       .map((r) => r.name)
       .join(", ")}`
 

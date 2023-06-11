@@ -2,7 +2,7 @@ import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
 import { Jobs } from "../../jobs.mjs"
 import { Config } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
-import { fetchChannel } from "../../utilities/discordUtilities.mjs"
+import { fetchChannel, uniqueName } from "../../utilities/discordUtilities.mjs"
 import { Variables } from "../../variables.mjs"
 import { ChannelType, Client, codeBlock, EmbedBuilder } from "discord.js"
 import { writeFileSync } from "fs"
@@ -14,7 +14,7 @@ export const StartupHandler: Handler<"ready"> = {
   event: "ready",
   once: true,
   async handle(client: Client<true>) {
-    console.log(`Running as: ${client.user.tag}`)
+    console.log(`Running as: ${uniqueName(client.user)}`)
 
     let title = "Bot "
     switch (await getState()) {

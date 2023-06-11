@@ -1,7 +1,7 @@
 import { Discord, Prisma } from "../clients.mjs"
 import { logError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import { ensureOwner } from "../utilities/discordUtilities.mjs"
+import { ensureOwner, uniqueName } from "../utilities/discordUtilities.mjs"
 import archiver from "archiver"
 import type { Archiver } from "archiver"
 import { stringify } from "csv-stringify"
@@ -70,10 +70,10 @@ export class StatisticsCommand extends ChatInputCommand {
         let count = warnings.filter(
           (warning) => warning.createdBy === user.id
         ).length
-        let value = series.get(user.tag)
+        let value = series.get(uniqueName(user))
         if (!value) {
           value = []
-          series.set(user.tag, value)
+          series.set(uniqueName(user), value)
         }
 
         const last = value.at(-1)

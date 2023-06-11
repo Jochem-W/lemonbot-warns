@@ -6,11 +6,13 @@ import {
   OwnerOnlyError,
 } from "../errors.mjs"
 import type { Warning, WarningGuild, WarningLogMessage } from "@prisma/client"
-import type {
-  Channel,
-  FetchChannelOptions,
-  PublicThreadChannel,
-  Snowflake,
+import {
+  User,
+  type Channel,
+  type FetchChannelOptions,
+  type GuildMember,
+  type PublicThreadChannel,
+  type Snowflake,
 } from "discord.js"
 import {
   ChannelType,
@@ -25,6 +27,34 @@ import type {
   UserResolvable,
 } from "discord.js"
 import { DateTime } from "luxon"
+
+export function uniqueName(user: User) {
+  if (user.discriminator !== "0") {
+    return `${user.username}#${user.discriminator}`
+  }
+
+  return user.username
+}
+
+export function displayName(userOrMember: User | GuildMember) {
+  if (userOrMember instanceof User) {
+    return userDisplayName(userOrMember)
+  }
+
+  if (userOrMember.nickname) {
+    return userOrMember.nickname
+  }
+
+  return userDisplayName(userOrMember.user)
+}
+
+function userDisplayName(user: User) {
+  if (user.globalName) {
+    return user.globalName
+  }
+
+  return uniqueName(user)
+}
 
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(

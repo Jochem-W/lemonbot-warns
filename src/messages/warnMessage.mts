@@ -1,6 +1,6 @@
 import { Discord } from "../clients.mjs"
 import { Config } from "../models/config.mjs"
-import { warningUrl } from "../utilities/discordUtilities.mjs"
+import { displayName, warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
 import type {
   Image,
@@ -66,7 +66,7 @@ export async function warnMessage(
 
   if (!warning.penalty.ban) {
     mainEmbed.setFooter({
-      text: `If you have any questions, please DM ${mailUser.username}`,
+      text: `If you have any questions, please DM ${displayName(mailUser)}`,
       iconURL: mailUser.displayAvatarURL(),
     })
   } else {

@@ -1,5 +1,6 @@
 import { Discord } from "../clients.mjs"
 import { customIdToString, InteractionScope } from "../models/customId.mjs"
+import { displayName, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
 import type { MessageActionRowComponentBuilder } from "discord.js"
 import {
@@ -62,15 +63,21 @@ export async function searchMessage(
       verb = "Warned"
     }
 
-    const user = await Discord.users.fetch(warning.warning.userId)
-    const warnedBy = await Discord.users.fetch(warning.warning.createdBy)
+    const userOrMember =
+      (await tryFetchMember(warning.warning.guildId, warning.warning.userId)) ??
+      (await Discord.users.fetch(warning.warning.userId))
+    const warnedBy =
+      (await tryFetchMember(
+        warning.warning.guildId,
+        warning.warning.createdBy
+      )) ?? (await Discord.users.fetch(warning.warning.createdBy))
     warning.embeds[0]?.setAuthor({
-      name: `${verb} ${user.tag}`,
-      iconURL: user.displayAvatarURL(),
+      name: `${verb} ${displayName(userOrMember)}`,
+      iconURL: userOrMember.displayAvatarURL(),
     })
 
     warning.embeds.at(-1)?.setFooter({
-      text: `${verb} by ${warnedBy.tag}`,
+      text: `${verb} by ${displayName(warnedBy)}`,
       iconURL: warnedBy.displayAvatarURL(),
     })
 
