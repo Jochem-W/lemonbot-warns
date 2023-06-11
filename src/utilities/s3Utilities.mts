@@ -5,16 +5,13 @@ import {
   HeadObjectCommand,
   ListObjectsV2Command,
   NotFound,
+  type GetObjectCommandInput,
+  type HeadObjectCommandInput,
+  type ListObjectsV2CommandInput,
+  type ListObjectsV2CommandOutput,
+  type PutObjectCommandInput,
 } from "@aws-sdk/client-s3"
-import type {
-  GetObjectCommandInput,
-  HeadObjectCommandInput,
-  ListObjectsV2CommandInput,
-  ListObjectsV2CommandOutput,
-  PutObjectCommandInput,
-} from "@aws-sdk/client-s3"
-import { Upload } from "@aws-sdk/lib-storage"
-import type { Options } from "@aws-sdk/lib-storage"
+import { Upload, type Options } from "@aws-sdk/lib-storage"
 import type { Attachment } from "discord.js"
 
 export async function uploadAttachment(attachment: Attachment) {

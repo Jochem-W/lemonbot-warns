@@ -22,12 +22,6 @@ import type {
   WarningGuild,
   WarningLogMessage,
 } from "@prisma/client"
-import type {
-  Attachment,
-  BanOptions,
-  ChatInputCommandInteraction,
-  MessageActionRowComponentBuilder,
-} from "discord.js"
 import {
   ChannelType,
   DiscordAPIError,
@@ -40,6 +34,10 @@ import {
   ButtonBuilder,
   ButtonStyle,
   Guild,
+  type Attachment,
+  type BanOptions,
+  type ChatInputCommandInteraction,
+  type MessageActionRowComponentBuilder,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"

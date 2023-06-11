@@ -9,8 +9,13 @@ import type {
   WarningGuild,
   WarningLogMessage,
 } from "@prisma/client"
-import { EmbedBuilder, escapeItalic, hyperlink, italic } from "discord.js"
-import type { EmbedAuthorOptions } from "discord.js"
+import {
+  EmbedBuilder,
+  escapeItalic,
+  hyperlink,
+  italic,
+  type EmbedAuthorOptions,
+} from "discord.js"
 
 const formUrl = await getFormResponderUri(Config.banAppealForm.id)
 const mailUser = await Discord.users.fetch(Config.mailUserId)

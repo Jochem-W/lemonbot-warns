@@ -3,8 +3,14 @@ import type { Command } from "./types/command.mjs"
 import { makeErrorEmbed } from "./utilities/embedUtilities.mjs"
 import type { forms_v1 } from "@googleapis/forms"
 import type { WarningGuild } from "@prisma/client"
-import { Attachment, ChannelType, CommandInteraction, Guild } from "discord.js"
-import type { Snowflake, Channel } from "discord.js"
+import {
+  Attachment,
+  ChannelType,
+  CommandInteraction,
+  Guild,
+  type Channel,
+  type Snowflake,
+} from "discord.js"
 import type { DateTime } from "luxon"
 
 class CustomError extends Error {

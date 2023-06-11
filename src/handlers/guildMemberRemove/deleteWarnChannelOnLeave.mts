@@ -1,8 +1,7 @@
 import { Discord, Prisma } from "../../clients.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
-import { ChannelType, GuildMember } from "discord.js"
-import type { PartialGuildMember } from "discord.js"
+import { ChannelType, GuildMember, type PartialGuildMember } from "discord.js"
 
 export const DeleteWarnChannelOnLeave: Handler<"guildMemberRemove"> = {
   event: "guildMemberRemove",

@@ -8,8 +8,8 @@ import {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
+  type ModalActionRowComponentBuilder,
 } from "discord.js"
-import type { ModalActionRowComponentBuilder } from "discord.js"
 
 export const EditDescriptionButton = registerButtonHandler(
   "edit-warn",

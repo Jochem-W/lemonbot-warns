@@ -6,8 +6,13 @@ import {
 } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
-import type { GuildMember } from "discord.js"
-import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
+import {
+  EmbedBuilder,
+  time,
+  TimestampStyles,
+  User,
+  type GuildMember,
+} from "discord.js"
 
 export async function warningsMessage(userOrMember: User | GuildMember) {
   const prismaUser = await Prisma.user.findFirst({

@@ -6,8 +6,7 @@ import {
 } from "../../errors.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
-import { CommandInteraction } from "discord.js"
-import type { Interaction } from "discord.js"
+import { CommandInteraction, type Interaction } from "discord.js"
 
 async function handleCommand(interaction: CommandInteraction) {
   const command = RegisteredCommands.get(interaction.commandId)

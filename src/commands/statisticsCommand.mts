@@ -2,15 +2,14 @@ import { Discord, Prisma } from "../clients.mjs"
 import { logError } from "../errors.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { ensureOwner, uniqueName } from "../utilities/discordUtilities.mjs"
-import archiver from "archiver"
-import type { Archiver } from "archiver"
+import archiver, { type Archiver } from "archiver"
 import { stringify } from "csv-stringify"
 import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
   User,
+  type Snowflake,
 } from "discord.js"
-import type { Snowflake } from "discord.js"
 import { createWriteStream } from "fs"
 import { unlink } from "fs/promises"
 import { DateTime } from "luxon"

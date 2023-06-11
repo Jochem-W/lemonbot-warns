@@ -3,8 +3,7 @@ import { RegisteredModals } from "../../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
-import { ModalSubmitInteraction } from "discord.js"
-import type { Interaction } from "discord.js"
+import { ModalSubmitInteraction, type Interaction } from "discord.js"
 
 async function handleModalSubmit(interaction: ModalSubmitInteraction) {
   const data = stringToCustomId(interaction.customId)

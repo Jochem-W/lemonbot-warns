@@ -4,8 +4,7 @@ import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
 import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
-import type { Message } from "discord.js"
-import { ChannelType, EmbedBuilder } from "discord.js"
+import { ChannelType, EmbedBuilder, Message } from "discord.js"
 
 export const AppendImagesToWarnings: Handler<"messageCreate"> = {
   event: "messageCreate",

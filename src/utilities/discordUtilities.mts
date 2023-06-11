@@ -20,11 +20,9 @@ import {
   RESTJSONErrorCodes,
   Guild,
   Team,
-} from "discord.js"
-import type {
-  FetchMemberOptions,
-  Interaction,
-  UserResolvable,
+  type FetchMemberOptions,
+  type Interaction,
+  type UserResolvable,
 } from "discord.js"
 import { DateTime } from "luxon"
 

@@ -9,8 +9,8 @@ import {
   PermissionFlagsBits,
   RequestMethod,
   REST,
+  type InternalRequest,
 } from "discord.js"
-import type { InternalRequest } from "discord.js"
 import { STATUS_CODES } from "http"
 
 function isPath(value: string): value is `/${string}` {

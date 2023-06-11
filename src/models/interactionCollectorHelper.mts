@@ -7,13 +7,11 @@ import {
   DiscordAPIError,
   InteractionCollector,
   RESTJSONErrorCodes,
-} from "discord.js"
-import type {
-  CollectedInteraction,
-  InteractionCollectorOptions,
-  InteractionReplyOptions,
-  MessageActionRowComponentBuilder,
-  WebhookMessageEditOptions,
+  type CollectedInteraction,
+  type InteractionCollectorOptions,
+  type InteractionReplyOptions,
+  type MessageActionRowComponentBuilder,
+  type WebhookMessageEditOptions,
 } from "discord.js"
 import { Duration } from "luxon"
 

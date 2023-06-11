@@ -19,10 +19,8 @@ import {
   EmbedBuilder,
   PermissionFlagsBits,
   Routes,
-} from "discord.js"
-import type {
-  RESTPutAPIApplicationGuildCommandsJSONBody,
-  RESTPutAPIApplicationGuildCommandsResult,
+  type RESTPutAPIApplicationGuildCommandsJSONBody,
+  type RESTPutAPIApplicationGuildCommandsResult,
 } from "discord.js"
 
 export class ReRegisterCommand extends ChatInputCommand {

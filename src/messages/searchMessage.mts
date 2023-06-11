@@ -2,12 +2,12 @@ import { Discord } from "../clients.mjs"
 import { customIdToString, InteractionScope } from "../models/customId.mjs"
 import { displayName, tryFetchMember } from "../utilities/discordUtilities.mjs"
 import type { Penalty, Reason, Warning } from "@prisma/client"
-import type { MessageActionRowComponentBuilder } from "discord.js"
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  type MessageActionRowComponentBuilder,
 } from "discord.js"
 
 function calculateStart(messages: { embeds: EmbedBuilder[] }[], page: number) {

@@ -1,7 +1,6 @@
 import { Config } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
-import type { Message } from "discord.js"
-import { EmbedBuilder, userMention } from "discord.js"
+import { EmbedBuilder, userMention, type Message } from "discord.js"
 
 export const ReplyToDMs: Handler<"messageCreate"> = {
   event: "messageCreate",

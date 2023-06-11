@@ -17,8 +17,8 @@ import {
   RESTJSONErrorCodes,
   time,
   TimestampStyles,
+  type Snowflake,
 } from "discord.js"
-import type { Snowflake } from "discord.js"
 import { DateTime } from "luxon"
 
 async function findBans(userId: Snowflake) {

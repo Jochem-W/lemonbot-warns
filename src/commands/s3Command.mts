@@ -9,8 +9,9 @@ import {
   DeleteObjectCommand,
   ListObjectsV2Command,
   NoSuchKey,
+  type _Object,
+  type ListObjectsV2CommandInput,
 } from "@aws-sdk/client-s3"
-import type { _Object, ListObjectsV2CommandInput } from "@aws-sdk/client-s3"
 import {
   AttachmentBuilder,
   ChatInputCommandInteraction,
