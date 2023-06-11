@@ -1,4 +1,5 @@
 import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
+import { logError } from "../../errors.mjs"
 import { Jobs } from "../../jobs.mjs"
 import { Config } from "../../models/config.mjs"
 import type { Handler } from "../../types/handler.mjs"
@@ -54,7 +55,10 @@ export const StartupHandler: Handler<"ready"> = {
     process.on("SIGTERM", () => process.exit())
     process.on("exit", () => {
       Discord.destroy()
-      setStateSync("DOWN")
+        .then(() => setStateSync("DOWN"))
+        .catch((e) =>
+          e instanceof Error ? void logError(e) : console.error(e)
+        )
     })
 
     for (const job of Jobs) {
