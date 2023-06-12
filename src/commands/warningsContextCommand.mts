@@ -1,11 +1,7 @@
-import { Discord } from "../clients.mjs"
 import { BotError, GuildOnlyError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { UserContextMenuCommand } from "../models/userContextMenuCommand.mjs"
-import {
-  isInPrivateChannel,
-  tryFetchMember,
-} from "../utilities/discordUtilities.mjs"
+import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import {
   PermissionFlagsBits,
   UserContextMenuCommandInteraction,
@@ -23,11 +19,7 @@ export class WarningsContextCommand extends UserContextMenuCommand {
 
     const ephemeral = !(await isInPrivateChannel(interaction))
 
-    const guild =
-      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
-    const member = await tryFetchMember(guild, interaction.targetUser)
-
-    const messages = await warningsMessage(member ?? interaction.targetUser)
+    const messages = await warningsMessage(interaction.targetUser)
 
     if (!messages[0]) {
       throw new BotError("Response has 0 messages")

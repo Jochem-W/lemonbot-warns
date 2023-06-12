@@ -10,7 +10,6 @@ import {
   User,
   type Channel,
   type FetchChannelOptions,
-  type GuildMember,
   type PublicThreadChannel,
   type Snowflake,
 } from "discord.js"
@@ -34,24 +33,12 @@ export function uniqueName(user: User) {
   return user.username
 }
 
-export function displayName(userOrMember: User | GuildMember) {
-  if (userOrMember instanceof User) {
-    return userDisplayName(userOrMember)
-  }
-
-  if (userOrMember.nickname) {
-    return userOrMember.nickname
-  }
-
-  return userDisplayName(userOrMember.user)
-}
-
-function userDisplayName(user: User) {
+export function userDisplayName(user: User) {
   if (user.globalName) {
     return user.globalName
   }
 
-  return uniqueName(user)
+  return user.username
 }
 
 export function snowflakeToDateTime(snowflake: Snowflake) {

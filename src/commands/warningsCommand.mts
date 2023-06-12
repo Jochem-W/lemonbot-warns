@@ -1,11 +1,7 @@
-import { Discord } from "../clients.mjs"
 import { BotError, GuildOnlyError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
-import {
-  isInPrivateChannel,
-  tryFetchMember,
-} from "../utilities/discordUtilities.mjs"
+import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
 
 export class WarningsCommand extends ChatInputCommand {
@@ -27,12 +23,9 @@ export class WarningsCommand extends ChatInputCommand {
 
     const ephemeral = !(await isInPrivateChannel(interaction))
 
-    const guild =
-      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
     const user = interaction.options.getUser("user", true)
-    const member = await tryFetchMember(guild, user)
 
-    const messages = await warningsMessage(member ?? user)
+    const messages = await warningsMessage(user)
 
     if (!messages[0]) {
       throw new BotError("Response has 0 messages")

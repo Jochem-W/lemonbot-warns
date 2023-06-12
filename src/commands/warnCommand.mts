@@ -6,10 +6,10 @@ import { warnMessage } from "../messages/warnMessage.mjs"
 import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { button } from "../utilities/button.mjs"
 import {
-  displayName,
   fetchChannel,
   tryFetchMember,
   uniqueName,
+  userDisplayName,
 } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
@@ -198,10 +198,8 @@ export class WarnCommand extends ChatInputCommand {
     warning: Warning & { penalty: Penalty; reasons: Reason[] },
     guild: Guild
   ) {
-    const by =
-      (await tryFetchMember(warning.guildId, warning.createdBy)) ??
-      (await Discord.users.fetch(warning.createdBy))
-    const reason = `By ${displayName(by)} for ${warning.reasons
+    const by = await Discord.users.fetch(warning.createdBy)
+    const reason = `By ${userDisplayName(by)} for ${warning.reasons
       .map((r) => r.name)
       .join(", ")}`
 

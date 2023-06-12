@@ -1,22 +1,12 @@
 import { Discord, Prisma } from "../clients.mjs"
-import {
-  displayName,
-  tryFetchMember,
-  warningUrl,
-} from "../utilities/discordUtilities.mjs"
+import { userDisplayName, warningUrl } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { compareReason } from "../utilities/reasonUtilities.mjs"
-import {
-  EmbedBuilder,
-  time,
-  TimestampStyles,
-  User,
-  type GuildMember,
-} from "discord.js"
+import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
 
-export async function warningsMessage(userOrMember: User | GuildMember) {
+export async function warningsMessage(user: User) {
   const prismaUser = await Prisma.user.findFirst({
-    where: { id: userOrMember.id },
+    where: { id: user.id },
     include: {
       warnings: {
         include: {
@@ -34,16 +24,12 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
   })
 
   const summaryEmbed = new EmbedBuilder().setAuthor({
-    name: `Warnings for ${displayName(userOrMember)}`,
-    iconURL: userOrMember.displayAvatarURL(),
+    name: `Warnings for ${userDisplayName(user)}`,
+    iconURL: user.displayAvatarURL(),
   })
 
   if (!prismaUser || prismaUser.warnings.length === 0) {
-    summaryEmbed.setTitle(
-      `This ${
-        userOrMember instanceof User ? "user" : "member"
-      } has no logged warnings`
-    )
+    summaryEmbed.setTitle("This user has no logged warnings")
     return [{ embeds: [summaryEmbed] }]
   }
 
@@ -84,9 +70,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       verb = "Warned"
     }
 
-    const createdBy =
-      (await tryFetchMember(warning.guildId, warning.createdBy)) ??
-      (await Discord.users.fetch(warning.createdBy))
+    const createdBy = await Discord.users.fetch(warning.createdBy)
 
     const warningEmbeds = warning.images
       .filter((i) => !i.extra)
@@ -114,7 +98,7 @@ export async function warningsMessage(userOrMember: User | GuildMember) {
       warningEmbeds.push(warningInfoEmbed)
     }
 
-    let title = `${verb} by ${displayName(createdBy)} `
+    let title = `${verb} by ${userDisplayName(createdBy)} `
     if (warning.reasons.length > 0) {
       title +=
         warning.reasons
