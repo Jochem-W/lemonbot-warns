@@ -9,7 +9,6 @@ const model = z.object({
       banReason: z.string(),
       contactMethod: z.string(),
       discordId: z.string(),
-      discordTag: z.string(),
       emailAddress: z.string(),
       twitterUsername: z.string(),
       unbanReason: z.string(),

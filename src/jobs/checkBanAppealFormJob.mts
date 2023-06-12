@@ -78,16 +78,6 @@ async function onTick() {
     )
     const user = await Discord.users.fetch(userId)
 
-    const userTag = getFirstTextAnswer(
-      formResponse,
-      Config.banAppealForm.questions.discordTag
-    )
-    if (userTag !== user.tag) {
-      notes.push(
-        "• The tag doesn't match the tag of the account with the ID they filled in"
-      )
-    }
-
     const embed = new EmbedBuilder()
       .setAuthor({
         name: `${user.tag} responded to the ban appeal form`,
