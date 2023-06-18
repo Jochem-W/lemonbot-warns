@@ -6,7 +6,6 @@ import type { Handler } from "../../types/handler.mjs"
 import { fetchChannel, uniqueName } from "../../utilities/discordUtilities.mjs"
 import { Variables } from "../../variables.mjs"
 import { ChannelType, Client, codeBlock, EmbedBuilder } from "discord.js"
-import { writeFileSync } from "fs"
 import { mkdir, readFile, writeFile } from "fs/promises"
 
 type State = "UP" | "DOWN" | "RECREATE"
@@ -55,7 +54,7 @@ export const StartupHandler: Handler<"ready"> = {
     process.on("SIGTERM", () => process.exit())
     process.on("exit", () => {
       Discord.destroy()
-        .then(() => setStateSync("DOWN"))
+        .then(() => setState("DOWN"))
         .catch((e) =>
           e instanceof Error ? void logError(e) : console.error(e)
         )
@@ -184,10 +183,6 @@ async function setVersion() {
 
 async function setState(status: State) {
   await writeFile("status", status, { encoding: "utf8" })
-}
-
-function setStateSync(status: State) {
-  writeFileSync("status", status, { encoding: "utf8" })
 }
 
 async function getState() {
