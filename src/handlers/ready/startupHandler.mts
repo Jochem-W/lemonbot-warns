@@ -60,6 +60,10 @@ export const StartupHandler: Handler<"ready"> = {
 }
 
 function exitListener() {
+  for (const job of Jobs) {
+    job.stop()
+  }
+
   Discord.destroy()
     .then(() => setState("DOWN"))
     .catch((e) => {
