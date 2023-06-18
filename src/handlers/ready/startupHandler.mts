@@ -50,20 +50,21 @@ export const StartupHandler: Handler<"ready"> = {
     await setState("UP")
     await setVersion()
 
-    process.on("SIGINT", () => process.exit())
-    process.on("SIGTERM", () => process.exit())
-    process.on("exit", () => {
-      Discord.destroy()
-        .then(() => setState("DOWN"))
-        .catch((e) =>
-          e instanceof Error ? void logError(e) : console.error(e)
-        )
-    })
+    process.on("SIGINT", () => exitListener())
+    process.on("SIGTERM", () => exitListener())
 
     for (const job of Jobs) {
       job.start()
     }
   },
+}
+
+function exitListener() {
+  Discord.destroy()
+    .then(() => setState("DOWN"))
+    .catch((e) => {
+      e instanceof Error ? void logError(e) : console.error(e)
+    })
 }
 
 async function getChangelog() {
