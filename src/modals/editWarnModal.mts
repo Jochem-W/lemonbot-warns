@@ -27,7 +27,6 @@ export const EditWarnModal = registerModalHandler(
       },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,

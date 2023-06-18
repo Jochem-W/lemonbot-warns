@@ -4,12 +4,10 @@ import { ReRegisterCommand } from "./commands/reRegisterCommand.mjs"
 import { logError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
 import { testComparePenalty } from "./utilities/penaltyUtilities.mjs"
-import { testCompareReason } from "./utilities/reasonUtilities.mjs"
 import { Variables } from "./variables.mjs"
 
 // TODO: make this run at compile time?
 testComparePenalty()
-testCompareReason()
 
 SlashCommands.push(new ReRegisterCommand())
 await ReRegisterCommand.register()

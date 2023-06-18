@@ -2,11 +2,9 @@ import { EditDescriptionButton } from "../buttons/editDescriptionButton.mjs"
 import { Discord } from "../clients.mjs"
 import { button } from "../utilities/button.mjs"
 import { userDisplayName, warningUrl } from "../utilities/discordUtilities.mjs"
-import { compareReason } from "../utilities/reasonUtilities.mjs"
 import type {
   Image,
   Penalty,
-  Reason,
   Warning,
   WarningGuild,
   WarningLogMessage,
@@ -22,7 +20,6 @@ import {
 export async function warnLogMessage(
   warning: Warning & {
     penalty: Penalty
-    reasons: Reason[]
     images: Image[]
     guild: WarningGuild
     messages: WarningLogMessage[]
@@ -106,14 +103,6 @@ export async function warnLogMessage(
     })
     .setFields(
       { name: "Description", value: warning.description ?? "-" },
-      {
-        name: warning.reasons.length === 1 ? "Reason" : "Reasons",
-        value:
-          warning.reasons
-            .sort(compareReason)
-            .map((r) => r.name)
-            .join(", ") || "-",
-      },
       { name: "Penalty", value: warning.penalty.name },
       { name: "Notification", value: notificationText },
       { name: "Penalised", value: penaltyText },

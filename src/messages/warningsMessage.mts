@@ -1,7 +1,6 @@
 import { Discord, Prisma } from "../clients.mjs"
 import { userDisplayName, warningUrl } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
-import { compareReason } from "../utilities/reasonUtilities.mjs"
 import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
 
 export async function warningsMessage(user: User) {
@@ -11,7 +10,6 @@ export async function warningsMessage(user: User) {
       warnings: {
         include: {
           penalty: true,
-          reasons: true,
           images: true,
           guild: true,
           messages: true,
@@ -99,13 +97,6 @@ export async function warningsMessage(user: User) {
     }
 
     let title = `${verb} by ${userDisplayName(createdBy)} `
-    if (warning.reasons.length > 0) {
-      title +=
-        warning.reasons
-          .sort(compareReason)
-          .map((r) => r.name)
-          .join(", ") + " "
-    }
 
     title += time(warning.createdAt, TimestampStyles.RelativeTime)
 

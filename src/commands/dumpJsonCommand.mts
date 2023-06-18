@@ -25,7 +25,6 @@ export class DumpJsonCommand extends ChatInputCommand {
         warnings: {
           include: {
             penalty: true,
-            reasons: true,
           },
         },
       },

@@ -12,12 +12,10 @@ import {
   userDisplayName,
 } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
-import { compareReason } from "../utilities/reasonUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type {
   Image,
   Penalty,
-  Reason,
   Warning,
   WarningGuild,
   WarningLogMessage,
@@ -46,8 +44,7 @@ const { nolookalikesSafe } = nanoidDictionary
 const nanoid = customAlphabet(nolookalikesSafe)
 
 export class WarnCommand extends ChatInputCommand {
-  public constructor(reasons: Reason[], penalties: Penalty[]) {
-    reasons = reasons.sort(compareReason)
+  public constructor(penalties: Penalty[]) {
     penalties = penalties.sort(comparePenalty)
 
     super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
@@ -56,13 +53,6 @@ export class WarnCommand extends ChatInputCommand {
         builder
           .setName("user")
           .setDescription("The target user")
-          .setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("reason")
-          .setDescription("Concise warning reason for administration purposes")
-          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
           .setRequired(true)
       )
       .addStringOption((builder) =>
@@ -85,18 +75,6 @@ export class WarnCommand extends ChatInputCommand {
           .setName("notify")
           .setDescription("Whether to notify the user of the warning")
           .setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("reason2")
-          .setDescription("Concise warning reason for administration purposes")
-          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("reason3")
-          .setDescription("Concise warning reason for administration purposes")
-          .setChoices(...reasons.map((r) => ({ name: r.name, value: r.name })))
       )
       .addAttachmentOption((builder) =>
         builder
@@ -195,13 +173,11 @@ export class WarnCommand extends ChatInputCommand {
 
   private async penalise(
     target: GuildMember | User,
-    warning: Warning & { penalty: Penalty; reasons: Reason[] },
+    warning: Warning & { penalty: Penalty },
     guild: Guild
   ) {
     const by = await Discord.users.fetch(warning.createdBy)
-    const reason = `By ${userDisplayName(by)} for ${warning.reasons
-      .map((r) => r.name)
-      .join(", ")}`
+    const reason = `By ${userDisplayName(by)}`
 
     if (warning.penalty.ban) {
       const banOptions: BanOptions = { reason }
@@ -247,11 +223,6 @@ export class WarnCommand extends ChatInputCommand {
 
     const targetUser = interaction.options.getUser("user", true)
     const targetMember = await tryFetchMember(guild, targetUser.id)
-    const reasons = [
-      interaction.options.getString("reason", true),
-      interaction.options.getString("reason2"),
-      interaction.options.getString("reason3"),
-    ].filter((r) => r !== null) as string[]
     const attachments = [
       interaction.options.getAttachment("image"),
       interaction.options.getAttachment("image2"),
@@ -283,9 +254,6 @@ export class WarnCommand extends ChatInputCommand {
             name: interaction.options.getString("penalty", true),
           },
         },
-        reasons: {
-          connect: reasons.map((r) => ({ name: r })),
-        },
         images: {
           createMany: {
             data: attachmentUrls.map((url) => ({ url, extra: false })),
@@ -299,7 +267,6 @@ export class WarnCommand extends ChatInputCommand {
       },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,
@@ -324,7 +291,6 @@ export class WarnCommand extends ChatInputCommand {
       data: { notified: notified, penalised },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,

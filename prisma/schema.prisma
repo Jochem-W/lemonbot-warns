@@ -65,8 +65,6 @@ model Warning {
   penalty   Penalty @relation(fields: [penaltyId], references: [id])
   penaltyId Int
 
-  reasons Reason[]
-
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
@@ -117,15 +115,6 @@ model Image {
 
   warning   Warning @relation(fields: [warningId], references: [id])
   warningId Int
-}
-
-model Reason {
-  id Int @id @default(autoincrement())
-
-  colour Colour
-  name   String @unique
-
-  warnings Warning[]
 }
 
 model Penalty {

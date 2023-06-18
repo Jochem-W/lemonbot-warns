@@ -40,7 +40,6 @@ export class SearchCommand extends ChatInputCommand {
       },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
       },
       orderBy: {

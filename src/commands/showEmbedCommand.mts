@@ -34,7 +34,6 @@ export class ShowEmbedCommand extends ChatInputCommand {
       where: { id },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,

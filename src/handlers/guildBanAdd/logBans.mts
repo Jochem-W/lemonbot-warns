@@ -97,7 +97,6 @@ export const LogBans: Handler<"guildBanAdd"> = {
       ...args,
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,

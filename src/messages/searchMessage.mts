@@ -1,7 +1,7 @@
 import { Discord } from "../clients.mjs"
 import { customIdToString, InteractionScope } from "../models/customId.mjs"
 import { userDisplayName } from "../utilities/discordUtilities.mjs"
-import type { Penalty, Reason, Warning } from "@prisma/client"
+import type { Penalty, Warning } from "@prisma/client"
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -36,7 +36,7 @@ function calculateStart(messages: { embeds: EmbedBuilder[] }[], page: number) {
 export async function searchMessage(
   warnings: {
     embeds: EmbedBuilder[]
-    warning: Warning & { penalty: Penalty; reasons: Reason[] }
+    warning: Warning & { penalty: Penalty }
   }[],
   page: number
 ) {

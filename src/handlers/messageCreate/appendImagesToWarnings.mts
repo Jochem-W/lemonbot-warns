@@ -56,7 +56,6 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
       },
       include: {
         penalty: true,
-        reasons: true,
         images: true,
         guild: true,
         messages: true,
