@@ -2,7 +2,10 @@ import { Discord, Forms, Prisma } from "../clients.mjs"
 import { InvalidDateTimeError, logError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { Config } from "../models/config.mjs"
-import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import {
+  fetchChannel,
+  userDisplayName,
+} from "../utilities/discordUtilities.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
@@ -80,7 +83,7 @@ async function onTick() {
 
     const embed = new EmbedBuilder()
       .setAuthor({
-        name: `${user.tag} responded to the ban appeal form`,
+        name: `${userDisplayName(user)} responded to the ban appeal form`,
         iconURL: user.displayAvatarURL(),
       })
       .setTitle("View full response")
@@ -194,7 +197,7 @@ async function onTick() {
         embeds: [embed],
       })
       const thread = await message.startThread({
-        name: `${user.tag}'s ban appeal`,
+        name: `${userDisplayName(user)}'s ban appeal`,
         reason: "Create thread for more coherent discussion",
       })
 
