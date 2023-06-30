@@ -117,11 +117,11 @@ export class RestCommand extends ChatInputCommand {
     }
 
     const response = await rest.raw(options)
-    const json = JSON.stringify(await response.body.json(), undefined, 4).trim()
+    const json = JSON.stringify(await response.json(), undefined, 4).trim()
 
     const files: AttachmentBuilder[] = []
     const embed = new EmbedBuilder().setTitle(
-      `${STATUS_CODES[response.statusCode] ?? ""} ${response.statusCode}`.trim()
+      `${STATUS_CODES[response.status] ?? ""} ${response.status}`.trim()
     )
     if (json.length <= 2036) {
       embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)
