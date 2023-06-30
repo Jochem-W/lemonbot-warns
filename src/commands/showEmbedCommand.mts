@@ -40,17 +40,26 @@ export class ShowEmbedCommand extends ChatInputCommand {
       },
     })
 
+    let ephemeral = true
+    if (interaction.inGuild()) {
+      const warningGuild = await Prisma.warningGuild.findFirst({
+        where: { id: interaction.guildId },
+      })
+
+      ephemeral = warningGuild?.warnLogsChannel !== interaction.channelId
+    }
+
     switch (type) {
       case "warn-dm":
         await interaction.reply({
           ...(await warnMessage(warning)),
-          ephemeral: true,
+          ephemeral,
         })
         break
       case "warn-log":
         await interaction.reply({
           ...(await warnLogMessage(warning)),
-          ephemeral: true,
+          ephemeral,
         })
         break
       default:
