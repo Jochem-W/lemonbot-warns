@@ -16,11 +16,12 @@ export const SearchCommand = slashCommand({
   description: "Search through all warning descriptions (W.I.P.)",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
   options: [
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("query")
-        .setDescription("Search query"),
-    }),
+        .setDescription("Search query")
+    ),
   ],
   async handle(interaction, search) {
     await interaction.deferReply({

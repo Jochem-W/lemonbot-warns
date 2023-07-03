@@ -50,18 +50,21 @@ export const WarnCommand = slashCommand({
   description: "Warn a user",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
   options: [
-    slashOption(true, {
-      option: new SlashCommandUserOption()
+    slashOption(
+      true,
+      new SlashCommandUserOption()
         .setName("user")
-        .setDescription("The target user"),
-    }),
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+        .setDescription("The target user")
+    ),
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("description")
-        .setDescription("Description that will be sent to the user"),
-    }),
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+        .setDescription("Description that will be sent to the user")
+    ),
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("penalty")
         .setDescription("The penalty to give to the user")
         .setChoices(
@@ -69,33 +72,38 @@ export const WarnCommand = slashCommand({
             name: p.name,
             value: p.name,
           }))
-        ),
-    }),
-    slashOption(true, {
-      option: new SlashCommandBooleanOption()
+        )
+    ),
+    slashOption(
+      true,
+      new SlashCommandBooleanOption()
         .setName("notify")
-        .setDescription("Whether to notify the user of the warning"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandAttachmentOption()
+        .setDescription("Whether to notify the user of the warning")
+    ),
+    slashOption(
+      false,
+      new SlashCommandAttachmentOption()
         .setName("image")
-        .setDescription("An image to add to the warning and send to the user"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandAttachmentOption()
+        .setDescription("An image to add to the warning and send to the user")
+    ),
+    slashOption(
+      false,
+      new SlashCommandAttachmentOption()
         .setName("image2")
-        .setDescription("An image to add to the warning and send to the user"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandAttachmentOption()
+        .setDescription("An image to add to the warning and send to the user")
+    ),
+    slashOption(
+      false,
+      new SlashCommandAttachmentOption()
         .setName("image3")
-        .setDescription("An image to add to the warning and send to the user"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandAttachmentOption()
+        .setDescription("An image to add to the warning and send to the user")
+    ),
+    slashOption(
+      false,
+      new SlashCommandAttachmentOption()
         .setName("image4")
-        .setDescription("An image to add to the warning and send to the user"),
-    }),
+        .setDescription("An image to add to the warning and send to the user")
+    ),
   ],
   async handle(
     interaction,

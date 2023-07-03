@@ -59,11 +59,12 @@ export const EvalCommand = slashCommand({
   description: "Run arbitrary code",
   defaultMemberPermissions: PermissionFlagsBits.Administrator,
   options: [
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("code")
-        .setDescription("The code to run"),
-    }),
+        .setDescription("The code to run")
+    ),
   ],
   async handle(interaction, code) {
     await ensureOwner(interaction)

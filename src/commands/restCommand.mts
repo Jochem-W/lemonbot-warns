@@ -37,8 +37,9 @@ export const RestCommand = slashCommand({
         .setName("path")
         .setDescription("The API path, including leading '/'"),
     }),
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("method")
         .setDescription("The HTTP request method")
         .setChoices(
@@ -62,23 +63,26 @@ export const RestCommand = slashCommand({
             name: "PATCH",
             value: "PATCH",
           }
-        ),
-    }),
-    slashOption(false, {
-      option: new SlashCommandStringOption()
+        )
+    ),
+    slashOption(
+      false,
+      new SlashCommandStringOption()
         .setName("query")
-        .setDescription("The query string, including leading '?'"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandStringOption()
+        .setDescription("The query string, including leading '?'")
+    ),
+    slashOption(
+      false,
+      new SlashCommandStringOption()
         .setName("body")
-        .setDescription("The JSON request body"),
-    }),
-    slashOption(false, {
-      option: new SlashCommandStringOption()
+        .setDescription("The JSON request body")
+    ),
+    slashOption(
+      false,
+      new SlashCommandStringOption()
         .setName("token")
-        .setDescription("The bot token to use for the request"),
-    }),
+        .setDescription("The bot token to use for the request")
+    ),
   ],
   async handle(interaction, path, method, query, body, token) {
     await ensureOwner(interaction)

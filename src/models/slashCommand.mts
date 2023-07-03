@@ -72,14 +72,14 @@ type InferOptionValuesWithRequired<
 > = T extends readonly [infer TH, ...infer TT]
   ? InferOptionValuesWithRequired<
       TT,
-      TH extends ReturnType<typeof slashOption>
+      TH extends SlashOption<Options, boolean>
         ? readonly [...R, OptionValueWithRequired<TH["option"], TH["required"]>]
         : R
     >
   : R
 
 type Handler<
-  T extends readonly [...(readonly ReturnType<typeof slashOption>[])]
+  T extends readonly [...(readonly SlashOption<Options, boolean>[])]
 > = (
   interaction: ChatInputCommandInteraction,
   ...values: readonly [...InferOptionValuesWithRequired<T>]
@@ -95,7 +95,7 @@ type AutocompleteHandler<T extends Options> = T extends
     ) => ApplicationCommandOptionChoiceData[]
   : never
 
-type SlashCommandInput<T extends readonly ReturnType<typeof slashOption>[]> =
+type SlashCommandInput<T extends readonly SlashOption<Options, boolean>[]> =
   | {
       name: Lowercase<string>
       description: string
@@ -199,7 +199,7 @@ function getOptionValue<T extends Options, TT extends boolean>(
 }
 
 export function slashCommand<
-  T extends readonly ReturnType<typeof slashOption>[]
+  T extends readonly SlashOption<Options, boolean>[]
 >(input: SlashCommandInput<T>) {
   const {
     name,
@@ -332,16 +332,31 @@ export function slashCommand<
   return { builder, handle: getOptionsAndHandle, autocomplete }
 }
 
+type SlashOption<T extends Options, TT extends boolean> = {
+  option: T
+  required: TT
+  autocomplete?: AutocompleteHandler<T>
+}
+
 export function slashOption<T extends Options, TT extends boolean>(
   required: TT,
-  {
-    option,
-    autocomplete,
-  }: {
-    option: T
-    autocomplete?: AutocompleteHandler<T>
-  }
+  data:
+    | {
+        option: T
+        autocomplete?: AutocompleteHandler<T>
+      }
+    | T
 ) {
+  let option
+  let autocomplete
+  if ("option" in data) {
+    option = data.option
+    autocomplete = data.autocomplete
+  } else {
+    option = data
+    autocomplete = undefined
+  }
+
   if (required) {
     option.setRequired(true)
   }
@@ -364,17 +379,17 @@ export function slashOption<T extends Options, TT extends boolean>(
     autocomplete,
     option,
     required,
-  }
+  } as SlashOption<T, TT>
 }
 
-type SubcommandHandler<T extends readonly ReturnType<typeof slashOption>[]> = (
+type SubcommandHandler<T extends readonly SlashOption<Options, boolean>[]> = (
   interaction: ChatInputCommandInteraction,
   subcommand: string,
   ...values: readonly [...InferOptionValuesWithRequired<T>]
 ) => Promise<void>
 
 type GroupedSubcommandHandler<
-  T extends readonly ReturnType<typeof slashOption>[]
+  T extends readonly SlashOption<Options, boolean>[]
 > = (
   interaction: ChatInputCommandInteraction,
   subcommandGroup: string,
@@ -383,7 +398,7 @@ type GroupedSubcommandHandler<
 ) => Promise<void>
 
 export function groupedSubcommand<
-  T extends readonly ReturnType<typeof slashOption>[]
+  T extends readonly SlashOption<Options, boolean>[]
 >({
   name,
   description,
@@ -442,9 +457,7 @@ export function groupedSubcommand<
   return { builder, handle: getOptionsAndHandle, autocomplete, grouped: true }
 }
 
-export function subcommand<
-  T extends readonly ReturnType<typeof slashOption>[]
->({
+export function subcommand<T extends readonly SlashOption<Options, boolean>[]>({
   name,
   description,
   options,

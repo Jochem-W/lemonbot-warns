@@ -13,17 +13,19 @@ export const ShowEmbedCommand = slashCommand({
   description: "Show various warning embeds",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
   options: [
-    slashOption(true, {
-      option: new SlashCommandIntegerOption()
+    slashOption(
+      true,
+      new SlashCommandIntegerOption()
         .setName("id")
-        .setDescription("The warning ID"),
-    }),
-    slashOption(true, {
-      option: new SlashCommandStringOption()
+        .setDescription("The warning ID")
+    ),
+    slashOption(
+      true,
+      new SlashCommandStringOption()
         .setName("type")
         .setDescription("The embed type")
-        .setChoices({ name: "Log", value: "log" }, { name: "DM", value: "dm" }),
-    }),
+        .setChoices({ name: "Log", value: "log" }, { name: "DM", value: "dm" })
+    ),
   ],
   async handle(interaction, id, type) {
     const warning = await Prisma.warning.findFirstOrThrow({

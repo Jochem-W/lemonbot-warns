@@ -23,11 +23,12 @@ export const EditCommand = slashCommand({
       name: "delete",
       description: "Delete a warning",
       options: [
-        slashOption(true, {
-          option: new SlashCommandIntegerOption()
+        slashOption(
+          true,
+          new SlashCommandIntegerOption()
             .setName("id")
-            .setDescription("The warning ID"),
-        }),
+            .setDescription("The warning ID")
+        ),
       ],
       async handle(interaction, _subcommand, warningId) {
         await ensureOwner(interaction)
