@@ -20,7 +20,7 @@ export const AutocompleteHandler: Handler<"interactionCreate"> = {
     }
 
     if (!("autocomplete" in command)) {
-      throw new NoAutocompleteHandlerError(command)
+      throw new NoAutocompleteHandlerError(interaction)
     }
 
     await command.autocomplete(interaction)
