@@ -1,127 +1,98 @@
 import { Prisma, S3 } from "../clients.mjs"
 import {
-  SubcommandGroupNotFoundError,
-  SubcommandNotFoundError,
-} from "../errors.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+  slashCommand,
+  slashOption,
+  subcommand,
+} from "../models/slashCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import { Variables } from "../variables.mjs"
 import { DeleteObjectCommand } from "@aws-sdk/client-s3"
 import {
-  ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
+  SlashCommandIntegerOption,
+  SlashCommandStringOption,
 } from "discord.js"
 
-export class EditCommand extends ChatInputCommand {
-  public constructor() {
-    super("edit", "Edit an existing warning", PermissionFlagsBits.Administrator)
-    this.builder
-      .addSubcommand((subcommandGroup) =>
-        subcommandGroup
-          .setName("delete")
-          .setDescription("Delete a warning")
-          .addIntegerOption((builder) =>
-            builder
-              .setName("id")
-              .setDescription("The warning ID")
-              .setRequired(true)
-          )
-      )
-      .addSubcommandGroup((subcommandGroup) =>
-        subcommandGroup
-          .setName("description")
-          .setDescription("Edit the description of a warning")
-          .addSubcommand((subcommandGroup) =>
-            subcommandGroup
-              .setName("set")
-              .setDescription("Set the description of a warning")
-              .addIntegerOption((builder) =>
-                builder
-                  .setName("id")
-                  .setDescription("The warning ID")
-                  .setRequired(true)
-              )
-              .addStringOption((builder) =>
-                builder
-                  .setName("description")
-                  .setDescription("The new warning description")
-                  .setRequired(true)
-              )
-          )
-      )
-  }
+export const EditCommand = slashCommand({
+  name: "edit",
+  description: "Edit an existing warning",
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  subcommands: [
+    subcommand({
+      name: "delete",
+      description: "Delete a warning",
+      options: [
+        slashOption(true, {
+          option: new SlashCommandIntegerOption()
+            .setName("id")
+            .setDescription("The warning ID"),
+        }),
+      ],
+      async handle(interaction, _subcommand, warningId) {
+        await ensureOwner(interaction)
 
-  private async handleDescription(interaction: ChatInputCommandInteraction) {
-    const warningId = interaction.options.getInteger("id", true)
-    const description = interaction.options.getString("description", true)
+        const images = await Prisma.image.findMany({ where: { warningId } })
+        await Prisma.image.deleteMany({ where: { warningId } })
+        const warning = await Prisma.warning.delete({
+          where: { id: warningId },
+        })
+        for (const image of images) {
+          await S3.send(
+            new DeleteObjectCommand({
+              Bucket: Variables.s3WarningsBucketName,
+              Key: new URL(image.url).pathname.slice(1),
+            })
+          )
+        }
 
-    const subcommand = interaction.options.getSubcommand(true)
-    switch (subcommand) {
-      case "set":
+        const user = await Prisma.user.findFirstOrThrow({
+          where: { id: warning.userId },
+          include: { warnings: true },
+        })
+
+        if (user.warnings.length === 0) {
+          await Prisma.user.delete({ where: { id: user.id } })
+        }
+
+        await interaction.reply({
+          embeds: [new EmbedBuilder().setTitle("Warning deleted")],
+          ephemeral: true,
+        })
+      },
+    }),
+    subcommand({
+      name: "description",
+      description: "Edit the description of a warning",
+      options: [
+        slashOption(true, {
+          option: new SlashCommandIntegerOption()
+            .setName("id")
+            .setDescription("The warning ID"),
+        }),
+        slashOption(true, {
+          option: new SlashCommandStringOption()
+            .setName("description")
+            .setDescription("The new warning description"),
+        }),
+      ],
+      async handle(interaction, _subcommand, id, description) {
+        await ensureOwner(interaction)
+
         await Prisma.warning.update({
           where: {
-            id: warningId,
+            id,
           },
           data: {
-            description: description,
+            description,
           },
         })
-        break
-      default:
-        throw new SubcommandNotFoundError(interaction, subcommand)
-    }
-  }
 
-  private async handleDelete(interaction: ChatInputCommandInteraction) {
-    const warningId = interaction.options.getInteger("id", true)
-    const images = await Prisma.image.findMany({ where: { warningId } })
-    await Prisma.image.deleteMany({ where: { warningId } })
-    const warning = await Prisma.warning.delete({ where: { id: warningId } })
-    for (const image of images) {
-      await S3.send(
-        new DeleteObjectCommand({
-          Bucket: Variables.s3WarningsBucketName,
-          Key: new URL(image.url).pathname.slice(1),
+        await interaction.reply({
+          embeds: [new EmbedBuilder().setTitle("Warning edited")],
+          ephemeral: true,
         })
-      )
-    }
-
-    const user = await Prisma.user.findFirstOrThrow({
-      where: { id: warning.userId },
-      include: { warnings: true },
-    })
-
-    if (user.warnings.length === 0) {
-      await Prisma.user.delete({ where: { id: user.id } })
-    }
-  }
-
-  public async handle(interaction: ChatInputCommandInteraction) {
-    await ensureOwner(interaction)
-
-    const subcommand = interaction.options.getSubcommand()
-    const subcommandGroup = interaction.options.getSubcommandGroup()
-    switch (subcommandGroup) {
-      case "description":
-        await this.handleDescription(interaction)
-        break
-      case null:
-        switch (subcommand) {
-          case "delete":
-            await this.handleDelete(interaction)
-            break
-          default:
-            throw new SubcommandNotFoundError(interaction, subcommand)
-        }
-        break
-      default:
-        throw new SubcommandGroupNotFoundError(interaction, subcommandGroup)
-    }
-
-    await interaction.reply({
-      embeds: [new EmbedBuilder().setTitle("Warning edited")],
-      ephemeral: true,
-    })
-  }
-}
+      },
+    }),
+  ],
+})

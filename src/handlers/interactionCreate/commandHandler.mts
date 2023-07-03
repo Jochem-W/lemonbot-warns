@@ -24,7 +24,7 @@ async function handleCommand(interaction: CommandInteraction) {
     throw new NoPermissionError()
   }
 
-  await command.handle(interaction)
+  await command.handle(interaction as never)
 }
 
 export const CommandHandler: Handler<"interactionCreate"> = {

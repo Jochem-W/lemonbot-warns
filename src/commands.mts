@@ -1,45 +1,33 @@
-import { CleanCommand } from "./commands/cleanCommand.mjs"
-import { DumpJsonCommand } from "./commands/dumpJsonCommand.mjs"
 import { EditCommand } from "./commands/editCommand.mjs"
 import { EvalCommand } from "./commands/evalCommand.mjs"
 import { EvalMessageCommand } from "./commands/evalMessageCommand.mjs"
 import { RestCommand } from "./commands/restCommand.mjs"
-import { S3Command } from "./commands/s3Command.mjs"
 import { SearchCommand } from "./commands/searchCommand.mjs"
 import { ShowEmbedCommand } from "./commands/showEmbedCommand.mjs"
-import { StatisticsCommand } from "./commands/statisticsCommand.mjs"
-import { StatusCommand } from "./commands/statusCommand.mjs"
+import { WarnCommand } from "./commands/warnCommand.mjs"
 import { WarningsCommand } from "./commands/warningsCommand.mjs"
 import { WarningsContextCommand } from "./commands/warningsContextCommand.mjs"
-import type { ChatInputCommand } from "./models/chatInputCommand.mjs"
-import type { MessageContextMenuCommand } from "./models/messageContextMenuCommand.mjs"
-import type { UserContextMenuCommand } from "./models/userContextMenuCommand.mjs"
 import type { Command } from "./types/command.mjs"
-import { Collection, CommandInteraction, type Snowflake } from "discord.js"
+import { ApplicationCommandType, Collection, type Snowflake } from "discord.js"
 
-export const SlashCommands: ChatInputCommand[] = [
-  new StatusCommand(),
-  new WarningsCommand(),
-  new DumpJsonCommand(),
-  new S3Command(),
-  new StatisticsCommand(),
-  new EditCommand(),
-  new SearchCommand(),
-  new RestCommand(),
-  new EvalCommand(),
-  new ShowEmbedCommand(),
-  new CleanCommand(),
+export const SlashCommands: Command<ApplicationCommandType.ChatInput>[] = [
+  WarningsCommand,
+  EditCommand,
+  SearchCommand,
+  RestCommand,
+  EvalCommand,
+  ShowEmbedCommand,
+  WarnCommand,
 ]
 
-export const MessageContextMenuCommands: MessageContextMenuCommand[] = [
-  new EvalMessageCommand(),
-]
+export const MessageContextMenuCommands: Command<ApplicationCommandType.Message>[] =
+  [EvalMessageCommand]
 
-export const UserContextMenuCommands: UserContextMenuCommand[] = [
-  new WarningsContextCommand(),
+export const UserContextMenuCommands: Command<ApplicationCommandType.User>[] = [
+  WarningsContextCommand,
 ]
 
 export const RegisteredCommands = new Collection<
   Snowflake,
-  Command<CommandInteraction>
+  Command<ApplicationCommandType>
 >()

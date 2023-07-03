@@ -1,29 +1,28 @@
 import { Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { searchMessage } from "../messages/searchMessage.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
 import { stringToCustomId } from "../models/customId.mjs"
 import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
+import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import {
-  ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
+  SlashCommandStringOption,
 } from "discord.js"
 
-export class SearchCommand extends ChatInputCommand {
-  public constructor() {
-    super(
-      "search",
-      "Search through all warning descriptions (W.I.P.)",
-      PermissionFlagsBits.ModerateMembers
-    )
-    this.builder.addStringOption((option) =>
-      option.setName("query").setDescription("Search query").setRequired(true)
-    )
-  }
-
-  public async handle(interaction: ChatInputCommandInteraction) {
+export const SearchCommand = slashCommand({
+  name: "search",
+  description: "Search through all warning descriptions (W.I.P.)",
+  defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  options: [
+    slashOption(true, {
+      option: new SlashCommandStringOption()
+        .setName("query")
+        .setDescription("Search query"),
+    }),
+  ],
+  async handle(interaction, search) {
     await interaction.deferReply({
       ephemeral: !(await isInPrivateChannel(interaction)),
     })
@@ -35,7 +34,7 @@ export class SearchCommand extends ChatInputCommand {
     const warnings = await Prisma.warning.findMany({
       where: {
         description: {
-          search: interaction.options.getString("query", true),
+          search,
         },
       },
       include: {
@@ -87,5 +86,5 @@ export class SearchCommand extends ChatInputCommand {
     })
 
     await interaction.editReply(await searchMessage(warningMessages, skip))
-  }
-}
+  },
+})

@@ -1,29 +1,26 @@
 import { BotError, GuildOnlyError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import { PermissionFlagsBits, SlashCommandUserOption } from "discord.js"
 
-export class WarningsCommand extends ChatInputCommand {
-  public constructor() {
-    super(
-      "warnings",
-      "List a user's warnings",
-      PermissionFlagsBits.ModerateMembers
-    )
-    this.builder.addUserOption((option) =>
-      option.setName("user").setDescription("Target user").setRequired(true)
-    )
-  }
-
-  public async handle(interaction: ChatInputCommandInteraction) {
+export const WarningsCommand = slashCommand({
+  name: "warnings",
+  description: "List a user's warnings",
+  defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  options: [
+    slashOption(true, {
+      option: new SlashCommandUserOption()
+        .setName("user")
+        .setDescription("The target user"),
+    }),
+  ],
+  async handle(interaction, user) {
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
     }
 
     const ephemeral = !(await isInPrivateChannel(interaction))
-
-    const user = interaction.options.getUser("user", true)
 
     const messages = await warningsMessage(user)
 
@@ -35,5 +32,5 @@ export class WarningsCommand extends ChatInputCommand {
     for (const message of messages.slice(1)) {
       await interaction.followUp({ ...message, ephemeral })
     }
-  }
-}
+  },
+})

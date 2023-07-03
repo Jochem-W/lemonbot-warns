@@ -10,6 +10,7 @@ import {
   Guild,
   type Channel,
   type Snowflake,
+  ApplicationCommandType,
 } from "discord.js"
 import type { DateTime } from "luxon"
 
@@ -67,13 +68,13 @@ export class SubcommandNotFoundError extends BotError {
 }
 
 export class NoAutocompleteHandlerError extends BotError {
-  public constructor(command: Command<CommandInteraction>) {
+  public constructor(command: Command<ApplicationCommandType>) {
     super(`Command "${command.builder.name}" has no autocomplete handler.`)
   }
 }
 
 export class NoMessageComponentHandlerError extends BotError {
-  public constructor(command: Command<CommandInteraction>) {
+  public constructor(command: Command<ApplicationCommandType>) {
     super(
       `Command "${command.builder.name}" doesn't support message component interactions.`
     )

@@ -3,7 +3,7 @@ import { Discord, Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { button } from "../utilities/button.mjs"
 import {
   fetchChannel,
@@ -11,7 +11,6 @@ import {
   uniqueName,
   userDisplayName,
 } from "../utilities/discordUtilities.mjs"
-import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type {
   Image,
@@ -34,8 +33,11 @@ import {
   Guild,
   type Attachment,
   type BanOptions,
-  type ChatInputCommandInteraction,
   type MessageActionRowComponentBuilder,
+  SlashCommandUserOption,
+  SlashCommandStringOption,
+  SlashCommandBooleanOption,
+  SlashCommandAttachmentOption,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"
@@ -43,170 +45,69 @@ import nanoidDictionary from "nanoid-dictionary"
 const { nolookalikesSafe } = nanoidDictionary
 const nanoid = customAlphabet(nolookalikesSafe)
 
-export class WarnCommand extends ChatInputCommand {
-  public constructor(penalties: Penalty[]) {
-    penalties = penalties.sort(comparePenalty)
-
-    super("warn", "Warn a user", PermissionFlagsBits.ModerateMembers)
-    this.builder
-      .addUserOption((builder) =>
-        builder
-          .setName("user")
-          .setDescription("The target user")
-          .setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("description")
-          .setDescription("Extended description that will be sent to the user")
-          .setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("penalty")
-          .setDescription("The penalty to give to the user")
-          .setChoices(
-            ...penalties.map((p) => ({ name: p.name, value: p.name }))
-          )
-          .setRequired(true)
-      )
-      .addBooleanOption((builder) =>
-        builder
-          .setName("notify")
-          .setDescription("Whether to notify the user of the warning")
-          .setRequired(true)
-      )
-      .addAttachmentOption((builder) =>
-        builder
-          .setName("image")
-          .setDescription("An image to add to the warning and send to the user")
-      )
-      .addAttachmentOption((builder) =>
-        builder
-          .setName("image2")
-          .setDescription("An image to add to the warning and send to the user")
-      )
-      .addAttachmentOption((builder) =>
-        builder
-          .setName("image3")
-          .setDescription("An image to add to the warning and send to the user")
-      )
-      .addAttachmentOption((builder) =>
-        builder
-          .setName("image4")
-          .setDescription("An image to add to the warning and send to the user")
-      )
-  }
-
-  private async notify(
-    target: GuildMember | User,
-    warning: Warning & {
-      penalty: Penalty
-      images: Image[]
-      guild: WarningGuild
-      messages: WarningLogMessage[]
-    },
-    guild: Guild
-  ) {
-    if (warning.silent) {
-      return "SILENT"
-    }
-
-    if (target instanceof User) {
-      return "NOT_IN_SERVER"
-    }
-
-    const message = await warnMessage(warning)
-
-    try {
-      await target.send(message)
-      return "DM"
-    } catch (e) {
-      if (
-        !(e instanceof DiscordAPIError) ||
-        e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser
-      ) {
-        await Prisma.warning.delete({ where: { id: warning.id } })
-        throw e
-      }
-    }
-
-    if (warning.penalty.ban) {
-      return "DMS_DISABLED"
-    }
-
-    const newChannel = await guild.channels.create({
-      name: `${uniqueName(target.user).replace("#", "-")}-${nanoid(4)}`,
-      type: ChannelType.GuildText,
-      parent: warning.guild.warnCategory,
-      reason: "Create a channel for warning a user that has DMs disabled",
-    })
-
-    await newChannel.permissionOverwrites.create(
-      target.id,
-      {
-        ViewChannel: true,
-        SendMessages: false,
-        AddReactions: false,
-        ReadMessageHistory: true,
-        UseApplicationCommands: true,
-      },
-      { reason: "Allow the member to-be-warned to view the channel" }
-    )
-    await newChannel.send({
-      ...message,
-      content: userMention(target.id),
-      components: [
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
-          new ButtonBuilder()
-            .setLabel("Dismiss")
-            .setStyle(ButtonStyle.Danger)
-            .setCustomId(
-              button(DismissWarnButton, [newChannel.id, warning.userId])
-            )
+export const WarnCommand = slashCommand({
+  name: "warn",
+  description: "Warn a user",
+  defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  options: [
+    slashOption(true, {
+      option: new SlashCommandUserOption()
+        .setName("user")
+        .setDescription("The target user"),
+    }),
+    slashOption(true, {
+      option: new SlashCommandStringOption()
+        .setName("description")
+        .setDescription("Description that will be sent to the user"),
+    }),
+    slashOption(true, {
+      option: new SlashCommandStringOption()
+        .setName("penalty")
+        .setDescription("The penalty to give to the user")
+        .setChoices(
+          ...(await Prisma.penalty.findMany()).map((p) => ({
+            name: p.name,
+            value: p.name,
+          }))
         ),
-      ],
-    })
-
-    return "CHANNEL"
-  }
-
-  private async penalise(
-    target: GuildMember | User,
-    warning: Warning & { penalty: Penalty },
-    guild: Guild
+    }),
+    slashOption(true, {
+      option: new SlashCommandBooleanOption()
+        .setName("notify")
+        .setDescription("Whether to notify the user of the warning"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandAttachmentOption()
+        .setName("image")
+        .setDescription("An image to add to the warning and send to the user"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandAttachmentOption()
+        .setName("image2")
+        .setDescription("An image to add to the warning and send to the user"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandAttachmentOption()
+        .setName("image3")
+        .setDescription("An image to add to the warning and send to the user"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandAttachmentOption()
+        .setName("image4")
+        .setDescription("An image to add to the warning and send to the user"),
+    }),
+  ],
+  async handle(
+    interaction,
+    targetUser,
+    description,
+    penalty,
+    notSilent,
+    image,
+    image2,
+    image3,
+    image4
   ) {
-    const by = await Discord.users.fetch(warning.createdBy)
-    const reason = `By ${userDisplayName(by)}`
-
-    if (warning.penalty.ban) {
-      const banOptions: BanOptions = { reason }
-      if (warning.penalty.deleteMessages) {
-        banOptions.deleteMessageSeconds = 604800
-      }
-
-      await guild.bans.create(target.id, banOptions)
-      return "APPLIED"
-    }
-
-    if (target instanceof User) {
-      return "NOT_IN_SERVER"
-    }
-
-    if (warning.penalty.kick) {
-      await target.kick(reason)
-      return "APPLIED"
-    }
-
-    if (warning.penalty.timeout) {
-      await target.timeout(warning.penalty.timeout, reason)
-      return "APPLIED"
-    }
-
-    return "NO_PENALTY"
-  }
-
-  public async handle(interaction: ChatInputCommandInteraction) {
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
     }
@@ -221,14 +122,10 @@ export class WarnCommand extends ChatInputCommand {
       ephemeral: interaction.channelId !== prismaGuild.warnLogsChannel,
     })
 
-    const targetUser = interaction.options.getUser("user", true)
     const targetMember = await tryFetchMember(guild, targetUser.id)
-    const attachments = [
-      interaction.options.getAttachment("image"),
-      interaction.options.getAttachment("image2"),
-      interaction.options.getAttachment("image3"),
-      interaction.options.getAttachment("image4"),
-    ].filter((r) => r !== null) as Attachment[]
+    const attachments = [image, image2, image3, image4].filter(
+      (r) => r !== null
+    ) as Attachment[]
 
     const attachmentUrls = await Promise.all(attachments.map(uploadAttachment))
 
@@ -247,11 +144,11 @@ export class WarnCommand extends ChatInputCommand {
         },
         createdAt: interaction.createdAt,
         createdBy: interaction.user.id,
-        description: interaction.options.getString("description", true),
-        silent: !interaction.options.getBoolean("notify", true),
+        description,
+        silent: !notSilent,
         penalty: {
           connect: {
-            name: interaction.options.getString("penalty", true),
+            name: penalty,
           },
         },
         images: {
@@ -275,16 +172,8 @@ export class WarnCommand extends ChatInputCommand {
 
     console.log("Created warning with ID", warning.id)
 
-    const notified = await this.notify(
-      targetMember ?? targetUser,
-      warning,
-      guild
-    )
-    const penalised = await this.penalise(
-      targetMember ?? targetUser,
-      warning,
-      guild
-    )
+    const notified = await notify(targetMember ?? targetUser, warning, guild)
+    const penalised = await penalise(targetMember ?? targetUser, warning, guild)
 
     warning = await Prisma.warning.update({
       where: { id: warning.id },
@@ -340,5 +229,113 @@ export class WarnCommand extends ChatInputCommand {
         },
       })
     }
+  },
+})
+
+async function notify(
+  target: GuildMember | User,
+  warning: Warning & {
+    penalty: Penalty
+    images: Image[]
+    guild: WarningGuild
+    messages: WarningLogMessage[]
+  },
+  guild: Guild
+) {
+  if (warning.silent) {
+    return "SILENT"
   }
+
+  if (target instanceof User) {
+    return "NOT_IN_SERVER"
+  }
+
+  const message = await warnMessage(warning)
+
+  try {
+    await target.send(message)
+    return "DM"
+  } catch (e) {
+    if (
+      !(e instanceof DiscordAPIError) ||
+      e.code !== RESTJSONErrorCodes.CannotSendMessagesToThisUser
+    ) {
+      await Prisma.warning.delete({ where: { id: warning.id } })
+      throw e
+    }
+  }
+
+  if (warning.penalty.ban) {
+    return "DMS_DISABLED"
+  }
+
+  const newChannel = await guild.channels.create({
+    name: `${uniqueName(target.user).replace("#", "-")}-${nanoid(4)}`,
+    type: ChannelType.GuildText,
+    parent: warning.guild.warnCategory,
+    reason: "Create a channel for warning a user that has DMs disabled",
+  })
+
+  await newChannel.permissionOverwrites.create(
+    target.id,
+    {
+      ViewChannel: true,
+      SendMessages: false,
+      AddReactions: false,
+      ReadMessageHistory: true,
+      UseApplicationCommands: true,
+    },
+    { reason: "Allow the member to-be-warned to view the channel" }
+  )
+  await newChannel.send({
+    ...message,
+    content: userMention(target.id),
+    components: [
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+        new ButtonBuilder()
+          .setLabel("Dismiss")
+          .setStyle(ButtonStyle.Danger)
+          .setCustomId(
+            button(DismissWarnButton, [newChannel.id, warning.userId])
+          )
+      ),
+    ],
+  })
+
+  return "CHANNEL"
+}
+
+async function penalise(
+  target: GuildMember | User,
+  warning: Warning & { penalty: Penalty },
+  guild: Guild
+) {
+  const by = await Discord.users.fetch(warning.createdBy)
+  const reason = `By ${userDisplayName(by)}`
+
+  if (warning.penalty.ban) {
+    const banOptions: BanOptions = { reason }
+    if (warning.penalty.deleteMessages) {
+      banOptions.deleteMessageSeconds = 604800
+    }
+
+    await guild.bans.create(target.id, banOptions)
+    return "APPLIED"
+  }
+
+  if (target instanceof User) {
+    return "NOT_IN_SERVER"
+  }
+
+  if (warning.penalty.kick) {
+    await target.kick(reason)
+    return "APPLIED"
+  }
+
+  if (warning.penalty.timeout) {
+    await target.timeout(warning.penalty.timeout, reason)
+    return "APPLIED"
+  }
+
+  return "NO_PENALTY"
 }

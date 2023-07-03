@@ -19,10 +19,10 @@ export const AutocompleteHandler: Handler<"interactionCreate"> = {
       throw new CommandNotFoundByIdError(interaction.commandId)
     }
 
-    if (!command.handleAutocomplete) {
+    if (!("autocomplete" in command)) {
       throw new NoAutocompleteHandlerError(command)
     }
 
-    await interaction.respond(await command.handleAutocomplete(interaction))
+    await command.autocomplete(interaction)
   },
 }

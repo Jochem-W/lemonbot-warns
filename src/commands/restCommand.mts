@@ -1,15 +1,15 @@
 import { Discord } from "../clients.mjs"
 import { InvalidMethodError, InvalidPathError } from "../errors.mjs"
-import { ChatInputCommand } from "../models/chatInputCommand.mjs"
+import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
 import {
   AttachmentBuilder,
-  ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
   RequestMethod,
   REST,
   type InternalRequest,
+  SlashCommandStringOption,
 } from "discord.js"
 import { STATUS_CODES } from "http"
 
@@ -27,68 +27,62 @@ function isMethod(value: string): value is RequestMethod {
   )
 }
 
-export class RestCommand extends ChatInputCommand {
-  public constructor() {
-    super(
-      "rest",
-      "Make a Discord API request",
-      PermissionFlagsBits.Administrator
-    )
-    this.builder
-      .addStringOption((builder) =>
-        builder.setName("path").setDescription("The API path").setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("method")
-          .setDescription("The HTTP request method")
-          .setChoices(
-            {
-              name: "GET",
-              value: "GET",
-            },
-            {
-              name: "POST",
-              value: "POST",
-            },
-            {
-              name: "PUT",
-              value: "PUT",
-            },
-            {
-              name: "DELETE",
-              value: "DELETE",
-            },
-            {
-              name: "PATCH",
-              value: "PATCH",
-            }
-          )
-          .setRequired(true)
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("query")
-          .setDescription("The query string, including leading '?'")
-      )
-      .addStringOption((builder) =>
-        builder.setName("body").setDescription("The JSON request body")
-      )
-      .addStringOption((builder) =>
-        builder
-          .setName("token")
-          .setDescription("The bot token to use for the request")
-      )
-  }
-
-  public async handle(interaction: ChatInputCommandInteraction) {
+export const RestCommand = slashCommand({
+  name: "rest",
+  description: "Make a Discord API request",
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  options: [
+    slashOption(true, {
+      option: new SlashCommandStringOption()
+        .setName("path")
+        .setDescription("The API path, including leading '/'"),
+    }),
+    slashOption(true, {
+      option: new SlashCommandStringOption()
+        .setName("method")
+        .setDescription("The HTTP request method")
+        .setChoices(
+          {
+            name: "GET",
+            value: "GET",
+          },
+          {
+            name: "POST",
+            value: "POST",
+          },
+          {
+            name: "PUT",
+            value: "PUT",
+          },
+          {
+            name: "DELETE",
+            value: "DELETE",
+          },
+          {
+            name: "PATCH",
+            value: "PATCH",
+          }
+        ),
+    }),
+    slashOption(false, {
+      option: new SlashCommandStringOption()
+        .setName("query")
+        .setDescription("The query string, including leading '?'"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandStringOption()
+        .setName("body")
+        .setDescription("The JSON request body"),
+    }),
+    slashOption(false, {
+      option: new SlashCommandStringOption()
+        .setName("token")
+        .setDescription("The bot token to use for the request"),
+    }),
+  ],
+  async handle(interaction, path, method, query, body, token) {
     await ensureOwner(interaction)
     await interaction.deferReply({ ephemeral: true })
-
-    const path = interaction.options.getString("path", true)
-    const query = interaction.options.getString("query")
-    const body = interaction.options.getString("body") ?? undefined
-    const method = interaction.options.getString("method", true)
 
     if (!isPath(path)) {
       throw new InvalidPathError(path)
@@ -108,7 +102,6 @@ export class RestCommand extends ChatInputCommand {
       options.query = new URLSearchParams(query)
     }
 
-    const token = interaction.options.getString("token")
     let rest
     if (token !== null) {
       rest = new REST().setToken(token)
@@ -137,5 +130,5 @@ export class RestCommand extends ChatInputCommand {
       embeds: [embed],
       files,
     })
-  }
-}
+  },
+})
