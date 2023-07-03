@@ -1,4 +1,11 @@
 import {
+  AutocompleteOptionNotFoundError,
+  NoAutocompleteHandlerError,
+  OptionNotAutocompletableError,
+  SubcommandGroupNotFoundError,
+  SubcommandNotFoundError,
+} from "../errors.mjs"
+import {
   type ChatInputCommandInteraction,
   SlashCommandStringOption,
   SlashCommandNumberOption,
@@ -220,8 +227,15 @@ export function slashCommand<
         ({ option }) => option.name === autocompleteOption.name
       )
 
-      if (!option?.autocomplete) {
-        throw new Error()
+      if (!option) {
+        throw new AutocompleteOptionNotFoundError(
+          interaction,
+          autocompleteOption
+        )
+      }
+
+      if (!option.autocomplete) {
+        throw new NoAutocompleteHandlerError(interaction)
       }
 
       await interaction.respond(
@@ -260,7 +274,10 @@ export function slashCommand<
           (g) => g.builder.name === subcommandGroupName
         )
         if (!subcommandGroup) {
-          throw new Error()
+          throw new SubcommandGroupNotFoundError(
+            interaction,
+            subcommandGroupName
+          )
         }
 
         subcommand = subcommandGroup.subcommands.find(
@@ -270,8 +287,8 @@ export function slashCommand<
         subcommand = subcommands?.find((s) => s.builder.name === subcommandName)
       }
 
-      if (!subcommand?.autocomplete) {
-        throw new Error()
+      if (!subcommand) {
+        throw new SubcommandNotFoundError(interaction, subcommandName)
       }
 
       await interaction.respond(subcommand.autocomplete(interaction))
@@ -287,7 +304,10 @@ export function slashCommand<
           (g) => g.builder.name === subcommandGroupName
         )
         if (!subcommandGroup) {
-          throw new Error()
+          throw new SubcommandGroupNotFoundError(
+            interaction,
+            subcommandGroupName
+          )
         }
 
         subcommand = subcommandGroup.subcommands.find(
@@ -298,7 +318,7 @@ export function slashCommand<
       }
 
       if (!subcommand) {
-        throw new Error()
+        throw new SubcommandNotFoundError(interaction, subcommandName)
       }
 
       await subcommand.handle(interaction)
@@ -334,7 +354,7 @@ export function slashOption<T extends Options, TT extends boolean>(
         option instanceof SlashCommandIntegerOption
       )
     ) {
-      throw new Error()
+      throw new OptionNotAutocompletableError(option)
     }
 
     option.setAutocomplete(true)
@@ -393,8 +413,12 @@ export function groupedSubcommand<
       ({ option }) => option.name === autocompleteOption.name
     )
 
-    if (!option?.autocomplete) {
-      throw new Error()
+    if (!option) {
+      throw new AutocompleteOptionNotFoundError(interaction, autocompleteOption)
+    }
+
+    if (!option.autocomplete) {
+      throw new NoAutocompleteHandlerError(interaction)
     }
 
     return option.autocomplete(interaction, autocompleteOption as never)
@@ -449,8 +473,12 @@ export function subcommand<
       ({ option }) => option.name === autocompleteOption.name
     )
 
-    if (!option?.autocomplete) {
-      throw new Error()
+    if (!option) {
+      throw new AutocompleteOptionNotFoundError(interaction, autocompleteOption)
+    }
+
+    if (!option.autocomplete) {
+      throw new NoAutocompleteHandlerError(interaction)
     }
 
     return option.autocomplete(interaction, autocompleteOption as never)

@@ -11,6 +11,9 @@ import {
   type Channel,
   type Snowflake,
   ApplicationCommandType,
+  AutocompleteInteraction,
+  type AutocompleteFocusedOption,
+  ApplicationCommandOptionBase,
 } from "discord.js"
 import type { DateTime } from "luxon"
 
@@ -18,6 +21,12 @@ class CustomError extends Error {
   public constructor(message: string) {
     super(message)
     this.name = this.constructor.name
+  }
+}
+
+export class NotImplementedError extends CustomError {
+  public constructor(message: string) {
+    super(message)
   }
 }
 
@@ -52,7 +61,10 @@ export class CommandNotFoundByNameError extends CommandNotFoundError {
 }
 
 export class SubcommandGroupNotFoundError extends BotError {
-  public constructor(interaction: CommandInteraction, subcommandGroup: string) {
+  public constructor(
+    interaction: CommandInteraction | AutocompleteInteraction,
+    subcommandGroup: string
+  ) {
     super(
       `Couldn't find subcommand group ${subcommandGroup} for command ${interaction.commandName} (${interaction.commandId})`
     )
@@ -60,16 +72,38 @@ export class SubcommandGroupNotFoundError extends BotError {
 }
 
 export class SubcommandNotFoundError extends BotError {
-  public constructor(interaction: CommandInteraction, subcommand: string) {
+  public constructor(
+    interaction: CommandInteraction | AutocompleteInteraction,
+    subcommand: string
+  ) {
     super(
       `Couldn't find subcommand ${subcommand} for command ${interaction.commandName} (${interaction.commandId})`
     )
   }
 }
 
+export class OptionNotAutocompletableError extends BotError {
+  public constructor(option: ApplicationCommandOptionBase) {
+    super(
+      `Option "${option.name}" (type "${option.type}") doesn't support autocompletion`
+    )
+  }
+}
+
+export class AutocompleteOptionNotFoundError extends BotError {
+  public constructor(
+    interaction: AutocompleteInteraction,
+    option: AutocompleteFocusedOption
+  ) {
+    super(
+      `Command "${interaction.commandName}" doesn't have the "${option.name}" option`
+    )
+  }
+}
+
 export class NoAutocompleteHandlerError extends BotError {
-  public constructor(command: Command<ApplicationCommandType>) {
-    super(`Command "${command.builder.name}" has no autocomplete handler.`)
+  public constructor(interaction: AutocompleteInteraction) {
+    super(`Command "${interaction.commandName}" has no autocomplete handler.`)
   }
 }
 

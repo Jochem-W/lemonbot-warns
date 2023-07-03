@@ -1,3 +1,4 @@
+import { NotImplementedError } from "../errors.mjs"
 import {
   ContextMenuCommandBuilder,
   ApplicationCommandType,
@@ -56,7 +57,9 @@ export function contextMenuCommand<T extends ContextMenuCommandType>({
         await handle(interaction, interaction.targetUser as Value<T>)
         break
       default:
-        throw new Error()
+        throw new NotImplementedError(
+          `Context menu commands of this type haven't been implemented yet.`
+        )
     }
   }
 
