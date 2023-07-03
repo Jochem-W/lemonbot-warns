@@ -3,7 +3,7 @@ import {
   AuditLogNotFoundError,
   InvalidAuditLogEntryError,
 } from "../../errors.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import {
   fetchChannel,
   userDisplayName,
@@ -27,10 +27,10 @@ async function getAuditLogEntry(ban: GuildBan) {
   )
 }
 
-export const LogUnbans: Handler<"guildBanRemove"> = {
+export const LogUnbans = handler({
   event: "guildBanRemove",
   once: false,
-  async handle(ban: GuildBan) {
+  async handle(ban) {
     const prismaGuild = await Prisma.warningGuild.findFirst({
       where: { id: ban.guild.id },
     })
@@ -83,4 +83,4 @@ export const LogUnbans: Handler<"guildBanRemove"> = {
       ],
     })
   },
-}
+})

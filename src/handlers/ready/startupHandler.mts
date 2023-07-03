@@ -2,7 +2,7 @@ import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
 import { logError } from "../../errors.mjs"
 import { Jobs } from "../../jobs.mjs"
 import { Config } from "../../models/config.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { fetchChannel, uniqueName } from "../../utilities/discordUtilities.mjs"
 import { Variables } from "../../variables.mjs"
 import { ChannelType, Client, codeBlock, EmbedBuilder } from "discord.js"
@@ -10,7 +10,7 @@ import { mkdir, readFile, writeFile } from "fs/promises"
 
 type State = "UP" | "DOWN" | "RECREATE"
 
-export const StartupHandler: Handler<"ready"> = {
+export const StartupHandler = handler({
   event: "ready",
   once: true,
   async handle(client: Client<true>) {
@@ -57,7 +57,7 @@ export const StartupHandler: Handler<"ready"> = {
       job.start()
     }
   },
-}
+})
 
 function exitListener() {
   for (const job of Jobs) {

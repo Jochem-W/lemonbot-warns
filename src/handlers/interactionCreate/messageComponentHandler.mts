@@ -5,7 +5,7 @@ import {
 } from "../../errors.mjs"
 import { RegisteredButtons } from "../../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { MessageComponentInteraction, type Interaction } from "discord.js"
 
@@ -29,7 +29,7 @@ async function handleMessageComponent(
   await button(interaction, data.args)
 }
 
-export const MessageComponentHandler: Handler<"interactionCreate"> = {
+export const MessageComponentHandler = handler({
   event: "interactionCreate",
   once: false,
   async handle(interaction: Interaction) {
@@ -50,4 +50,4 @@ export const MessageComponentHandler: Handler<"interactionCreate"> = {
 
     return
   },
-}
+})

@@ -4,7 +4,7 @@ import {
   InvalidAuditLogEntryError,
 } from "../../errors.mjs"
 import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import {
   fetchChannel,
   tryFetchMember,
@@ -28,10 +28,10 @@ async function getAuditLogEntry(ban: GuildBan) {
   )
 }
 
-export const LogBans: Handler<"guildBanAdd"> = {
+export const LogBans = handler({
   event: "guildBanAdd",
   once: false,
-  async handle(ban: GuildBan) {
+  async handle(ban) {
     const prismaGuild = await Prisma.warningGuild.findFirst({
       where: { id: ban.guild.id },
     })
@@ -143,4 +143,4 @@ export const LogBans: Handler<"guildBanAdd"> = {
       })
     }
   },
-}
+})

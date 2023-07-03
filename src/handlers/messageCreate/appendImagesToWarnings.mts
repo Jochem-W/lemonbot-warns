@@ -1,12 +1,12 @@
 import { Prisma } from "../../clients.mjs"
 import { logError } from "../../errors.mjs"
 import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
 import { ChannelType, EmbedBuilder, Message } from "discord.js"
 
-export const AppendImagesToWarnings: Handler<"messageCreate"> = {
+export const AppendImagesToWarnings = handler({
   event: "messageCreate",
   once: false,
   async handle(message: Message) {
@@ -82,4 +82,4 @@ export const AppendImagesToWarnings: Handler<"messageCreate"> = {
       await channel.messages.edit(message.id, logMessage)
     }
   },
-}
+})

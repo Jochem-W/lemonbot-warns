@@ -3,10 +3,10 @@ import {
   CommandNotFoundByIdError,
   NoAutocompleteHandlerError,
 } from "../../errors.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import type { Interaction } from "discord.js"
 
-export const AutocompleteHandler: Handler<"interactionCreate"> = {
+export const AutocompleteHandler = handler({
   event: "interactionCreate",
   once: false,
   async handle(interaction: Interaction) {
@@ -25,4 +25,4 @@ export const AutocompleteHandler: Handler<"interactionCreate"> = {
 
     await command.autocomplete(interaction)
   },
-}
+})

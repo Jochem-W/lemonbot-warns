@@ -1,12 +1,12 @@
 import { Discord, Prisma } from "../../clients.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
-import { ChannelType, GuildMember, type PartialGuildMember } from "discord.js"
+import { ChannelType } from "discord.js"
 
-export const DeleteWarnChannelOnLeave: Handler<"guildMemberRemove"> = {
+export const DeleteWarnChannelOnLeave = handler({
   event: "guildMemberRemove",
   once: false,
-  async handle(member: GuildMember | PartialGuildMember) {
+  async handle(member) {
     const prismaGuild = await Prisma.warningGuild.findFirst({
       where: { id: member.guild.id },
     })
@@ -42,4 +42,4 @@ export const DeleteWarnChannelOnLeave: Handler<"guildMemberRemove"> = {
       }
     }
   },
-}
+})

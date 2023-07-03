@@ -4,7 +4,7 @@ import {
   NoPermissionError,
   logError,
 } from "../../errors.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { CommandInteraction, type Interaction } from "discord.js"
 
@@ -27,7 +27,7 @@ async function handleCommand(interaction: CommandInteraction) {
   await command.handle(interaction as never)
 }
 
-export const CommandHandler: Handler<"interactionCreate"> = {
+export const CommandHandler = handler({
   event: "interactionCreate",
   once: false,
   async handle(interaction: Interaction) {
@@ -55,4 +55,4 @@ export const CommandHandler: Handler<"interactionCreate"> = {
 
     return
   },
-}
+})

@@ -1,7 +1,7 @@
 import { logError, UnregisteredNameError } from "../../errors.mjs"
 import { RegisteredModals } from "../../interactable.mjs"
 import { InteractionScope, stringToCustomId } from "../../models/customId.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { makeErrorEmbed } from "../../utilities/embedUtilities.mjs"
 import { ModalSubmitInteraction, type Interaction } from "discord.js"
 
@@ -19,7 +19,7 @@ async function handleModalSubmit(interaction: ModalSubmitInteraction) {
   await modal(interaction, data.args)
 }
 
-export const ModalHandler: Handler<"interactionCreate"> = {
+export const ModalHandler = handler({
   event: "interactionCreate",
   once: false,
   async handle(interaction: Interaction) {
@@ -40,4 +40,4 @@ export const ModalHandler: Handler<"interactionCreate"> = {
 
     return
   },
-}
+})

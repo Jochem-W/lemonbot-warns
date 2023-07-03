@@ -1,10 +1,10 @@
 import { Prisma } from "../../clients.mjs"
-import type { Handler } from "../../types/handler.mjs"
+import { handler } from "../../models/handler.mjs"
 import { upload } from "../../utilities/s3Utilities.mjs"
 import { Variables } from "../../variables.mjs"
 import type { Message } from "discord.js"
 
-export const UploadAttachments: Handler<"messageCreate"> = {
+export const UploadAttachments = handler({
   event: "messageCreate",
   once: false,
   async handle(message: Message) {
@@ -30,4 +30,4 @@ export const UploadAttachments: Handler<"messageCreate"> = {
       )
     }
   },
-}
+})
