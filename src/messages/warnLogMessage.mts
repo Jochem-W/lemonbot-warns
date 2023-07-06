@@ -54,8 +54,7 @@ export async function warnLogMessage(
       notificationText = "✅ (via DMs)"
       break
     case "DMS_DISABLED":
-      notificationText =
-        "❌ (the user has DMs disabled and the penalty disallows notifying using a channel)"
+      notificationText = "❌ (the user has DMs disabled)"
       break
     case "CHANNEL":
       notificationText = "✅ (via channel)"
