@@ -68,7 +68,7 @@ export const WarnCommand = slashCommand({
         .setName("penalty")
         .setDescription("The penalty to give to the user")
         .setChoices(
-          ...(await Prisma.penalty.findMany()).map((p) => ({
+          ...(await Prisma.penalty.findMany({where: {hidden: false}})).map((p) => ({
             name: p.name,
             value: p.name,
           }))
