@@ -1,8 +1,8 @@
-import { Config } from "../../models/config.mjs"
-import { handler } from "../../models/handler.mjs"
+import { Config } from "../models/config.mjs"
+import { handler } from "../models/handler.mjs"
 import { EmbedBuilder, userMention } from "discord.js"
 
-export const ReplyToDMs = handler({
+export const ReplyToDmsHandler = handler({
   event: "messageCreate",
   once: false,
   async handle(message) {

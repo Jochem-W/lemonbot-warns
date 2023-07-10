@@ -1,9 +1,9 @@
-import { Prisma } from "../../clients.mjs"
-import { handler } from "../../models/handler.mjs"
-import { upload } from "../../utilities/s3Utilities.mjs"
-import { Variables } from "../../variables.mjs"
+import { Prisma } from "../clients.mjs"
+import { handler } from "../models/handler.mjs"
+import { upload } from "../utilities/s3Utilities.mjs"
+import { Variables } from "../variables.mjs"
 
-export const UploadAttachments = handler({
+export const UploadAttachmentsHandler = handler({
   event: "messageCreate",
   once: false,
   async handle(message) {

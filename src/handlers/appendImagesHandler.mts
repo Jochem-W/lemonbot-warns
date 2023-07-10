@@ -1,12 +1,12 @@
-import { Prisma } from "../../clients.mjs"
-import { logError } from "../../errors.mjs"
-import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
-import { handler } from "../../models/handler.mjs"
-import { fetchChannel } from "../../utilities/discordUtilities.mjs"
-import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
+import { Prisma } from "../clients.mjs"
+import { logError } from "../errors.mjs"
+import { warnLogMessage } from "../messages/warnLogMessage.mjs"
+import { handler } from "../models/handler.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
+import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import { ChannelType, EmbedBuilder } from "discord.js"
 
-export const AppendImagesToWarnings = handler({
+export const AppendImagesHandler = handler({
   event: "messageCreate",
   once: false,
   async handle(message) {

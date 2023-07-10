@@ -1,8 +1,8 @@
-import { GitHubClient, Prisma } from "../../clients.mjs"
-import { Config } from "../../models/config.mjs"
-import { handler } from "../../models/handler.mjs"
-import { fetchChannel, uniqueName } from "../../utilities/discordUtilities.mjs"
-import { Variables } from "../../variables.mjs"
+import { GitHubClient, Prisma } from "../clients.mjs"
+import { Config } from "../models/config.mjs"
+import { handler } from "../models/handler.mjs"
+import { fetchChannel, uniqueName } from "../utilities/discordUtilities.mjs"
+import { Variables } from "../variables.mjs"
 import { ChannelType, Client, codeBlock, EmbedBuilder } from "discord.js"
 import { mkdir, readFile, writeFile } from "fs/promises"
 

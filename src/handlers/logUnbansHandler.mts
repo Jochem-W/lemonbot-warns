@@ -1,13 +1,10 @@
-import { Prisma } from "../../clients.mjs"
-import {
-  AuditLogNotFoundError,
-  InvalidAuditLogEntryError,
-} from "../../errors.mjs"
-import { handler } from "../../models/handler.mjs"
+import { Prisma } from "../clients.mjs"
+import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
+import { handler } from "../models/handler.mjs"
 import {
   fetchChannel,
   userDisplayName,
-} from "../../utilities/discordUtilities.mjs"
+} from "../utilities/discordUtilities.mjs"
 import { AuditLogEvent, ChannelType, EmbedBuilder, GuildBan } from "discord.js"
 
 async function getAuditLogEntry(ban: GuildBan) {
@@ -27,7 +24,7 @@ async function getAuditLogEntry(ban: GuildBan) {
   )
 }
 
-export const LogUnbans = handler({
+export const LogUnbansHandler = handler({
   event: "guildBanRemove",
   once: false,
   async handle(ban) {

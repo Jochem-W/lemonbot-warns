@@ -1,9 +1,9 @@
-import { Prisma } from "../../clients.mjs"
-import { handler } from "../../models/handler.mjs"
-import { fetchChannel } from "../../utilities/discordUtilities.mjs"
+import { Prisma } from "../clients.mjs"
+import { handler } from "../models/handler.mjs"
+import { fetchChannel } from "../utilities/discordUtilities.mjs"
 import { ChannelType } from "discord.js"
 
-export const DeleteWarnChannelOnLeave = handler({
+export const DeleteWarnChannelHandler = handler({
   event: "guildMemberRemove",
   once: false,
   async handle(member) {

@@ -1,5 +1,5 @@
-import { RegisteredCommands } from "../../commands.mjs"
-import { Components } from "../../components.mjs"
+import { RegisteredCommands } from "../commands.mjs"
+import { Components } from "../components.mjs"
 import {
   CommandNotFoundError,
   CommandTypeMismatchError,
@@ -7,10 +7,10 @@ import {
   InvalidCustomIdError,
   ModalNotFoundError,
   logError,
-} from "../../errors.mjs"
-import { Modals } from "../../modals.mjs"
-import { handler } from "../../models/handler.mjs"
-import { makeErrorMessage } from "../../utilities/embedUtilities.mjs"
+} from "../errors.mjs"
+import { Modals } from "../modals.mjs"
+import { handler } from "../models/handler.mjs"
+import { makeErrorMessage } from "../utilities/embedUtilities.mjs"
 import {
   AutocompleteInteraction,
   CommandInteraction,

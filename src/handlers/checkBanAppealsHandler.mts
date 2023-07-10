@@ -1,16 +1,16 @@
-import { Forms, Prisma } from "../../clients.mjs"
-import { InvalidDateTimeError, logError } from "../../errors.mjs"
-import { warningsMessage } from "../../messages/warningsMessage.mjs"
-import { Config } from "../../models/config.mjs"
-import { handler } from "../../models/handler.mjs"
+import { Forms, Prisma } from "../clients.mjs"
+import { InvalidDateTimeError, logError } from "../errors.mjs"
+import { warningsMessage } from "../messages/warningsMessage.mjs"
+import { Config } from "../models/config.mjs"
+import { handler } from "../models/handler.mjs"
 import {
   fetchChannel,
   userDisplayName,
-} from "../../utilities/discordUtilities.mjs"
+} from "../utilities/discordUtilities.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
-} from "../../utilities/googleForms.mjs"
+} from "../utilities/googleForms.mjs"
 import { CronJob } from "cron"
 import {
   ChannelType,
