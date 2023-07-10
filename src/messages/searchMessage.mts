@@ -18,7 +18,26 @@ const searchUpdate = component({
   async handle(interaction, key, page) {
     const warnings = WarningsCache.get(key)
     if (warnings === undefined) {
-      // disable
+      const rows = interaction.message.components.map(
+        (row) =>
+          new ActionRowBuilder<MessageActionRowComponentBuilder>(row.toJSON())
+      )
+
+      for (const row of rows) {
+        for (const component of row.components) {
+          component.setDisabled(true)
+        }
+      }
+
+      await interaction.update({ components: rows })
+      await interaction.followUp({
+        ephemeral: true,
+        embeds: [
+          new EmbedBuilder()
+            .setColor(0xff0000)
+            .setTitle("This command has expired!"),
+        ],
+      })
       return
     }
 
