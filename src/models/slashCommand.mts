@@ -28,7 +28,10 @@ import {
   ApplicationCommandOptionType,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
+  ApplicationCommandType,
 } from "discord.js"
+
+// Please don't blatantly copy this. I worked very hard on everything.
 
 type Options =
   | SlashCommandStringOption
@@ -85,6 +88,7 @@ type Handler<
   ...values: readonly [...InferOptionValuesWithRequired<T>]
 ) => Promise<void>
 
+// TODO: fix return type to be string or number correctly
 type AutocompleteHandler<T extends Options> = T extends
   | SlashCommandStringOption
   | SlashCommandIntegerOption
@@ -92,15 +96,17 @@ type AutocompleteHandler<T extends Options> = T extends
   ? (
       interaction: AutocompleteInteraction,
       value: AutocompleteFocusedOption & { type: T["type"] }
-    ) => ApplicationCommandOptionChoiceData[]
+    ) =>
+      | ApplicationCommandOptionChoiceData[]
+      | Promise<ApplicationCommandOptionChoiceData[]>
   : never
 
 type SlashCommandInput<T extends readonly SlashOption<Options, boolean>[]> =
   | {
       name: Lowercase<string>
       description: string
-      defaultMemberPermissions?: bigint
-      dmPermission?: boolean
+      defaultMemberPermissions: bigint | null
+      dmPermission: boolean
       options?: [...T]
       handle: Handler<T>
       transform?: (builder: SlashCommandBuilder) => void
@@ -108,8 +114,8 @@ type SlashCommandInput<T extends readonly SlashOption<Options, boolean>[]> =
   | {
       name: Lowercase<string>
       description: string
-      defaultMemberPermissions?: bigint
-      dmPermission?: boolean
+      defaultMemberPermissions: bigint | null
+      dmPermission: boolean
       subcommands?: readonly ReturnType<typeof subcommand>[]
       subcommandGroups: readonly ReturnType<typeof subcommandGroup>[]
       transform?: (builder: SlashCommandBuilder) => void
@@ -117,8 +123,8 @@ type SlashCommandInput<T extends readonly SlashOption<Options, boolean>[]> =
   | {
       name: Lowercase<string>
       description: string
-      defaultMemberPermissions?: bigint
-      dmPermission?: boolean
+      defaultMemberPermissions: bigint | null
+      dmPermission: boolean
       subcommands: readonly ReturnType<typeof subcommand>[]
       subcommandGroups?: readonly ReturnType<typeof subcommandGroup>[]
       transform?: (builder: SlashCommandBuilder) => void
@@ -211,8 +217,8 @@ export function slashCommand<
   const builder = new SlashCommandBuilder()
     .setName(name)
     .setDescription(description)
-    .setDefaultMemberPermissions(defaultMemberPermissions ?? 0)
-    .setDMPermission(dmPermission ?? false)
+    .setDefaultMemberPermissions(defaultMemberPermissions)
+    .setDMPermission(dmPermission)
 
   let getOptionsAndHandle
   let autocomplete
@@ -239,7 +245,7 @@ export function slashCommand<
       }
 
       await interaction.respond(
-        option.autocomplete(interaction, autocompleteOption as never)
+        await option.autocomplete(interaction, autocompleteOption as never)
       )
     }
 
@@ -291,7 +297,7 @@ export function slashCommand<
         throw new SubcommandNotFoundError(interaction, subcommandName)
       }
 
-      await interaction.respond(subcommand.autocomplete(interaction))
+      await interaction.respond(await subcommand.autocomplete(interaction))
     }
 
     getOptionsAndHandle = async (interaction: ChatInputCommandInteraction) => {
@@ -329,7 +335,12 @@ export function slashCommand<
     transform(builder)
   }
 
-  return { builder, handle: getOptionsAndHandle, autocomplete }
+  return {
+    type: ApplicationCommandType.ChatInput as ApplicationCommandType.ChatInput,
+    builder,
+    handle: getOptionsAndHandle,
+    autocomplete,
+  }
 }
 
 type SlashOption<T extends Options, TT extends boolean> = {
@@ -382,21 +393,6 @@ export function slashOption<T extends Options, TT extends boolean>(
   } as SlashOption<T, TT>
 }
 
-type SubcommandHandler<T extends readonly SlashOption<Options, boolean>[]> = (
-  interaction: ChatInputCommandInteraction,
-  subcommand: string,
-  ...values: readonly [...InferOptionValuesWithRequired<T>]
-) => Promise<void>
-
-type GroupedSubcommandHandler<
-  T extends readonly SlashOption<Options, boolean>[]
-> = (
-  interaction: ChatInputCommandInteraction,
-  subcommandGroup: string,
-  subcommand: string,
-  ...values: [...InferOptionValuesWithRequired<T>]
-) => Promise<void>
-
 export function groupedSubcommand<
   T extends readonly SlashOption<Options, boolean>[]
 >({
@@ -409,7 +405,7 @@ export function groupedSubcommand<
   name: Lowercase<string>
   description: string
   options?: [...T]
-  handle: GroupedSubcommandHandler<T>
+  handle: Handler<T>
   transform?: (builder: SlashCommandSubcommandBuilder) => void
 }) {
   const builder = new SlashCommandSubcommandBuilder()
@@ -446,12 +442,7 @@ export function groupedSubcommand<
       getOptionValue(interaction, option, required)
     ) ?? []) as [...InferOptionValuesWithRequired<T>]
 
-    await handle(
-      interaction,
-      interaction.options.getSubcommandGroup(true),
-      interaction.options.getSubcommand(true),
-      ...values
-    )
+    await handle(interaction, ...values)
   }
 
   return { builder, handle: getOptionsAndHandle, autocomplete, grouped: true }
@@ -467,7 +458,7 @@ export function subcommand<T extends readonly SlashOption<Options, boolean>[]>({
   name: Lowercase<string>
   description: string
   options?: [...T]
-  handle: SubcommandHandler<T>
+  handle: Handler<T>
   transform?: (builder: SlashCommandSubcommandBuilder) => void
 }) {
   const builder = new SlashCommandSubcommandBuilder()
@@ -504,11 +495,7 @@ export function subcommand<T extends readonly SlashOption<Options, boolean>[]>({
       getOptionValue(interaction, option, required)
     ) ?? []) as [...InferOptionValuesWithRequired<T>]
 
-    await handle(
-      interaction,
-      interaction.options.getSubcommand(true),
-      ...values
-    )
+    await handle(interaction, ...values)
   }
 
   return { builder, handle: getOptionsAndHandle, autocomplete }

@@ -4,7 +4,6 @@ import { auth, forms } from "@googleapis/forms"
 import { sheets } from "@googleapis/sheets"
 import { Octokit } from "@octokit/rest"
 import { PrismaClient } from "@prisma/client"
-import { Client, GatewayIntentBits, Partials } from "discord.js"
 
 const GoogleAuth = new auth.GoogleAuth({
   scopes: [
@@ -25,24 +24,4 @@ export const S3 = new S3Client({
 })
 export const Forms = forms({ version: "v1", auth: GoogleAuth })
 export const Sheets = sheets({ version: "v4", auth: GoogleAuth })
-export const Discord = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildBans,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-  partials: [
-    Partials.User,
-    Partials.Channel,
-    Partials.GuildMember,
-    Partials.Message,
-    Partials.Reaction,
-    Partials.GuildScheduledEvent,
-    Partials.ThreadMember,
-  ],
-})
-Discord.rest.setToken(Variables.discordBotToken)
 export const GitHubClient = new Octokit({ auth: Variables.githubToken })

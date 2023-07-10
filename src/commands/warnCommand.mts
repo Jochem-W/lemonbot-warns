@@ -1,16 +1,17 @@
-import { DismissWarnButton } from "../buttons/dismissWarnButton.mjs"
-import { Discord, Prisma } from "../clients.mjs"
+import { Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
+import { originalUserOnlyMessage } from "../messages/originalUserOnlyMessage.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { warnMessage } from "../messages/warnMessage.mjs"
+import { component } from "../models/component.mjs"
 import { slashCommand, slashOption } from "../models/slashCommand.mjs"
-import { button } from "../utilities/button.mjs"
 import {
   fetchChannel,
   tryFetchMember,
   uniqueName,
   userDisplayName,
 } from "../utilities/discordUtilities.mjs"
+import { interactionGuild } from "../utilities/interactionUtilities.mjs"
 import { uploadAttachment } from "../utilities/s3Utilities.mjs"
 import type {
   Image,
@@ -38,6 +39,7 @@ import {
   SlashCommandStringOption,
   SlashCommandBooleanOption,
   SlashCommandAttachmentOption,
+  ComponentType,
 } from "discord.js"
 import { customAlphabet } from "nanoid"
 import nanoidDictionary from "nanoid-dictionary"
@@ -45,10 +47,33 @@ import nanoidDictionary from "nanoid-dictionary"
 const { nolookalikesSafe } = nanoidDictionary
 const nanoid = customAlphabet(nolookalikesSafe)
 
+const dismissWarnButton = component({
+  type: ComponentType.Button,
+  name: "dismiss-warn",
+  async handle(interaction, channelId, userId) {
+    if (interaction.user.id !== userId) {
+      await interaction.reply({
+        ...originalUserOnlyMessage(interaction.componentType),
+        ephemeral: true,
+      })
+      return
+    }
+
+    const channel = await fetchChannel(
+      interaction.client,
+      channelId,
+      ChannelType.GuildText
+    )
+    await channel.delete()
+    await interaction.deferUpdate()
+  },
+})
+
 export const WarnCommand = slashCommand({
   name: "warn",
   description: "Warn a user",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   options: [
     slashOption(
       true,
@@ -68,10 +93,12 @@ export const WarnCommand = slashCommand({
         .setName("penalty")
         .setDescription("The penalty to give to the user")
         .setChoices(
-          ...(await Prisma.penalty.findMany({where: {hidden: false}})).map((p) => ({
-            name: p.name,
-            value: p.name,
-          }))
+          ...(await Prisma.penalty.findMany({ where: { hidden: false } })).map(
+            (p) => ({
+              name: p.name,
+              value: p.name,
+            })
+          )
         )
     ),
     slashOption(
@@ -120,8 +147,7 @@ export const WarnCommand = slashCommand({
       throw new GuildOnlyError()
     }
 
-    const guild =
-      interaction.guild ?? (await Discord.guilds.fetch(interaction.guildId))
+    const guild = await interactionGuild(interaction, true)
     const prismaGuild = await Prisma.warningGuild.findFirstOrThrow({
       where: { id: guild.id },
     })
@@ -130,7 +156,7 @@ export const WarnCommand = slashCommand({
       ephemeral: interaction.channelId !== prismaGuild.warnLogsChannel,
     })
 
-    const targetMember = await tryFetchMember(guild, targetUser.id)
+    const targetMember = await tryFetchMember(guild, targetUser)
     const attachments = [image, image2, image3, image4].filter(
       (r) => r !== null
     ) as Attachment[]
@@ -194,9 +220,10 @@ export const WarnCommand = slashCommand({
       },
     })
 
-    const logMessage = await warnLogMessage(warning)
+    const logMessage = await warnLogMessage(interaction.client, warning)
 
     let channel = await fetchChannel(
+      interaction.client,
       prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )
@@ -219,11 +246,17 @@ export const WarnCommand = slashCommand({
       where: { id: { not: guild.id } },
     })
     for (const otherGuild of otherGuilds) {
-      if (!(await tryFetchMember(otherGuild.id, warning.userId))) {
+      if (
+        !(await tryFetchMember(
+          { client: interaction.client, id: otherGuild.id },
+          warning.userId
+        ))
+      ) {
         continue
       }
 
       channel = await fetchChannel(
+        interaction.client,
         otherGuild.warnLogsChannel,
         ChannelType.GuildText
       )
@@ -258,7 +291,7 @@ async function notify(
     return "NOT_IN_SERVER"
   }
 
-  const message = await warnMessage(warning)
+  const message = await warnMessage(target.client, warning)
 
   try {
     await target.send(message)
@@ -303,9 +336,7 @@ async function notify(
         new ButtonBuilder()
           .setLabel("Dismiss")
           .setStyle(ButtonStyle.Danger)
-          .setCustomId(
-            button(DismissWarnButton, [newChannel.id, warning.userId])
-          )
+          .setCustomId(dismissWarnButton(newChannel.id, warning.userId))
       ),
     ],
   })
@@ -318,7 +349,7 @@ async function penalise(
   warning: Warning & { penalty: Penalty },
   guild: Guild
 ) {
-  const by = await Discord.users.fetch(warning.createdBy)
+  const by = await guild.client.users.fetch(warning.createdBy)
   const reason = `By ${userDisplayName(by)}`
 
   if (warning.penalty.ban) {

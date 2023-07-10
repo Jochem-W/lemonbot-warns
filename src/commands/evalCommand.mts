@@ -58,6 +58,7 @@ export const EvalCommand = slashCommand({
   name: "eval",
   description: "Run arbitrary code",
   defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  dmPermission: false,
   options: [
     slashOption(
       true,

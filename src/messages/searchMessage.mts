@@ -1,14 +1,32 @@
-import { Discord } from "../clients.mjs"
-import { customIdToString, InteractionScope } from "../models/customId.mjs"
+import { WarningsCache } from "../commands/searchCommand.mjs"
+import { component } from "../models/component.mjs"
 import { userDisplayName } from "../utilities/discordUtilities.mjs"
 import type { Penalty, Warning } from "@prisma/client"
 import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  Client,
+  ComponentType,
   EmbedBuilder,
   type MessageActionRowComponentBuilder,
 } from "discord.js"
+
+const searchUpdate = component({
+  type: ComponentType.Button,
+  name: "search",
+  async handle(interaction, key, page) {
+    const warnings = WarningsCache.get(key)
+    if (warnings === undefined) {
+      // disable
+      return
+    }
+
+    await interaction.update(
+      await searchMessage(interaction.client, key, warnings, parseInt(page))
+    )
+  },
+})
 
 function calculateStart(messages: { embeds: EmbedBuilder[] }[], page: number) {
   let start = 0
@@ -34,6 +52,8 @@ function calculateStart(messages: { embeds: EmbedBuilder[] }[], page: number) {
 }
 
 export async function searchMessage(
+  client: Client<true>,
+  key: string,
   warnings: {
     embeds: EmbedBuilder[]
     warning: Warning & { penalty: Penalty }
@@ -63,8 +83,8 @@ export async function searchMessage(
       verb = "Warned"
     }
 
-    const userOrMember = await Discord.users.fetch(warning.warning.userId)
-    const warnedBy = await Discord.users.fetch(warning.warning.createdBy)
+    const userOrMember = await client.users.fetch(warning.warning.userId)
+    const warnedBy = await client.users.fetch(warning.warning.createdBy)
     warning.embeds[0]?.setAuthor({
       name: `${verb} ${userDisplayName(userOrMember)}`,
       iconURL: userOrMember.displayAvatarURL(),
@@ -85,22 +105,12 @@ export async function searchMessage(
       new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
         new ButtonBuilder()
           .setStyle(ButtonStyle.Primary)
-          .setCustomId(
-            customIdToString({
-              scope: InteractionScope.Collector,
-              name: "previous",
-            })
-          )
+          .setCustomId(searchUpdate(key, (page - 1).toString(10)))
           .setDisabled(start === 0)
           .setEmoji("⬅️"),
         new ButtonBuilder()
           .setStyle(ButtonStyle.Primary)
-          .setCustomId(
-            customIdToString({
-              scope: InteractionScope.Collector,
-              name: "next",
-            })
-          )
+          .setCustomId(searchUpdate(key, (page + 1).toString(10)))
           .setDisabled(end >= total)
           .setEmoji("➡️"),
       ]),

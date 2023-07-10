@@ -1,15 +1,16 @@
-import { Discord, Forms, Prisma } from "../clients.mjs"
-import { InvalidDateTimeError, logError } from "../errors.mjs"
-import { warningsMessage } from "../messages/warningsMessage.mjs"
-import { Config } from "../models/config.mjs"
+import { Forms, Prisma } from "../../clients.mjs"
+import { InvalidDateTimeError, logError } from "../../errors.mjs"
+import { warningsMessage } from "../../messages/warningsMessage.mjs"
+import { Config } from "../../models/config.mjs"
+import { handler } from "../../models/handler.mjs"
 import {
   fetchChannel,
   userDisplayName,
-} from "../utilities/discordUtilities.mjs"
+} from "../../utilities/discordUtilities.mjs"
 import {
   getFirstTextAnswer,
   getFormEditUrl,
-} from "../utilities/googleForms.mjs"
+} from "../../utilities/googleForms.mjs"
 import { CronJob } from "cron"
 import {
   ChannelType,
@@ -21,14 +22,15 @@ import {
   time,
   TimestampStyles,
   type Snowflake,
+  Client,
 } from "discord.js"
 import { DateTime } from "luxon"
 
-async function findBans(userId: Snowflake) {
+async function findBans(client: Client<true>, userId: Snowflake) {
   const results: GuildBan[] = []
   const guilds = await Prisma.warningGuild.findMany()
   for (const prismaGuild of guilds) {
-    const guild = await Discord.guilds.fetch(prismaGuild.id)
+    const guild = await client.guilds.fetch(prismaGuild.id)
     try {
       results.push(await guild.bans.fetch(userId))
     } catch (e) {
@@ -44,7 +46,7 @@ async function findBans(userId: Snowflake) {
   return results
 }
 
-async function onTick() {
+async function onTick(client: Client<true>) {
   const end = DateTime.now().toUTC().startOf("minute")
   const start = end.minus({ minutes: 1 })
   const timestamp = start.toISO()
@@ -79,7 +81,7 @@ async function onTick() {
       formResponse,
       Config.banAppealForm.questions.discordId
     )
-    const user = await Discord.users.fetch(userId)
+    const user = await client.users.fetch(userId)
 
     const embed = new EmbedBuilder()
       .setAuthor({
@@ -150,7 +152,7 @@ async function onTick() {
           : claimedBanReason,
     })
 
-    const bans = await findBans(user.id)
+    const bans = await findBans(client, user.id)
     if (bans.length > 0) {
       embed.addFields({
         name: "Audit log ban reasons",
@@ -190,6 +192,7 @@ async function onTick() {
 
     for (const prismaGuild of loggingGuilds) {
       const appealsChannel = await fetchChannel(
+        client,
         prismaGuild.appealsChannel,
         ChannelType.GuildText
       )
@@ -208,10 +211,17 @@ async function onTick() {
   }
 }
 
-export const CheckBanAppealFormJob = new CronJob("* * * * *", () => {
-  onTick().catch((e) => {
-    if (e instanceof Error) {
-      void logError(e)
-    }
-  })
+export const CheckBanAppealsHandler = handler({
+  event: "ready",
+  once: true,
+  handle(client) {
+    const job = new CronJob("* * * * *", () => {
+      onTick(client).catch((e) =>
+        e instanceof Error ? void logError(client, e) : console.error(e)
+      )
+    })
+    job.start()
+
+    process.on("exit", () => job.stop())
+  },
 })

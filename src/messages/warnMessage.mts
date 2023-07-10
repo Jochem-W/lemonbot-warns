@@ -1,4 +1,3 @@
-import { Discord } from "../clients.mjs"
 import { Config } from "../models/config.mjs"
 import { userDisplayName, warningUrl } from "../utilities/discordUtilities.mjs"
 import { getFormResponderUri } from "../utilities/googleForms.mjs"
@@ -15,12 +14,13 @@ import {
   hyperlink,
   italic,
   type EmbedAuthorOptions,
+  Client,
 } from "discord.js"
 
 const formUrl = await getFormResponderUri(Config.banAppealForm.id)
-const mailUser = await Discord.users.fetch(Config.mailUserId)
 
 export async function warnMessage(
+  client: Client<true>,
   warning: Warning & {
     penalty: Penalty
     images: Image[]
@@ -28,6 +28,8 @@ export async function warnMessage(
     messages: WarningLogMessage[]
   }
 ) {
+  const mailUser = await client.users.fetch(Config.mailUserId)
+
   let verb
   if (warning.penalty.ban) {
     verb = "banned from"
@@ -54,7 +56,7 @@ export async function warnMessage(
     embeds.push(mainEmbed)
   }
 
-  const guild = await Discord.guilds.fetch(warning.guild.id)
+  const guild = await client.guilds.fetch(warning.guild.id)
   const author: EmbedAuthorOptions = {
     name: `You have been ${verb} ${guild.name}`,
   }

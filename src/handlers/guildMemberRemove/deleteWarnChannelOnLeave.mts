@@ -1,4 +1,4 @@
-import { Discord, Prisma } from "../../clients.mjs"
+import { Prisma } from "../../clients.mjs"
 import { handler } from "../../models/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { ChannelType } from "discord.js"
@@ -13,9 +13,10 @@ export const DeleteWarnChannelOnLeave = handler({
     if (!prismaGuild) {
       return
     }
-    const user = await Discord.users.fetch(member.id)
+    const user = await member.client.users.fetch(member.id)
 
     const warnCategory = await fetchChannel(
+      member.client,
       prismaGuild.warnCategory,
       ChannelType.GuildCategory,
       { force: true }

@@ -1,8 +1,6 @@
 import { Prisma } from "../clients.mjs"
 import { GuildOnlyError } from "../errors.mjs"
 import { searchMessage } from "../messages/searchMessage.mjs"
-import { stringToCustomId } from "../models/customId.mjs"
-import { InteractionCollectorHelper } from "../models/interactionCollectorHelper.mjs"
 import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
 import {
@@ -10,11 +8,21 @@ import {
   PermissionFlagsBits,
   SlashCommandStringOption,
 } from "discord.js"
+import { LRUCache } from "lru-cache"
+import { nanoid } from "nanoid"
+
+export const WarningsCache = new LRUCache<
+  string,
+  Parameters<typeof searchMessage>[2]
+>({
+  max: 20,
+})
 
 export const SearchCommand = slashCommand({
   name: "search",
   description: "Search through all warning descriptions (W.I.P.)",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   options: [
     slashOption(
       true,
@@ -47,7 +55,7 @@ export const SearchCommand = slashCommand({
       },
     })
 
-    const warningMessages: Parameters<typeof searchMessage>[0] = []
+    const warningMessages: Parameters<typeof searchMessage>[2] = []
     for (const warning of warnings) {
       const embeds = warning.images.map((image) =>
         new EmbedBuilder().setImage(image.url)
@@ -66,26 +74,11 @@ export const SearchCommand = slashCommand({
       warningMessages.push({ embeds, warning })
     }
 
-    let skip = 0
-    const collector = await InteractionCollectorHelper.create(interaction)
-    collector.addListener(async (collected) => {
-      if (!collected.isButton()) {
-        return
-      }
+    const key = nanoid()
+    WarningsCache.set(key, warningMessages)
 
-      const customId = stringToCustomId(collected.customId)
-      switch (customId.name) {
-        case "next":
-          skip++
-          break
-        case "previous":
-          skip--
-          break
-      }
-
-      await collected.update(await searchMessage(warningMessages, skip))
-    })
-
-    await interaction.editReply(await searchMessage(warningMessages, skip))
+    await interaction.editReply(
+      await searchMessage(interaction.client, key, warningMessages, 0)
+    )
   },
 })

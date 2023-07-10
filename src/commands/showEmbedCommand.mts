@@ -12,6 +12,7 @@ export const ShowEmbedCommand = slashCommand({
   name: "show",
   description: "Show various warning embeds",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   options: [
     slashOption(
       true,
@@ -47,13 +48,13 @@ export const ShowEmbedCommand = slashCommand({
     switch (type) {
       case "warn-dm":
         await interaction.reply({
-          ...(await warnMessage(warning)),
+          ...(await warnMessage(interaction.client, warning)),
           ephemeral,
         })
         break
       case "warn-log":
         await interaction.reply({
-          ...(await warnLogMessage(warning)),
+          ...(await warnLogMessage(interaction.client, warning)),
           ephemeral,
         })
         break

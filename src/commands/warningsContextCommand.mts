@@ -1,4 +1,4 @@
-import { BotError, GuildOnlyError } from "../errors.mjs"
+import { GuildOnlyError, NoDataError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { contextMenuCommand } from "../models/contextMenuCommand.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
@@ -8,6 +8,7 @@ export const WarningsContextCommand = contextMenuCommand({
   type: ApplicationCommandType.User,
   name: "List warnings",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   async handle(interaction, user) {
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
@@ -17,7 +18,7 @@ export const WarningsContextCommand = contextMenuCommand({
 
     const messages = await warningsMessage(user)
     if (!messages[0]) {
-      throw new BotError("Response has 0 messages")
+      throw new NoDataError("Response has no messages")
     }
 
     await interaction.reply({ ...messages[0], ephemeral })

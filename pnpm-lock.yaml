@@ -46,7 +46,10 @@ dependencies:
     version: 6.4.0
   discord.js:
     specifier: dev
-    version: 14.11.1-dev.1688385870-75d91b5.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+    version: 14.11.1-dev.1688990693-09b0382.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+  lru-cache:
+    specifier: ^10.0.0
+    version: 10.0.0
   luxon:
     specifier: ^3.3.0
     version: 3.3.0
@@ -886,12 +889,12 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@discordjs/builders@1.6.4-dev.1688385876-75d91b5.0:
-    resolution: {integrity: sha512-/oklSxkXRXD1zv5A8ZQIQ1a98KxPvFNYiPOq8+i2C5RKFKjwc7cJTbp5NNTmdYn5NLWXcJqOhHOaZ14wNQhIhg==}
+  /@discordjs/builders@1.6.4-dev.1688990691-09b0382.0:
+    resolution: {integrity: sha512-F5pcWO+5BKb4z+ZPjf+NNUS8b8i3cjUnPNb/e5gEi3Ly3ucEXyynb0/pAiKhzoECpbCS6+aRrX7d+/Nzacau+g==}
     engines: {node: '>=16.9.0'}
     dependencies:
-      '@discordjs/formatters': 0.3.2-dev.1688385880-75d91b5.0
-      '@discordjs/util': 0.3.2-dev.1688385875-75d91b5.0
+      '@discordjs/formatters': 0.3.2-dev.1688990676-09b0382.0
+      '@discordjs/util': 0.3.2-dev.1688990682-09b0382.0
       '@sapphire/shapeshift': 3.9.2
       discord-api-types: 0.37.47
       fast-deep-equal: 3.1.3
@@ -899,24 +902,24 @@ packages:
       tslib: 2.6.0
     dev: false
 
-  /@discordjs/collection@1.5.2-dev.1688385881-75d91b5.0:
-    resolution: {integrity: sha512-Qwjp7tNzwDqdnvTJBXQlHJhEmpXdQRNLy0Vi/GfG22E2DqNNiErf1sQ5TzcCYLXKS0l4Dy57BBMhIcx9clDBYw==}
+  /@discordjs/collection@1.5.2-dev.1688990681-09b0382.0:
+    resolution: {integrity: sha512-uwihabBGN7BPDXA7j7tk7tOl2pSvnix57Oogh2slWtbCdCXhQm3WLo6czwQOLsY9Hf5VNsWbFssrMi7a0T3ulw==}
     engines: {node: '>=16.9.0'}
     dev: false
 
-  /@discordjs/formatters@0.3.2-dev.1688385880-75d91b5.0:
-    resolution: {integrity: sha512-6Jp3dHsyNsU5IRxP0mNF0zNLsnyO9+AlMdMD34RTZaYAAUXXiaGffO67JxuzsgN0G6WFhCr64UfeyS2apxYQPg==}
+  /@discordjs/formatters@0.3.2-dev.1688990676-09b0382.0:
+    resolution: {integrity: sha512-pvBydHJJLJHbXjAbTjShl607pCfRLrvbKyslshLpTeKH9j2psV6N/aLVaPhgcPw+/FxiLrnC6Xko/+pg8AyAsQ==}
     engines: {node: '>=16.9.0'}
     dependencies:
       discord-api-types: 0.37.47
     dev: false
 
-  /@discordjs/rest@1.7.2-dev.1688385875-75d91b5.0:
-    resolution: {integrity: sha512-tN5npIQUpqpfjL3RgG8zLZ9EVyh3paCGs2ckCvc33nQb5KJwDchWViYvnHbU78yOVLxwMuOT4J0WKA5AgKNpZA==}
+  /@discordjs/rest@1.7.2-dev.1688990686-09b0382.0:
+    resolution: {integrity: sha512-7uBwYngVqURInhpajXU6NBdehzen0+mRIrWQY6mVxjDj3rVmJNhCjriLR486I/sYTWAtY8DM2IissR538WRhlA==}
     engines: {node: '>=16.9.0'}
     dependencies:
-      '@discordjs/collection': 1.5.2-dev.1688385881-75d91b5.0
-      '@discordjs/util': 0.3.2-dev.1688385875-75d91b5.0
+      '@discordjs/collection': 1.5.2-dev.1688990681-09b0382.0
+      '@discordjs/util': 0.3.2-dev.1688990682-09b0382.0
       '@sapphire/async-queue': 1.5.0
       '@sapphire/snowflake': 3.5.1
       discord-api-types: 0.37.47
@@ -925,18 +928,18 @@ packages:
       undici: 5.22.1
     dev: false
 
-  /@discordjs/util@0.3.2-dev.1688385875-75d91b5.0:
-    resolution: {integrity: sha512-RpH0I42xL/NDMcMo6DZEInrIr7PX5v20bg8xFNb3dlX8JNMG0sJYLGzakCEMQwj+GXEw6dCUfL19rsZrEbNwHQ==}
+  /@discordjs/util@0.3.2-dev.1688990682-09b0382.0:
+    resolution: {integrity: sha512-CrggM0snX510Fd5S4ADBnq9bkcYQG9IcC1QMAP9Ugh/vZMUFckEnd5ln0PUv9nXBO1G5NkxURToJmoIPJucFEw==}
     engines: {node: '>=16.9.0'}
     dev: false
 
-  /@discordjs/ws@0.8.4-dev.1688385882-75d91b5.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    resolution: {integrity: sha512-/rWAjLiDd0lcdFW/Orq4t88jBcM/gE9kfqIA5RSmxaEgnJfjnq8TCnAUD3K4/SL04XTWj8CrVBEylbsc4bspkw==}
+  /@discordjs/ws@0.8.4-dev.1688990685-09b0382.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
+    resolution: {integrity: sha512-TbId5Zvoins+E4ISczMru5LfmxyueZ5Qbxof6iA82/yo/vLWZxuD1yPZYme0Am4+d4a6AKZDrl+5LTDGqF0sAw==}
     engines: {node: '>=16.9.0'}
     dependencies:
-      '@discordjs/collection': 1.5.2-dev.1688385881-75d91b5.0
-      '@discordjs/rest': 1.7.2-dev.1688385875-75d91b5.0
-      '@discordjs/util': 0.3.2-dev.1688385875-75d91b5.0
+      '@discordjs/collection': 1.5.2-dev.1688990681-09b0382.0
+      '@discordjs/rest': 1.7.2-dev.1688990686-09b0382.0
+      '@discordjs/util': 0.3.2-dev.1688990682-09b0382.0
       '@sapphire/async-queue': 1.5.0
       '@types/ws': 8.5.5
       '@vladfrangu/async_event_emitter': 2.2.2
@@ -2141,16 +2144,16 @@ packages:
     resolution: {integrity: sha512-rNif8IAv6duS2z47BMXq/V9kkrLfkAoiwpFY3sLxxbyKprk065zqf3HLTg4bEoxRSmi+Lhc7yqGDrG8C3j8GFA==}
     dev: false
 
-  /discord.js@14.11.1-dev.1688385870-75d91b5.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
-    resolution: {integrity: sha512-KgvNCxDiTNscUoOBynQ6IbmJssJQc0QndndmhUJMIMb/Q/jtgqsEGZYHaxIC1CHvtCZDQZ3aVNoRJoj7O14SOg==}
+  /discord.js@14.11.1-dev.1688990693-09b0382.0(bufferutil@4.0.7)(utf-8-validate@6.0.3):
+    resolution: {integrity: sha512-3eBM5FJzIMMe8DtDKhQSCRsfjKj4Px7KtOkJIeEwOnm+FaeYgYIQpsDWih6MQYqTMsvbtz4XxBeRux38ec666Q==}
     engines: {node: '>=16.9.0'}
     dependencies:
-      '@discordjs/builders': 1.6.4-dev.1688385876-75d91b5.0
-      '@discordjs/collection': 1.5.2-dev.1688385881-75d91b5.0
-      '@discordjs/formatters': 0.3.2-dev.1688385880-75d91b5.0
-      '@discordjs/rest': 1.7.2-dev.1688385875-75d91b5.0
-      '@discordjs/util': 0.3.2-dev.1688385875-75d91b5.0
-      '@discordjs/ws': 0.8.4-dev.1688385882-75d91b5.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
+      '@discordjs/builders': 1.6.4-dev.1688990691-09b0382.0
+      '@discordjs/collection': 1.5.2-dev.1688990681-09b0382.0
+      '@discordjs/formatters': 0.3.2-dev.1688990676-09b0382.0
+      '@discordjs/rest': 1.7.2-dev.1688990686-09b0382.0
+      '@discordjs/util': 0.3.2-dev.1688990682-09b0382.0
+      '@discordjs/ws': 0.8.4-dev.1688990685-09b0382.0(bufferutil@4.0.7)(utf-8-validate@6.0.3)
       '@sapphire/snowflake': 3.5.1
       '@types/ws': 8.5.5
       discord-api-types: 0.37.47
@@ -2781,6 +2784,11 @@ packages:
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  /lru-cache@10.0.0:
+    resolution: {integrity: sha512-svTf/fzsKHffP42sujkO/Rjs37BCIsQVRCeNYIm9WN8rgT7ffoUnRtZCqU+6BqcSBdv8gwJeTz8knJpgACeQMw==}
+    engines: {node: 14 || >=16.14}
+    dev: false
 
   /lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}

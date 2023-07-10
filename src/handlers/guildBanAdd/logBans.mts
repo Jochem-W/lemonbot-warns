@@ -103,9 +103,10 @@ export const LogBans = handler({
       },
     })
 
-    const logMessage = await warnLogMessage(prismaBan)
+    const logMessage = await warnLogMessage(ban.client, prismaBan)
 
     let channel = await fetchChannel(
+      ban.client,
       prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )
@@ -124,11 +125,17 @@ export const LogBans = handler({
       where: { id: { not: prismaGuild.id } },
     })
     for (const otherGuild of otherGuilds) {
-      if (!(await tryFetchMember(otherGuild.id, ban.user.id))) {
+      if (
+        !(await tryFetchMember(
+          { client: ban.client, id: otherGuild.id },
+          ban.user.id
+        ))
+      ) {
         continue
       }
 
       channel = await fetchChannel(
+        ban.client,
         otherGuild.warnLogsChannel,
         ChannelType.GuildText
       )

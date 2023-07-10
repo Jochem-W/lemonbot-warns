@@ -1,11 +1,11 @@
 import { Config } from "../../models/config.mjs"
 import { handler } from "../../models/handler.mjs"
-import { EmbedBuilder, userMention, type Message } from "discord.js"
+import { EmbedBuilder, userMention } from "discord.js"
 
 export const ReplyToDMs = handler({
   event: "messageCreate",
   once: false,
-  async handle(message: Message) {
+  async handle(message) {
     if (message.author.bot || message.inGuild()) {
       return
     }

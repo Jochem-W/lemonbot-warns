@@ -18,6 +18,7 @@ export const EditCommand = slashCommand({
   name: "edit",
   description: "Edit an existing warning",
   defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  dmPermission: false,
   subcommands: [
     subcommand({
       name: "delete",
@@ -30,7 +31,7 @@ export const EditCommand = slashCommand({
             .setDescription("The warning ID")
         ),
       ],
-      async handle(interaction, _subcommand, warningId) {
+      async handle(interaction, warningId) {
         await ensureOwner(interaction)
 
         const images = await Prisma.image.findMany({ where: { warningId } })
@@ -77,7 +78,7 @@ export const EditCommand = slashCommand({
             .setDescription("The new warning description"),
         }),
       ],
-      async handle(interaction, _subcommand, id, description) {
+      async handle(interaction, id, description) {
         await ensureOwner(interaction)
 
         await Prisma.warning.update({

@@ -9,6 +9,8 @@ import {
   type UserContextMenuCommandInteraction,
 } from "discord.js"
 
+// Please don't blatantly copy this. I worked very hard on everything.
+
 type Interaction<T extends ContextMenuCommandType> =
   T extends ApplicationCommandType.Message
     ? MessageContextMenuCommandInteraction
@@ -33,16 +35,16 @@ export function contextMenuCommand<T extends ContextMenuCommandType>({
 }: {
   name: string
   type: T
-  defaultMemberPermissions?: bigint
-  dmPermission?: boolean
+  defaultMemberPermissions: bigint | null
+  dmPermission: boolean
   transform?: (builder: ContextMenuCommandBuilder) => void
   handle: (interaction: Interaction<T>, value: Value<T>) => Promise<void>
 }) {
   const builder = new ContextMenuCommandBuilder()
     .setName(name)
     .setType(type)
-    .setDefaultMemberPermissions(defaultMemberPermissions ?? 0)
-    .setDMPermission(dmPermission ?? false)
+    .setDefaultMemberPermissions(defaultMemberPermissions)
+    .setDMPermission(dmPermission)
 
   if (transform) {
     transform(builder)
@@ -63,5 +65,5 @@ export function contextMenuCommand<T extends ContextMenuCommandType>({
     }
   }
 
-  return { builder, handle: getOptionAndHandle }
+  return { builder, handle: getOptionAndHandle, type }
 }

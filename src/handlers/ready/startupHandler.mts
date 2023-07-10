@@ -1,6 +1,4 @@
-import { Discord, GitHubClient, Prisma } from "../../clients.mjs"
-import { logError } from "../../errors.mjs"
-import { Jobs } from "../../jobs.mjs"
+import { GitHubClient, Prisma } from "../../clients.mjs"
 import { Config } from "../../models/config.mjs"
 import { handler } from "../../models/handler.mjs"
 import { fetchChannel, uniqueName } from "../../utilities/discordUtilities.mjs"
@@ -13,7 +11,7 @@ type State = "UP" | "DOWN" | "RECREATE"
 export const StartupHandler = handler({
   event: "ready",
   once: true,
-  async handle(client: Client<true>) {
+  async handle(client) {
     console.log(`Running as: ${uniqueName(client.user)}`)
 
     let title = "Bot "
@@ -41,6 +39,7 @@ export const StartupHandler = handler({
       }
 
       const channel = await fetchChannel(
+        client,
         guild.restartChannel,
         ChannelType.GuildText
       )
@@ -50,25 +49,16 @@ export const StartupHandler = handler({
     await setState("UP")
     await setVersion()
 
-    process.on("SIGINT", () => exitListener())
-    process.on("SIGTERM", () => exitListener())
-
-    for (const job of Jobs) {
-      job.start()
-    }
+    process.on("SIGINT", () => exitListener(client))
+    process.on("SIGTERM", () => exitListener(client))
   },
 })
 
-function exitListener() {
-  for (const job of Jobs) {
-    job.stop()
-  }
-
-  Discord.destroy()
+function exitListener(client: Client<true>) {
+  client
+    .destroy()
     .then(() => setState("DOWN"))
-    .catch((e) => {
-      e instanceof Error ? void logError(e) : console.error(e)
-    })
+    .catch(console.error)
 }
 
 async function getChangelog() {

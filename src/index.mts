@@ -1,11 +1,11 @@
-import { Discord, Prisma } from "./clients.mjs"
+import { Prisma } from "./clients.mjs"
 import {
   MessageContextMenuCommands,
   RegisteredCommands,
   SlashCommands,
   UserContextMenuCommands,
 } from "./commands.mjs"
-import { CommandNotFoundByNameError, logError } from "./errors.mjs"
+import { CommandNotFoundError, logError } from "./errors.mjs"
 import { Handlers } from "./handlers.mjs"
 import { Config } from "./models/config.mjs"
 import type { Command } from "./types/command.mjs"
@@ -16,10 +16,34 @@ import {
   type RESTPutAPIApplicationGuildCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsResult,
   ApplicationCommandType,
+  Client,
+  GatewayIntentBits,
+  Partials,
 } from "discord.js"
 
 // TODO: make this run at compile time?
 testComparePenalty()
+
+const discord = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [
+    Partials.User,
+    Partials.Channel,
+    Partials.GuildMember,
+    Partials.Message,
+    Partials.Reaction,
+    Partials.GuildScheduledEvent,
+    Partials.ThreadMember,
+  ],
+})
+discord.rest.setToken(Variables.discordBotToken)
 
 const commandsBody: RESTPutAPIApplicationGuildCommandsJSONBody = []
 for (const command of [
@@ -38,7 +62,7 @@ for (const guild of guilds) {
       ? Routes.applicationCommands(Config.bot.applicationId)
       : Routes.applicationGuildCommands(Config.bot.applicationId, guild.id)
 
-  const applicationCommands = (await Discord.rest.put(route, {
+  const applicationCommands = (await discord.rest.put(route, {
     body: commandsBody,
   })) as RESTPutAPIApplicationGuildCommandsResult
   console.log("Commands updated")
@@ -63,7 +87,7 @@ for (const guild of guilds) {
     }
 
     if (!command) {
-      throw new CommandNotFoundByNameError(applicationCommand.name)
+      throw new CommandNotFoundError(applicationCommand.name)
     }
 
     RegisteredCommands.set(applicationCommand.id, command)
@@ -76,7 +100,7 @@ for (const guild of guilds) {
 
 for (const handler of Handlers) {
   if (handler.once) {
-    Discord.once(handler.event, async (...args) => {
+    discord.once(handler.event, async (...args) => {
       try {
         await handler.handle(...args)
       } catch (e) {
@@ -84,13 +108,13 @@ for (const handler of Handlers) {
           throw e
         }
 
-        await logError(e)
+        await logError(discord, e)
       }
     })
     continue
   }
 
-  Discord.on(handler.event, async (...args) => {
+  discord.on(handler.event, async (...args) => {
     try {
       await handler.handle(...args)
     } catch (e) {
@@ -98,9 +122,9 @@ for (const handler of Handlers) {
         throw e
       }
 
-      await logError(e)
+      await logError(discord, e)
     }
   })
 }
 
-await Discord.login(Variables.discordBotToken)
+await discord.login(Variables.discordBotToken)

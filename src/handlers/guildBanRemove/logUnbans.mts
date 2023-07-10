@@ -39,6 +39,7 @@ export const LogUnbans = handler({
     }
 
     const warnLogsChannel = await fetchChannel(
+      ban.client,
       prismaGuild.warnLogsChannel,
       ChannelType.GuildText
     )

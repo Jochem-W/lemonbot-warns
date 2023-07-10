@@ -1,4 +1,3 @@
-import { Discord } from "../clients.mjs"
 import { InvalidMethodError, InvalidPathError } from "../errors.mjs"
 import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
@@ -31,6 +30,7 @@ export const RestCommand = slashCommand({
   name: "rest",
   description: "Make a Discord API request",
   defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  dmPermission: false,
   options: [
     slashOption(true, {
       option: new SlashCommandStringOption()
@@ -110,7 +110,7 @@ export const RestCommand = slashCommand({
     if (token !== null) {
       rest = new REST().setToken(token)
     } else {
-      rest = Discord.rest
+      rest = interaction.client.rest
     }
 
     const response = await rest.raw(options)

@@ -1,4 +1,4 @@
-import { Discord, Prisma } from "../clients.mjs"
+import { Prisma } from "../clients.mjs"
 import { userDisplayName, warningUrl } from "../utilities/discordUtilities.mjs"
 import { comparePenalty } from "../utilities/penaltyUtilities.mjs"
 import { EmbedBuilder, time, TimestampStyles, User } from "discord.js"
@@ -68,7 +68,7 @@ export async function warningsMessage(user: User) {
       verb = "Warned"
     }
 
-    const createdBy = await Discord.users.fetch(warning.createdBy)
+    const createdBy = await user.client.users.fetch(warning.createdBy)
 
     const warningEmbeds = warning.images
       .filter((i) => !i.extra)

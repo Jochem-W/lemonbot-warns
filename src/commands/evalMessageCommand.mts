@@ -8,6 +8,7 @@ export const EvalMessageCommand = contextMenuCommand({
   type: ApplicationCommandType.Message,
   name: "Eval",
   defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  dmPermission: false,
   async handle(interaction, message) {
     await ensureOwner(interaction)
     await interaction.deferReply({ ephemeral: true })

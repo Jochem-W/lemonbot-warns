@@ -1,4 +1,4 @@
-import { BotError, GuildOnlyError } from "../errors.mjs"
+import { GuildOnlyError, NoDataError } from "../errors.mjs"
 import { warningsMessage } from "../messages/warningsMessage.mjs"
 import { slashCommand, slashOption } from "../models/slashCommand.mjs"
 import { isInPrivateChannel } from "../utilities/discordUtilities.mjs"
@@ -8,6 +8,7 @@ export const WarningsCommand = slashCommand({
   name: "warnings",
   description: "List a user's warnings",
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  dmPermission: false,
   options: [
     slashOption(
       true,
@@ -26,7 +27,7 @@ export const WarningsCommand = slashCommand({
     const messages = await warningsMessage(user)
 
     if (!messages[0]) {
-      throw new BotError("Response has 0 messages")
+      throw new NoDataError("Response has no messages")
     }
 
     await interaction.reply({ ...messages[0], ephemeral })

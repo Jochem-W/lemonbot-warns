@@ -4,12 +4,12 @@ import { warnLogMessage } from "../../messages/warnLogMessage.mjs"
 import { handler } from "../../models/handler.mjs"
 import { fetchChannel } from "../../utilities/discordUtilities.mjs"
 import { uploadAttachment } from "../../utilities/s3Utilities.mjs"
-import { ChannelType, EmbedBuilder, Message } from "discord.js"
+import { ChannelType, EmbedBuilder } from "discord.js"
 
 export const AppendImagesToWarnings = handler({
   event: "messageCreate",
   once: false,
-  async handle(message: Message) {
+  async handle(message) {
     if (
       message.author.bot ||
       !message.reference?.messageId ||
@@ -71,15 +71,26 @@ export const AppendImagesToWarnings = handler({
     })
     await message.delete()
 
-    setTimeout(() => void reply.delete().catch(logError), 2500)
+    setTimeout(
+      () =>
+        void reply
+          .delete()
+          .catch((e) =>
+            e instanceof Error
+              ? void logError(message.client, e)
+              : console.error(e)
+          ),
+      2500
+    )
 
-    const logMessage = await warnLogMessage(updatedWarning)
-    for (const message of updatedWarning.messages) {
+    const logMessage = await warnLogMessage(message.client, updatedWarning)
+    for (const warnMessage of updatedWarning.messages) {
       const channel = await fetchChannel(
-        message.channelId,
+        message.client,
+        warnMessage.channelId,
         ChannelType.GuildText
       )
-      await channel.messages.edit(message.id, logMessage)
+      await channel.messages.edit(warnMessage.id, logMessage)
     }
   },
 })
