@@ -3,6 +3,7 @@ import { AuditLogNotFoundError, InvalidAuditLogEntryError } from "../errors.mjs"
 import { warnLogMessage } from "../messages/warnLogMessage.mjs"
 import { handler } from "../models/handler.mjs"
 import { fetchChannel, tryFetchMember } from "../utilities/discordUtilities.mjs"
+import type { Notified, Penalised } from "@prisma/client"
 import { AuditLogEvent, ChannelType, GuildBan } from "discord.js"
 
 async function getAuditLogEntry(ban: GuildBan) {
@@ -56,10 +57,11 @@ export const LogBansHandler = handler({
       },
     })
 
-    const args: Parameters<typeof Prisma.warning.create>[0] = {
+    const args = {
       data: {
         createdAt: auditLogEntry.createdAt,
         createdBy: auditLogEntry.executor.id,
+        description: null as null | string,
         silent: true,
         penalty: {
           connect: {
@@ -77,8 +79,8 @@ export const LogBansHandler = handler({
             },
           },
         },
-        penalised: "APPLIED",
-        notified: "REGULAR_BAN",
+        penalised: "APPLIED" as Penalised,
+        notified: "REGULAR_BAN" as Notified,
         guild: { connect: { id: ban.guild.id } },
       },
     }
