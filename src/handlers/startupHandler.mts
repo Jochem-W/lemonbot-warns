@@ -58,6 +58,7 @@ function exitListener(client: Client<true>) {
   client
     .destroy()
     .then(() => setState("DOWN"))
+    .then(() => process.exit())
     .catch(console.error)
 }
 
