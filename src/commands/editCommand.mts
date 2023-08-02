@@ -28,7 +28,7 @@ export const EditCommand = slashCommand({
           true,
           new SlashCommandIntegerOption()
             .setName("id")
-            .setDescription("The warning ID")
+            .setDescription("The warning ID"),
         ),
       ],
       async handle(interaction, warningId) {
@@ -44,7 +44,7 @@ export const EditCommand = slashCommand({
             new DeleteObjectCommand({
               Bucket: Variables.s3WarningsBucketName,
               Key: new URL(image.url).pathname.slice(1),
-            })
+            }),
           )
         }
 

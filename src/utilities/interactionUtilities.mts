@@ -19,7 +19,7 @@ type Return<Type, Force extends boolean> = Force extends true
 
 export async function interactionGuild<T extends boolean>(
   interaction: Interaction,
-  force?: T
+  force?: T,
 ): Promise<Return<Guild, T>> {
   if (interaction.guild) {
     return interaction.guild
@@ -38,7 +38,7 @@ export async function interactionGuild<T extends boolean>(
 
 export async function interactionMember<T extends boolean>(
   interaction: Interaction,
-  options?: { force?: T; user?: User }
+  options?: { force?: T; user?: User },
 ): Promise<Return<GuildMember, T>> {
   const force = options?.force ?? false
   const user = options?.user ?? interaction.user
@@ -65,7 +65,7 @@ export async function interactionMember<T extends boolean>(
 
 export async function interactionChannel<T extends boolean>(
   interaction: Interaction,
-  force?: T
+  force?: T,
 ): Promise<Return<TextBasedChannel, T>> {
   if (interaction.channel) {
     return interaction.channel

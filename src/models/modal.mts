@@ -12,7 +12,7 @@ import {
 
 type InferModalValues<
   T extends readonly unknown[],
-  R extends object | unknown = unknown
+  R extends object | unknown = unknown,
 > = T extends readonly [infer TH, ...infer TT]
   ? InferModalValues<
       TT,
@@ -27,7 +27,7 @@ type InferModalValues<
 export function modalInput<T extends boolean, TT extends string>(
   id: TT,
   required: T,
-  builder: TextInputBuilder
+  builder: TextInputBuilder,
 ) {
   builder.setCustomId(id).setRequired(required)
   return { id, required, builder }
@@ -36,7 +36,7 @@ export function modalInput<T extends boolean, TT extends string>(
 export function modal<
   T extends string,
   TT extends readonly ReturnType<typeof modalInput>[],
-  TTT extends readonly string[]
+  TTT extends readonly string[],
 >({
   id,
   title,
@@ -71,7 +71,7 @@ export function modal<
     await handle(
       interaction,
       values as InferModalValues<TT>,
-      ...(interaction.customId.split(":").slice(1) as [...TTT])
+      ...(interaction.customId.split(":").slice(1) as [...TTT]),
     )
   })
 
@@ -90,9 +90,9 @@ export function modal<
           }
 
           return new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
-            input
+            input,
           )
-        })
+        }),
       )
   }
 

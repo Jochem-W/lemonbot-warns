@@ -14,8 +14,8 @@ export const ReplyToDmsHandler = handler({
       embeds: [
         new EmbedBuilder().setDescription(
           `Messages that are sent here won't be read, please open a mod mail thread by sending a direct message to ${userMention(
-            Config.mailUserId
-          )} instead!`
+            Config.mailUserId,
+          )} instead!`,
         ),
       ],
     })

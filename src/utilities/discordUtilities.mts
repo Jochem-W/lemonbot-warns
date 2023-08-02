@@ -44,13 +44,13 @@ export function userDisplayName(user: User) {
 export function snowflakeToDateTime(snowflake: Snowflake) {
   return DateTime.fromMillis(
     Number((BigInt(snowflake) >> 22n) + 1420070400000n),
-    { zone: "utc" }
+    { zone: "utc" },
   )
 }
 
 export async function tryFetchMember(
   data: { id: Snowflake; client: Client<true> } | Guild,
-  options: FetchMemberOptions | UserResolvable
+  options: FetchMemberOptions | UserResolvable,
 ) {
   let guild
   if (!(data instanceof Guild)) {
@@ -78,7 +78,7 @@ export async function fetchChannel<T extends ChannelType>(
   client: Client<true>,
   id: Snowflake,
   type: T | T[],
-  options?: FetchChannelOptions
+  options?: FetchChannelOptions,
 ) {
   const channel = await client.channels.fetch(id, {
     allowUnknownGuild: true,
@@ -156,14 +156,14 @@ export async function isInPrivateChannel(interaction: Interaction) {
 
 export function warningUrl(
   warning: Warning & { guild: WarningGuild; messages: WarningLogMessage[] },
-  search = ""
+  search = "",
 ) {
   const message = warning.messages.find((m) => m.main)
 
   const url = new URL(
     `https://discord.com/channels/${warning.guild.id}/${
       warning.guild.warnLogsChannel
-    }/${message?.id ?? ""}`
+    }/${message?.id ?? ""}`,
   )
 
   url.search = search

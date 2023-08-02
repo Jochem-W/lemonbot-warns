@@ -60,7 +60,7 @@ export function contextMenuCommand<T extends ContextMenuCommandType>({
         break
       default:
         throw new NotImplementedError(
-          `Context menu commands of this type haven't been implemented yet.`
+          `Context menu commands of this type haven't been implemented yet.`,
         )
     }
   }

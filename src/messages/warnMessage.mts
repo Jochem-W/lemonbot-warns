@@ -26,7 +26,7 @@ export async function warnMessage(
     images: Image[]
     guild: WarningGuild
     messages: WarningLogMessage[]
-  }
+  },
 ) {
   const mailUser = await client.users.fetch(Config.mailUserId)
 
@@ -47,7 +47,7 @@ export async function warnMessage(
       new EmbedBuilder()
         .setImage(i.url)
         .setURL(warningUrl(warning).toString())
-        .setColor(0xff0000)
+        .setColor(0xff0000),
     )
 
   let mainEmbed: EmbedBuilder | undefined = embeds[0]
@@ -85,11 +85,11 @@ export async function warnMessage(
             escapeItalic(
               `If you'd like to appeal this decision, please fill in the form found ${hyperlink(
                 "here",
-                formUrl
-              )}.`
-            )
-          )
-        )
+                formUrl,
+              )}.`,
+            ),
+          ),
+        ),
     )
   }
 

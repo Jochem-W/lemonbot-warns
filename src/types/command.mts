@@ -21,7 +21,7 @@ export type Command<T extends ApplicationCommandType> =
         type: T
         builder: ContextMenuCommandBuilder
         handle: (
-          interaction: MessageContextMenuCommandInteraction
+          interaction: MessageContextMenuCommandInteraction,
         ) => Promise<void>
       }
     : T extends ApplicationCommandType.User
@@ -29,7 +29,7 @@ export type Command<T extends ApplicationCommandType> =
         type: T
         builder: ContextMenuCommandBuilder
         handle: (
-          interaction: UserContextMenuCommandInteraction
+          interaction: UserContextMenuCommandInteraction,
         ) => Promise<void>
       }
     : never

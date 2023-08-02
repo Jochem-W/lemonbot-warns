@@ -19,7 +19,7 @@ async function getAuditLogEntry(ban: GuildBan) {
   }
 
   throw new AuditLogNotFoundError(
-    `Couldn't find an audit log entry for ban target ${ban.user.id}`
+    `Couldn't find an audit log entry for ban target ${ban.user.id}`,
   )
 }
 
@@ -104,7 +104,7 @@ export const LogBansHandler = handler({
     let channel = await fetchChannel(
       ban.client,
       prismaGuild.warnLogsChannel,
-      ChannelType.GuildText
+      ChannelType.GuildText,
     )
     let message = await channel.send(logMessage)
 
@@ -124,7 +124,7 @@ export const LogBansHandler = handler({
       if (
         !(await tryFetchMember(
           { client: ban.client, id: otherGuild.id },
-          ban.user.id
+          ban.user.id,
         ))
       ) {
         continue
@@ -133,7 +133,7 @@ export const LogBansHandler = handler({
       channel = await fetchChannel(
         ban.client,
         otherGuild.warnLogsChannel,
-        ChannelType.GuildText
+        ChannelType.GuildText,
       )
       message = await channel.send(logMessage)
       await Prisma.warningLogMessage.create({

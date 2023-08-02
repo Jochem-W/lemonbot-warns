@@ -39,9 +39,9 @@ export async function warningsMessage(user: User) {
         name: "Most recent penalty",
         value: `${lastWarning.penalty.name} (${time(
           lastWarning.createdAt,
-          TimestampStyles.RelativeTime
+          TimestampStyles.RelativeTime,
         )})`,
-      }
+      },
     )
   }
 
@@ -75,7 +75,7 @@ export async function warningsMessage(user: User) {
       .map((i) =>
         new EmbedBuilder()
           .setImage(i.url)
-          .setURL(warningUrl(warning).toString())
+          .setURL(warningUrl(warning).toString()),
       )
 
     const extraImages = warning.images
@@ -83,7 +83,7 @@ export async function warningsMessage(user: User) {
       .map((i) =>
         new EmbedBuilder()
           .setImage(i.url)
-          .setURL(warningUrl(warning, "extra").toString())
+          .setURL(warningUrl(warning, "extra").toString()),
       )
 
     extraImages[0]?.setAuthor({ name: "Extra images" })
@@ -120,7 +120,7 @@ export async function warningsMessage(user: User) {
       name: "Highest penalty",
       value: `${highestPenaltyWarning.penalty.name} (${time(
         highestPenaltyWarning.createdAt,
-        TimestampStyles.RelativeTime
+        TimestampStyles.RelativeTime,
       )})`,
     })
   }

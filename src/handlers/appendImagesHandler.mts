@@ -37,7 +37,7 @@ export const AppendImagesHandler = handler({
             .setDescription(
               `You're trying to add ${exceedsBy} too many image${
                 exceedsBy === 1 ? "" : "s"
-              }. Warnings can have at most 4 extra images, and this warning already has ${extraImageCount} extra images`
+              }. Warnings can have at most 4 extra images, and this warning already has ${extraImageCount} extra images`,
             ),
         ],
       })
@@ -65,7 +65,7 @@ export const AppendImagesHandler = handler({
     const reply = await message.reply({
       embeds: [
         new EmbedBuilder().setTitle(
-          `Image${attachments.length === 1 ? "" : "s"} added`
+          `Image${attachments.length === 1 ? "" : "s"} added`,
         ),
       ],
     })
@@ -78,9 +78,9 @@ export const AppendImagesHandler = handler({
           .catch((e) =>
             e instanceof Error
               ? void logError(message.client, e)
-              : console.error(e)
+              : console.error(e),
           ),
-      2500
+      2500,
     )
 
     const logMessage = await warnLogMessage(message.client, updatedWarning)
@@ -88,7 +88,7 @@ export const AppendImagesHandler = handler({
       const channel = await fetchChannel(
         message.client,
         warnMessage.channelId,
-        ChannelType.GuildText
+        ChannelType.GuildText,
       )
       await channel.messages.edit(warnMessage.id, logMessage)
     }

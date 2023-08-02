@@ -62,26 +62,26 @@ export const RestCommand = slashCommand({
           {
             name: "PATCH",
             value: "PATCH",
-          }
-        )
+          },
+        ),
     ),
     slashOption(
       false,
       new SlashCommandStringOption()
         .setName("query")
-        .setDescription("The query string, including leading '?'")
+        .setDescription("The query string, including leading '?'"),
     ),
     slashOption(
       false,
       new SlashCommandStringOption()
         .setName("body")
-        .setDescription("The JSON request body")
+        .setDescription("The JSON request body"),
     ),
     slashOption(
       false,
       new SlashCommandStringOption()
         .setName("token")
-        .setDescription("The bot token to use for the request")
+        .setDescription("The bot token to use for the request"),
     ),
   ],
   async handle(interaction, path, method, query, body, token) {
@@ -118,7 +118,7 @@ export const RestCommand = slashCommand({
 
     const files: AttachmentBuilder[] = []
     const embed = new EmbedBuilder().setTitle(
-      `${STATUS_CODES[response.status] ?? ""} ${response.status}`.trim()
+      `${STATUS_CODES[response.status] ?? ""} ${response.status}`.trim(),
     )
     if (json.length <= 2036) {
       embed.setDescription(`\`\`\`json\n${json}\n\`\`\``)
@@ -126,7 +126,7 @@ export const RestCommand = slashCommand({
       files.push(
         new AttachmentBuilder(Buffer.from(json), {
           name: "response.json",
-        })
+        }),
       )
     }
 

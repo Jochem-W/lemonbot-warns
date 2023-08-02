@@ -36,7 +36,7 @@ export class DownloadError extends CustomError {
 export class FileSizeError extends CustomError {
   public constructor(current: number, max: number) {
     super(
-      `The file size ${current} exceeds the maximum file size of ${max} bytes`
+      `The file size ${current} exceeds the maximum file size of ${max} bytes`,
     )
   }
 }
@@ -63,7 +63,7 @@ export class CommandTypeMismatchError extends CustomError {
   public constructor(
     id: Snowflake,
     expected: ApplicationCommandType,
-    got: ApplicationCommandType
+    got: ApplicationCommandType,
   ) {
     super(`${id} expected a command of type ${expected}, got ${got} instead`)
   }
@@ -85,10 +85,10 @@ export class ComponentTypeMismatchError extends CustomError {
   public constructor(
     name: string,
     expected: ComponentType,
-    got: ComponentType
+    got: ComponentType,
   ) {
     super(
-      `${name} expected a component of type ${expected}, got ${got} instead`
+      `${name} expected a component of type ${expected}, got ${got} instead`,
     )
   }
 }
@@ -102,10 +102,10 @@ export class ModalNotFoundError extends CustomError {
 export class SubcommandGroupNotFoundError extends CustomError {
   public constructor(
     interaction: CommandInteraction | AutocompleteInteraction,
-    subcommandGroup: string
+    subcommandGroup: string,
   ) {
     super(
-      `Couldn't find subcommand group ${subcommandGroup} for command ${interaction.commandName} (${interaction.commandId})`
+      `Couldn't find subcommand group ${subcommandGroup} for command ${interaction.commandName} (${interaction.commandId})`,
     )
   }
 }
@@ -113,10 +113,10 @@ export class SubcommandGroupNotFoundError extends CustomError {
 export class SubcommandNotFoundError extends CustomError {
   public constructor(
     interaction: CommandInteraction | AutocompleteInteraction,
-    subcommand: string
+    subcommand: string,
   ) {
     super(
-      `Couldn't find subcommand ${subcommand} for command ${interaction.commandName} (${interaction.commandId})`
+      `Couldn't find subcommand ${subcommand} for command ${interaction.commandName} (${interaction.commandId})`,
     )
   }
 }
@@ -124,7 +124,7 @@ export class SubcommandNotFoundError extends CustomError {
 export class OptionNotAutocompletableError extends CustomError {
   public constructor(option: ApplicationCommandOptionBase) {
     super(
-      `Option ${option.name} of type ${option.type} doesn't support autocompletion`
+      `Option ${option.name} of type ${option.type} doesn't support autocompletion`,
     )
   }
 }
@@ -132,10 +132,10 @@ export class OptionNotAutocompletableError extends CustomError {
 export class AutocompleteOptionNotFoundError extends CustomError {
   public constructor(
     interaction: AutocompleteInteraction,
-    option: AutocompleteFocusedOption
+    option: AutocompleteFocusedOption,
   ) {
     super(
-      `Command ${interaction.commandName} doesn't have the ${option.name} option`
+      `Command ${interaction.commandName} doesn't have the ${option.name} option`,
     )
   }
 }
@@ -222,7 +222,7 @@ export class InvalidArgumentsError extends CustomError {
 export class NoMessageComponentHandlerError extends CustomError {
   public constructor(command: Command<ApplicationCommandType>) {
     super(
-      `Command "${command.builder.name}" doesn't support message component interactions.`
+      `Command "${command.builder.name}" doesn't support message component interactions.`,
     )
   }
 }
@@ -301,7 +301,7 @@ export class NoMessageRevisionsError extends CustomError {
 
 export class InvalidFormResponseError extends CustomError {
   public constructor(
-    response: forms_v1.Schema$FormResponse | forms_v1.Schema$Form
+    response: forms_v1.Schema$FormResponse | forms_v1.Schema$Form,
   ) {
     super(JSON.stringify(response, undefined, 4))
   }
@@ -322,7 +322,7 @@ export class InvalidDateTimeError extends CustomError {
 export async function logError(
   client: Client<true>,
   error: Error,
-  guild?: Guild | WarningGuild | string | null
+  guild?: Guild | WarningGuild | string | null,
 ) {
   console.error(error)
   if (guild instanceof Guild) {

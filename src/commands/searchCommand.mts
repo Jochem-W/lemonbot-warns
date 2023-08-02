@@ -28,7 +28,7 @@ export const SearchCommand = slashCommand({
       true,
       new SlashCommandStringOption()
         .setName("query")
-        .setDescription("Search query")
+        .setDescription("Search query"),
     ),
   ],
   async handle(interaction, search) {
@@ -58,7 +58,7 @@ export const SearchCommand = slashCommand({
     const warningMessages: Parameters<typeof searchMessage>[2] = []
     for (const warning of warnings) {
       const embeds = warning.images.map((image) =>
-        new EmbedBuilder().setImage(image.url)
+        new EmbedBuilder().setImage(image.url),
       )
 
       let firstEmbed = embeds.at(0)
@@ -78,7 +78,7 @@ export const SearchCommand = slashCommand({
     WarningsCache.set(key, warningMessages)
 
     await interaction.editReply(
-      await searchMessage(interaction.client, key, warningMessages, 0)
+      await searchMessage(interaction.client, key, warningMessages, 0),
     )
   },
 })

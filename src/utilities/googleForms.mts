@@ -4,18 +4,18 @@ import type { forms_v1 } from "@googleapis/forms"
 
 export function getFirstTextAnswer(
   response: forms_v1.Schema$FormResponse,
-  questionId: string
+  questionId: string,
 ): string
 export function getFirstTextAnswer(
   response: forms_v1.Schema$FormResponse,
   questionId: string,
-  throwOnMissing: boolean
+  throwOnMissing: boolean,
 ): string | null
 
 export function getFirstTextAnswer(
   response: forms_v1.Schema$FormResponse,
   questionId: string,
-  throwOnMissing?: boolean
+  throwOnMissing?: boolean,
 ) {
   if (!response.answers) {
     if (throwOnMissing) {
@@ -36,7 +36,7 @@ export function getFirstTextAnswer(
 
 export function getFormEditUrl(
   formId: string,
-  responseId?: string | null | undefined
+  responseId?: string | null | undefined,
 ) {
   const url = new URL(`https://docs.google.com/forms/d/${formId}/edit`)
   if (responseId) {

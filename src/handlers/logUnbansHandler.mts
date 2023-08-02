@@ -20,7 +20,7 @@ async function getAuditLogEntry(ban: GuildBan) {
   }
 
   throw new AuditLogNotFoundError(
-    `Couldn't find an audit log entry for ban target ${ban.user.id}`
+    `Couldn't find an audit log entry for ban target ${ban.user.id}`,
   )
 }
 
@@ -38,7 +38,7 @@ export const LogUnbansHandler = handler({
     const warnLogsChannel = await fetchChannel(
       ban.client,
       prismaGuild.warnLogsChannel,
-      ChannelType.GuildText
+      ChannelType.GuildText,
     )
 
     await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -72,7 +72,7 @@ export const LogUnbansHandler = handler({
             {
               name: "User ID",
               value: ban.user.id,
-            }
+            },
           )
           .setFooter({
             text: `Unbanned by ${userDisplayName(auditLogEntry.executor)}`,

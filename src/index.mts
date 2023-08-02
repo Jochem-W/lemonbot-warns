@@ -71,17 +71,17 @@ for (const guild of guilds) {
     switch (applicationCommand.type) {
       case ApplicationCommandType.ChatInput:
         command = SlashCommands.find(
-          (command) => command.builder.name === applicationCommand.name
+          (command) => command.builder.name === applicationCommand.name,
         )
         break
       case ApplicationCommandType.User:
         command = UserContextMenuCommands.find(
-          (command) => command.builder.name === applicationCommand.name
+          (command) => command.builder.name === applicationCommand.name,
         )
         break
       case ApplicationCommandType.Message:
         command = MessageContextMenuCommands.find(
-          (command) => command.builder.name === applicationCommand.name
+          (command) => command.builder.name === applicationCommand.name,
         )
         break
     }

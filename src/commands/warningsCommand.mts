@@ -14,7 +14,7 @@ export const WarningsCommand = slashCommand({
       true,
       new SlashCommandUserOption()
         .setName("user")
-        .setDescription("The target user")
+        .setDescription("The target user"),
     ),
   ],
   async handle(interaction, user) {

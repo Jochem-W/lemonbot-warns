@@ -50,8 +50,8 @@ const editDescriptionButton = component({
     await interaction.showModal(
       editDescriptionModal(
         { description: warning.description ?? "" },
-        warningId
-      )
+        warningId,
+      ),
     )
   },
 })
@@ -65,7 +65,7 @@ const editDescriptionModal = modal({
       false,
       new TextInputBuilder()
         .setLabel("Description")
-        .setStyle(TextInputStyle.Paragraph)
+        .setStyle(TextInputStyle.Paragraph),
     ),
   ],
   async handle(interaction, { description }, warningId) {
@@ -93,7 +93,7 @@ const editDescriptionModal = modal({
           .setTitle("Warning edited")
           .setFields(
             { name: "Old description", value: oldWarning.description ?? "-" },
-            { name: "New description", value: warning.description ?? "-" }
+            { name: "New description", value: warning.description ?? "-" },
           ),
       ],
       ephemeral: !(await isInPrivateChannel(interaction)),
@@ -106,9 +106,9 @@ const editDescriptionModal = modal({
           .catch((e) =>
             e instanceof Error
               ? void logError(interaction.client, e)
-              : console.error(e)
+              : console.error(e),
           ),
-      2500
+      2500,
     )
 
     const logMessage = await warnLogMessage(interaction.client, warning)
@@ -116,7 +116,7 @@ const editDescriptionModal = modal({
       const channel = await fetchChannel(
         interaction.client,
         message.channelId,
-        ChannelType.GuildText
+        ChannelType.GuildText,
       )
       await channel.messages.edit(message.id, logMessage)
     }
@@ -130,7 +130,7 @@ export async function warnLogMessage(
     images: Image[]
     guild: WarningGuild
     messages: WarningLogMessage[]
-  }
+  },
 ) {
   const guild = await client.guilds.fetch(warning.guildId)
 
@@ -193,7 +193,7 @@ export async function warnLogMessage(
   const embeds = warning.images
     .filter((i) => !i.extra)
     .map((i) =>
-      new EmbedBuilder().setImage(i.url).setURL(warningUrl(warning).toString())
+      new EmbedBuilder().setImage(i.url).setURL(warningUrl(warning).toString()),
     )
 
   let mainEmbed: EmbedBuilder | undefined = embeds[0]
@@ -212,7 +212,7 @@ export async function warnLogMessage(
       { name: "Penalty", value: warning.penalty.name },
       { name: "Notification", value: notificationText },
       { name: "Penalised", value: penaltyText },
-      { name: "User ID", value: user.id }
+      { name: "User ID", value: user.id },
     )
     .setFooter({
       text: userDisplayName(createdBy),
@@ -225,7 +225,7 @@ export async function warnLogMessage(
     .map((i) =>
       new EmbedBuilder()
         .setImage(i.url)
-        .setURL(warningUrl(warning, "extra").toString())
+        .setURL(warningUrl(warning, "extra").toString()),
     )
 
   extraImages[0]?.setAuthor({ name: "Extra images" }) // Looks better than title
@@ -239,8 +239,8 @@ export async function warnLogMessage(
         new ButtonBuilder()
           .setStyle(ButtonStyle.Secondary)
           .setLabel("Edit description")
-          .setCustomId(editDescriptionButton(warning.id.toString(10)))
-      )
+          .setCustomId(editDescriptionButton(warning.id.toString(10))),
+      ),
     )
   }
 

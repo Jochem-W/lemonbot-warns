@@ -3,7 +3,7 @@ import type { Penalty } from "@prisma/client"
 export function comparePenalty(
   a: Penalty | null,
   b: Penalty | null,
-  reverse = false
+  reverse = false,
 ) {
   const aIsLarger = reverse ? -1 : 1
   const bIsLarger = reverse ? 1 : -1
@@ -108,20 +108,20 @@ export function testComparePenalty() {
   assert(
     comparePenalty(
       { ...makePenalty("ban"), deleteMessages: true },
-      { ...makePenalty("ban"), deleteMessages: true }
-    ) === 0
+      { ...makePenalty("ban"), deleteMessages: true },
+    ) === 0,
   )
   assert(
     comparePenalty(
       { ...makePenalty("ban"), deleteMessages: false },
-      { ...makePenalty("ban"), deleteMessages: true }
-    ) === -1
+      { ...makePenalty("ban"), deleteMessages: true },
+    ) === -1,
   )
   assert(
     comparePenalty(
       { ...makePenalty("ban"), deleteMessages: true },
-      { ...makePenalty("ban"), deleteMessages: false }
-    ) === 1
+      { ...makePenalty("ban"), deleteMessages: false },
+    ) === 1,
   )
 
   assert(comparePenalty(makePenalty("ban"), makePenalty("ban")) === 0)

@@ -25,7 +25,7 @@ export const UploadAttachmentsHandler = handler({
         Variables.s3ArchiveBucketName,
         key,
         response.body ?? undefined,
-        attachment.contentType ?? undefined
+        attachment.contentType ?? undefined,
       )
     }
   },

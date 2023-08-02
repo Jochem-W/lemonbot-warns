@@ -20,7 +20,7 @@ const searchUpdate = component({
     if (warnings === undefined) {
       const rows = interaction.message.components.map(
         (row) =>
-          new ActionRowBuilder<MessageActionRowComponentBuilder>(row.toJSON())
+          new ActionRowBuilder<MessageActionRowComponentBuilder>(row.toJSON()),
       )
 
       for (const row of rows) {
@@ -42,7 +42,7 @@ const searchUpdate = component({
     }
 
     await interaction.update(
-      await searchMessage(interaction.client, key, warnings, parseInt(page))
+      await searchMessage(interaction.client, key, warnings, parseInt(page)),
     )
   },
 })
@@ -77,7 +77,7 @@ export async function searchMessage(
     embeds: EmbedBuilder[]
     warning: Warning & { penalty: Penalty }
   }[],
-  page: number
+  page: number,
 ) {
   const total = warnings.length
   const start = calculateStart(warnings, page)

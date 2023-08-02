@@ -47,7 +47,7 @@ export async function evalCode(interaction: CommandInteraction, code: string) {
     files.push(
       new AttachmentBuilder(Buffer.from(returnString), {
         name: json ? "eval.json" : "eval.txt",
-      })
+      }),
     )
   }
 
@@ -64,7 +64,7 @@ export const EvalCommand = slashCommand({
       true,
       new SlashCommandStringOption()
         .setName("code")
-        .setDescription("The code to run")
+        .setDescription("The code to run"),
     ),
   ],
   async handle(interaction, code) {

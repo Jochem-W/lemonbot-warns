@@ -19,7 +19,7 @@ export const DeleteWarnChannelHandler = handler({
       member.client,
       prismaGuild.warnCategory,
       ChannelType.GuildCategory,
-      { force: true }
+      { force: true },
     )
 
     for (const [, channel] of await warnCategory.guild.channels.fetch()) {
@@ -35,7 +35,7 @@ export const DeleteWarnChannelHandler = handler({
         messages.some(
           (message) =>
             message.author.id === member.client.user.id &&
-            message.mentions.has(user)
+            message.mentions.has(user),
         )
       ) {
         await channel.delete()

@@ -18,14 +18,14 @@ export const ShowEmbedCommand = slashCommand({
       true,
       new SlashCommandIntegerOption()
         .setName("id")
-        .setDescription("The warning ID")
+        .setDescription("The warning ID"),
     ),
     slashOption(
       true,
       new SlashCommandStringOption()
         .setName("type")
         .setDescription("The embed type")
-        .setChoices({ name: "Log", value: "log" }, { name: "DM", value: "dm" })
+        .setChoices({ name: "Log", value: "log" }, { name: "DM", value: "dm" }),
     ),
   ],
   async handle(interaction, id, type) {

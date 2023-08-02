@@ -62,7 +62,7 @@ const dismissWarnButton = component({
     const channel = await fetchChannel(
       interaction.client,
       channelId,
-      ChannelType.GuildText
+      ChannelType.GuildText,
     )
     await channel.delete()
     await interaction.deferUpdate()
@@ -79,13 +79,13 @@ export const WarnCommand = slashCommand({
       true,
       new SlashCommandUserOption()
         .setName("user")
-        .setDescription("The target user")
+        .setDescription("The target user"),
     ),
     slashOption(
       true,
       new SlashCommandStringOption()
         .setName("description")
-        .setDescription("Description that will be sent to the user")
+        .setDescription("Description that will be sent to the user"),
     ),
     slashOption(
       true,
@@ -97,39 +97,39 @@ export const WarnCommand = slashCommand({
             (p) => ({
               name: p.name,
               value: p.name,
-            })
-          )
-        )
+            }),
+          ),
+        ),
     ),
     slashOption(
       true,
       new SlashCommandBooleanOption()
         .setName("notify")
-        .setDescription("Whether to notify the user of the warning")
+        .setDescription("Whether to notify the user of the warning"),
     ),
     slashOption(
       false,
       new SlashCommandAttachmentOption()
         .setName("image")
-        .setDescription("An image to add to the warning and send to the user")
+        .setDescription("An image to add to the warning and send to the user"),
     ),
     slashOption(
       false,
       new SlashCommandAttachmentOption()
         .setName("image2")
-        .setDescription("An image to add to the warning and send to the user")
+        .setDescription("An image to add to the warning and send to the user"),
     ),
     slashOption(
       false,
       new SlashCommandAttachmentOption()
         .setName("image3")
-        .setDescription("An image to add to the warning and send to the user")
+        .setDescription("An image to add to the warning and send to the user"),
     ),
     slashOption(
       false,
       new SlashCommandAttachmentOption()
         .setName("image4")
-        .setDescription("An image to add to the warning and send to the user")
+        .setDescription("An image to add to the warning and send to the user"),
     ),
   ],
   async handle(
@@ -141,7 +141,7 @@ export const WarnCommand = slashCommand({
     image,
     image2,
     image3,
-    image4
+    image4,
   ) {
     if (!interaction.inGuild()) {
       throw new GuildOnlyError()
@@ -158,7 +158,7 @@ export const WarnCommand = slashCommand({
 
     const targetMember = await tryFetchMember(guild, targetUser)
     const attachments = [image, image2, image3, image4].filter(
-      (r) => r !== null
+      (r) => r !== null,
     ) as Attachment[]
 
     const attachmentUrls = await Promise.all(attachments.map(uploadAttachment))
@@ -225,7 +225,7 @@ export const WarnCommand = slashCommand({
     let channel = await fetchChannel(
       interaction.client,
       prismaGuild.warnLogsChannel,
-      ChannelType.GuildText
+      ChannelType.GuildText,
     )
 
     let message = await interaction.editReply(logMessage)
@@ -249,7 +249,7 @@ export const WarnCommand = slashCommand({
       if (
         !(await tryFetchMember(
           { client: interaction.client, id: otherGuild.id },
-          warning.userId
+          warning.userId,
         ))
       ) {
         continue
@@ -258,7 +258,7 @@ export const WarnCommand = slashCommand({
       channel = await fetchChannel(
         interaction.client,
         otherGuild.warnLogsChannel,
-        ChannelType.GuildText
+        ChannelType.GuildText,
       )
       message = await channel.send(logMessage)
       await Prisma.warningLogMessage.create({
@@ -281,7 +281,7 @@ async function notify(
     guild: WarningGuild
     messages: WarningLogMessage[]
   },
-  guild: Guild
+  guild: Guild,
 ) {
   if (warning.silent) {
     return "SILENT"
@@ -326,7 +326,7 @@ async function notify(
       ReadMessageHistory: true,
       UseApplicationCommands: true,
     },
-    { reason: "Allow the member to-be-warned to view the channel" }
+    { reason: "Allow the member to-be-warned to view the channel" },
   )
   await newChannel.send({
     ...message,
@@ -336,7 +336,7 @@ async function notify(
         new ButtonBuilder()
           .setLabel("Dismiss")
           .setStyle(ButtonStyle.Danger)
-          .setCustomId(dismissWarnButton(newChannel.id, warning.userId))
+          .setCustomId(dismissWarnButton(newChannel.id, warning.userId)),
       ),
     ],
   })
@@ -347,7 +347,7 @@ async function notify(
 async function penalise(
   target: GuildMember | User,
   warning: Warning & { penalty: Penalty },
-  guild: Guild
+  guild: Guild,
 ) {
   const by = await guild.client.users.fetch(warning.createdBy)
   const reason = `By ${userDisplayName(by)}`

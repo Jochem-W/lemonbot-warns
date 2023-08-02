@@ -79,7 +79,7 @@ async function onTick(client: Client<true>) {
 
     const userId = getFirstTextAnswer(
       formResponse,
-      Config.banAppealForm.questions.discordId
+      Config.banAppealForm.questions.discordId,
     )
     const user = await client.users.fetch(userId)
 
@@ -92,14 +92,14 @@ async function onTick(client: Client<true>) {
       .setURL(
         getFormEditUrl(
           Config.banAppealForm.id,
-          formResponse.responseId
-        ).toString()
+          formResponse.responseId,
+        ).toString(),
       )
       .setTimestamp(submittedTime.toMillis())
 
     const contactMethod = getFirstTextAnswer(
       formResponse,
-      Config.banAppealForm.questions.contactMethod
+      Config.banAppealForm.questions.contactMethod,
     )
     let contact
     switch (contactMethod) {
@@ -109,11 +109,11 @@ async function onTick(client: Client<true>) {
       case "Twitter":
         contact = getFirstTextAnswer(
           formResponse,
-          Config.banAppealForm.questions.twitterUsername
+          Config.banAppealForm.questions.twitterUsername,
         )
         contact = hyperlink(
           `@${contact}`,
-          new URL(contact, "https://twitter.com/")
+          new URL(contact, "https://twitter.com/"),
         )
         break
       default:
@@ -128,21 +128,21 @@ async function onTick(client: Client<true>) {
     const claimedBanDate = getFirstTextAnswer(
       formResponse,
       Config.banAppealForm.questions.banDate,
-      false
+      false,
     )
     embed.addFields({
       name: "When were you banned?",
       value: claimedBanDate
         ? time(
             DateTime.fromISO(claimedBanDate).toJSDate(),
-            TimestampStyles.ShortDate
+            TimestampStyles.ShortDate,
           )
         : "Not provided",
     })
 
     const claimedBanReason = getFirstTextAnswer(
       formResponse,
-      Config.banAppealForm.questions.banReason
+      Config.banAppealForm.questions.banReason,
     )
     embed.addFields({
       name: "Why were you banned?",
@@ -167,7 +167,7 @@ async function onTick(client: Client<true>) {
     const unbanReason = getFirstTextAnswer(
       formResponse,
       Config.banAppealForm.questions.unbanReason,
-      false
+      false,
     )
     if (unbanReason) {
       embed.addFields({
@@ -183,8 +183,8 @@ async function onTick(client: Client<true>) {
 
     let loggingGuilds = await Promise.all(
       bans.map((b) =>
-        Prisma.warningGuild.findFirstOrThrow({ where: { id: b.guild.id } })
-      )
+        Prisma.warningGuild.findFirstOrThrow({ where: { id: b.guild.id } }),
+      ),
     )
     if (loggingGuilds.length === 0) {
       loggingGuilds = await Prisma.warningGuild.findMany()
@@ -194,7 +194,7 @@ async function onTick(client: Client<true>) {
       const appealsChannel = await fetchChannel(
         client,
         prismaGuild.appealsChannel,
-        ChannelType.GuildText
+        ChannelType.GuildText,
       )
       const message = await appealsChannel.send({
         embeds: [embed],
@@ -217,7 +217,7 @@ export const CheckBanAppealsHandler = handler({
   handle(client) {
     const job = new CronJob("* * * * *", () => {
       onTick(client).catch((e) =>
-        e instanceof Error ? void logError(client, e) : console.error(e)
+        e instanceof Error ? void logError(client, e) : console.error(e),
       )
     })
     job.start()

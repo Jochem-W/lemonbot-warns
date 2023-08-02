@@ -16,7 +16,7 @@ export const EvalMessageCommand = contextMenuCommand({
     const match = message.content.match(/^```js\n(.*)\n```$/s)?.[1]
     if (!match) {
       throw new NoValidCodeError(
-        "The specified message doesn't contain valid code"
+        "The specified message doesn't contain valid code",
       )
     }
 
