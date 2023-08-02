@@ -113,7 +113,7 @@ export const RestCommand = slashCommand({
       rest = interaction.client.rest
     }
 
-    const response = await rest.raw(options)
+    const response = await rest.queueRequest(options)
     const json = JSON.stringify(await response.json(), undefined, 4).trim()
 
     const files: AttachmentBuilder[] = []
