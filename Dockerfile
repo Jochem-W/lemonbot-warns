@@ -1,5 +1,5 @@
 # Set-up build image
-FROM node:20-slim AS builder
+FROM node:20-alpine AS builder
 ENV NODE_ENV=development
 
 WORKDIR /app
@@ -8,9 +8,7 @@ WORKDIR /app
 COPY ["pnpm-lock.yaml", "package.json", ".npmrc", "prisma", "./"]
 
 # Install build tools
-RUN apt-get update && \
-    apt-get -y install build-essential openssl python3 && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN apk add --no-cache alpine-sdk python3 openssl && \
     npm install -g pnpm && \
     pnpm install
 
@@ -23,16 +21,14 @@ RUN pnpm prisma generate && \
     pnpm prune --prod
 
 # Set-up running image
-FROM node:20-slim
+FROM node:20-alpine
 ARG commit_hash
 ENV NODE_ENV=production \
     COMMIT_HASH=$commit_hash
 WORKDIR /app
 
 # Install openssl
-RUN apt-get update && \
-    apt-get -y install openssl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache openssl
 
 # Copy all files (including source :/)
 COPY --from=builder /app .
