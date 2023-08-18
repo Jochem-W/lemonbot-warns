@@ -30,7 +30,10 @@ export class LongTimeout {
   }
 
   public clear() {
-    clearTimeout(this.timer)
+    if (!this.timer) {
+      clearTimeout(this.timer)
+    }
+
     this.callback = () => undefined
   }
 }
