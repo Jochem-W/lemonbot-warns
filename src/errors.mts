@@ -18,7 +18,7 @@ import {
   Client,
 } from "discord.js"
 import type { DateTime } from "luxon"
-import type MIMEType from "whatwg-mimetype"
+import type { MIMEType } from "util"
 
 class CustomError extends Error {
   public constructor(message: string) {
