@@ -23,7 +23,6 @@ import {
   type Interaction,
   type UserResolvable,
 } from "discord.js"
-import { DateTime } from "luxon"
 
 export function uniqueName(user: User) {
   if (user.discriminator !== "0") {
@@ -39,13 +38,6 @@ export function userDisplayName(user: User) {
   }
 
   return user.username
-}
-
-export function snowflakeToDateTime(snowflake: Snowflake) {
-  return DateTime.fromMillis(
-    Number((BigInt(snowflake) >> 22n) + 1420070400000n),
-    { zone: "utc" },
-  )
 }
 
 export async function tryFetchMember(
