@@ -1,7 +1,6 @@
 import { Variables } from "./variables.mjs"
 import { S3Client } from "@aws-sdk/client-s3"
 import { auth, forms } from "@googleapis/forms"
-import { sheets } from "@googleapis/sheets"
 import { Octokit } from "@octokit/rest"
 import { PrismaClient } from "@prisma/client"
 
@@ -9,7 +8,6 @@ const GoogleAuth = new auth.GoogleAuth({
   scopes: [
     "https://www.googleapis.com/auth/forms.responses.readonly",
     "https://www.googleapis.com/auth/forms.body.readonly",
-    "https://www.googleapis.com/auth/spreadsheets.readonly",
   ],
 })
 
@@ -23,5 +21,4 @@ export const S3 = new S3Client({
   },
 })
 export const Forms = forms({ version: "v1", auth: GoogleAuth })
-export const Sheets = sheets({ version: "v4", auth: GoogleAuth })
 export const GitHubClient = new Octokit({ auth: Variables.githubToken })
