@@ -18,9 +18,16 @@ const model = z.object({
     applicationId: z.string(),
   }),
   mailUserId: z.string(),
-  repository: z.object({
-    name: z.string(),
-    owner: z.string(),
+  repository: z
+    .object({
+      name: z.string(),
+      owner: z.string(),
+    })
+    .optional(),
+  s3: z.object({
+    region: z.string(),
+    endpoint: z.string(),
+    bucket: z.object({ name: z.string(), url: z.string().url() }),
   }),
 })
 

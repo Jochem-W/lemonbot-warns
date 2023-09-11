@@ -1,3 +1,4 @@
+import { Config } from "./models/config.mjs"
 import { Variables } from "./variables.mjs"
 import { S3Client } from "@aws-sdk/client-s3"
 import { auth, forms } from "@googleapis/forms"
@@ -13,8 +14,8 @@ const GoogleAuth = new auth.GoogleAuth({
 
 export const Prisma = new PrismaClient()
 export const S3 = new S3Client({
-  region: Variables.s3Region,
-  endpoint: Variables.s3Endpoint,
+  region: Config.s3.region,
+  endpoint: Config.s3.endpoint,
   credentials: {
     accessKeyId: Variables.s3AccessKeyId,
     secretAccessKey: Variables.s3SecretAccessKey,

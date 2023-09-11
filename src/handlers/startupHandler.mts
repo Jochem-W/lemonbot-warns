@@ -63,7 +63,7 @@ function exitListener(client: Client<true>) {
 }
 
 async function getChangelog() {
-  if (!Variables.commitHash) {
+  if (!Variables.commitHash || !Variables.githubToken || !Config.repository) {
     return null
   }
 

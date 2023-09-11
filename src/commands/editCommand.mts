@@ -1,11 +1,11 @@
 import { Prisma, S3 } from "../clients.mjs"
+import { Config } from "../models/config.mjs"
 import {
   slashCommand,
   slashOption,
   subcommand,
 } from "../models/slashCommand.mjs"
 import { ensureOwner } from "../utilities/discordUtilities.mjs"
-import { Variables } from "../variables.mjs"
 import { DeleteObjectCommand } from "@aws-sdk/client-s3"
 import {
   EmbedBuilder,
@@ -42,7 +42,7 @@ export const EditCommand = slashCommand({
         for (const image of images) {
           await S3.send(
             new DeleteObjectCommand({
-              Bucket: Variables.s3WarningsBucketName,
+              Bucket: Config.s3.bucket.name,
               Key: new URL(image.url).pathname.slice(1),
             }),
           )

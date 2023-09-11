@@ -1,5 +1,5 @@
 import { S3 } from "../clients.mjs"
-import { Variables } from "../variables.mjs"
+import { Config } from "../models/config.mjs"
 import {
   GetObjectCommand,
   HeadObjectCommand,
@@ -19,12 +19,12 @@ export async function uploadAttachment(attachment: Attachment) {
 
   const response = await fetch(attachment.url)
   await upload(
-    Variables.s3WarningsBucketName,
+    Config.s3.bucket.name,
     key,
     response.body ?? undefined,
     attachment.contentType ?? undefined,
   )
-  return new URL(`${Variables.s3WarningsBucketUrl}/${key}`).toString()
+  return new URL(`${Config.s3.bucket.url}/${key}`).toString()
 }
 
 export async function download(
