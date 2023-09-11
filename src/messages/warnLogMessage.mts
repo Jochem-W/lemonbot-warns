@@ -166,7 +166,7 @@ export async function warnLogMessage(
     .setTimestamp(warning.createdAt)
 
   if (warning.description) {
-    firstEmbed.setFields({ name: "❔ Reason", value: warning.description })
+    firstEmbed.setFields({ name: "⚠️ Reason", value: warning.description })
   } else {
     components.push(
       new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
@@ -219,7 +219,7 @@ export async function warnLogMessage(
   }
 
   if (errors.length > 0) {
-    firstEmbed.addFields({ name: "⚠️ Errors", value: errors.join("\n") })
+    firstEmbed.addFields({ name: "🦐 Errors", value: errors.join("\n") })
   }
 
   return { embeds }
