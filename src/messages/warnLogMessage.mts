@@ -5,11 +5,11 @@ import { modal, modalInput } from "../models/modal.mjs"
 import {
   fetchChannel,
   isInPrivateChannel,
-  userDisplayName,
   warningUrl,
 } from "../utilities/discordUtilities.mjs"
 import type {
   Image,
+  Notified,
   Penalty,
   Warning,
   WarningGuild,
@@ -23,10 +23,14 @@ import {
   Client,
   ComponentType,
   EmbedBuilder,
+  MessageActionRowComponentBuilder,
   TextInputBuilder,
   TextInputStyle,
-  inlineCode,
+  TimestampStyles,
+  time,
+  userMention,
 } from "discord.js"
+import { DateTime } from "luxon"
 
 const editDescriptionButton = component({
   type: ComponentType.Button,
@@ -132,110 +136,40 @@ export async function warnLogMessage(
     messages: WarningLogMessage[]
   },
 ) {
+  const embeds = warning.images.map((image) =>
+    new EmbedBuilder()
+      .setImage(image.url)
+      .setURL(warningUrl(warning).toString()),
+  )
+  const components = []
+
+  let firstEmbed = embeds[0]
+  if (!firstEmbed) {
+    firstEmbed = new EmbedBuilder()
+    embeds.push(firstEmbed)
+  }
+  const createdBy = await client.users.fetch(warning.createdBy)
+  const target = await client.users.fetch(warning.userId)
   const guild = await client.guilds.fetch(warning.guildId)
 
-  const user = await client.users.fetch(warning.userId)
-
-  const createdBy = await client.users.fetch(warning.createdBy)
-
-  let verb
-  if (warning.penalty.ban) {
-    verb = "Banned"
-  } else if (warning.penalty.kick) {
-    verb = "Kicked"
-  } else if (warning.penalty.timeout) {
-    verb = "Timed out"
-  } else {
-    verb = "Warned"
-  }
-
-  let notificationText
-  switch (warning.notified) {
-    case "SILENT":
-      notificationText = `❌ (notify was ${inlineCode("False")})`
-      break
-    case "NOT_IN_SERVER":
-      notificationText = "❌ (the user isn't in the server)"
-      break
-    case "DM":
-      notificationText = "✅ (via DMs)"
-      break
-    case "DMS_DISABLED":
-      notificationText = "❌ (the user has DMs disabled)"
-      break
-    case "CHANNEL":
-      notificationText = "✅ (via channel)"
-      break
-    case "REGULAR_BAN":
-      notificationText = "❌ (regular ban)"
-      break
-    case null:
-      notificationText = "❓"
-      break
-  }
-
-  let penaltyText
-  switch (warning.penalised) {
-    case "NOT_IN_SERVER":
-      penaltyText = "❌ (the user isn't in the server)"
-      break
-    case "APPLIED":
-      penaltyText = "✅ (applied)"
-      break
-    case "NO_PENALTY":
-      penaltyText = "❌ (no penalty)"
-      break
-    case null:
-      penaltyText = "❓"
-      break
-  }
-
-  const embeds = warning.images
-    .filter((i) => !i.extra)
-    .map((i) =>
-      new EmbedBuilder().setImage(i.url).setURL(warningUrl(warning).toString()),
-    )
-
-  let mainEmbed: EmbedBuilder | undefined = embeds[0]
-  if (!mainEmbed) {
-    mainEmbed = new EmbedBuilder()
-    embeds.push(mainEmbed)
-  }
-
-  mainEmbed
+  firstEmbed
     .setAuthor({
-      name: `${verb} ${userDisplayName(user)} in ${guild.name} [${warning.id}]`,
-      iconURL: user.displayAvatarURL(),
-    })
-    .setFields(
-      { name: "Description", value: warning.description ?? "-" },
-      { name: "Penalty", value: warning.penalty.name },
-      { name: "Notification", value: notificationText },
-      { name: "Penalised", value: penaltyText },
-      { name: "User ID", value: user.id },
-    )
-    .setFooter({
-      text: userDisplayName(createdBy),
+      name: `${createdBy.displayName} ${actionVerb(warning)} ${
+        target.displayName
+      } in ${guild.name}`,
       iconURL: createdBy.displayAvatarURL(),
+    })
+    .setThumbnail(target.displayAvatarURL())
+    .setFooter({
+      text: `${warning.id}${notifiedText(warning)}`,
     })
     .setTimestamp(warning.createdAt)
 
-  const extraImages = warning.images
-    .filter((i) => i.extra)
-    .map((i) =>
-      new EmbedBuilder()
-        .setImage(i.url)
-        .setURL(warningUrl(warning, "extra").toString()),
-    )
-
-  extraImages[0]?.setAuthor({ name: "Extra images" }) // Looks better than title
-
-  embeds.push(...extraImages)
-
-  const components = []
-  if (!warning.description) {
+  if (warning.description) {
+    firstEmbed.setFields({ name: "❔ Reason", value: warning.description })
+  } else {
     components.push(
-      new ActionRowBuilder<ButtonBuilder>().setComponents(
+      new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
         new ButtonBuilder()
           .setStyle(ButtonStyle.Secondary)
           .setLabel("Edit description")
@@ -244,8 +178,72 @@ export async function warnLogMessage(
     )
   }
 
-  return {
-    embeds,
-    components,
+  if (warning.penalty.timeout) {
+    firstEmbed.addFields({ name: "🕛 Timeout duration", value: "" })
+  } else if (warning.penalty.ban && warning.penalty.deleteMessages) {
+    const date = DateTime.fromJSDate(warning.createdAt)
+      .minus({ days: 7 })
+      .toJSDate()
+    firstEmbed.addFields({
+      name: "🗑️ Messages deleted",
+      value: `Last 7 days (since ${time(
+        date,
+        TimestampStyles.ShortTime,
+      )} ${time(date, TimestampStyles.ShortDate)})`,
+    })
+  }
+
+  firstEmbed.addFields(
+    { name: "👤 User", value: userMention(target.id), inline: true },
+    { name: "#️⃣ User ID", value: target.id, inline: true },
+  )
+
+  const errors = []
+  switch (warning.notified) {
+    case "DMS_DISABLED":
+      errors.push("- Sending a DM failed, because the member has DMs disabled.")
+      break
+    case "NOT_IN_SERVER":
+      errors.push(
+        "- Sending a DM failed, because the user is not in the server.",
+      )
+      break
+  }
+
+  switch (warning.penalised) {
+    case "NOT_IN_SERVER":
+      errors.push(
+        "- Penalising the user failed, because they're not in the server.",
+      )
+      break
+  }
+
+  if (errors.length > 0) {
+    firstEmbed.addFields({ name: "⚠️ Errors", value: errors.join("\n") })
+  }
+
+  return { embeds }
+}
+
+function notifiedText(warning: { notified: Notified | null }) {
+  switch (warning.notified) {
+    case "DM":
+      return ", notified via DM"
+    case "CHANNEL":
+      return ", notified via channel"
+    default:
+      return ""
+  }
+}
+
+function actionVerb(warning: { penalty: Penalty }) {
+  if (warning.penalty.ban) {
+    return "banned"
+  } else if (warning.penalty.kick) {
+    return "kicked"
+  } else if (warning.penalty.timeout) {
+    return "timed out"
+  } else {
+    return "warned"
   }
 }
