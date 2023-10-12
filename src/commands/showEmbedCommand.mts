@@ -38,21 +38,24 @@ export const ShowEmbedCommand = slashCommand({
         messages: true,
       },
     })
+
     let ephemeral = true
+
     if (interaction.inGuild()) {
       const warningGuild = await Prisma.warningGuild.findFirst({
         where: { id: interaction.guildId },
       })
       ephemeral = warningGuild?.warnLogsChannel !== interaction.channelId
     }
+
     switch (type) {
-      case "warn-dm":
+      case "dm":
         await interaction.reply({
           ...(await warnMessage(interaction.client, warning)),
           ephemeral,
         })
         break
-      case "warn-log":
+      case "log":
         await interaction.reply({
           ...(await warnLogMessage(interaction.client, warning)),
           ephemeral,
