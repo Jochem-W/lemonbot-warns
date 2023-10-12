@@ -30,7 +30,7 @@ import {
   time,
   userMention,
 } from "discord.js"
-import { DateTime } from "luxon"
+import { DateTime, Duration } from "luxon"
 
 const editDescriptionButton = component({
   type: ComponentType.Button,
@@ -179,7 +179,10 @@ export async function warnLogMessage(
   }
 
   if (warning.penalty.timeout) {
-    firstEmbed.addFields({ name: "🕛 Timeout duration", value: "" })
+    firstEmbed.addFields({
+      name: "🕛 Timeout duration",
+      value: Duration.fromMillis(warning.penalty.timeout).toHuman(),
+    })
   } else if (warning.penalty.ban && warning.penalty.deleteMessages) {
     const date = DateTime.fromJSDate(warning.createdAt)
       .minus({ days: 7 })
