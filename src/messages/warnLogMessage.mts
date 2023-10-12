@@ -181,9 +181,9 @@ export async function warnLogMessage(
   if (warning.penalty.timeout) {
     firstEmbed.addFields({
       name: "🕛 Timeout duration",
-      value: Duration.fromMillis(warning.penalty.timeout)
-        .shiftToAll()
-        .toHuman(),
+      value: shiftDuration(
+        Duration.fromMillis(warning.penalty.timeout),
+      ).toHuman(),
     })
   } else if (warning.penalty.ban && warning.penalty.deleteMessages) {
     const date = DateTime.fromJSDate(warning.createdAt)
@@ -251,4 +251,14 @@ function actionVerb(warning: { penalty: Penalty }) {
   } else {
     return "warned"
   }
+}
+
+function shiftDuration(duration: Duration) {
+  return Duration.fromObject(
+    Object.fromEntries(
+      Object.entries(duration.shiftToAll().toObject()).filter(
+        ([, value]) => value !== 0,
+      ),
+    ),
+  )
 }
