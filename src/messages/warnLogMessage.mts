@@ -181,7 +181,9 @@ export async function warnLogMessage(
   if (warning.penalty.timeout) {
     firstEmbed.addFields({
       name: "🕛 Timeout duration",
-      value: Duration.fromMillis(warning.penalty.timeout).toHuman(),
+      value: Duration.fromMillis(warning.penalty.timeout)
+        .shiftToAll()
+        .toHuman(),
     })
   } else if (warning.penalty.ban && warning.penalty.deleteMessages) {
     const date = DateTime.fromJSDate(warning.createdAt)
