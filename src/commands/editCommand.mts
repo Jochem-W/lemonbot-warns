@@ -34,6 +34,7 @@ export const EditCommand = slashCommand({
       async handle(interaction, warningId) {
         const images = await Prisma.image.findMany({ where: { warningId } })
         await Prisma.image.deleteMany({ where: { warningId } })
+        await Prisma.warningLogMessage.deleteMany({ where: { warningId } })
         const warning = await Prisma.warning.delete({
           where: { id: warningId },
         })
