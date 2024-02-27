@@ -320,11 +320,15 @@ export class InvalidDateTimeError extends CustomError {
 }
 
 export async function logError(
-  client: Client<true>,
+  client: Client,
   error: Error,
   guild?: Guild | WarningGuild | string | null,
 ) {
   console.error(error)
+  if (!client.isReady()) {
+    return
+  }
+  
   if (guild instanceof Guild) {
     guild = await Prisma.warningGuild.findFirst({ where: { id: guild.id } })
   } else if (typeof guild === "string") {

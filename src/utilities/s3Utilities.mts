@@ -13,6 +13,7 @@ import {
 } from "@aws-sdk/client-s3"
 import { Upload, type Options } from "@aws-sdk/lib-storage"
 import type { Attachment } from "discord.js"
+import { Readable } from "stream"
 
 export async function uploadAttachment(attachment: Attachment) {
   const key = `${attachment.id}/${attachment.name}`
@@ -21,7 +22,7 @@ export async function uploadAttachment(attachment: Attachment) {
   await upload(
     Config.s3.bucket.name,
     key,
-    response.body ?? undefined,
+    response.body as unknown as Readable | undefined,
     attachment.contentType ?? undefined,
   )
   return new URL(`${Config.s3.bucket.url}/${key}`).toString()
