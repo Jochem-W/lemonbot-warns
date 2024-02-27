@@ -1,6 +1,6 @@
 {
   "extends": [
-    "@tsconfig/node20",
+    "@tsconfig/node21",
     "@tsconfig/strictest"
   ],
   "compilerOptions": {
