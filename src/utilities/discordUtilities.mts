@@ -72,10 +72,7 @@ export async function fetchChannel<T extends ChannelType>(
   type: T | T[],
   options?: FetchChannelOptions,
 ) {
-  const channel = await client.channels.fetch(id, {
-    allowUnknownGuild: true,
-    ...options,
-  })
+  const channel = await client.channels.fetch(id, options)
   if (!channel) {
     throw new ChannelNotFoundError(id)
   }
@@ -133,9 +130,7 @@ export async function isInPrivateChannel(interaction: Interaction) {
 
   const channel =
     interaction.channel ??
-    (await interaction.client.channels.fetch(interaction.channelId, {
-      allowUnknownGuild: true,
-    }))
+    (await interaction.client.channels.fetch(interaction.channelId))
 
   if (!channel || channel.isDMBased() || !channel.parentId) {
     return false
